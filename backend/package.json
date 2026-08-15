@@ -7,7 +7,8 @@
     "dev": "nodemon src/server.js",
     "test": "jest",
     "lint": "eslint .",
-    "format": "prettier --write ."
+    "format": "prettier --write .",
+    "seed:knowledge": "node src/scripts/seed-knowledge.js"
   },
   "keywords": [],
   "author": "",
@@ -20,6 +21,7 @@
     "express-validator": "^7.2.1",
     "helmet": "^7.1.0",
     "mongoose": "^8.15.2",
+    "openai": "^7.4.0",
     "winston": "^3.17.0"
   },
   "devDependencies": {
