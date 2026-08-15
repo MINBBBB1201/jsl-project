@@ -14,6 +14,9 @@
  *      node src/scripts/seed-knowledge.js --reset   (기존 문서 삭제 후 재삽입)
  */
 
+// ⚠️ mongoose 보다 먼저 — server.js 와 같은 이유 (config/dns.js 주석 참고)
+require('../config/dns');
+
 const mongoose = require('mongoose');
 const { connectDB, closeDB } = require('../config/database');
 const KnowledgeDoc = require('../models/knowledge.model');

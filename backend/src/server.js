@@ -1,3 +1,7 @@
+// ⚠️ 반드시 첫 줄. mongoose 가 로드되기 전에 DNS 리졸버를 확정해야 한다.
+//    (설명은 config/dns.js 주석 참고 — DNS_SERVERS 미설정 시 아무 동작 안 함)
+require('./config/dns');
+
 const express = require('express');
 const cors = require('cors');
 const helmet = require('helmet');
