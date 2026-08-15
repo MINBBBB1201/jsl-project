@@ -23,7 +23,19 @@ export function AboutSection() {
           </p>
         </div>
 
-        {/* Modern Values Grid with Enhanced Design */}
+        {/* 왜 JSL인가 — 4가지 강점 */}
+        <div className="text-center mb-10">
+          <h3 className="text-2xl font-semibold tracking-tight">
+            {about.valuesTitle}
+          </h3>
+        </div>
+
+        {/*
+          TODO: 고객사 실명 공개 여부 컨펌 후 반영
+          소개서에는 실명 거래처가 언급돼 있으나 웹사이트 공개 가능 여부가
+          확인되지 않아 "글로벌 제조기업"으로 익명화했습니다.
+          컨펌 후 실명/로고를 이 섹션 또는 LogoCarousel에 추가하세요.
+        */}
         <div className="grid grid-cols-1 gap-x-8 gap-y-12 sm:grid-cols-2 xl:grid-cols-4 mb-12">
           {about.values.map((value, index) => (
             <Card key={index} className='group shadow-xs py-2'>

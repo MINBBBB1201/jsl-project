@@ -2,7 +2,7 @@
 
 import { Card, CardContent } from '@/components/ui/card'
 import { DotPattern } from '@/components/dot-pattern'
-import { stats } from '@/config/landing-content'
+import { stats, monthlyVolumes, volumesHeading } from '@/config/landing-content'
 
 export function StatsSection() {
   return (
@@ -35,6 +35,44 @@ export function StatsSection() {
               </CardContent>
             </Card>
           ))}
+        </div>
+
+        {/* 월간 처리 물동량 */}
+        <div className="mt-10 md:mt-12">
+          <div className="text-center mb-6">
+            <h3 className="text-lg font-semibold text-foreground">
+              {volumesHeading.title}
+            </h3>
+            <p className="text-sm text-muted-foreground mt-1">
+              {volumesHeading.description}
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 md:gap-6">
+            {monthlyVolumes.map((volume) => (
+              <Card
+                key={volume.mode}
+                className="bg-background/60 backdrop-blur-sm border-border/50 py-0"
+              >
+                <CardContent className="p-5 flex items-center gap-4">
+                  <div className="p-2.5 bg-primary/10 rounded-lg shrink-0">
+                    <volume.icon className="h-5 w-5 text-primary" />
+                  </div>
+                  <div className="min-w-0">
+                    <p className="text-xs font-semibold tracking-wider text-primary">
+                      {volume.mode}
+                    </p>
+                    <p className="text-xl font-bold text-foreground">
+                      {volume.value}
+                      <span className="ms-1 text-sm font-medium text-muted-foreground">
+                        {volume.unit}
+                      </span>
+                    </p>
+                  </div>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
         </div>
       </div>
     </section>

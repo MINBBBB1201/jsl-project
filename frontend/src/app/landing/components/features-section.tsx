@@ -1,12 +1,13 @@
 "use client"
 
-import { ArrowRight } from 'lucide-react'
+import { ArrowRight, Check } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
+import { Card, CardContent } from '@/components/ui/card'
 import { Image3D } from '@/components/image-3d'
 import { services } from '@/config/landing-content'
 
-const { transport, valueAdded } = services
+const { modes, valueAdded } = services
 
 export function FeaturesSection() {
   return (
@@ -23,54 +24,45 @@ export function FeaturesSection() {
           </p>
         </div>
 
-        {/* First Feature Section */}
-        <div className="grid items-center gap-12 lg:grid-cols-2 lg:gap-8 xl:gap-16 mb-24">
-          {/* Left Image */}
-          <Image3D
-            lightSrc="/feature-1-light.png"
-            darkSrc="/feature-1-dark.png"
-            alt="운송 현황 관리 화면"
-            direction="left"
-          />
-          {/* Right Content */}
-          <div className="space-y-6">
-            <div className="space-y-4">
-              <h3 className="text-2xl font-semibold tracking-tight text-balance sm:text-3xl">
-                {transport.title}
-              </h3>
-              <p className="text-muted-foreground text-base text-pretty">
-                {transport.description}
-              </p>
-            </div>
-
-            <ul className="grid gap-4 sm:grid-cols-2">
-              {transport.items.map((feature, index) => (
-                <li key={index} className="group hover:bg-accent/5 flex items-start gap-3 p-2 rounded-lg transition-colors">
-                  <div className="mt-0.5 flex shrink-0 items-center justify-center">
-                    <feature.icon className="size-5 text-primary" aria-hidden="true" />
+        {/* 5개 운송 모드 */}
+        <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3 mb-24">
+          {modes.map((mode) => (
+            <Card key={mode.code} className="shadow-xs h-full py-0">
+              <CardContent className="p-6 flex h-full flex-col">
+                <div className="flex items-center gap-3 mb-4">
+                  <div className="p-2.5 bg-primary/10 rounded-xl shrink-0">
+                    <mode.icon className="h-5 w-5 text-primary" aria-hidden="true" />
                   </div>
-                  <div>
-                    <h3 className="text-foreground font-medium">{feature.title}</h3>
-                    <p className="text-muted-foreground mt-1 text-sm">{feature.description}</p>
+                  <div className="min-w-0">
+                    <p className="text-xs font-semibold tracking-widest text-primary">
+                      {mode.code}
+                    </p>
+                    <h3 className="text-lg font-semibold text-foreground">
+                      {mode.title}
+                    </h3>
                   </div>
-                </li>
-              ))}
-            </ul>
+                </div>
 
-            <div className="flex flex-col sm:flex-row gap-4 pe-4 pt-2">
-              <Button size="lg" className="cursor-pointer" asChild>
-                <a href={transport.primaryCta.href} className='flex items-center'>
-                  {transport.primaryCta.label}
-                  <ArrowRight className="ms-2 size-4" aria-hidden="true" />
-                </a>
-              </Button>
-              <Button size="lg" variant="outline" className="cursor-pointer" asChild>
-                <a href={transport.secondaryCta.href}>
-                  {transport.secondaryCta.label}
-                </a>
-              </Button>
-            </div>
-          </div>
+                <p className="text-sm text-muted-foreground mb-4">
+                  {mode.summary}
+                </p>
+
+                <ul className="space-y-2 mt-auto">
+                  {mode.highlights.map((highlight) => (
+                    <li key={highlight} className="flex items-start gap-2">
+                      <Check
+                        className="mt-0.5 size-4 shrink-0 text-primary"
+                        aria-hidden="true"
+                      />
+                      <span className="text-sm text-muted-foreground">
+                        {highlight}
+                      </span>
+                    </li>
+                  ))}
+                </ul>
+              </CardContent>
+            </Card>
+          ))}
         </div>
 
         {/* Second Feature Section - Flipped Layout */}

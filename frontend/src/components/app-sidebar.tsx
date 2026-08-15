@@ -27,7 +27,8 @@ import {
 const data = {
   user: {
     name: "JSL Logistics",
-    email: "admin@jsl-logistics.com",
+    // 로그인 연동 전까지 쓰는 데모 계정 (도메인은 실제 사내 도메인 기준)
+    email: "admin@jsl-logis.com",
     avatar: "",
   },
   navGroups: [

@@ -5,7 +5,8 @@ import { LandingNavbar } from './components/navbar'
 import { HeroSection } from './components/hero-section'
 import { StatsSection } from './components/stats-section'
 import { FeaturesSection } from './components/features-section'
-import { TeamSection } from './components/team-section'
+import { ConsultingSection } from './components/consulting-section'
+import { NetworkSection } from './components/network-section'
 import { PricingSection } from './components/pricing-section'
 import { CTASection } from './components/cta-section'
 import { ContactSection } from './components/contact-section'
@@ -36,7 +37,8 @@ export function LandingPageContent() {
         <StatsSection />
         <AboutSection />
         <FeaturesSection />
-        <TeamSection />
+        <ConsultingSection />
+        <NetworkSection />
         <PricingSection />
         <FaqSection />
         <CTASection />
