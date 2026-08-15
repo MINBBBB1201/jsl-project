@@ -564,30 +564,33 @@ export const footer = {
     placeholder: "이메일 주소를 입력하세요",
     submitLabel: "구독하기",
   },
+  // 푸터는 /privacy, /terms 에서도 렌더링되므로 앵커만 쓰면 동작하지 않는다.
+  // 경로를 붙여두면 랜딩에서는 같은 문서 내 스크롤로, 다른 페이지에서는
+  // 랜딩으로 이동 후 해당 위치로 스크롤된다.
   links: {
     서비스: [
-      { name: "항공운송", href: "#features" },
-      { name: "해상 · 복합운송", href: "#features" },
-      { name: "육상운송", href: "#features" },
-      { name: "철도운송", href: "#features" },
-      { name: "특송", href: "#features" },
+      { name: "항공운송", href: "/landing#features" },
+      { name: "해상 · 복합운송", href: "/landing#features" },
+      { name: "육상운송", href: "/landing#features" },
+      { name: "철도운송", href: "/landing#features" },
+      { name: "특송", href: "/landing#features" },
     ],
     회사: [
-      { name: "회사 소개", href: "#about" },
-      { name: "물류 컨설팅", href: "#consulting" },
-      { name: "글로벌 네트워크", href: "#network" },
-      { name: "문의하기", href: "#contact" },
+      { name: "회사 소개", href: "/landing#about" },
+      { name: "물류 컨설팅", href: "/landing#consulting" },
+      { name: "글로벌 네트워크", href: "/landing#network" },
+      { name: "문의하기", href: "/landing#contact" },
     ],
-    // TODO: 실제 페이지 준비되면 링크 연결
     고객지원: [
-      { name: "자주 묻는 질문", href: "#faq" },
-      { name: "화물 추적", href: "#contact" },
-      { name: "견적 요청", href: "#contact" },
+      { name: "자주 묻는 질문", href: "/landing#faq" },
+      { name: "화물 추적", href: "/landing#contact" },
+      { name: "견적 요청", href: "/landing#contact" },
+      // TODO: 공지사항 페이지 준비되면 링크 연결
       { name: "공지사항", href: "#" },
     ],
     약관: [
-      { name: "이용약관", href: "#" },
-      { name: "개인정보처리방침", href: "#" },
+      { name: "이용약관", href: "/terms" },
+      { name: "개인정보처리방침", href: "/privacy" },
     ],
   },
 }

@@ -1,10 +1,12 @@
 "use client"
 
+import Link from "next/link"
 import { zodResolver } from "@hookform/resolvers/zod"
-import { useForm } from "react-hook-form"
+import { useForm, useWatch } from "react-hook-form"
 import { z } from "zod"
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
+import { Checkbox } from '@/components/ui/checkbox'
 import { Input } from '@/components/ui/input'
 import { Textarea } from '@/components/ui/textarea'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
@@ -37,6 +39,10 @@ const contactFormSchema = z.object({
   message: z.string().min(10, {
     message: "문의 내용을 10자 이상 입력해 주세요.",
   }),
+  // 개인정보를 수집하는 폼이라 동의 없이는 제출할 수 없다
+  privacyConsent: z.boolean().refine((checked) => checked === true, {
+    message: "개인정보 수집·이용에 동의해 주세요.",
+  }),
 })
 
 export function ContactSection() {
@@ -48,10 +54,17 @@ export function ContactSection() {
       email: "",
       subject: "",
       message: "",
+      privacyConsent: false,
     },
   })
 
   const isSubmitting = form.formState.isSubmitting
+  // form.watch() 대신 useWatch — watch() 는 매 렌더 새 함수를 반환해
+  // React Compiler 가 컴포넌트 메모이제이션을 건너뛴다.
+  const hasConsented = useWatch({
+    control: form.control,
+    name: "privacyConsent",
+  })
 
   async function onSubmit(values: z.infer<typeof contactFormSchema>) {
     try {
@@ -212,7 +225,56 @@ export function ContactSection() {
                         </FormItem>
                       )}
                     />
-                    <Button type="submit" className="w-full cursor-pointer" disabled={isSubmitting}>
+                    <FormField
+                      control={form.control}
+                      name="privacyConsent"
+                      render={({ field }) => (
+                        <FormItem className="flex flex-row items-start gap-3 rounded-lg border p-4">
+                          <FormControl>
+                            <Checkbox
+                              checked={field.value}
+                              onCheckedChange={field.onChange}
+                              className="mt-0.5 cursor-pointer"
+                              aria-describedby="privacy-consent-detail"
+                            />
+                          </FormControl>
+                          <div className="space-y-1.5">
+                            {/*
+                              링크는 FormLabel 밖에 둔다. label 안의 링크는
+                              클릭 시 체크박스까지 토글되고 접근성상으로도
+                              중첩 인터랙티브 요소가 된다.
+                            */}
+                            <div className="flex flex-wrap items-center gap-x-2">
+                              <FormLabel className="font-normal cursor-pointer">
+                                개인정보 수집·이용에 동의합니다. (필수)
+                              </FormLabel>
+                              <Link
+                                href="/privacy"
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="text-sm underline underline-offset-4 text-muted-foreground hover:text-primary"
+                              >
+                                개인정보처리방침 전문 보기
+                              </Link>
+                            </div>
+                            <p
+                              id="privacy-consent-detail"
+                              className="text-xs text-muted-foreground"
+                            >
+                              수집항목: 회사명, 담당자명, 이메일, 문의 내용 ·
+                              이용목적: 문의 답변 및 상담 · 보유기간: 3년
+                            </p>
+                            <FormMessage />
+                          </div>
+                        </FormItem>
+                      )}
+                    />
+
+                    <Button
+                      type="submit"
+                      className="w-full cursor-pointer"
+                      disabled={isSubmitting || !hasConsented}
+                    >
                       {isSubmitting && <Loader2 className="h-4 w-4 animate-spin" />}
                       {isSubmitting ? '전송 중...' : contact.submitLabel}
                     </Button>
