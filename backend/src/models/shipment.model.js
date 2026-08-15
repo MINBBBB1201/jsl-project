@@ -1,4 +1,11 @@
 const mongoose = require('mongoose');
+const TRANSIT_TIMES = require('../config/transit-times');
+const { TRANSPORT_MODES } = require('../config/transit-times');
+const {
+  RISK_LEVELS,
+  calculateDelayRisk,
+  calculateEstimatedArrival
+} = require('../utils/delay-risk');
 
 const locationSchema = new mongoose.Schema({
   type: {
@@ -69,14 +76,45 @@ const shipmentSchema = new mongoose.Schema({
     required: true
   },
   status: {
+    // 'delayed' 는 지연 감지 기능에서 추가. 기존 값은 그대로 유지한다.
     type: String,
-    enum: ['pending', 'in_transit', 'out_for_delivery', 'delivered', 'exception'],
+    enum: ['pending', 'in_transit', 'out_for_delivery', 'delivered', 'exception', 'delayed'],
     default: 'pending',
     required: true
   },
   estimatedDelivery: {
     type: Date,
     required: true
+  },
+
+  // ── 지연 리스크 스코어링 (v1: 규칙 기반) ────────────────────────────
+  // 자세한 계산은 utils/delay-risk.js 참고.
+  transportMode: {
+    type: String,
+    enum: TRANSPORT_MODES,
+    index: true
+  },
+  /** 집하 일시. 경과율 계산의 기준점이라 없으면 스코어링에서 제외된다. */
+  shippedAt: {
+    type: Date,
+    index: true
+  },
+  /** shippedAt + 운송모드 표준 소요일 (pre-save 훅에서 자동 계산) */
+  estimatedArrivalAt: {
+    type: Date
+  },
+  /**
+   * 경과율 스냅샷 (0 ~ 1+).
+   * ⚠️ 시간이 지나면 낡는 값이다. 목록/집계 API 는 조회 시점에 다시 계산해
+   *    응답하므로, 이 필드는 마지막 저장 시점의 참고값으로만 쓴다.
+   */
+  delayRiskScore: {
+    type: Number,
+    min: 0
+  },
+  delayRiskLevel: {
+    type: String,
+    enum: [RISK_LEVELS.NORMAL, RISK_LEVELS.AT_RISK, RISK_LEVELS.DELAYED]
   },
   history: [{
     location: locationSchema,
@@ -122,6 +160,32 @@ const shipmentSchema = new mongoose.Schema({
 
 // Index for geospatial queries
 shipmentSchema.index({ 'currentLocation.coordinates': '2dsphere' });
+
+// 리스크 등급 필터는 transportMode + shippedAt 범위로 조회한다 (delay-risk.js 참고)
+shipmentSchema.index({ transportMode: 1, shippedAt: 1 });
+
+/**
+ * 저장 전에 예상 도착일과 리스크 스냅샷을 채운다.
+ * 스냅샷은 저장 시점 기준이라 시간이 지나면 낡으므로, 조회 API 는
+ * 응답을 만들 때 다시 계산한다.
+ */
+shipmentSchema.pre('save', function assignDelayRisk(next) {
+  if (this.shippedAt && this.transportMode) {
+    this.estimatedArrivalAt = calculateEstimatedArrival(
+      this.shippedAt,
+      this.transportMode,
+      TRANSIT_TIMES
+    );
+  }
+
+  const risk = calculateDelayRisk(this, TRANSIT_TIMES);
+  if (!risk.skipped) {
+    this.delayRiskScore = risk.score;
+    this.delayRiskLevel = risk.level;
+  }
+
+  next();
+});
 
 // Add a method to update location
 shipmentSchema.methods.updateLocation = async function(locationData, status, description) {

@@ -2,6 +2,36 @@ const Shipment = require('../models/shipment.model');
 const logger = require('../utils/logger');
 const { validationResult } = require('express-validator');
 const mongoose = require('mongoose');
+const TRANSIT_TIMES = require('../config/transit-times');
+const {
+  calculateDelayRisk,
+  buildRiskLevelQuery,
+  RISK_LEVELS
+} = require('../utils/delay-risk');
+
+/**
+ * 저장된 delayRiskScore/Level 은 시간이 지나면 낡으므로, 응답을 만들 때
+ * 조회 시점 기준으로 다시 계산해 덮어쓴다.
+ */
+const withFreshRisk = (shipment, now) => {
+  const plain = typeof shipment.toObject === 'function' ? shipment.toObject() : { ...shipment };
+  const risk = calculateDelayRisk(plain, TRANSIT_TIMES, { now });
+
+  return {
+    ...plain,
+    delayRiskScore: risk.score,
+    delayRiskLevel: risk.level,
+    delayRisk: {
+      score: risk.score,
+      level: risk.level,
+      elapsedDays: risk.elapsedDays,
+      standardDays: risk.standardDays,
+      // 표준 소요일이 추정치인지 실측인지 함께 내려준다
+      standardSource: risk.source,
+      skipped: risk.skipped
+    }
+  };
+};
 
 // Helper function to generate a tracking number
 const generateTrackingNumber = () => {
@@ -352,14 +382,36 @@ exports.getAllShipments = async (req, res) => {
       }
     }
     
-    const { status, sortBy, sortOrder, limit = 50, page = 1 } = req.query;
+    const { status, riskLevel, transportMode, sortBy, sortOrder, limit = 50, page = 1 } = req.query;
+    const now = new Date();
     const query = {};
-    
+
     // Apply filters
     if (status) {
       query.status = status;
     }
-    
+
+    if (transportMode) {
+      query.transportMode = transportMode;
+    }
+
+    // 리스크 등급 필터.
+    // 저장된 delayRiskLevel 은 낡을 수 있어 shippedAt 날짜 범위로 조회한다.
+    if (riskLevel) {
+      const riskQuery = buildRiskLevelQuery(riskLevel, TRANSIT_TIMES, { now });
+      if (!riskQuery) {
+        return res.status(400).json({
+          success: false,
+          error: `riskLevel 은 ${Object.values(RISK_LEVELS).join(', ')} 중 하나여야 합니다.`
+        });
+      }
+      query.$or = riskQuery.$or;
+      // status 를 명시적으로 넘긴 경우 그 필터를 우선한다
+      if (!status) {
+        query.status = riskQuery.status;
+      }
+    }
+
     // Apply sorting
     const sortOptions = {};
     if (sortBy) {
@@ -415,7 +467,7 @@ exports.getAllShipments = async (req, res) => {
     
     res.status(200).json({
       success: true,
-      data: shipments,
+      data: shipments.map((shipment) => withFreshRisk(shipment, now)),
       pagination: {
         total: totalCount,
         page: parseInt(page),
@@ -438,6 +490,76 @@ exports.getAllShipments = async (req, res) => {
     res.status(500).json({ 
       success: false, 
       error: errorMessage,
+      details: process.env.NODE_ENV === 'development' ? error.message : undefined
+    });
+  }
+};
+
+/**
+ * GET /api/shipments/delay-summary
+ *
+ * 진행 중인 화물의 지연 리스크 등급별 건수를 집계한다.
+ * 배송 완료(delivered) 건은 결과가 이미 나온 건이라 집계에서 제외한다.
+ */
+exports.getDelaySummary = async (req, res) => {
+  try {
+    const now = new Date();
+
+    // 스코어링 대상: 배송 완료가 아니고, 집하일과 운송모드가 있는 건
+    const scorableQuery = {
+      status: { $ne: 'delivered' },
+      shippedAt: { $ne: null },
+      transportMode: { $ne: null }
+    };
+
+    const shipments = await Shipment.find(scorableQuery)
+      .select('transportMode shippedAt status')
+      .lean();
+
+    const counts = {
+      [RISK_LEVELS.NORMAL]: 0,
+      [RISK_LEVELS.AT_RISK]: 0,
+      [RISK_LEVELS.DELAYED]: 0
+    };
+    let skipped = 0;
+
+    for (const shipment of shipments) {
+      const { level } = calculateDelayRisk(shipment, TRANSIT_TIMES, { now });
+      if (level) counts[level] += 1;
+      else skipped += 1;
+    }
+
+    const total = counts[RISK_LEVELS.NORMAL] + counts[RISK_LEVELS.AT_RISK] + counts[RISK_LEVELS.DELAYED];
+
+    // 참고용 부가 정보
+    const [deliveredCount, allCount] = await Promise.all([
+      Shipment.countDocuments({ status: 'delivered' }),
+      Shipment.countDocuments({})
+    ]);
+
+    res.status(200).json({
+      success: true,
+      total,
+      [RISK_LEVELS.NORMAL]: counts[RISK_LEVELS.NORMAL],
+      [RISK_LEVELS.AT_RISK]: counts[RISK_LEVELS.AT_RISK],
+      [RISK_LEVELS.DELAYED]: counts[RISK_LEVELS.DELAYED],
+      updatedAt: now.toISOString(),
+      meta: {
+        // 집계에서 빠진 건수 — 운영자가 데이터 품질을 확인할 수 있게 노출한다
+        totalShipments: allCount,
+        deliveredExcluded: deliveredCount,
+        // 집하일 또는 운송모드가 없어 점수를 낼 수 없는 건
+        unscorable: allCount - deliveredCount - total,
+        // v1 은 규칙 기반이며 표준 소요일 상당수가 추정치임을 명시한다
+        method: 'rule-based-v1',
+        note: '표준 소요일 일부는 업계 평균 추정치입니다. 실제 배송 이력 확보 시 교체 예정.'
+      }
+    });
+  } catch (error) {
+    logger.error('Error building delay summary:', error);
+    res.status(500).json({
+      success: false,
+      error: '지연 리스크 집계에 실패했습니다.',
       details: process.env.NODE_ENV === 'development' ? error.message : undefined
     });
   }

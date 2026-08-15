@@ -1,4 +1,4 @@
-import { AlertTriangle, Package, Truck, TrendingDown, TrendingUp } from "lucide-react"
+import { Package, Truck, TrendingUp } from "lucide-react"
 
 import { Badge } from "@/components/ui/badge"
 import {
@@ -9,7 +9,11 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card"
+import { DelayRiskCard } from "./delay-risk-card"
 
+// TODO: 처리 화물 건수 / 온타임 배송률 / 활성 배송 건수는 아직 정적 더미값이다.
+//       지연 예상 건수만 실제 API(/api/shipments/delay-summary)와 연결돼 있다.
+//       실제 배송 이력 데이터를 받으면 나머지 3개도 API 로 교체해야 한다.
 export function SectionCards() {
   return (
     <div className="*:data-[slot=card]:from-primary/5 *:data-[slot=card]:to-card dark:*:data-[slot=card]:bg-card *:data-[slot=card]:bg-gradient-to-t *:data-[slot=card]:shadow-xs grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
@@ -79,28 +83,7 @@ export function SectionCards() {
           </div>
         </CardFooter>
       </Card>
-      <Card className="@container/card">
-        <CardHeader>
-          <CardDescription>지연 예상 건수</CardDescription>
-          <CardTitle className="text-2xl font-semibold tabular-nums @[250px]/card:text-3xl">
-            48
-          </CardTitle>
-          <CardAction>
-            <Badge variant="outline">
-              <TrendingDown />
-              -12%
-            </Badge>
-          </CardAction>
-        </CardHeader>
-        <CardFooter className="flex-col items-start gap-1.5 text-sm">
-          <div className="line-clamp-1 flex gap-2 font-medium">
-            지연 위험 건 감소 <AlertTriangle className="size-4" />
-          </div>
-          <div className="text-muted-foreground">
-            예정일 초과가 예상되는 배송 건수
-          </div>
-        </CardFooter>
-      </Card>
+      <DelayRiskCard />
     </div>
   )
 }

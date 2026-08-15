@@ -14,8 +14,28 @@ const validate = (req, res, next) => {
   next();
 };
 
-// Get all shipments
-router.get('/', shipmentController.getAllShipments);
+const { RISK_LEVELS } = require('../utils/delay-risk');
+const { TRANSPORT_MODES } = require('../config/transit-times');
+
+// Get all shipments (riskLevel / transportMode 필터 지원)
+router.get(
+  '/',
+  [
+    query('riskLevel').optional({ values: 'falsy' })
+      .isIn(Object.values(RISK_LEVELS))
+      .withMessage(`riskLevel 은 ${Object.values(RISK_LEVELS).join(', ')} 중 하나여야 합니다.`),
+    query('transportMode').optional({ values: 'falsy' })
+      .isIn(TRANSPORT_MODES)
+      .withMessage(`transportMode 는 ${TRANSPORT_MODES.join(', ')} 중 하나여야 합니다.`),
+    validate
+  ],
+  shipmentController.getAllShipments
+);
+
+// 지연 리스크 등급별 집계.
+// ⚠️ '/:trackingNumber' 보다 먼저 선언해야 한다. 아래에 두면 delay-summary 가
+//    트래킹 번호로 해석돼 404 가 난다.
+router.get('/delay-summary', shipmentController.getDelaySummary);
 
 // Get shipments near a location
 router.get(
