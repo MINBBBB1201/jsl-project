@@ -3,6 +3,7 @@ import "./globals.css";
 
 import { ThemeProvider } from "@/components/theme-provider";
 import { SidebarConfigProvider } from "@/contexts/sidebar-context";
+import { Toaster } from "@/components/ui/sonner";
 import { inter } from "@/lib/fonts";
 
 export const metadata: Metadata = {
@@ -21,6 +22,7 @@ export default function RootLayout({
         <ThemeProvider defaultTheme="system" storageKey="nextjs-ui-theme">
           <SidebarConfigProvider>
             {children}
+            <Toaster richColors position="top-center" />
           </SidebarConfigProvider>
         </ThemeProvider>
       </body>

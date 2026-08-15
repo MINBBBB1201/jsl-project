@@ -16,8 +16,10 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form"
-import { Mail } from 'lucide-react'
+import { Loader2, Mail } from 'lucide-react'
+import { toast } from 'sonner'
 import { contact } from '@/config/landing-content'
+import { API_BASE_URL } from '@/lib/api'
 
 const contactFormSchema = z.object({
   company: z.string().min(2, {
@@ -49,10 +51,48 @@ export function ContactSection() {
     },
   })
 
-  // TODO: 실제 문의 접수 API가 준비되면 연결 (현재는 콘솔 출력만)
-  function onSubmit(values: z.infer<typeof contactFormSchema>) {
-    console.log(values)
-    form.reset()
+  const isSubmitting = form.formState.isSubmitting
+
+  async function onSubmit(values: z.infer<typeof contactFormSchema>) {
+    try {
+      const response = await fetch(`${API_BASE_URL}/api/contact`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          companyName: values.company,
+          contactName: values.name,
+          email: values.email,
+          subject: values.subject,
+          message: values.message,
+        }),
+      })
+
+      const result = await response.json().catch(() => null)
+
+      if (!response.ok) {
+        // 400은 서버 검증 실패(errors 배열), 그 외는 서버/DB 오류
+        const serverDetail = result?.errors?.[0]?.msg ?? result?.error
+        const description =
+          response.status === 400 && serverDetail
+            ? `입력값을 확인해 주세요. (${serverDetail})`
+            : `잠시 후 다시 시도해 주세요. (HTTP ${response.status})`
+        toast.error('문의 접수에 실패했습니다.', { description })
+        return
+      }
+
+      toast.success('문의가 접수되었습니다.', {
+        description: '담당자가 확인 후 빠르게 연락드리겠습니다.',
+      })
+      form.reset()
+    } catch (error) {
+      // 네트워크 오류 / 서버 미기동 등 fetch 자체가 실패한 경우
+      toast.error('문의 접수에 실패했습니다.', {
+        description:
+          error instanceof Error
+            ? `서버에 연결할 수 없습니다. (${error.message})`
+            : '서버에 연결할 수 없습니다. 잠시 후 다시 시도해 주세요.',
+      })
+    }
   }
 
   return (
@@ -172,8 +212,9 @@ export function ContactSection() {
                         </FormItem>
                       )}
                     />
-                    <Button type="submit" className="w-full cursor-pointer">
-                      {contact.submitLabel}
+                    <Button type="submit" className="w-full cursor-pointer" disabled={isSubmitting}>
+                      {isSubmitting && <Loader2 className="h-4 w-4 animate-spin" />}
+                      {isSubmitting ? '전송 중...' : contact.submitLabel}
                     </Button>
                   </form>
                 </Form>
