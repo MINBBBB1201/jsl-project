@@ -8,6 +8,7 @@ const logger = require('./utils/logger');
 const { errorHandler } = require('./middleware/error.middleware');
 const { checkDbAuth } = require('./middleware/auth.middleware');
 const shipmentRoutes = require('./routes/shipment.routes');
+const contactRoutes = require('./routes/contact.routes');
 
 // Initialize Express app
 const app = express();
@@ -49,6 +50,7 @@ app.use((req, res, next) => {
 
 // Routes
 app.use('/api/shipments', checkDbAuth, shipmentRoutes);
+app.use('/api/contact', checkDbAuth, contactRoutes);
 
 // Add redirect for /shipments to /api/shipments
 app.use('/shipments', (req, res) => {
@@ -72,7 +74,8 @@ app.get('/', (req, res) => {
     message: 'Shipment Tracker API is running',
     endpoints: {
       health: '/health',
-      api: '/api/shipments'
+      api: '/api/shipments',
+      contact: '/api/contact'
     }
   });
 });
