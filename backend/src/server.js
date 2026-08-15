@@ -2,10 +2,10 @@ const express = require('express');
 const cors = require('cors');
 const helmet = require('helmet');
 const mongoose = require('mongoose');
-const { port, mongoUri } = require('./config/config');
+const { port, mongoUri, allowedOrigins, allowedOriginPatterns } = require('./config/config');
 const { connectDB } = require('./config/database');
 const logger = require('./utils/logger');
-const { errorHandler } = require('./middleware/error.middleware');
+const { AppError, errorHandler } = require('./middleware/error.middleware');
 const { checkDbAuth } = require('./middleware/auth.middleware');
 const shipmentRoutes = require('./routes/shipment.routes');
 const contactRoutes = require('./routes/contact.routes');
@@ -16,7 +16,33 @@ const app = express();
 
 // Security middleware
 app.use(helmet());
-app.use(cors());
+
+/**
+ * CORS
+ *
+ * 허용 목록은 config 에서 관리한다 (ALLOWED_ORIGINS 환경변수 > 기본값).
+ * Vercel preview 배포는 커밋마다 URL 이 바뀌어서 정규식으로 함께 처리한다.
+ */
+const isAllowedOrigin = (origin) =>
+  allowedOrigins.includes(origin) ||
+  allowedOriginPatterns.some((pattern) => pattern.test(origin));
+
+app.use(cors({
+  origin: (origin, callback) => {
+    // origin 헤더가 없는 요청(curl, 서버 간 호출, 헬스체크)은 CORS 대상이 아니다
+    if (!origin) return callback(null, true);
+
+    if (isAllowedOrigin(origin)) return callback(null, true);
+
+    // 허용 헤더를 빼는 대신 요청 자체를 막는다.
+    // 헤더만 빼면 브라우저는 응답을 못 읽지만 POST 는 이미 실행된 뒤다.
+    logger.warn(`CORS 차단된 origin: ${origin}`);
+    return callback(new AppError(`CORS 정책에 의해 차단된 origin 입니다: ${origin}`, 403));
+  },
+  credentials: true,
+}));
+
+logger.info(`CORS 허용 origin: ${allowedOrigins.join(', ')}`);
 
 // Body parser middleware
 app.use(express.json({ limit: '10kb' }));
