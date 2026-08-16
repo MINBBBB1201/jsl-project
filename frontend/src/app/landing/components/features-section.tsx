@@ -42,8 +42,13 @@ export function FeaturesSection() {
             return (
               <article
                 key={mode.code}
+                /*
+                  히어로 벤토그리드의 각 칸이 이 앵커(#air, #sea …)로 들어온다.
+                  scroll-mt 는 sticky 헤더에 카드 윗줄이 가려지지 않도록 준 여백이다.
+                */
+                id={mode.code.toLowerCase()}
                 className={cn(
-                  "flex flex-col bg-background p-6 sm:p-8",
+                  "flex scroll-mt-24 flex-col bg-background p-6 sm:p-8",
                   isPrimary ? "lg:col-span-3" : "lg:col-span-2"
                 )}
               >

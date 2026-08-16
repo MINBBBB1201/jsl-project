@@ -3,6 +3,7 @@
 import React from 'react'
 import { LandingNavbar } from './components/navbar'
 import { HeroSection } from './components/hero-section'
+import { OpsStatusSection } from './components/ops-status-section'
 import { StatsSection } from './components/stats-section'
 import { PartnersBar } from './components/partners-bar'
 import { FeaturesSection } from './components/features-section'
@@ -35,6 +36,7 @@ export function LandingPageContent() {
       */}
       <main>
         <HeroSection />
+        <OpsStatusSection />
         <StatsSection />
         <PartnersBar />
         <AboutSection />

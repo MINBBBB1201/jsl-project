@@ -43,6 +43,13 @@
     "primaryCta": "立即询价",
     "secondaryCta": "了解服务"
   },
+  "heroBentoAlt": {
+    "AIR": "地勤人员在机坪上将航空货运集装器（ULD）装入货机",
+    "SEA": "满载集装箱的集装箱船在海上航行的航拍俯视图",
+    "TRUCK": "行驶在高速公路上的大型货运挂车正面",
+    "RAIL": "黄色机车牵引货运列车通过集装箱堆场",
+    "EXPRESS": "快递员骑着载有包裹箱的踏板车穿行于城市街道"
+  },
   "heroPanel": {
     "title": "运营状况",
     "inTransitLabel": "进行中",

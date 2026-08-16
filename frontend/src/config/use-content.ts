@@ -120,6 +120,26 @@ export function useContent() {
     subheadline: m.hero.subheadline as string,
     primaryCta: { label: m.hero.primaryCta as string, href: "#contact" },
     secondaryCta: { label: m.hero.secondaryCta as string, href: "#features" },
+    /*
+      히어로 벤토그리드의 5개 칸.
+
+      제목과 한 줄 설명은 services.modes 를 그대로 쓴다. 히어로용으로 문구를
+      따로 두면 같은 서비스를 두 가지 표현으로 부르게 되고, 번역도 두 벌이 된다.
+      사진 대체텍스트(alt)만 별도 키를 쓰는데, 사진에 무엇이 찍혔는지는 서비스
+      설명과 다른 이야기라 그렇다.
+
+      href 는 같은 페이지의 서비스 카드 앵커다 (features-section 의 article id).
+    */
+    bento: {
+      modes: Object.entries(MODE_ICONS).map(([code, icon]) => ({
+        icon,
+        code,
+        title: m.services.modes[code].title as string,
+        summary: m.services.modes[code].summary as string,
+        alt: m.heroBentoAlt[code] as string,
+        href: `#${code.toLowerCase()}`,
+      })),
+    },
   }
 
   const stats = [

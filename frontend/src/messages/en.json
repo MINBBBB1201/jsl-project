@@ -43,6 +43,13 @@
     "primaryCta": "Request a quote",
     "secondaryCta": "Explore services"
   },
+  "heroBentoAlt": {
+    "AIR": "Ground crew loading air cargo containers (ULDs) onto a freighter aircraft on the apron",
+    "SEA": "Aerial view of a fully loaded container ship under way at sea",
+    "TRUCK": "Front view of a heavy freight trailer truck on the highway",
+    "RAIL": "Yellow locomotive hauling a freight train through a container yard",
+    "EXPRESS": "Express courier riding through the city with a delivery box on the back of a scooter"
+  },
   "heroPanel": {
     "title": "Operations status",
     "inTransitLabel": "Active",

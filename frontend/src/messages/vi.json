@@ -43,6 +43,13 @@
     "primaryCta": "Yêu cầu báo giá",
     "secondaryCta": "Tìm hiểu dịch vụ"
   },
+  "heroBentoAlt": {
+    "AIR": "Nhân viên mặt đất đang xếp thùng hàng hàng không (ULD) lên máy bay chở hàng tại sân đỗ",
+    "SEA": "Ảnh chụp từ trên cao tàu container chở đầy hàng đang hành trình trên biển",
+    "TRUCK": "Mặt trước của xe đầu kéo chở hàng cỡ lớn đang chạy trên đường cao tốc",
+    "RAIL": "Đầu máy màu vàng kéo đoàn tàu hàng đi qua bãi container",
+    "EXPRESS": "Nhân viên chuyển phát nhanh chạy xe tay ga chở thùng hàng qua phố"
+  },
   "heroPanel": {
     "title": "Tình hình vận hành",
     "inTransitLabel": "Đang chạy",
