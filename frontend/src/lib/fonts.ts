@@ -13,11 +13,13 @@ import localFont from 'next/font/local'
  * 폰트가 늦게 오면 글자가 늦게 그려진다(FOUT). 파일을 받아 두면 next/font 가
  * 빌드 시점에 preload 를 걸고 같은 도메인에서 서빙한다.
  *
- * ── 왜 가변 폰트 한 벌인가 ─────────────────────────────────────────────
- * 처음에는 400/500/600/700 을 각각 받았는데(합계 90KB) 네 파일이 전부 preload 돼
- * 첫 화면에서 JS 와 대역폭을 다퉜다 (Lighthouse LCP 4.4s → 5.1s 로 악화).
- * 가변 폰트 한 벌은 200~700 전 구간을 20.9KB 로 담는다. 파일 수와 용량이
- * 동시에 줄어 그 회귀가 사라졌다.
+ * ── 굵기는 정적 4종으로 받는다 ─────────────────────────────────────────
+ * ⚠️ Fontshare 의 `general-sans@variable` 엔드포인트는 이름과 달리 진짜 가변
+ *    폰트를 주지 않는다. 200/300/400/... 정적 인스턴스 목록을 돌려줄 뿐이다.
+ *    이걸 가변 폰트로 착각해 첫 파일(=굵기 200)을 받아 `weight: '200 700'` 로
+ *    선언했더니, 브라우저가 모든 굵기를 그 200 페이스로 그려서 라틴 문자와
+ *    숫자만 가늘게 나왔다 (한글은 폴백이라 굵게 나와 대비가 뒤죽박죽이 됐다).
+ *    필요한 굵기를 각각 받아야 한다. 4종 합계 90KB.
  *
  * ── 한글 ───────────────────────────────────────────────────────────────
  * General Sans 에는 한글 글리프가 없다. 한글은 시스템에 설치된 산세리프로
@@ -27,15 +29,21 @@ import localFont from 'next/font/local'
  */
 export const generalSans = localFont({
   src: [
-    {
-      path: '../fonts/GeneralSans-Variable.woff2',
-      // 가변 폰트 — 이 구간 안의 굵기는 파일 하나로 전부 나온다
-      weight: '200 700',
-      style: 'normal',
-    },
+    { path: '../fonts/GeneralSans-400.woff2', weight: '400', style: 'normal' },
+    { path: '../fonts/GeneralSans-500.woff2', weight: '500', style: 'normal' },
+    { path: '../fonts/GeneralSans-600.woff2', weight: '600', style: 'normal' },
+    { path: '../fonts/GeneralSans-700.woff2', weight: '700', style: 'normal' },
   ],
   display: 'swap',
   variable: '--font-general-sans',
+  /*
+    preload 를 끈다.
+    굵기 4종을 전부 preload 하면 첫 화면에서 히어로 헤드라인이 그려지기 전에
+    폰트 4개가 대역폭을 가져간다 (실측 LCP 4.3s → 5.1s). preload 를 끄면
+    브라우저가 CSS 를 해석한 뒤에 필요한 굵기만 받아 오고, display: swap +
+    아래 폴백의 메트릭 보정 덕에 글자는 곧바로 그려진다.
+  */
+  preload: false,
   /*
     폴백 스택.
     ⚠️ 한글 폰트를 여기(next/font 의 fallback)에 넣어야 한다. CSS 쪽 --font-sans 에
