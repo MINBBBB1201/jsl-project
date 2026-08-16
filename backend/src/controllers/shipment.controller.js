@@ -565,6 +565,65 @@ exports.getDelaySummary = async (req, res) => {
   }
 };
 
+/**
+ * GET /api/shipments/track/:trackingNumber
+ *
+ * 고객용 공개 조회. 운송장번호만 알면 누구나 호출할 수 있으므로
+ * 기존 getShipmentByTrackingNumber 를 쓰지 않고 별도로 둔다.
+ * 그쪽은 문서를 통째로 반환해서 고객 이름/이메일/전화번호와 위치 이력까지
+ * 노출된다 — 공개 페이지에 그대로 쓰면 개인정보가 새어나간다.
+ *
+ * 여기서는 배송 상태 확인에 필요한 필드만 골라서 내려준다.
+ */
+exports.trackShipment = async (req, res) => {
+  try {
+    const { trackingNumber } = req.params;
+    const now = new Date();
+
+    const shipment = await Shipment.findOne({ trackingNumber })
+      .select('trackingNumber transportMode status shippedAt estimatedArrivalAt estimatedDelivery origin.address destination.address currentLocation.address')
+      .lean();
+
+    if (!shipment) {
+      return res.status(404).json({
+        success: false,
+        error: '운송장번호를 찾을 수 없습니다. 번호를 다시 확인해 주세요.'
+      });
+    }
+
+    const risk = calculateDelayRisk(shipment, TRANSIT_TIMES, { now });
+
+    res.status(200).json({
+      success: true,
+      data: {
+        trackingNumber: shipment.trackingNumber,
+        transportMode: shipment.transportMode ?? null,
+        status: shipment.status,
+        origin: shipment.origin?.address ?? null,
+        destination: shipment.destination?.address ?? null,
+        currentLocation: shipment.currentLocation?.address ?? null,
+        shippedAt: shipment.shippedAt ?? null,
+        estimatedArrivalAt: shipment.estimatedArrivalAt ?? shipment.estimatedDelivery ?? null,
+        delayRisk: {
+          level: risk.level,
+          score: risk.score,
+          elapsedDays: risk.elapsedDays,
+          standardDays: risk.standardDays,
+          standardSource: risk.source,
+          skipped: risk.skipped
+        }
+      }
+    });
+  } catch (error) {
+    logger.error('Error tracking shipment:', error);
+    res.status(500).json({
+      success: false,
+      error: '조회 중 오류가 발생했습니다. 잠시 후 다시 시도해 주세요.',
+      details: process.env.NODE_ENV === 'development' ? error.message : undefined
+    });
+  }
+};
+
 // Get shipment ETA
 exports.getShipmentETA = async (req, res) => {
   try {

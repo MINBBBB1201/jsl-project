@@ -3,27 +3,14 @@
 import { useCallback, useEffect, useState } from "react"
 import { API_BASE_URL } from "@/lib/api"
 
-/** backend/src/config/transit-times.js 의 키와 일치해야 한다 */
-export type TransportMode =
-  | "AIR"
-  | "SEA"
-  | "SEA_AIR"
-  | "TRUCK_DOMESTIC"
-  | "TRUCK_CROSSBORDER"
-  | "RAIL"
-  | "EXPRESS"
+// 운송모드/등급 정의는 공개 추적 페이지와 공유한다
+export {
+  TRANSPORT_MODE_LABELS,
+  type TransportMode,
+  type RiskLevel,
+} from "@/lib/transport-modes"
 
-export const TRANSPORT_MODE_LABELS: Record<TransportMode, string> = {
-  AIR: "항공",
-  SEA: "해상",
-  SEA_AIR: "해상-항공",
-  TRUCK_DOMESTIC: "육상(국내)",
-  TRUCK_CROSSBORDER: "육상(국경)",
-  RAIL: "철도",
-  EXPRESS: "특송",
-}
-
-export type RiskLevel = "정상" | "지연위험" | "지연"
+import type { TransportMode, RiskLevel } from "@/lib/transport-modes"
 
 export interface DelaySummary {
   total: number

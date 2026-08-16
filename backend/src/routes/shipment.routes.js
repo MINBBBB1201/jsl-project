@@ -37,6 +37,19 @@ router.get(
 //    트래킹 번호로 해석돼 404 가 난다.
 router.get('/delay-summary', shipmentController.getDelaySummary);
 
+// 고객용 공개 조회 (개인정보 제외한 필드만 반환).
+// ⚠️ delay-summary 와 마찬가지로 '/:trackingNumber' 보다 먼저 선언해야 한다.
+router.get(
+  '/track/:trackingNumber',
+  [
+    param('trackingNumber').isString().trim().notEmpty()
+      .withMessage('운송장번호를 입력해 주세요.')
+      .isLength({ max: 64 }).withMessage('운송장번호가 너무 깁니다.'),
+    validate
+  ],
+  shipmentController.trackShipment
+);
+
 // Get shipments near a location
 router.get(
   '/nearby',

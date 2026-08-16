@@ -87,14 +87,18 @@ export function LandingNavbar() {
                     </NavigationMenuContent>
                   </>
                 ) : (
+                  // href 를 실제로 넣는다. 예전에는 onClick 안에서
+                  // window.location.href 로만 이동시켜 DOM 에 앵커가 없었는데,
+                  // /tracking 처럼 라우트로 가는 항목이 생기면서 새 탭 열기·
+                  // 스크린리더·크롤러가 링크를 인식하지 못하는 문제가 있었다.
+                  // 페이지 내 앵커(#)일 때만 기본 동작을 막고 부드럽게 스크롤한다.
                   <NavigationMenuLink
+                    href={item.href}
                     className="group inline-flex h-10 w-max items-center justify-center px-4 py-2 text-sm font-medium transition-colors hover:text-primary focus:text-primary focus:outline-none cursor-pointer"
                     onClick={(e: React.MouseEvent) => {
-                      e.preventDefault()
                       if (item.href.startsWith('#')) {
+                        e.preventDefault()
                         smoothScrollTo(item.href)
-                      } else {
-                        window.location.href = item.href
                       }
                     }}
                   >

@@ -1,7 +1,7 @@
 import { PublicPageShell } from '@/components/layout/public-page-shell'
 
-/** 법적 고지 페이지 — 공개 페이지 공용 셸을 그대로 쓴다 */
-export default function LegalLayout({
+/** 공개 페이지(화물추적, 컨설팅 등) — 로그인 불필요 */
+export default function PublicLayout({
   children,
 }: {
   children: React.ReactNode

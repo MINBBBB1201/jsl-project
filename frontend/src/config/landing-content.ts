@@ -583,7 +583,7 @@ export const footer = {
     ],
     고객지원: [
       { name: "자주 묻는 질문", href: "/landing#faq" },
-      { name: "화물 추적", href: "/landing#contact" },
+      { name: "화물 추적", href: "/tracking" },
       { name: "견적 요청", href: "/landing#contact" },
       // TODO: 공지사항 페이지 준비되면 링크 연결
       { name: "공지사항", href: "#" },
@@ -603,6 +603,7 @@ export const navigation = {
     { name: "서비스", href: "#features", hasMegaMenu: true },
     { name: "물류 컨설팅", href: "#consulting" },
     { name: "글로벌 네트워크", href: "#network" },
+    { name: "화물추적", href: "/tracking" },
     { name: "FAQ", href: "#faq" },
     { name: "문의", href: "#contact" },
   ],
@@ -682,9 +683,9 @@ export const navigation = {
         },
         {
           title: "화물 추적",
-          description: "진행 중인 운송 현황 조회",
+          description: "운송장번호로 배송 현황 조회",
           icon: Radar,
-          href: "#contact",
+          href: "/tracking",
         },
         {
           title: "자주 묻는 질문",
