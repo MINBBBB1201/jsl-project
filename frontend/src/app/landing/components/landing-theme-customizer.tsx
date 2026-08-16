@@ -38,7 +38,10 @@ export function LandingThemeCustomizer({ open, onOpenChange }: LandingThemeCusto
 
   const { toggleTheme } = useCircularTransition()
 
-  const [selectedTheme, setSelectedTheme] = React.useState("default")
+  // 빈 값으로 시작한다. "default" 로 두면 마운트 직후 shadcn 기본(무채색) 프리셋을
+  // <html> 인라인 스타일로 덮어써서 globals.css 의 JSL 브랜드 컬러가 묻힌다.
+  // 사용자가 커스터마이저에서 프리셋을 고르면 그때부터 적용된다.
+  const [selectedTheme, setSelectedTheme] = React.useState("")
   const [selectedTweakcnTheme, setSelectedTweakcnTheme] = React.useState("")
   const [selectedRadius, setSelectedRadius] = React.useState("0.5rem")
   const [importModalOpen, setImportModalOpen] = React.useState(false)

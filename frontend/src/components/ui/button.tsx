@@ -11,6 +11,10 @@ const buttonVariants = cva(
       variant: {
         default:
           "bg-primary text-primary-foreground shadow-xs hover:bg-primary/90",
+        // 브랜드 오렌지 CTA. --accent 가 아니라 --brand-cta 를 쓴다.
+        // accent 는 outline/ghost 의 hover 배경이라 여기에 쓰면 hover 가 전부 주황이 된다.
+        brand:
+          "bg-brand-cta text-brand-cta-foreground shadow-xs hover:bg-brand-cta/90",
         destructive:
           "bg-destructive text-white shadow-xs hover:bg-destructive/90 focus-visible:ring-destructive/20 dark:focus-visible:ring-destructive/40 dark:bg-destructive/60",
         outline:

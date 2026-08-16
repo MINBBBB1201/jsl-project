@@ -9,6 +9,12 @@ import { inter } from "@/lib/fonts";
 export const metadata: Metadata = {
   title: "JSL Logistics",
   description: "JSL Logistics 물류 운영 관리 시스템",
+  // 파비콘은 로고에서 뽑은 정사각 마크를 쓴다 (public/logo-mark.png 기준)
+  icons: {
+    icon: [{ url: "/favicon.png", type: "image/png" }],
+    shortcut: ["/favicon.png"],
+    apple: [{ url: "/apple-icon.png" }],
+  },
 };
 
 export default function RootLayout({

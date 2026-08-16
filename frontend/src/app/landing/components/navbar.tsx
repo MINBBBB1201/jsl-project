@@ -122,7 +122,7 @@ export function LandingNavbar() {
           <Button variant="ghost" asChild className="cursor-pointer">
             <Link href="/sign-in">로그인</Link>
           </Button>
-          <Button asChild className="cursor-pointer">
+          <Button variant="brand" asChild className="cursor-pointer">
             <Link href="#contact">견적 문의</Link>
           </Button>
         </div>
@@ -236,7 +236,7 @@ export function LandingNavbar() {
                     <Button variant="outline" size="lg" asChild className="cursor-pointer">
                       <Link href="/sign-in">로그인</Link>
                     </Button>
-                    <Button asChild size="lg" className="cursor-pointer" >
+                    <Button variant="brand" asChild size="lg" className="cursor-pointer" >
                       <Link href="#contact" onClick={() => setIsOpen(false)}>견적 문의</Link>
                     </Button>
                   </div>

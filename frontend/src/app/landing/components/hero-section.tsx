@@ -43,7 +43,7 @@ export function HeroSection() {
 
           {/* CTA Buttons */}
           <div className="flex flex-col gap-4 sm:flex-row sm:justify-center">
-            <Button size="lg" className="text-base cursor-pointer" asChild>
+            <Button variant="brand" size="lg" className="text-base cursor-pointer" asChild>
               <Link href={hero.primaryCta.href}>
                 {hero.primaryCta.label}
                 <ArrowRight className="ml-2 h-4 w-4" />

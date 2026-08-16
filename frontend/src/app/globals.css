@@ -40,75 +40,140 @@
   --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
   --color-sidebar-border: var(--sidebar-border);
   --color-sidebar-ring: var(--sidebar-ring);
+  /* 브랜드 원색 — bg-brand-navy, text-brand-orange 등으로 쓴다 */
+  --color-brand-navy: var(--brand-navy);
+  --color-brand-orange: var(--brand-orange);
+  --color-brand-orange-deep: var(--brand-orange-deep);
+  --color-brand-orange-light: var(--brand-orange-light);
+  --color-brand-blue: var(--brand-blue);
+  --color-brand-cta: var(--brand-cta);
+  --color-brand-cta-foreground: var(--brand-cta-foreground);
 }
 
+/**
+ * JSL 브랜드 컬러
+ *
+ * 값은 public/logo.png 에서 직접 추출했다 (눈대중 아님).
+ *   네이비  #012853  — 로고 배경, 전체 픽셀의 78%
+ *   오렌지  #e87000  — 플래그 (그라데이션 #e0400f → #f08a10)
+ *   블루    #0a58a8  — 스우시
+ *
+ * ⚠️ 접근성: 흰 텍스트를 #e87000 위에 올리면 대비가 3.11:1 이라 WCAG AA
+ *    (본문 4.5:1) 에 못 미친다. 그래서 오렌지를 두 역할로 나눴다.
+ *      --brand-cta     흰 텍스트를 올리는 CTA 배경 (렌더 실측 4.5:1 이상 ✅)
+ *      --brand-orange  #e87000  텍스트를 올리지 않는 장식용 (아이콘·그라데이션·라인)
+ *    오렌지 배경에 텍스트를 올려야 하면 --brand-cta 를 쓸 것.
+ *    (--accent 는 shadcn 의 hover 배경 토큰이라 브랜드색으로 쓰지 않는다)
+ *
+ * 색을 조정할 때는 이 블록과 아래 .dark 블록만 고치면 된다.
+ */
 :root {
   --radius: 0.625rem;
-  --background: oklch(1 0 0);
-  --foreground: oklch(0.145 0 0);
+
+  /* 브랜드 원색 (장식용 — 텍스트 배경으로 쓰지 말 것) */
+  --brand-navy: oklch(0.28 0.089 254.6);
+  --brand-orange: oklch(0.676 0.175 51.3);
+  --brand-orange-deep: oklch(0.603 0.204 35.3);
+  --brand-orange-light: oklch(0.728 0.166 60.8);
+  --brand-blue: oklch(0.465 0.146 254.8);
+
+  /* 옅은 네이비 틴트 배경 — 순백 대신 깊이감을 준다 */
+  --background: oklch(0.981 0.005 258.3);
+  --foreground: oklch(0.22 0.042 256.4);
   --card: oklch(1 0 0);
-  --card-foreground: oklch(0.145 0 0);
+  --card-foreground: oklch(0.22 0.042 256.4);
   --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.145 0 0);
-  --primary: oklch(0.205 0 0);
-  --primary-foreground: oklch(0.985 0 0);
-  --secondary: oklch(0.97 0 0);
-  --secondary-foreground: oklch(0.205 0 0);
-  --muted: oklch(0.97 0 0);
-  --muted-foreground: oklch(0.556 0 0);
-  --accent: oklch(0.97 0 0);
-  --accent-foreground: oklch(0.205 0 0);
+  --popover-foreground: oklch(0.22 0.042 256.4);
+
+  --primary: oklch(0.28 0.089 254.6);
+  --primary-foreground: oklch(0.99 0 0);
+  --secondary: oklch(0.96 0.009 258.3);
+  --secondary-foreground: oklch(0.28 0.089 254.6);
+  --muted: oklch(0.96 0.009 258.3);
+  --muted-foreground: oklch(0.525 0.046 260);
+
+  /* accent 는 shadcn 규약상 outline/ghost 버튼의 "은은한 hover 배경"이다.
+     여기에 브랜드 오렌지를 넣으면 모든 hover 가 주황 덩어리가 되므로 건드리지 않는다. */
+  --accent: oklch(0.96 0.009 258.3);
+  --accent-foreground: oklch(0.28 0.089 254.6);
+
+  /* CTA 용 오렌지 — 흰 텍스트 대비 4.5:1 이상 (실측 확인)
+     0.585 는 렌더 결과 4.38:1 이라 AA 에 살짝 못 미쳐 조금 낮췄다. */
+  --brand-cta: oklch(0.562 0.157 45.5);
+  --brand-cta-foreground: oklch(0.99 0 0);
+
   --destructive: oklch(0.577 0.245 27.325);
-  --border: oklch(0.922 0 0);
-  --input: oklch(0.922 0 0);
-  --ring: oklch(0.708 0 0);
-  --chart-1: oklch(0.646 0.222 41.116);
-  --chart-2: oklch(0.6 0.118 184.704);
-  --chart-3: oklch(0.398 0.07 227.392);
-  --chart-4: oklch(0.828 0.189 84.429);
-  --chart-5: oklch(0.769 0.188 70.08);
-  --sidebar: oklch(0.985 0 0);
-  --sidebar-foreground: oklch(0.145 0 0);
-  --sidebar-primary: oklch(0.205 0 0);
-  --sidebar-primary-foreground: oklch(0.985 0 0);
-  --sidebar-accent: oklch(0.97 0 0);
-  --sidebar-accent-foreground: oklch(0.205 0 0);
-  --sidebar-border: oklch(0.922 0 0);
-  --sidebar-ring: oklch(0.708 0 0);
+  --border: oklch(0.929 0.015 260.7);
+  --input: oklch(0.929 0.015 260.7);
+  --ring: oklch(0.585 0.163 45.5);
+
+  --chart-1: oklch(0.676 0.175 51.3);
+  --chart-2: oklch(0.465 0.146 254.8);
+  --chart-3: oklch(0.28 0.089 254.6);
+  --chart-4: oklch(0.728 0.166 60.8);
+  --chart-5: oklch(0.6 0.09 230);
+
+  /* 대시보드 사이드바 — 네이비 */
+  --sidebar: oklch(0.28 0.089 254.6);
+  --sidebar-foreground: oklch(0.95 0.014 258.3);
+  --sidebar-primary: oklch(0.676 0.175 51.3);
+  --sidebar-primary-foreground: oklch(0.16 0.04 256);
+  --sidebar-accent: oklch(0.36 0.075 255);
+  --sidebar-accent-foreground: oklch(0.99 0 0);
+  --sidebar-border: oklch(0.38 0.06 256);
+  --sidebar-ring: oklch(0.676 0.175 51.3);
 }
 
+/* 다크모드도 순검정이 아니라 딥 네이비를 쓴다 */
 .dark {
-  --background: oklch(0.145 0 0);
-  --foreground: oklch(0.985 0 0);
-  --card: oklch(0.205 0 0);
-  --card-foreground: oklch(0.985 0 0);
-  --popover: oklch(0.205 0 0);
-  --popover-foreground: oklch(0.985 0 0);
-  --primary: oklch(0.922 0 0);
-  --primary-foreground: oklch(0.205 0 0);
-  --secondary: oklch(0.269 0 0);
-  --secondary-foreground: oklch(0.985 0 0);
-  --muted: oklch(0.269 0 0);
-  --muted-foreground: oklch(0.708 0 0);
-  --accent: oklch(0.269 0 0);
-  --accent-foreground: oklch(0.985 0 0);
+  --brand-navy: oklch(0.28 0.089 254.6);
+  --brand-orange: oklch(0.744 0.168 62.4);
+  --brand-orange-deep: oklch(0.66 0.19 40);
+  --brand-orange-light: oklch(0.8 0.14 68);
+  --brand-blue: oklch(0.6 0.13 254.8);
+
+  --background: oklch(0.195 0.038 258.8);
+  --foreground: oklch(0.947 0.014 258.3);
+  --card: oklch(0.249 0.044 254.7);
+  --card-foreground: oklch(0.947 0.014 258.3);
+  --popover: oklch(0.249 0.044 254.7);
+  --popover-foreground: oklch(0.947 0.014 258.3);
+
+  /* 다크에서는 네이비가 배경에 묻히므로 primary 를 밝은 톤으로 뒤집는다 */
+  --primary: oklch(0.947 0.014 258.3);
+  --primary-foreground: oklch(0.249 0.044 254.7);
+  --secondary: oklch(0.29 0.046 255.3);
+  --secondary-foreground: oklch(0.947 0.014 258.3);
+  --muted: oklch(0.29 0.046 255.3);
+  --muted-foreground: oklch(0.709 0.049 256.5);
+
+  /* accent 는 hover 배경용 — 라이트 모드와 같은 이유로 은은하게 둔다 */
+  --accent: oklch(0.29 0.046 255.3);
+  --accent-foreground: oklch(0.947 0.014 258.3);
+
+  /* 어두운 배경 위에서는 밝은 오렌지 + 짙은 글자가 대비를 확보한다 */
+  --brand-cta: oklch(0.744 0.168 62.4);
+  --brand-cta-foreground: oklch(0.195 0.038 258.8);
+
   --destructive: oklch(0.704 0.191 22.216);
-  --border: oklch(1 0 0 / 10%);
-  --input: oklch(1 0 0 / 15%);
-  --ring: oklch(0.556 0 0);
-  --chart-1: oklch(0.488 0.243 264.376);
-  --chart-2: oklch(0.696 0.17 162.48);
-  --chart-3: oklch(0.769 0.188 70.08);
-  --chart-4: oklch(0.627 0.265 303.9);
-  --chart-5: oklch(0.645 0.246 16.439);
-  --sidebar: oklch(0.205 0 0);
-  --sidebar-foreground: oklch(0.985 0 0);
-  --sidebar-primary: oklch(0.488 0.243 264.376);
-  --sidebar-primary-foreground: oklch(0.985 0 0);
-  --sidebar-accent: oklch(0.269 0 0);
-  --sidebar-accent-foreground: oklch(0.985 0 0);
-  --sidebar-border: oklch(1 0 0 / 10%);
-  --sidebar-ring: oklch(0.556 0 0);
+  --border: oklch(1 0 0 / 12%);
+  --input: oklch(1 0 0 / 16%);
+  --ring: oklch(0.744 0.168 62.4);
+
+  --chart-1: oklch(0.744 0.168 62.4);
+  --chart-2: oklch(0.6 0.13 254.8);
+  --chart-3: oklch(0.8 0.14 68);
+  --chart-4: oklch(0.66 0.1 230);
+  --chart-5: oklch(0.66 0.19 40);
+
+  --sidebar: oklch(0.226 0.042 256);
+  --sidebar-foreground: oklch(0.947 0.014 258.3);
+  --sidebar-primary: oklch(0.744 0.168 62.4);
+  --sidebar-primary-foreground: oklch(0.195 0.038 258.8);
+  --sidebar-accent: oklch(0.32 0.05 255);
+  --sidebar-accent-foreground: oklch(0.99 0 0);
+  --sidebar-border: oklch(1 0 0 / 12%);
+  --sidebar-ring: oklch(0.744 0.168 62.4);
 }
 
 @layer base {
@@ -169,4 +234,59 @@ html {
 
 .animate-logo-scroll:hover {
   animation-play-state: paused;
+}
+
+/**
+ * 브랜드 배경 패턴
+ *
+ * 단색 배경이 밋밋해 보이지 않도록 은은한 깊이감을 준다.
+ * 색은 currentColor 가 아니라 브랜드 토큰을 참조하므로
+ * 라이트/다크 모두에서 자동으로 맞는 톤이 적용된다.
+ */
+
+/* 아주 옅은 도트 그리드 */
+.bg-brand-dots {
+  background-image: radial-gradient(
+    color-mix(in oklch, var(--brand-navy) 12%, transparent) 1px,
+    transparent 1px
+  );
+  background-size: 22px 22px;
+}
+
+/* 옅은 격자 */
+.bg-brand-grid {
+  background-image:
+    linear-gradient(
+      to right,
+      color-mix(in oklch, var(--brand-navy) 7%, transparent) 1px,
+      transparent 1px
+    ),
+    linear-gradient(
+      to bottom,
+      color-mix(in oklch, var(--brand-navy) 7%, transparent) 1px,
+      transparent 1px
+    );
+  background-size: 48px 48px;
+}
+
+/* 위에서 아래로 옅게 깔리는 네이비 틴트 */
+.bg-brand-wash {
+  background-image: linear-gradient(
+    180deg,
+    color-mix(in oklch, var(--brand-navy) 6%, transparent) 0%,
+    transparent 55%
+  );
+}
+
+/* 로고 워드마크용 오렌지 그라데이션 (플래그 색 재현) */
+.text-brand-gradient {
+  background-image: linear-gradient(
+    100deg,
+    var(--brand-orange-deep) 0%,
+    var(--brand-orange) 45%,
+    var(--brand-orange-light) 100%
+  );
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
 }
