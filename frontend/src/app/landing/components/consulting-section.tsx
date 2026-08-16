@@ -1,5 +1,6 @@
 "use client"
 
+import Link from 'next/link'
 import { ArrowRight } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
@@ -59,11 +60,16 @@ export function ConsultingSection() {
         </div>
 
         {/* Call to Action */}
-        <div className="mt-16 text-center">
+        <div className="mt-16 flex flex-col justify-center gap-3 sm:flex-row">
+          <Button size="lg" variant="outline" className="cursor-pointer" asChild>
+            <Link href={consulting.detailCta.href} className="flex items-center">
+              {consulting.detailCta.label}
+              <ArrowRight className="ms-2 size-4" aria-hidden="true" />
+            </Link>
+          </Button>
           <Button size="lg" className="cursor-pointer" asChild>
             <a href={consulting.primaryCta.href} className="flex items-center">
               {consulting.primaryCta.label}
-              <ArrowRight className="ms-2 size-4" aria-hidden="true" />
             </a>
           </Button>
         </div>

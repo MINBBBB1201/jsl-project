@@ -286,26 +286,38 @@ export const consulting = {
         {
           icon: ClipboardCheck,
           title: "공급망 진단",
+          subtitle: "Supply Chain Diagnosis",
           description:
             "Supply Chain Diagnosis — 현재 물류 구조의 비용·리드타임 병목을 분석합니다.",
+          detail:
+            "현재 운영 중인 물류 흐름을 구간별로 나누어 살펴보고, 비용과 리드타임이 어디에서 발생하는지 정리해 드립니다. 개선이 필요한 지점을 우선순위와 함께 제안합니다.",
         },
         {
           icon: Route,
           title: "멀티모드 라우팅 설계",
+          subtitle: "Multi-mode Routing",
           description:
             "항공·해상·육상·철도를 조합해 납기와 비용 조건에 맞는 경로를 설계합니다.",
+          detail:
+            "항공·해상·육상·철도·특송을 조합해 납기와 비용 조건에 맞는 운송 경로를 설계합니다. 단일 모드로 처리하던 구간을 복합운송으로 바꿔 조건을 맞추는 방안도 함께 검토합니다.",
         },
         {
           icon: Boxes,
           title: "물류파트너 최적화",
+          subtitle: "Vendor Consolidation",
           description:
             "분산된 벤더를 통합해 관리 포인트와 단가 구조를 정리합니다.",
+          detail:
+            "여러 곳으로 나뉜 물류 파트너를 정리해 관리 창구를 줄이고 단가 구조를 다시 잡습니다. 구간별로 어떤 파트너를 유지하고 통합할지 함께 결정합니다.",
         },
         {
           icon: ShoppingCart,
           title: "이커머스 / FBA 물류 자문",
+          subtitle: "E-commerce & FBA",
           description:
             "이커머스 물동 특성과 FBA 입고 요건에 맞춘 물류 운영을 자문합니다.",
+          detail:
+            "주문 단위가 작고 변동이 큰 이커머스 물동의 특성과 FBA 입고 요건에 맞춰 운영 방식을 자문합니다. 입고 규격과 리드타임을 고려한 운송 계획을 함께 세웁니다.",
         },
       ],
     },
@@ -316,31 +328,61 @@ export const consulting = {
         {
           icon: Globe2,
           title: "해외진출 전략 자문",
+          subtitle: "Market Entry Strategy",
           description:
             "진출 국가와 시장 진입 방식, 초기 운영 구조를 함께 설계합니다.",
+          detail:
+            "어느 국가에 어떤 방식으로 진출할지, 초기 운영 조직을 어떻게 구성할지 함께 검토합니다. 현지에서 직접 겪은 운영 경험을 기준으로 조언드립니다.",
         },
         {
           icon: Building2,
           title: "현지법인 설립 동행",
+          subtitle: "Local Entity Setup",
           description:
             "한국·중국·베트남 현지법인 운영 경험을 바탕으로 설립 전 과정을 지원합니다.",
+          detail:
+            "상해·위해·광주·하노이에서 법인을 직접 운영하며 쌓은 경험을 바탕으로 설립 절차를 함께 진행합니다. 준비 서류와 진행 순서를 안내하고 현지 실무까지 동행합니다.",
         },
         {
           icon: Handshake,
           title: "파트너 매칭",
+          subtitle: "Partner Matching",
           description:
             "현지 검증된 협력사 네트워크를 연결해 초기 영업 기반을 확보합니다.",
+          detail:
+            "직접 거래하며 확인한 현지 협력사를 연결해 드립니다. 초기 영업 기반을 빠르게 만들 수 있도록 필요한 구간의 파트너부터 소개합니다.",
         },
         {
           icon: BadgeCheck,
           title: "정부지원금 확보 지원",
+          subtitle: "Government Funding",
           description:
             "해외진출 관련 정부지원 사업 발굴과 신청 절차를 지원합니다.",
+          detail:
+            "해외진출과 관련된 정부지원 사업을 찾아 안내하고 신청 절차를 함께 준비합니다. 지원 대상 여부와 필요한 요건을 먼저 확인해 드립니다.",
         },
       ],
     },
   ],
-  primaryCta: { label: "컨설팅 문의", href: "#contact" },
+  primaryCta: { label: "컨설팅 문의", href: "/landing#contact" },
+  /** 랜딩 섹션 → 독립 페이지로 가는 링크 */
+  detailCta: { label: "자세히 보기", href: "/consulting" },
+
+  /** /consulting 독립 페이지 전용 문구 */
+  page: {
+    eyebrow: "NEW",
+    title: "물류 컨설팅",
+    lead:
+      "운송을 대행하는 데서 그치지 않고, 공급망 구조와 해외 진출 전략까지 함께 설계합니다. 화주와 포워더는 마주하는 과제가 달라 접근 방식도 다르게 잡습니다.",
+    note:
+      "서울 본사와 상해·위해·광주·하노이 4개 해외법인을 직접 운영하며 쌓은 현장 경험을 기준으로 자문합니다.",
+    contact: {
+      title: "컨설팅이 필요하신가요?",
+      description:
+        "현재 물류 구조와 고민하고 계신 부분을 알려주시면 담당자가 확인 후 연락드립니다.",
+      primaryCta: { label: "문의 남기기", href: "/landing#contact" },
+    },
+  },
 }
 
 /** 글로벌 네트워크 섹션 — 5개 거점 / 총 20명 */
@@ -577,7 +619,7 @@ export const footer = {
     ],
     회사: [
       { name: "회사 소개", href: "/landing#about" },
-      { name: "물류 컨설팅", href: "/landing#consulting" },
+      { name: "물류 컨설팅", href: "/consulting" },
       { name: "글로벌 네트워크", href: "/landing#network" },
       { name: "문의하기", href: "/landing#contact" },
     ],
@@ -601,7 +643,7 @@ export const navigation = {
     { name: "홈", href: "#hero" },
     { name: "회사 소개", href: "#about" },
     { name: "서비스", href: "#features", hasMegaMenu: true },
-    { name: "물류 컨설팅", href: "#consulting" },
+    { name: "물류 컨설팅", href: "/consulting" },
     { name: "글로벌 네트워크", href: "#network" },
     { name: "화물추적", href: "/tracking" },
     { name: "FAQ", href: "#faq" },
@@ -650,25 +692,25 @@ export const navigation = {
           title: "공급망 진단",
           description: "비용·리드타임 병목 분석",
           icon: ClipboardCheck,
-          href: "#consulting",
+          href: "/consulting",
         },
         {
           title: "멀티모드 라우팅 설계",
           description: "조건에 맞는 경로 설계",
           icon: Route,
-          href: "#consulting",
+          href: "/consulting",
         },
         {
           title: "해외진출 전략 자문",
           description: "포워더 해외 진출 동행",
           icon: Globe2,
-          href: "#consulting",
+          href: "/consulting",
         },
         {
           title: "현지법인 설립 동행",
           description: "설립 전 과정 지원",
           icon: Building2,
-          href: "#consulting",
+          href: "/consulting",
         },
       ],
     },
