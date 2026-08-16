@@ -1,22 +1,12 @@
-"use client";
+import { redirect } from "next/navigation";
 
-import { useEffect } from "react";
-import { useRouter } from "next/navigation";
-
+/**
+ * 루트 진입점.
+ *
+ * 평소에는 미들웨어가 '/' 를 /landing 으로 넘겨서 여기까지 오지 않는다.
+ * 미들웨어를 타지 않는 경로(정적 프리렌더 등)에서도 대시보드가 아니라 공개
+ * 랜딩이 나오도록 같은 목적지로 맞춰 둔다.
+ */
 export default function HomePage() {
-  const router = useRouter();
-
-  useEffect(() => {
-    router.replace("/dashboard");
-  }, [router]);
-
-  // Show a loading state while redirecting
-  return (
-    <div className="flex min-h-screen items-center justify-center">
-      <div className="text-center">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto"></div>
-        <p className="text-muted-foreground mt-2">Redirecting to dashboard...</p>
-      </div>
-    </div>
-  );
+  redirect("/landing");
 }

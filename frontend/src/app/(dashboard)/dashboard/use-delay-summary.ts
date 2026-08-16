@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useState } from "react"
 import { API_BASE_URL } from "@/lib/api"
+import { authHeaders } from "@/lib/auth"
 
 // 운송모드/등급 정의는 공개 추적 페이지와 공유한다
 export {
@@ -46,7 +47,7 @@ export interface RiskShipment {
   estimatedArrivalAt: string | null
   origin?: { address?: string }
   destination?: { address?: string }
-  // customer 는 서버가 더 이상 내려주지 않는다 (인증 없는 API 라 개인정보 제외)
+  // customer 는 목록 응답에서 제외된다 (개인정보 최소제공 — shipment.controller.js 참고)
   delayRisk: DelayRisk
 }
 
@@ -56,8 +57,9 @@ interface AsyncState<T> {
   error: string | null
 }
 
+// 대시보드 조회 API 는 로그인 필수라 토큰을 함께 보낸다
 const request = async <T,>(path: string): Promise<T> => {
-  const res = await fetch(`${API_BASE_URL}${path}`)
+  const res = await fetch(`${API_BASE_URL}${path}`, { headers: authHeaders() })
   const json = await res.json().catch(() => null)
 
   if (!res.ok || !json?.success) {

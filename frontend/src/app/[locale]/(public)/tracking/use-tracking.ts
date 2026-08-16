@@ -36,15 +36,12 @@ export function useSampleTrackingNumbers(count = 4) {
 
   const load = useCallback(async (signal?: AbortSignal) => {
     try {
-      const res = await fetch(`${API_BASE_URL}/api/shipments?limit=${count}`)
+      // 화물 목록(GET /api/shipments)은 로그인 뒤로 옮겨졌다.
+      // 이 공개 엔드포인트는 예시용 번호만 내려준다.
+      const res = await fetch(`${API_BASE_URL}/api/shipments/track-samples?limit=${count}`)
       const json = await res.json().catch(() => null)
       if (signal?.aborted || !res.ok || !json?.success) return
-      setSamples(
-        (json.data as { trackingNumber: string }[])
-          .map((s) => s.trackingNumber)
-          .filter(Boolean)
-          .slice(0, count)
-      )
+      setSamples((json.data as string[]).filter(Boolean).slice(0, count))
     } catch {
       // 예시 번호는 부가 정보라 실패해도 조회 기능은 그대로 쓸 수 있다
     }

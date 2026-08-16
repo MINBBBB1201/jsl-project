@@ -10,18 +10,12 @@ const {
 } = require('../utils/delay-risk');
 
 /**
- * 조회 응답에서 제외할 고객 개인정보.
+ * 목록 조회 응답에서 제외할 고객 개인정보.
  *
- * ⚠️ 이 프로젝트에는 아직 인증이 없다. auth.middleware 의 checkDbAuth 는
- *    이름과 달리 로그인 검사가 아니라 mongoose 연결 상태만 본다. 따라서
- *    /api/shipments 이하 모든 엔드포인트는 사실상 공개 상태다.
- *
- *    그 상태에서 customer(이름·이메일·전화번호)를 그대로 내려주면 운송장번호만
- *    알면, 혹은 목록 조회만으로 전체 고객 연락처를 긁어갈 수 있다.
- *    개인정보처리방침의 최소수집·최소제공 원칙에도 어긋난다.
- *
- * TODO: 실제 로그인/권한 체계를 붙인 뒤, 인증된 관리자 요청에 한해
- *       customer 를 포함하는 경로를 따로 열 것.
+ * 목록은 로그인한 직원만 볼 수 있지만(routes/shipment.routes.js 참고), 화면에서
+ * 쓰지도 않는 연락처를 수십 건씩 한꺼번에 내려줄 이유는 없다. 개인정보처리방침의
+ * 최소제공 원칙에 따라 목록에서는 customer 를 빼고, 필요한 경우 단건 상세
+ * (GET /:trackingNumber) 로만 확인한다.
  */
 const PII_EXCLUDED_FIELDS = '-customer';
 
@@ -600,6 +594,38 @@ exports.getDelaySummary = async (req, res) => {
  *
  * 여기서는 배송 상태 확인에 필요한 필드만 골라서 내려준다.
  */
+/**
+ * 공개 조회 페이지의 "예시 운송장번호" 안내용.
+ *
+ * 목록 API(GET /api/shipments)는 구간·상태가 전부 담겨 있어 로그인 뒤로 옮겼는데,
+ * 조회 화면의 데모 안내에는 번호 몇 개가 필요하다. 그래서 번호만 내려주는
+ * 공개 엔드포인트를 따로 둔다.
+ *
+ * TODO: 실제 배송 데이터가 연결되면 데모 안내와 함께 이 엔드포인트도 삭제하세요.
+ */
+exports.getTrackingSamples = async (req, res) => {
+  try {
+    const limit = Math.min(Math.max(parseInt(req.query.limit, 10) || 4, 1), 10);
+
+    const shipments = await Shipment.find({ trackingNumber: /^DEMO-/ })
+      .select('trackingNumber -_id')
+      .sort({ createdAt: -1 })
+      .limit(limit)
+      .lean();
+
+    res.status(200).json({
+      success: true,
+      data: shipments.map((s) => s.trackingNumber)
+    });
+  } catch (error) {
+    logger.error('Error fetching tracking samples:', error);
+    res.status(500).json({
+      success: false,
+      error: '예시 번호를 불러오지 못했습니다.'
+    });
+  }
+};
+
 exports.trackShipment = async (req, res) => {
   try {
     const { trackingNumber } = req.params;

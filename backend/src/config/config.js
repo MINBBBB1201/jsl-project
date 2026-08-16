@@ -5,6 +5,20 @@ if (!process.env.MONGO_URI) {
 }
 
 /**
+ * JWT 서명 키.
+ *
+ * 기본값을 두지 않는다. 개발용 기본 키를 넣어 두면 그대로 배포됐을 때
+ * 누구나 관리자 토큰을 위조할 수 있다. 없으면 서버가 아예 뜨지 않게 한다.
+ * 생성: node -e "console.log(require('crypto').randomBytes(48).toString('base64url'))"
+ */
+if (!process.env.JWT_SECRET) {
+  throw new Error(
+    'JWT_SECRET environment variable is required (인증 토큰 서명 키). ' +
+    'env.example 의 안내를 참고해 .env 에 설정하세요.'
+  );
+}
+
+/**
  * CORS 허용 origin.
  *
  * ALLOWED_ORIGINS 에 콤마로 구분해 넣으면 아래 기본값을 대체한다.
@@ -39,6 +53,9 @@ module.exports = {
   nodeEnv: process.env.NODE_ENV || 'development',
   allowedOrigins: configuredOrigins.length > 0 ? configuredOrigins : DEFAULT_ALLOWED_ORIGINS,
   allowedOriginPatterns: ALLOWED_ORIGIN_PATTERNS,
+  jwtSecret: process.env.JWT_SECRET,
+  // 내부 업무 포털이라 근무일 하루 정도면 충분하다.
+  jwtExpiresIn: process.env.JWT_EXPIRES_IN || '12h',
   // Groq — OpenAI 호환 엔드포인트라 openai SDK에 baseURL만 바꿔 쓴다.
   //
   // 주의: Groq(api.groq.com, gsk_ 키)와 Grok/xAI(api.x.ai, xai- 키)는

@@ -7,8 +7,29 @@ import { SiteFooter } from "@/components/site-footer";
 import { SidebarProvider, SidebarInset } from "@/components/ui/sidebar";
 import { ThemeCustomizer, ThemeCustomizerTrigger } from "@/components/theme-customizer";
 import { useSidebarConfig } from "@/hooks/use-sidebar-config";
+import { AuthProvider } from "@/contexts/auth-context";
+import { RequireAuth } from "@/components/auth/require-auth";
 
+/**
+ * 대시보드는 전 구간 로그인 필수다.
+ * 미들웨어가 쿠키 유무로 1차로 막고, RequireAuth 가 토큰이 실제로 유효한지까지
+ * 확인한 뒤 화면을 그린다. (데이터 자체는 백엔드가 403 으로 막는다.)
+ */
 export default function DashboardLayout({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
+  return (
+    <AuthProvider>
+      <RequireAuth>
+        <DashboardShell>{children}</DashboardShell>
+      </RequireAuth>
+    </AuthProvider>
+  );
+}
+
+function DashboardShell({
   children,
 }: {
   children: React.ReactNode;

@@ -4,6 +4,19 @@ const { body, param, query, validationResult } = require('express-validator');
 const shipmentController = require('../controllers/shipment.controller');
 const { check } = require('express-validator');
 const logger = require('../utils/logger');
+const { requireAuth, requireRole } = require('../middleware/auth.middleware');
+const { SHIPMENT_WRITE_ROLES } = require('../models/user.model');
+
+/**
+ * 접근 정책
+ *
+ *  공개  : GET /track/:trackingNumber, GET /track-samples
+ *          → 고객이 로그인 없이 자기 화물을 조회하는 경로. 개인정보는 빠진 필드만 나간다.
+ *  로그인: 그 외 조회 (목록·집계·상세·이력 등). 전체 화물 현황은 내부 정보다.
+ *  운영권한: 상태/위치/체크포인트 변경 (admin, operations)
+ *          → 예전에는 누구나 PATCH 로 화물 상태를 바꿀 수 있었다. 그 구멍을 막는 부분이다.
+ */
+const requireShipmentWrite = [requireAuth, requireRole(...SHIPMENT_WRITE_ROLES)];
 
 // Validation middleware
 const validate = (req, res, next) => {
@@ -20,6 +33,7 @@ const { TRANSPORT_MODES } = require('../config/transit-times');
 // Get all shipments (riskLevel / transportMode 필터 지원)
 router.get(
   '/',
+  requireAuth,
   [
     query('riskLevel').optional({ values: 'falsy' })
       .isIn(Object.values(RISK_LEVELS))
@@ -35,7 +49,19 @@ router.get(
 // 지연 리스크 등급별 집계.
 // ⚠️ '/:trackingNumber' 보다 먼저 선언해야 한다. 아래에 두면 delay-summary 가
 //    트래킹 번호로 해석돼 404 가 난다.
-router.get('/delay-summary', shipmentController.getDelaySummary);
+router.get('/delay-summary', requireAuth, shipmentController.getDelaySummary);
+
+// 공개 조회 화면의 예시 번호 안내용 (번호만 반환).
+// ⚠️ '/:trackingNumber' 보다 먼저 선언해야 한다.
+router.get(
+  '/track-samples',
+  [
+    query('limit').optional({ values: 'falsy' }).isInt({ min: 1, max: 10 })
+      .withMessage('limit 은 1~10 사이여야 합니다.'),
+    validate
+  ],
+  shipmentController.getTrackingSamples
+);
 
 // 고객용 공개 조회 (개인정보 제외한 필드만 반환).
 // ⚠️ delay-summary 와 마찬가지로 '/:trackingNumber' 보다 먼저 선언해야 한다.
@@ -53,6 +79,7 @@ router.get(
 // Get shipments near a location
 router.get(
   '/nearby',
+  requireAuth,
   [
     query('longitude').isFloat({ min: -180, max: 180 }).withMessage('Valid longitude is required'),
     query('latitude').isFloat({ min: -90, max: 90 }).withMessage('Valid latitude is required'),
@@ -65,6 +92,7 @@ router.get(
 // Create a new shipment
 router.post(
   '/',
+  requireShipmentWrite,
   [
     body('origin').isObject().withMessage('Origin is required'),
     body('origin.coordinates').isArray({ min: 2, max: 2 }).withMessage('Invalid coordinates'),
@@ -80,9 +108,10 @@ router.post(
   shipmentController.createShipment
 );
 
-// Get shipment by tracking number
+// Get shipment by tracking number (내부용 상세 — 공개 조회는 /track/:trackingNumber)
 router.get(
   '/:trackingNumber',
+  requireAuth,
   [
     param('trackingNumber').isString().notEmpty().withMessage('Valid tracking number is required'),
     validate
@@ -93,6 +122,7 @@ router.get(
 // Update shipment location
 router.patch(
   '/:trackingNumber/location',
+  requireShipmentWrite,
   [
     param('trackingNumber').isString().notEmpty().withMessage('Valid tracking number is required'),
     body('coordinates').isArray({ min: 2, max: 2 }).withMessage('Invalid coordinates'),
@@ -105,11 +135,16 @@ router.patch(
 );
 
 // Update shipment status
-router.patch('/:trackingNumber/status', shipmentController.updateShipmentStatus);
+router.patch(
+  '/:trackingNumber/status',
+  requireShipmentWrite,
+  shipmentController.updateShipmentStatus
+);
 
 // Get shipment history
 router.get(
   '/:trackingNumber/history',
+  requireAuth,
   [
     param('trackingNumber').isString().notEmpty().withMessage('Valid tracking number is required'),
     validate
@@ -120,6 +155,7 @@ router.get(
 // Get shipment ETA
 router.get(
   '/:trackingNumber/eta',
+  requireAuth,
   [
     param('trackingNumber').isString().notEmpty().withMessage('Valid tracking number is required'),
     validate
@@ -130,6 +166,7 @@ router.get(
 // Get shipment route distance
 router.get(
   '/:trackingNumber/distance',
+  requireAuth,
   [
     param('trackingNumber').isString().notEmpty().withMessage('Valid tracking number is required'),
     validate
@@ -140,6 +177,7 @@ router.get(
 // Update shipment location manually
 router.patch(
   '/:trackingNumber/location/manual',
+  requireShipmentWrite,
   [
     param('trackingNumber').isString().notEmpty().withMessage('Valid tracking number is required'),
     body('coordinates').isArray({ min: 2, max: 2 }).withMessage('Invalid coordinates'),
@@ -154,6 +192,7 @@ router.patch(
 // Add a checkpoint to shipment
 router.post(
   '/:trackingNumber/checkpoints',
+  requireShipmentWrite,
   [
     param('trackingNumber').isString().notEmpty().withMessage('Valid tracking number is required'),
     body('location').isObject().withMessage('Location is required'),
@@ -168,6 +207,7 @@ router.post(
 // Update a checkpoint
 router.patch(
   '/:trackingNumber/checkpoints/:checkpointId',
+  requireShipmentWrite,
   [
     param('trackingNumber').isString().notEmpty().withMessage('Valid tracking number is required'),
     param('checkpointId').isString().notEmpty().withMessage('Valid checkpoint ID is required'),
@@ -179,6 +219,7 @@ router.patch(
 // Delete a checkpoint
 router.delete(
   '/:trackingNumber/checkpoints/:checkpointId',
+  requireShipmentWrite,
   [
     param('trackingNumber').isString().notEmpty().withMessage('Valid tracking number is required'),
     param('checkpointId').isString().notEmpty().withMessage('Valid checkpoint ID is required'),

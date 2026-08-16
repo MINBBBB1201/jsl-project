@@ -26,12 +26,6 @@ import {
 } from "@/components/ui/sidebar"
 
 const data = {
-  user: {
-    name: "JSL Logistics",
-    // 로그인 연동 전까지 쓰는 데모 계정 (도메인은 실제 사내 도메인 기준)
-    email: "admin@jsl-logis.com",
-    avatar: "",
-  },
   navGroups: [
     {
       label: "Dashboards",
@@ -175,7 +169,8 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         ))}
       </SidebarContent>
       <SidebarFooter>
-        <NavUser user={data.user} />
+        {/* 사용자 정보는 로그인 상태(AuthProvider)에서 직접 읽는다 */}
+        <NavUser />
       </SidebarFooter>
     </Sidebar>
   )

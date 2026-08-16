@@ -3,6 +3,14 @@ const multer = require('multer');
 const router = express.Router();
 const damageInspectionController = require('../controllers/damage-inspection.controller');
 const { SEVERITIES } = require('../utils/damage-inspection');
+const { requireAuth } = require('../middleware/auth.middleware');
+
+/**
+ * 파손 판정은 전부 내부 업무 기능이다.
+ * 판정 기록에는 화물 사진과 판정 사유가 담기므로 저장·조회 모두 로그인이 필요하다.
+ * (업로드 자체가 비전 모델 호출이라 공개돼 있으면 비용도 그대로 노출된다.)
+ */
+router.use(requireAuth);
 
 const MAX_UPLOAD_BYTES = 5 * 1024 * 1024; // 5MB
 const ALLOWED_MIME = ['image/jpeg', 'image/png'];

@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useState } from "react"
 import { API_BASE_URL } from "@/lib/api"
+import { authHeaders } from "@/lib/auth"
 
 export type DamageType = "찌그러짐" | "파손" | "젖음" | "포장손상" | "해당없음"
 export type Severity = "정상" | "경미" | "심각"
@@ -82,8 +83,11 @@ export function useDamageInspection() {
       form.append("image", file)
       if (shipmentId) form.append("shipmentId", shipmentId)
 
+      // 판정 API 는 로그인 필수. Content-Type 은 지정하지 않는다 —
+      // FormData 는 브라우저가 boundary 를 포함해 직접 설정해야 한다.
       const res = await fetch(`${API_BASE_URL}/api/damage-inspection`, {
         method: "POST",
+        headers: authHeaders(),
         body: form,
       })
       const json = await res.json().catch(() => null)
@@ -133,7 +137,8 @@ export function useInspectionHistory(limit = 8) {
 
   const fetcher = useCallback(async () => {
     const res = await fetch(
-      `${API_BASE_URL}/api/damage-inspection?limit=${limit}&includeImage=true`
+      `${API_BASE_URL}/api/damage-inspection?limit=${limit}&includeImage=true`,
+      { headers: authHeaders() }
     )
     const json = await res.json().catch(() => null)
     if (!res.ok || !json?.success) {

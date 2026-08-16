@@ -1,6 +1,8 @@
+import { Suspense } from "react"
+import Link from "next/link"
+
 import { LoginForm1 } from "./components/login-form-1"
 import { Logo } from "@/components/logo"
-import Link from "next/link"
 
 export default function Page() {
   return (
@@ -12,7 +14,10 @@ export default function Page() {
           </div>
           JSL Logistics
         </Link>
-        <LoginForm1 />
+        {/* useSearchParams(next 파라미터) 를 쓰므로 Suspense 경계가 필요하다 */}
+        <Suspense fallback={null}>
+          <LoginForm1 />
+        </Suspense>
       </div>
     </div>
   )

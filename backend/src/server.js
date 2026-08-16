@@ -10,7 +10,8 @@ const { port, mongoUri, allowedOrigins, allowedOriginPatterns } = require('./con
 const { connectDB } = require('./config/database');
 const logger = require('./utils/logger');
 const { AppError, errorHandler } = require('./middleware/error.middleware');
-const { checkDbAuth } = require('./middleware/auth.middleware');
+const { checkDbConnection } = require('./middleware/db.middleware');
+const authRoutes = require('./routes/auth.routes');
 const shipmentRoutes = require('./routes/shipment.routes');
 const contactRoutes = require('./routes/contact.routes');
 const chatRoutes = require('./routes/chat.routes');
@@ -80,11 +81,19 @@ app.use((req, res, next) => {
   }
 });
 
-// Routes
-app.use('/api/shipments', checkDbAuth, shipmentRoutes);
-app.use('/api/contact', checkDbAuth, contactRoutes);
-app.use('/api/chat', checkDbAuth, chatRoutes);
-app.use('/api/damage-inspection', checkDbAuth, damageInspectionRoutes);
+/**
+ * Routes
+ *
+ * 인증 정책은 각 라우터 안에서 엔드포인트 단위로 건다 (routes/*.js 참고).
+ * 마케팅 페이지·단건 화물조회·문의·챗봇은 공개, 대시보드용 조회와
+ * 데이터 변경 API 는 로그인(+역할)이 필요하다.
+ * 여기 checkDbConnection 은 이름 그대로 DB 연결 확인만 한다.
+ */
+app.use('/api/auth', checkDbConnection, authRoutes);
+app.use('/api/shipments', checkDbConnection, shipmentRoutes);
+app.use('/api/contact', checkDbConnection, contactRoutes);
+app.use('/api/chat', checkDbConnection, chatRoutes);
+app.use('/api/damage-inspection', checkDbConnection, damageInspectionRoutes);
 
 // Add redirect for /shipments to /api/shipments
 app.use('/shipments', (req, res) => {
@@ -108,6 +117,7 @@ app.get('/', (req, res) => {
     message: 'Shipment Tracker API is running',
     endpoints: {
       health: '/health',
+      auth: '/api/auth',
       api: '/api/shipments',
       contact: '/api/contact',
       chat: '/api/chat',
