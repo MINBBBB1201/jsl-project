@@ -128,6 +128,39 @@ export const volumesHeading = {
   description: "항공·해상·육상 3개 모드 기준 월 평균 처리량입니다.",
 }
 
+/**
+ * 제휴 항공사 · 특송 파트너
+ *
+ * ⚠️ 로고 이미지를 쓰지 않는다. 각 사의 로고는 등록상표라 무단 사용 시 문제가
+ *    될 수 있어, 회사명을 텍스트 워드마크로만 표기한다.
+ *    실제 로고를 넣으려면 각 사 브랜드 가이드라인 확인과 사용 허가가 필요하다.
+ *
+ * 출처: 회사소개서에 명시된 파트너만 넣었다. 임의로 추가하지 말 것.
+ */
+export const partners = {
+  title: "제휴 항공사 · 특송 파트너",
+  description: "주요 노선에서 아래 항공사·특송사와 협력해 운송합니다.",
+  groups: [
+    {
+      label: "항공",
+      items: [
+        { name: "대한항공", nameEn: "Korean Air" },
+        { name: "동방항공", nameEn: "China Eastern" },
+      ],
+    },
+    {
+      label: "특송 라스트마일",
+      items: [
+        { name: "Royal Mail" },
+        { name: "Deutsche Post" },
+        { name: "DHL" },
+        { name: "dpd" },
+      ],
+    },
+  ],
+  note: "각 사의 상표는 해당 회사에 귀속됩니다.",
+}
+
 /** 회사 소개 섹션 */
 export const about = {
   badge: "회사 소개",
