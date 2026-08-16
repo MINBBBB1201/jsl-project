@@ -5,6 +5,7 @@ import { Separator } from "@/components/ui/separator"
 import { SidebarTrigger } from "@/components/ui/sidebar"
 import { CommandSearch, SearchTrigger } from "@/components/command-search"
 import { ModeToggle } from "@/components/mode-toggle"
+import { NotificationBell } from "@/components/notification-bell"
 
 export function SiteHeader() {
   const [searchOpen, setSearchOpen] = React.useState(false)
@@ -34,6 +35,7 @@ export function SiteHeader() {
             <SearchTrigger onClick={() => setSearchOpen(true)} />
           </div>
           <div className="ml-auto flex items-center gap-2">
+            <NotificationBell />
             <ModeToggle />
           </div>
         </div>

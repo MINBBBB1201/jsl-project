@@ -16,6 +16,7 @@ const shipmentRoutes = require('./routes/shipment.routes');
 const contactRoutes = require('./routes/contact.routes');
 const chatRoutes = require('./routes/chat.routes');
 const damageInspectionRoutes = require('./routes/damage-inspection.routes');
+const notificationRoutes = require('./routes/notification.routes');
 
 // Initialize Express app
 const app = express();
@@ -94,6 +95,7 @@ app.use('/api/shipments', checkDbConnection, shipmentRoutes);
 app.use('/api/contact', checkDbConnection, contactRoutes);
 app.use('/api/chat', checkDbConnection, chatRoutes);
 app.use('/api/damage-inspection', checkDbConnection, damageInspectionRoutes);
+app.use('/api/notifications', checkDbConnection, notificationRoutes);
 
 // Add redirect for /shipments to /api/shipments
 app.use('/shipments', (req, res) => {
@@ -119,6 +121,7 @@ app.get('/', (req, res) => {
       health: '/health',
       auth: '/api/auth',
       api: '/api/shipments',
+      notifications: '/api/notifications',
       contact: '/api/contact',
       chat: '/api/chat',
       damageInspection: '/api/damage-inspection'
@@ -144,7 +147,7 @@ const startServer = async () => {
     const server = app.listen(port, () => {
       logger.info(`Server running on port ${port}`);
     });
-    
+
     // Handle server shutdown
     const gracefulShutdown = async () => {
       logger.info('Shutting down server...');

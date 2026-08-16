@@ -8,6 +8,7 @@ const {
   buildRiskLevelQuery,
   RISK_LEVELS
 } = require('../utils/delay-risk');
+const shipmentEvents = require('../services/shipment-events.service');
 
 /**
  * 목록 조회 응답에서 제외할 고객 개인정보.
@@ -303,10 +304,13 @@ exports.updateShipmentLocation = async (req, res) => {
     );
     
     logger.info(`Shipment ${trackingNumber} location updated`);
-    
+
     // Get updated shipment
     const updatedShipment = await Shipment.findOne({ trackingNumber });
-    
+
+    // 위치 갱신에도 상태가 함께 바뀔 수 있어 같은 알림 트리거를 태운다
+    await shipmentEvents.handleShipmentSaved(updatedShipment);
+
     res.status(200).json({
       success: true,
       data: stripPii(updatedShipment),
@@ -766,9 +770,12 @@ exports.updateShipmentStatus = async (req, res) => {
     });
     
     await shipment.save();
-    
+
     logger.info(`Shipment ${trackingNumber} status updated to ${status}`);
-    
+
+    // 배송완료 / 지연위험 알림 트리거 (실패해도 상태 변경은 이미 저장됐다)
+    await shipmentEvents.handleShipmentSaved(shipment);
+
     res.status(200).json({
       success: true,
       data: shipment,
@@ -954,7 +961,9 @@ exports.updateShipmentLocationManually = async (req, res) => {
     await shipment.save();
     
     logger.info(`Shipment ${trackingNumber} location updated manually`);
-    
+
+    await shipmentEvents.handleShipmentSaved(shipment);
+
     res.status(200).json({
       success: true,
       data: shipment,

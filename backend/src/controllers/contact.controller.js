@@ -1,5 +1,6 @@
 const Contact = require('../models/contact.model');
 const logger = require('../utils/logger');
+const notificationService = require('../services/notification.service');
 
 // Create a new contact inquiry
 exports.createContact = async (req, res) => {
@@ -15,6 +16,10 @@ exports.createContact = async (req, res) => {
     });
 
     logger.info(`New contact inquiry received from ${contact.email}`);
+
+    // 운영자용 인앱 알림. 실패해도 문의 접수 자체는 성공으로 응답한다
+    // (알림은 부가 기능이고, 실패 시 고객이 문의를 다시 보내게 만들면 안 된다).
+    await notificationService.notifyNewContact(contact);
 
     res.status(201).json({
       success: true,
