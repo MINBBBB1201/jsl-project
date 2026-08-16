@@ -15,7 +15,24 @@
     "contact": "联系我们",
     "dashboard": "管理后台",
     "signIn": "登录",
-    "quoteCta": "询价"
+    "quoteCta": "询价",
+    "shipper": "货主服务",
+    "forwarder": "合作伙伴·货代"
+  },
+  "megaMenu": {
+    "shipperQuestion": "您是货主吗？",
+    "shipperLead": "面向委托进出口货物的企业客户的运输与咨询服务。",
+    "shipperServices": "运输服务",
+    "shipperConsulting": "货主咨询",
+    "shipperCta": "查看全部货主服务",
+    "forwarderQuestion": "您是合作伙伴或货代吗？",
+    "forwarderLead": "面向拓展海外市场与本地运营的货代伙伴的项目。",
+    "forwarderPrograms": "合作伙伴项目",
+    "forwarderSupport": "合作伙伴支持",
+    "forwarderCta": "查看全部合作伙伴项目",
+    "networkDescription": "直接运营首尔、上海、威海、广州、河内5个据点",
+    "partnershipTitle": "合作咨询",
+    "partnershipDescription": "欢迎提出合作与业务提案。"
   },
   "hero": {
     "badge": "空运 · 海运 · 陆运 · 铁路 · 快递",

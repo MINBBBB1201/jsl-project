@@ -99,6 +99,16 @@ const CONSULTING_FORWARDER_KEYS = ["marketEntry", "entitySetup", "matching", "fu
 
 type Msg = Record<string, any> // eslint-disable-line @typescript-eslint/no-explicit-any
 
+/** 메가메뉴 방문자 세그먼트 */
+export type MegaMenuAudience = "shipper" | "forwarder"
+
+interface NavItem {
+  name: string
+  href: string
+  /** 값이 있으면 그 세그먼트의 메가메뉴를 드롭다운으로 연다 */
+  megaMenu?: MegaMenuAudience
+}
+
 export function useContent() {
   const m = useMessages() as unknown as Msg
 
@@ -205,11 +215,14 @@ export function useContent() {
     description: m.consulting.description,
     groups: [
       {
+        // 메가메뉴의 화주/포워더 진입 경로가 이 앵커로 연결된다 (#shipper, #forwarder)
+        id: "shipper",
         audience: m.consulting.clientAudience,
         description: m.consulting.clientDescription,
         items: CONSULTING_CLIENT_KEYS.map(consultingItem),
       },
       {
+        id: "forwarder",
         audience: m.consulting.forwarderAudience,
         description: m.consulting.forwarderDescription,
         items: CONSULTING_FORWARDER_KEYS.map(consultingItem),
@@ -380,46 +393,87 @@ export function useContent() {
     rights: m.footer.rights,
   }
 
+  /**
+   * 메가메뉴 — 방문자 세그먼트별로 진입 경로를 나눈다.
+   *
+   * 화주(짐을 맡기는 기업)와 포워더(파트너사)는 찾는 것이 다르다. 예전에는 하나의
+   * "서비스" 드롭다운에 둘의 항목이 섞여 있어서, 컨설팅 페이지에 들어가 화주 4개 ·
+   * 포워더 4개를 눈으로 골라내야 했다. 네비게이션에서부터 갈라 각자 관련된 항목이
+   * 먼저 보이게 한다. 페이지 구조는 그대로 두고 진입 경로만 나눈 것이다.
+   */
+  const modeItems = Object.entries(MODE_ICONS).map(([code, icon]) => ({
+    title: m.services.modes[code].title,
+    description: m.services.modes[code].summary,
+    icon,
+    href: "/landing#features",
+  }))
+
+  const megaMenus = {
+    shipper: {
+      question: m.megaMenu.shipperQuestion as string,
+      lead: m.megaMenu.shipperLead as string,
+      cta: { label: m.megaMenu.shipperCta as string, href: "/consulting#shipper" },
+      sections: [
+        { title: m.megaMenu.shipperServices as string, items: modeItems },
+        {
+          title: m.megaMenu.shipperConsulting as string,
+          items: CONSULTING_CLIENT_KEYS.map((key) => ({
+            title: m.consulting.items[key].title,
+            description: m.consulting.items[key].description,
+            icon: CONSULTING_ICONS[key],
+            href: "/consulting#shipper",
+          })),
+        },
+        {
+          title: m.nav.contact as string,
+          items: [
+            { title: m.nav.tracking, description: m.tracking.subtitle, icon: Radar, href: "/tracking" },
+            { title: m.footer.linkQuote, description: m.contact.channelQuote.title, icon: Container, href: "/landing#contact" },
+            { title: m.nav.faq, description: m.faq.description, icon: BadgeCheck, href: "/landing#faq" },
+          ],
+        },
+      ],
+    },
+    forwarder: {
+      question: m.megaMenu.forwarderQuestion as string,
+      lead: m.megaMenu.forwarderLead as string,
+      cta: { label: m.megaMenu.forwarderCta as string, href: "/consulting#forwarder" },
+      sections: [
+        {
+          title: m.megaMenu.forwarderPrograms as string,
+          items: CONSULTING_FORWARDER_KEYS.map((key) => ({
+            title: m.consulting.items[key].title,
+            description: m.consulting.items[key].description,
+            icon: CONSULTING_ICONS[key],
+            href: "/consulting#forwarder",
+          })),
+        },
+        {
+          title: m.megaMenu.forwarderSupport as string,
+          items: [
+            { title: m.nav.network, description: m.megaMenu.networkDescription, icon: Globe2, href: "/landing#network" },
+            { title: m.megaMenu.partnershipTitle, description: m.megaMenu.partnershipDescription, icon: Handshake, href: "/landing#contact" },
+            { title: m.nav.faq, description: m.faq.description, icon: BadgeCheck, href: "/landing#faq" },
+          ],
+        },
+      ],
+    },
+  }
+
+  const navItems: NavItem[] = [
+    { name: m.nav.home, href: "#hero" },
+    { name: m.nav.about, href: "#about" },
+    { name: m.nav.shipper, href: "#features", megaMenu: "shipper" },
+    { name: m.nav.forwarder, href: "/consulting#forwarder", megaMenu: "forwarder" },
+    { name: m.nav.network, href: "#network" },
+    { name: m.nav.tracking, href: "/tracking" },
+    { name: m.nav.faq, href: "#faq" },
+    { name: m.nav.contact, href: "#contact" },
+  ]
+
   const navigation = {
-    items: [
-      { name: m.nav.home, href: "#hero" },
-      { name: m.nav.about, href: "#about" },
-      { name: m.nav.services, href: "#features", hasMegaMenu: true },
-      { name: m.nav.consulting, href: "/consulting" },
-      { name: m.nav.network, href: "#network" },
-      { name: m.nav.tracking, href: "/tracking" },
-      { name: m.nav.faq, href: "#faq" },
-      { name: m.nav.contact, href: "#contact" },
-    ],
-    megaMenu: [
-      {
-        title: m.services.badge,
-        items: Object.entries(MODE_ICONS).map(([code, icon]) => ({
-          title: m.services.modes[code].title,
-          description: m.services.modes[code].summary,
-          icon,
-          href: "/landing#features",
-        })),
-      },
-      {
-        title: m.consulting.title,
-        items: CONSULTING_CLIENT_KEYS.map((key) => ({
-          title: m.consulting.items[key].title,
-          description: m.consulting.items[key].description,
-          icon: CONSULTING_ICONS[key],
-          href: "/consulting",
-        })),
-      },
-      {
-        title: m.nav.contact,
-        items: [
-          { title: m.nav.network, description: m.network.title, icon: Globe2, href: "/landing#network" },
-          { title: m.nav.tracking, description: m.tracking.subtitle, icon: Radar, href: "/tracking" },
-          { title: m.nav.faq, description: m.faq.description, icon: BadgeCheck, href: "/landing#faq" },
-          { title: m.footer.linkQuote, description: m.contact.channelQuote.title, icon: Container, href: "/landing#contact" },
-        ],
-      },
-    ],
+    items: navItems,
+    megaMenus,
     dashboard: m.nav.dashboard,
     signIn: m.nav.signIn,
     quoteCta: m.nav.quoteCta,

@@ -15,7 +15,24 @@
     "contact": "Liên hệ",
     "dashboard": "Bảng điều khiển",
     "signIn": "Đăng nhập",
-    "quoteCta": "Yêu cầu báo giá"
+    "quoteCta": "Yêu cầu báo giá",
+    "shipper": "Dành cho chủ hàng",
+    "forwarder": "Đối tác giao nhận"
+  },
+  "megaMenu": {
+    "shipperQuestion": "Bạn là chủ hàng?",
+    "shipperLead": "Dịch vụ vận chuyển và tư vấn dành cho doanh nghiệp xuất nhập khẩu.",
+    "shipperServices": "Dịch vụ vận chuyển",
+    "shipperConsulting": "Tư vấn cho chủ hàng",
+    "shipperCta": "Xem toàn bộ dịch vụ cho chủ hàng",
+    "forwarderQuestion": "Bạn là đối tác giao nhận?",
+    "forwarderLead": "Chương trình dành cho đối tác giao nhận mở rộng và vận hành tại thị trường mới.",
+    "forwarderPrograms": "Chương trình đối tác",
+    "forwarderSupport": "Hỗ trợ đối tác",
+    "forwarderCta": "Xem toàn bộ chương trình đối tác",
+    "networkDescription": "Vận hành trực tiếp 5 văn phòng: Seoul, Thượng Hải, Uy Hải, Quảng Châu, Hà Nội",
+    "partnershipTitle": "Liên hệ hợp tác",
+    "partnershipDescription": "Gửi cho chúng tôi đề xuất hợp tác của bạn."
   },
   "hero": {
     "badge": "Hàng không · Đường biển · Đường bộ · Đường sắt · Chuyển phát nhanh",

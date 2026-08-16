@@ -15,7 +15,24 @@
     "contact": "문의",
     "dashboard": "대시보드",
     "signIn": "로그인",
-    "quoteCta": "견적 문의"
+    "quoteCta": "견적 문의",
+    "shipper": "화주 서비스",
+    "forwarder": "파트너·포워더"
+  },
+  "megaMenu": {
+    "shipperQuestion": "화주이신가요?",
+    "shipperLead": "수출입 화물을 맡기실 기업 고객을 위한 운송·컨설팅 서비스입니다.",
+    "shipperServices": "운송 서비스",
+    "shipperConsulting": "화주 컨설팅",
+    "shipperCta": "화주 서비스 전체 보기",
+    "forwarderQuestion": "파트너·포워더이신가요?",
+    "forwarderLead": "해외 진출과 현지 운영을 준비하는 포워더 파트너를 위한 프로그램입니다.",
+    "forwarderPrograms": "파트너 프로그램",
+    "forwarderSupport": "파트너 지원",
+    "forwarderCta": "파트너 프로그램 전체 보기",
+    "networkDescription": "서울·상해·위해·광주·하노이 5개 거점 직접 운영",
+    "partnershipTitle": "파트너십 문의",
+    "partnershipDescription": "제휴·협업 제안을 보내 주세요."
   },
   "hero": {
     "badge": "항공 · 해상 · 육상 · 철도 · 특송",

@@ -28,7 +28,7 @@ import { Logo } from '@/components/logo'
 import { MegaMenu } from '@/components/landing/mega-menu'
 import { ModeToggle } from '@/components/mode-toggle'
 import { useTheme } from '@/hooks/use-theme'
-import { useContent } from '@/config/use-content'
+import { useContent, type MegaMenuAudience } from '@/config/use-content'
 import { LanguageSwitcher } from '@/components/language-switcher'
 
 // 모바일 메뉴용 — 데스크톱 메가메뉴와 동일한 항목을 평탄화해서 사용
@@ -50,15 +50,19 @@ const smoothScrollTo = (targetId: string) => {
 
 export function LandingNavbar() {
   const [isOpen, setIsOpen] = useState(false)
-  const [solutionsOpen, setSolutionsOpen] = useState(false)
+  // 화주/포워더 드롭다운을 각각 접었다 펼 수 있게 세그먼트별로 상태를 둔다
+  const [openMenus, setOpenMenus] = useState<Record<string, boolean>>({})
   const { setTheme, theme } = useTheme()
   const { company, navigation } = useContent()
 
   const navigationItems = navigation.items
-  const solutionsItems: MobileMenuEntry[] = navigation.megaMenu.flatMap((section) => [
-    { title: section.title },
-    ...section.items.map((item) => ({ name: item.title, href: item.href })),
-  ])
+
+  // 모바일에서는 메가메뉴를 섹션 제목 + 링크 목록으로 펼쳐 보여 준다
+  const mobileMenuEntries = (audience: MegaMenuAudience): MobileMenuEntry[] =>
+    navigation.megaMenus[audience].sections.flatMap((section) => [
+      { title: section.title },
+      ...section.items.map((item) => ({ name: item.title, href: item.href })),
+    ])
 
   return (
     <header className="sticky top-0 z-50 w-full border-b bg-background/80 backdrop-blur-xl supports-[backdrop-filter]:bg-background/60">
@@ -81,13 +85,13 @@ export function LandingNavbar() {
           <NavigationMenuList>
             {navigationItems.map((item) => (
               <NavigationMenuItem key={item.name}>
-                {item.hasMegaMenu ? (
+                {item.megaMenu ? (
                   <>
                     <NavigationMenuTrigger className="bg-transparent hover:bg-transparent focus:bg-transparent data-[active]:bg-transparent data-[state=open]:bg-transparent whitespace-nowrap px-2.5 py-2 text-sm font-medium transition-colors hover:text-primary focus:text-primary cursor-pointer">
                       {item.name}
                     </NavigationMenuTrigger>
                     <NavigationMenuContent>
-                      <MegaMenu />
+                      <MegaMenu audience={item.megaMenu} />
                     </NavigationMenuContent>
                   </>
                 ) : (
@@ -173,14 +177,23 @@ export function LandingNavbar() {
                 <nav className="p-6 space-y-1">
                   {navigationItems.map((item) => (
                     <div key={item.name}>
-                      {item.hasMegaMenu ? (
-                        <Collapsible open={solutionsOpen} onOpenChange={setSolutionsOpen}>
+                      {item.megaMenu ? (
+                        <Collapsible
+                          open={openMenus[item.megaMenu] ?? false}
+                          onOpenChange={(open) =>
+                            setOpenMenus((prev) => ({ ...prev, [item.megaMenu as string]: open }))
+                          }
+                        >
                           <CollapsibleTrigger className="flex items-center justify-between w-full px-4 py-3 text-base font-medium rounded-lg transition-colors hover:bg-accent hover:text-accent-foreground cursor-pointer">
                             {item.name}
-                            <ChevronDown className={`h-4 w-4 transition-transform ${solutionsOpen ? 'rotate-180' : ''}`} />
+                            <ChevronDown className={`h-4 w-4 transition-transform ${openMenus[item.megaMenu] ? 'rotate-180' : ''}`} />
                           </CollapsibleTrigger>
                           <CollapsibleContent className="pl-4 space-y-1">
-                            {solutionsItems.map((solution, index) => (
+                            {/* 세그먼트 안내 문구 — 데스크톱 메가메뉴와 같은 맥락을 준다 */}
+                            <p className="px-4 pt-3 text-sm text-muted-foreground">
+                              {navigation.megaMenus[item.megaMenu].question}
+                            </p>
+                            {mobileMenuEntries(item.megaMenu).map((solution, index) => (
                               solution.title ? (
                                 <div
                                   key={`title-${index}`}
@@ -205,6 +218,13 @@ export function LandingNavbar() {
                                 </a>
                               )
                             ))}
+                            <a
+                              href={navigation.megaMenus[item.megaMenu].cta.href}
+                              onClick={() => setIsOpen(false)}
+                              className="mt-3 flex items-center px-4 py-2 text-sm font-medium text-primary rounded-lg transition-colors hover:bg-accent cursor-pointer"
+                            >
+                              {navigation.megaMenus[item.megaMenu].cta.label}
+                            </a>
                           </CollapsibleContent>
                         </Collapsible>
                       ) : (

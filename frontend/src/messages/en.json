@@ -15,7 +15,24 @@
     "contact": "Contact",
     "dashboard": "Dashboard",
     "signIn": "Sign in",
-    "quoteCta": "Request a quote"
+    "quoteCta": "Request a quote",
+    "shipper": "For Shippers",
+    "forwarder": "For Forwarders"
+  },
+  "megaMenu": {
+    "shipperQuestion": "Are you a shipper?",
+    "shipperLead": "Transport and consulting services for companies shipping cargo.",
+    "shipperServices": "Transport services",
+    "shipperConsulting": "Shipper consulting",
+    "shipperCta": "See all shipper services",
+    "forwarderQuestion": "Are you a partner or forwarder?",
+    "forwarderLead": "Programs for forwarding partners entering and operating in new markets.",
+    "forwarderPrograms": "Partner programs",
+    "forwarderSupport": "Partner support",
+    "forwarderCta": "See all partner programs",
+    "networkDescription": "Five directly operated offices: Seoul, Shanghai, Weihai, Guangzhou, Hanoi",
+    "partnershipTitle": "Partnership inquiry",
+    "partnershipDescription": "Send us your partnership or collaboration proposal."
   },
   "hero": {
     "badge": "Air · Ocean · Road · Rail · Express",

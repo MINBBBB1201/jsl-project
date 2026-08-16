@@ -30,7 +30,9 @@ export function ConsultingClient() {
       {/* 대상별 서비스 */}
       <div className="space-y-14">
         {groups.map((group) => (
-          <section key={group.audience}>
+          // id 는 메가메뉴의 화주/포워더 진입 링크(/consulting#shipper, #forwarder)가 가리키는 앵커다.
+          // scroll-mt 는 sticky 헤더에 제목이 가려지지 않도록 준 여백이다.
+          <section key={group.audience} id={group.id} className="scroll-mt-24">
             <div className="border-s-2 border-primary ps-4">
               <h2 className="text-xl font-semibold text-foreground">
                 {group.audience}
