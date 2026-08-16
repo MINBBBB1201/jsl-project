@@ -284,7 +284,19 @@
     "errorNetwork": "无法连接服务器。请稍后重试。",
     "riskNormal": "运输中，处于预计运输天数的正常范围内。",
     "riskAtRisk": "预计到达日临近，可能发生延误。",
-    "riskDelayed": "已超过预计运输天数，请联系负责人。"
+    "riskDelayed": "已超过预计运输天数，请联系负责人。",
+    "stepsTitle": "运输进度",
+    "steps": {
+      "pickup": "揽收",
+      "inTransit": "运输中",
+      "customs": "清关",
+      "delivered": "已送达"
+    },
+    "stepDone": "已完成",
+    "stepCurrent": "进行中",
+    "stepPending": "待处理",
+    "stepDelayNote": "该货物晚于预定计划，请联系负责人。",
+    "exceptionNote": "运输过程中发生异常，请联系负责人。"
   },
   "modes": {
     "AIR": "空运",

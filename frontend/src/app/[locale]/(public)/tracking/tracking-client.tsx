@@ -20,6 +20,7 @@ import { Progress } from "@/components/ui/progress"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { cn } from "@/lib/utils"
 import { RISK_LEVEL_STYLE, type RiskLevel } from "@/lib/transport-modes"
+import { TrackingStepper } from "./tracking-stepper"
 import { useSampleTrackingNumbers, useTracking } from "./use-tracking"
 
 const formatDate = (value: string | null) => {
@@ -77,6 +78,9 @@ function ResultCard({
       </CardHeader>
 
       <CardContent className="space-y-6">
+        {/* 진행 단계 */}
+        <TrackingStepper status={shipment.status} riskLevel={level} />
+
         {/* 구간 */}
         <div className="flex flex-wrap items-center gap-3 rounded-lg border p-4">
           <MapPin className="size-4 shrink-0 text-muted-foreground" aria-hidden />

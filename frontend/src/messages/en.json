@@ -284,7 +284,19 @@
     "errorNetwork": "Cannot reach the server. Please try again shortly.",
     "riskNormal": "In transit and within the expected transit time.",
     "riskAtRisk": "The estimated arrival date is approaching. A delay is possible.",
-    "riskDelayed": "The expected transit time has been exceeded. Please contact us."
+    "riskDelayed": "The expected transit time has been exceeded. Please contact us.",
+    "stepsTitle": "Progress",
+    "steps": {
+      "pickup": "Picked up",
+      "inTransit": "In transit",
+      "customs": "Customs",
+      "delivered": "Delivered"
+    },
+    "stepDone": "Done",
+    "stepCurrent": "In progress",
+    "stepPending": "Pending",
+    "stepDelayNote": "This shipment is running behind schedule. Please contact your representative.",
+    "exceptionNote": "An exception occurred during transit. Please contact your representative."
   },
   "modes": {
     "AIR": "Air",

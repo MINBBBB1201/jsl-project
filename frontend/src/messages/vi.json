@@ -284,7 +284,19 @@
     "errorNetwork": "Không kết nối được máy chủ. Vui lòng thử lại sau.",
     "riskNormal": "Đang vận chuyển trong khoảng thời gian dự kiến.",
     "riskAtRisk": "Ngày dự kiến đến đang tới gần. Có thể phát sinh chậm trễ.",
-    "riskDelayed": "Đã vượt quá thời gian vận chuyển dự kiến. Vui lòng liên hệ bộ phận phụ trách."
+    "riskDelayed": "Đã vượt quá thời gian vận chuyển dự kiến. Vui lòng liên hệ bộ phận phụ trách.",
+    "stepsTitle": "Tiến trình",
+    "steps": {
+      "pickup": "Đã lấy hàng",
+      "inTransit": "Đang vận chuyển",
+      "customs": "Thông quan",
+      "delivered": "Đã giao"
+    },
+    "stepDone": "Hoàn tất",
+    "stepCurrent": "Đang thực hiện",
+    "stepPending": "Chờ xử lý",
+    "stepDelayNote": "Lô hàng đang chậm hơn dự kiến. Vui lòng liên hệ người phụ trách.",
+    "exceptionNote": "Đã xảy ra sự cố trong quá trình vận chuyển. Vui lòng liên hệ người phụ trách."
   },
   "modes": {
     "AIR": "Hàng không",
