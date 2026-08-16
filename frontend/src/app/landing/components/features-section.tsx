@@ -3,7 +3,7 @@
 import { ArrowRight, Check } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
-import { Card, CardContent } from '@/components/ui/card'
+import { cn } from '@/lib/utils'
 import { useContent } from '@/config/use-content'
 
 export function FeaturesSection() {
@@ -11,10 +11,11 @@ export function FeaturesSection() {
   const { modes, valueAdded } = services
 
   return (
-    <section id="features" className="py-24 sm:py-32 bg-muted/30">
+    <section id="features" className="border-b bg-background py-24 sm:py-32">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
         {/* Section Header */}
-        <div className="mx-auto max-w-2xl text-center mb-16">
+        {/* 섹션 머리말 — 가운데 정렬 대신 좌측 정렬. 그리드 축과 맞아 읽는 눈이 덜 움직인다 */}
+        <div className="mb-16 max-w-2xl">
           <Badge variant="outline" className="mb-4">{services.badge}</Badge>
           <h2 className="text-3xl font-bold tracking-tight sm:text-4xl mb-4">
             {services.title}
@@ -24,34 +25,54 @@ export function FeaturesSection() {
           </p>
         </div>
 
-        {/* 5개 운송 모드 */}
-        <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3 mb-24">
-          {modes.map((mode) => (
-            <Card key={mode.code} className="shadow-xs h-full py-0">
-              <CardContent className="p-6 flex h-full flex-col">
-                <div className="flex items-center gap-3 mb-4">
-                  <div className="p-2.5 bg-primary/10 rounded-xl shrink-0">
-                    <mode.icon className="h-5 w-5 text-primary" aria-hidden="true" />
-                  </div>
-                  <div className="min-w-0">
-                    <p className="text-xs font-semibold tracking-widest text-primary">
-                      {mode.code}
-                    </p>
-                    <h3 className="text-lg font-semibold text-foreground">
-                      {mode.title}
-                    </h3>
-                  </div>
+        {/*
+          5개 운송 모드 — 벤토 그리드
+
+          다섯 개를 같은 크기로 늘어놓으면 "어느 것이 주력인지" 정보가 사라진다.
+          물동량이 큰 항공·해상을 넓은 칸에, 나머지 셋을 좁은 칸에 두어
+          크기 자체가 위계를 말하게 했다 (lg 6열 기준 3+3 / 2+2+2).
+
+          카드는 그림자 대신 1px 보더만 쓴다. 그림자를 겹쳐 띄우는 것보다
+          같은 두께의 선으로 구획하는 편이 이 양식에 맞고, 화면이 조용해진다.
+        */}
+        <div className="mb-24 grid gap-px bg-border sm:grid-cols-2 lg:grid-cols-6">
+          {modes.map((mode, index) => {
+            const isPrimary = index < 2
+
+            return (
+              <article
+                key={mode.code}
+                className={cn(
+                  "flex flex-col bg-background p-6 sm:p-8",
+                  isPrimary ? "lg:col-span-3" : "lg:col-span-2"
+                )}
+              >
+                <div className="flex items-baseline justify-between gap-3">
+                  <p className="text-[11px] font-medium tracking-[0.18em] text-muted-foreground">
+                    {mode.code}
+                  </p>
+                  <mode.icon
+                    className="size-5 shrink-0 text-muted-foreground"
+                    aria-hidden="true"
+                  />
                 </div>
 
-                <p className="text-sm text-muted-foreground mb-4">
-                  {mode.summary}
-                </p>
+                <h3
+                  className={cn(
+                    "mt-3 font-semibold text-foreground",
+                    isPrimary ? "text-2xl" : "text-lg"
+                  )}
+                >
+                  {mode.title}
+                </h3>
 
-                <ul className="space-y-2 mt-auto">
+                <p className="mt-2 text-sm text-muted-foreground">{mode.summary}</p>
+
+                <ul className="mt-auto space-y-2 pt-6">
                   {mode.highlights.map((highlight) => (
                     <li key={highlight} className="flex items-start gap-2">
                       <Check
-                        className="mt-0.5 size-4 shrink-0 text-primary"
+                        className="mt-0.5 size-3.5 shrink-0 text-muted-foreground"
                         aria-hidden="true"
                       />
                       <span className="text-sm text-muted-foreground">
@@ -60,9 +81,9 @@ export function FeaturesSection() {
                     </li>
                   ))}
                 </ul>
-              </CardContent>
-            </Card>
-          ))}
+              </article>
+            )
+          })}
         </div>
 
         {/*
@@ -74,7 +95,8 @@ export function FeaturesSection() {
           창고 재고와 아무 관계가 없었습니다. 실제 화면 이미지가 준비되면 그때
           2단 배치로 되돌리세요.
         */}
-        <div className="mx-auto max-w-3xl space-y-6">
+        {/* 머리말과 같은 축(좌측 정렬)에 맞춘다 — 가운데 정렬이 섞이면 그리드가 흐트러진다 */}
+        <div className="max-w-3xl space-y-6">
           <div className="space-y-4">
             <h3 className="text-2xl font-semibold tracking-tight text-balance sm:text-3xl">
               {valueAdded.title}

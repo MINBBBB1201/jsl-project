@@ -10,9 +10,14 @@ import localFont from 'next/font/local'
  *
  * ── 왜 CDN 링크가 아니라 self-host 인가 ────────────────────────────────
  * Fontshare CDN 을 <link> 로 부르면 렌더 경로에 외부 요청이 하나 더 붙고,
- * 폰트가 늦게 오면 글자가 늦게 그려진다(FOUT). woff2 4종을 받아 두면
- * next/font 가 빌드 시점에 preload 를 걸고 같은 도메인에서 서빙한다.
- * 4개 굵기 전부 합쳐 90KB 정도다.
+ * 폰트가 늦게 오면 글자가 늦게 그려진다(FOUT). 파일을 받아 두면 next/font 가
+ * 빌드 시점에 preload 를 걸고 같은 도메인에서 서빙한다.
+ *
+ * ── 왜 가변 폰트 한 벌인가 ─────────────────────────────────────────────
+ * 처음에는 400/500/600/700 을 각각 받았는데(합계 90KB) 네 파일이 전부 preload 돼
+ * 첫 화면에서 JS 와 대역폭을 다퉜다 (Lighthouse LCP 4.4s → 5.1s 로 악화).
+ * 가변 폰트 한 벌은 200~700 전 구간을 20.9KB 로 담는다. 파일 수와 용량이
+ * 동시에 줄어 그 회귀가 사라졌다.
  *
  * ── 한글 ───────────────────────────────────────────────────────────────
  * General Sans 에는 한글 글리프가 없다. 한글은 시스템에 설치된 산세리프로
@@ -22,13 +27,29 @@ import localFont from 'next/font/local'
  */
 export const generalSans = localFont({
   src: [
-    { path: '../fonts/GeneralSans-400.woff2', weight: '400', style: 'normal' },
-    { path: '../fonts/GeneralSans-500.woff2', weight: '500', style: 'normal' },
-    { path: '../fonts/GeneralSans-600.woff2', weight: '600', style: 'normal' },
-    { path: '../fonts/GeneralSans-700.woff2', weight: '700', style: 'normal' },
+    {
+      path: '../fonts/GeneralSans-Variable.woff2',
+      // 가변 폰트 — 이 구간 안의 굵기는 파일 하나로 전부 나온다
+      weight: '200 700',
+      style: 'normal',
+    },
   ],
   display: 'swap',
   variable: '--font-general-sans',
-  // 폰트가 로드되기 전후로 글자 폭이 튀는 것을 줄인다
-  fallback: ['system-ui', 'Segoe UI', 'sans-serif'],
+  /*
+    폴백 스택.
+    ⚠️ 한글 폰트를 여기(next/font 의 fallback)에 넣어야 한다. CSS 쪽 --font-sans 에
+       이어 붙이면 next/font 가 만들어 넣는 'sans-serif' 뒤로 밀리는데, 브라우저는
+       제네릭 패밀리에서 탐색을 끝내므로 그 뒤 항목들은 죽은 값이 된다.
+       (실제로 그렇게 짰다가 한글이 Pretendard 대신 기본 산세리프로 떨어졌다)
+    General Sans 에 한글 글리프가 없으므로 한글은 이 스택에서 그려진다.
+  */
+  fallback: [
+    'Pretendard',
+    'Apple SD Gothic Neo',
+    'Malgun Gothic',
+    'Noto Sans KR',
+    'system-ui',
+    'sans-serif',
+  ],
 })

@@ -6,12 +6,10 @@
 @theme inline {
   /*
     본문 서체 — General Sans (lib/fonts.ts 참고).
-    한글 글리프가 없어 한글은 뒤 스택으로 떨어진다. Pretendard 가 설치돼 있으면
-    그것을, 없으면 OS 기본 산세리프를 쓴다. 두 서체 모두 네오그로테스크 계열이라
-    라틴/한글이 섞여도 인상이 크게 어긋나지 않는다.
+    한글 폴백까지 포함한 전체 스택이 이 변수 하나에 들어 있으므로 여기서
+    폰트를 덧붙이지 않는다 (덧붙이면 제네릭 패밀리 뒤로 밀려 무시된다).
   */
-  --font-sans: var(--font-general-sans), Pretendard, "Apple SD Gothic Neo",
-    "Malgun Gothic", "Noto Sans KR", system-ui, sans-serif;
+  --font-sans: var(--font-general-sans);
   --radius-sm: calc(var(--radius) - 4px);
   --radius-md: calc(var(--radius) - 2px);
   --radius-lg: var(--radius);

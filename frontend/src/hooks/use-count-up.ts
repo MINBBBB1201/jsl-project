@@ -1,7 +1,6 @@
 "use client"
 
 import * as React from "react"
-import gsap from "gsap"
 
 import { usePrefersReducedMotion } from "@/hooks/use-prefers-reduced-motion"
 
@@ -13,6 +12,11 @@ import { usePrefersReducedMotion } from "@/hooks/use-prefers-reduced-motion"
  *
  * React state 가 아니라 DOM textContent 를 직접 쓴다. 60fps 로 도는 동안
  * 매 프레임 리렌더를 걸면 프레임을 흘리기 때문이다.
+ *
+ * GSAP 은 화면에 들어온 뒤에 동적 import 한다. 첫 화면 번들에 넣으면 아직
+ * 보이지도 않은 숫자 애니메이션 때문에 파싱·실행 시간이 늘어난다
+ * (히어로는 LCP 구간이라 그 비용이 그대로 지표에 잡힌다).
+ * 동작 줄이기 설정이면 아예 받지 않는다.
  */
 export function useCountUp(
   target: number | null,
@@ -36,7 +40,8 @@ export function useCountUp(
     }
 
     const counter = { value: 0 }
-    let tween: gsap.core.Tween | null = null
+    let tween: { kill: () => void } | null = null
+    let cancelled = false
 
     const observer = new IntersectionObserver(
       (entries) => {
@@ -44,14 +49,20 @@ export function useCountUp(
         if (!entry.isIntersecting || hasAnimated.current) return
 
         hasAnimated.current = true
-        tween = gsap.to(counter, {
-          value: target,
-          duration: durationSeconds,
-          // 빠르게 시작해 부드럽게 멈춘다 — 계기판이 값을 잡는 느낌
-          ease: "power2.out",
-          onUpdate: () => {
-            element.textContent = format(Math.round(counter.value))
-          },
+
+        import("gsap").then(({ default: gsap }) => {
+          // import 를 기다리는 사이 언마운트됐을 수 있다
+          if (cancelled) return
+
+          tween = gsap.to(counter, {
+            value: target,
+            duration: durationSeconds,
+            // 빠르게 시작해 부드럽게 멈춘다 — 계기판이 값을 잡는 느낌
+            ease: "power2.out",
+            onUpdate: () => {
+              element.textContent = format(Math.round(counter.value))
+            },
+          })
         })
       },
       { threshold: 0.4 }
@@ -60,6 +71,7 @@ export function useCountUp(
     observer.observe(element)
 
     return () => {
+      cancelled = true
       observer.disconnect()
       tween?.kill()
     }
