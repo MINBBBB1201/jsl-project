@@ -4,6 +4,7 @@ import * as React from "react"
 import {
   LayoutDashboard,
   MessageCircle,
+  ScanSearch,
   Shield,
   AlertTriangle,
   Settings,
@@ -49,6 +50,11 @@ const data = {
           title: "Chat",
           url: "/chat",
           icon: MessageCircle,
+        },
+        {
+          title: "화물 파손 판정",
+          url: "/damage-inspection",
+          icon: ScanSearch,
         },
       ],
     },

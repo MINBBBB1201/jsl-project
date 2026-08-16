@@ -14,6 +14,7 @@ const { checkDbAuth } = require('./middleware/auth.middleware');
 const shipmentRoutes = require('./routes/shipment.routes');
 const contactRoutes = require('./routes/contact.routes');
 const chatRoutes = require('./routes/chat.routes');
+const damageInspectionRoutes = require('./routes/damage-inspection.routes');
 
 // Initialize Express app
 const app = express();
@@ -83,6 +84,7 @@ app.use((req, res, next) => {
 app.use('/api/shipments', checkDbAuth, shipmentRoutes);
 app.use('/api/contact', checkDbAuth, contactRoutes);
 app.use('/api/chat', checkDbAuth, chatRoutes);
+app.use('/api/damage-inspection', checkDbAuth, damageInspectionRoutes);
 
 // Add redirect for /shipments to /api/shipments
 app.use('/shipments', (req, res) => {
@@ -108,7 +110,8 @@ app.get('/', (req, res) => {
       health: '/health',
       api: '/api/shipments',
       contact: '/api/contact',
-      chat: '/api/chat'
+      chat: '/api/chat',
+      damageInspection: '/api/damage-inspection'
     }
   });
 });

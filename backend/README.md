@@ -35,7 +35,74 @@ This project implements a complete Cargo Shipment Tracker backend using Node.js,
 | GET    | /api/shipments/:id/history              | Get shipment location history                   |
 | GET    | /api/shipments/delay-summary            | 지연 리스크 등급별 집계                          |
 | GET    | /api/shipments?riskLevel=지연위험        | 지연 리스크 등급으로 필터링                      |
+| POST   | /api/damage-inspection                  | 화물 사진 업로드 → 파손 여부 판정                |
+| GET    | /api/damage-inspection                  | 최근 판정 이력 (페이지네이션)                    |
 | GET    | /health                                 | Health check endpoint                           |
+
+## 📷 화물 파손 판정 (Damage Inspection)
+
+### v1 — 비전 LLM zero-shot 판정
+
+실제 파손 사진 라벨링 데이터가 없어 자체 분류 모델을 학습시킬 수 없습니다.
+대신 비전 지원 LLM 에 사진과 검수 기준을 함께 보내 zero-shot 으로 판정합니다.
+학습 데이터 0건으로도 동작하고, 커스텀 CV 모델의 학습·운영 비용이 들지 않습니다.
+
+향후 실제 파손 사진 라벨링 데이터를 확보하면 자체 분류 모델로 정확도를 개선할
+수 있으며, 그때 이 v1 이 성능 비교 기준선이 됩니다.
+
+```
+사진 업로드 → 리사이즈(최대 1024px, JPEG q70) → qwen/qwen3.6-27b 호출
+  → <think> 블록 제거 후 JSON 파싱 → MongoDB 저장 → 결과 반환
+```
+
+### ⚠️ 이 기능은 판정 보조 도구입니다
+
+**AI 가 파손을 100% 정확하게 감지하지 못합니다.** 1차 스크리닝 결과이며,
+최종 파손 여부와 배상 판단은 반드시 담당자가 실물로 확인해야 합니다.
+
+공개 이미지 5장으로 검증한 결과 **4/5 정답**이었고, 다음과 같은 실패가 있었습니다.
+
+| 이미지 | 정답 | 판정 | 결과 |
+|--------|------|------|------|
+| 파손 상자 (FRAGILE, 모서리 찌그러짐) | 파손 | 이상없음 (confidence 0.95) | ❌ **미탐** |
+| 파손 상자 (현관 배송) | 파손 | 찌그러짐 / 경미 (0.95) | ✅ |
+| 정상 상자 (이삿짐 트럭) | 정상 | 이상없음 (0.95) | ✅ |
+| 정상 크레이트 (핸드트럭) | 정상 | 해당없음 (1.0) | ✅ |
+| 인물 초상화 (화물 아님) | 해당없음 | 해당없음 (1.0) | ✅ |
+
+첫 번째 사례가 특히 중요합니다. **눈에 띄게 찌그러진 상자를 "이상 없음"으로,
+그것도 confidence 0.95 로 단정**했습니다. 확신도가 높다고 정확한 것이 아니므로
+UI 와 문서에서 이 점을 명시하고 있습니다.
+
+### 모델 선택과 제약
+
+- **모델**: `qwen/qwen3.6-27b` (Groq). Llama 4 Scout/Maverick 은 Groq 가 2026년에
+  서비스를 종료해 사용할 수 없습니다(`model_not_found`).
+- **thinking 모델**: `<think>` 블록에 토큰을 씁니다. `max_tokens` 3,000 으로 두고,
+  길이 초과로 잘리면 4,500 으로 올려 1회 재시도합니다. temperature 0 이라 같은
+  조건으로 재시도하면 같은 결과가 나오므로 상한을 바꿔서 재시도합니다.
+- **레이트리밋 TPM 8,000**: 사진 1장에 약 2,600~4,100 토큰(대부분 prompt 2,182).
+  분당 2~3장이 한계입니다. 대응:
+  - 호출 전 리사이즈로 토큰 절감
+  - 순차 큐로 동시 호출 차단 (한 번에 1건)
+  - openai SDK 가 429 를 내부 재시도하므로 응답이 느려지는 형태로 나타납니다.
+    실측상 5장 연속 업로드 시 마지막 건이 약 3분 걸렸습니다. 무한 대기를 막으려
+    요청 타임아웃 90초 / maxRetries 1 을 두었고, 초과 시 429 안내가 나갑니다.
+
+### 업로드 검증
+
+- jpg / png 만 허용 (mimetype + **매직 바이트** 이중 확인)
+- 최대 5MB, 1회 1장
+- 메모리 저장 — 업로드 파일이 서버 파일시스템에 남지 않음
+- DB 에는 원본이 아닌 리사이즈된 압축본만 저장
+
+### 구현 위치
+
+| 파일 | 역할 |
+|------|------|
+| `src/utils/damage-inspection.js` | 리사이즈, 프롬프트, JSON 파싱, 순차 큐 |
+| `src/models/damage-inspection.model.js` | 판정 기록 (사람 검토 필드 포함) |
+| `src/routes/damage-inspection.routes.js` | multer 업로드 + 파일 검증 |
 
 ## ⏱️ 지연 감지 (Delay Risk Detection)
 
