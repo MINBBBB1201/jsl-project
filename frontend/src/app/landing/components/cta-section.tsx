@@ -45,11 +45,17 @@ export function CTASection() {
                 <h2 className='text-4xl font-bold tracking-tight text-balance sm:text-5xl lg:text-6xl'>
                   {cta.headlineStart}
                   <span className='flex sm:inline-flex justify-center'>
+                    {/*
+                      강조는 그라데이션 글자가 아니라 밑줄 한 줄로 한다.
+                      그라데이션 텍스트는 읽기 대비를 떨어뜨리면서 의미도 더하지 않는다.
+                      대신 브랜드 오렌지를 얇은 규칙선으로 써서 신호로만 남긴다.
+                    */}
                     <span className='relative mx-2'>
-                      <span className='bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent'>
-                        {cta.headlineHighlight}
-                      </span>
-                      <div className='absolute start-0 -bottom-2 h-1 w-full bg-gradient-to-r from-primary/30 to-secondary/30' />
+                      {cta.headlineHighlight}
+                      <span
+                        className='absolute start-0 -bottom-1 h-0.5 w-full bg-brand-cta'
+                        aria-hidden='true'
+                      />
                     </span>
                     {cta.headlineEnd}
                   </span>

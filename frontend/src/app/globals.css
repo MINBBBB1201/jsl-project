@@ -4,7 +4,14 @@
 @custom-variant dark (&:is(.dark *));
 
 @theme inline {
-  --font-sans: var(--font-inter);
+  /*
+    본문 서체 — General Sans (lib/fonts.ts 참고).
+    한글 글리프가 없어 한글은 뒤 스택으로 떨어진다. Pretendard 가 설치돼 있으면
+    그것을, 없으면 OS 기본 산세리프를 쓴다. 두 서체 모두 네오그로테스크 계열이라
+    라틴/한글이 섞여도 인상이 크게 어긋나지 않는다.
+  */
+  --font-sans: var(--font-general-sans), Pretendard, "Apple SD Gothic Neo",
+    "Malgun Gothic", "Noto Sans KR", system-ui, sans-serif;
   --radius-sm: calc(var(--radius) - 4px);
   --radius-md: calc(var(--radius) - 2px);
   --radius-lg: var(--radius);
@@ -181,15 +188,38 @@
     @apply border-border outline-ring/50;
   }
   body {
-    @apply bg-background text-foreground;
+    @apply bg-background text-foreground font-sans;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
     /*
-      장식용 요소(히어로 글로우 등)가 뷰포트 밖으로 번져 가로 스크롤이 생기는 것을 막는다.
+      장식용 요소가 뷰포트 밖으로 번져 가로 스크롤이 생기는 것을 막는다.
       overflow-x: hidden 과 달리 clip 은 스크롤 컨테이너를 만들지 않아
       헤더의 position: sticky 가 그대로 동작한다.
     */
     overflow-x: clip;
+  }
+
+  /*
+    큰 제목일수록 자간을 좁힌다.
+    네오그로테스크는 본문 크기에 맞춰 자간이 설계돼 있어서, 그대로 키우면
+    글자 사이가 벌어져 보인다. 스위스 양식의 조밀한 헤드라인은 이 보정에서 나온다.
+  */
+  h1 {
+    letter-spacing: -0.03em;
+  }
+  h2,
+  h3 {
+    letter-spacing: -0.02em;
+  }
+
+  /*
+    숫자는 고정폭으로.
+    카운트업 애니메이션이나 실시간 수치가 바뀔 때 자릿수마다 폭이 달라지면
+    글자가 흔들린다. 표·통계·배지처럼 숫자가 의미를 갖는 자리에 쓴다.
+  */
+  .tabular-figures {
+    font-variant-numeric: tabular-nums;
+    font-feature-settings: "tnum" 1;
   }
 }
 
@@ -222,6 +252,31 @@
 /* Smooth scrolling for the entire page */
 html {
   scroll-behavior: smooth;
+}
+
+/**
+ * 모션 최소화 설정 존중 (접근성)
+ *
+ * 전정기관 장애가 있는 사용자에게 자동으로 움직이는 요소는 실제로 어지럼증을
+ * 유발한다. OS 에서 "동작 줄이기"를 켠 사용자에게는 애니메이션을 끄되,
+ * 콘텐츠 자체는 최종 상태로 그대로 보이게 한다 (숨기지 않는다).
+ *
+ * JS 로 만드는 애니메이션은 이 CSS 로 막히지 않으므로 각 컴포넌트에서
+ * usePrefersReducedMotion 으로 따로 확인한다.
+ */
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
 }
 
 /* Logo carousel animation */
@@ -273,6 +328,50 @@ html {
       transparent 1px
     );
   background-size: 48px 48px;
+}
+
+/**
+ * 블루프린트 격자 — 굵은 선 96px, 가는 선 24px 의 2단 격자.
+ *
+ * 설계 도면·운송 시간표의 괘선에서 가져온 결이다. 배경을 "채우는" 것이 아니라
+ * 레이아웃 그리드가 실제로 존재한다는 것을 아주 옅게 드러내는 용도라,
+ * 가장 진한 선도 알파 4% 를 넘지 않는다. 이 이상 올리면 배경이 말을 걸기 시작한다.
+ */
+.bg-blueprint {
+  background-image:
+    linear-gradient(
+      to right,
+      color-mix(in oklch, var(--brand-navy) 4%, transparent) 1px,
+      transparent 1px
+    ),
+    linear-gradient(
+      to bottom,
+      color-mix(in oklch, var(--brand-navy) 4%, transparent) 1px,
+      transparent 1px
+    ),
+    linear-gradient(
+      to right,
+      color-mix(in oklch, var(--brand-navy) 2%, transparent) 1px,
+      transparent 1px
+    ),
+    linear-gradient(
+      to bottom,
+      color-mix(in oklch, var(--brand-navy) 2%, transparent) 1px,
+      transparent 1px
+    );
+  background-size:
+    96px 96px,
+    96px 96px,
+    24px 24px,
+    24px 24px;
+}
+
+.dark .bg-blueprint {
+  background-image:
+    linear-gradient(to right, oklch(1 0 0 / 4%) 1px, transparent 1px),
+    linear-gradient(to bottom, oklch(1 0 0 / 4%) 1px, transparent 1px),
+    linear-gradient(to right, oklch(1 0 0 / 2%) 1px, transparent 1px),
+    linear-gradient(to bottom, oklch(1 0 0 / 2%) 1px, transparent 1px);
 }
 
 /* 위에서 아래로 옅게 깔리는 네이비 틴트 */
