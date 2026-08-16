@@ -17,6 +17,8 @@ const contactRoutes = require('./routes/contact.routes');
 const chatRoutes = require('./routes/chat.routes');
 const damageInspectionRoutes = require('./routes/damage-inspection.routes');
 const notificationRoutes = require('./routes/notification.routes');
+const automationRoutes = require('./routes/automation.routes');
+const { startScheduler, stopScheduler } = require('./automation/scheduler');
 
 // Initialize Express app
 const app = express();
@@ -96,6 +98,7 @@ app.use('/api/contact', checkDbConnection, contactRoutes);
 app.use('/api/chat', checkDbConnection, chatRoutes);
 app.use('/api/damage-inspection', checkDbConnection, damageInspectionRoutes);
 app.use('/api/notifications', checkDbConnection, notificationRoutes);
+app.use('/api/automation', checkDbConnection, automationRoutes);
 
 // Add redirect for /shipments to /api/shipments
 app.use('/shipments', (req, res) => {
@@ -122,6 +125,7 @@ app.get('/', (req, res) => {
       auth: '/api/auth',
       api: '/api/shipments',
       notifications: '/api/notifications',
+      automation: '/api/automation/logs',
       contact: '/api/contact',
       chat: '/api/chat',
       damageInspection: '/api/damage-inspection'
@@ -148,9 +152,14 @@ const startServer = async () => {
       logger.info(`Server running on port ${port}`);
     });
 
+    // 자동화 스케줄러 — 웹 요청과 무관하게 정해진 시각에 스스로 실행된다.
+    // (automation/scheduler.js 주석에 배포 형태와 한계를 정리해 두었다)
+    startScheduler();
+
     // Handle server shutdown
     const gracefulShutdown = async () => {
       logger.info('Shutting down server...');
+      stopScheduler();
       server.close(async () => {
         logger.info('Express server closed');
         try {

@@ -1,3 +1,4 @@
+import { AutomationLogCard } from "./components/automation-log-card"
 import { ChartAreaInteractive } from "./components/chart-area-interactive"
 import { DataTable } from "./components/data-table"
 import { DelayRiskTable } from "./components/delay-risk-table"
@@ -22,6 +23,7 @@ export default function Page() {
       <div className="@container/main px-4 lg:px-6 space-y-6">
         <SectionCards />
         <DelayRiskTable />
+        <AutomationLogCard />
         <ChartAreaInteractive />
       </div>
       <div className="@container/main">
