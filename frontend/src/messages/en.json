@@ -43,6 +43,14 @@
     "primaryCta": "Request a quote",
     "secondaryCta": "Explore services"
   },
+  "heroPanel": {
+    "title": "Operations status",
+    "inTransitLabel": "Active",
+    "onTimeRate": "On-time rate",
+    "unit": "",
+    "demoNote": "Calculated live by our delay-detection system. Figures shown are based on demo data.",
+    "liveNote": "Calculated live by our delay-detection system across active shipments."
+  },
   "stats": {
     "revenue": {
       "value": "KRW 18B",

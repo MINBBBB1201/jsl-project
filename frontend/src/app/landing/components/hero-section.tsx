@@ -4,68 +4,87 @@ import Link from 'next/link'
 import { ArrowRight, Ship } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
-import { DotPattern } from '@/components/dot-pattern'
 import { useContent } from '@/config/use-content'
+import { HeroOpsPanel } from './hero-ops-panel'
+import { HeroRouteLines } from './hero-route-lines'
+
+/**
+ * 히어로
+ *
+ * 조판은 스위스 양식의 비대칭 2단 그리드다. 가운데 정렬로 모든 요소를 쌓으면
+ * 위계가 크기 하나로만 표현되는데, 좌우로 나누면 "주장(카피)"과 "증거(데이터)"가
+ * 나란히 놓여 관계가 드러난다.
+ *
+ * 배경은 블루프린트 격자 + 거점 노선 도해. 둘 다 아주 옅어서 본문 대비를
+ * 건드리지 않는다. 예전의 오렌지 글로우(blur-3xl)는 걷어냈다 — 색으로 만든
+ * 깊이감은 정보를 담지 않는다.
+ */
 export function HeroSection() {
   const { hero } = useContent()
-  return (
-    <section id="hero" className="relative overflow-hidden bg-gradient-to-b from-background to-background/80 pt-16 sm:pt-20 pb-20 sm:pb-24">
-      {/* Background Pattern */}
-      <div className="absolute inset-0">
-        {/* Dot pattern overlay using reusable component */}
-        <DotPattern className="opacity-100" size="md" fadeStyle="ellipse" />
-      </div>
 
-      <div className="container mx-auto px-4 sm:px-6 lg:px-8 relative">
-        <div className="mx-auto max-w-4xl text-center">
-          {/* Announcement Badge */}
-          <div className="mb-8 flex justify-center">
-            <Badge variant="outline" className="px-4 py-2 border-foreground">
-              <Ship className="w-3 h-3 mr-2" />
+  return (
+    <section
+      id="hero"
+      className="relative overflow-hidden border-b bg-background pt-16 pb-16 sm:pt-20 sm:pb-20"
+    >
+      {/* 배경 — 격자 */}
+      <div className="bg-blueprint absolute inset-0" aria-hidden="true" />
+
+      {/*
+        배경 — 거점 노선 도해 (데스크톱에서만).
+        오른쪽 절반을 덮되 운영 현황 패널이 그 위에 불투명하게 올라가므로
+        패널 주변에서만 선이 보인다. 레이어가 겹치면서 깊이가 생긴다.
+      */}
+      <HeroRouteLines className="pointer-events-none absolute -top-16 right-0 hidden h-[640px] w-[860px] text-brand-navy lg:block dark:text-foreground" />
+
+      <div className="relative container mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="grid items-center gap-12 lg:grid-cols-12 lg:gap-8">
+          {/* 좌: 카피 */}
+          <div className="lg:col-span-7">
+            <Badge variant="outline" className="mb-6 border-foreground px-3 py-1.5">
+              <Ship className="mr-2 size-3" aria-hidden="true" />
               {hero.badge}
             </Badge>
+
+            <h1 className="text-4xl font-bold sm:text-5xl lg:text-6xl">
+              {hero.headlineStart}
+              {/*
+                강조는 색이 아니라 굵기와 규칙선으로 준다.
+                예전에는 그라데이션 글자였는데, 대비를 떨어뜨리면서
+                "무엇이 중요한가"를 더 잘 알려주지도 않았다.
+              */}
+              <span className="relative mx-2 inline-block whitespace-nowrap">
+                {hero.headlineHighlight}
+                <span
+                  className="absolute inset-x-0 -bottom-1 h-1 bg-brand-cta"
+                  aria-hidden="true"
+                />
+              </span>
+              {hero.headlineEnd}
+            </h1>
+
+            <p className="mt-8 max-w-xl text-lg text-muted-foreground">
+              {hero.subheadline}
+            </p>
+
+            <div className="mt-10 flex flex-col gap-3 sm:flex-row">
+              <Button variant="brand" size="lg" className="cursor-pointer text-base" asChild>
+                <Link href={hero.primaryCta.href}>
+                  {hero.primaryCta.label}
+                  <ArrowRight className="ml-2 size-4" aria-hidden="true" />
+                </Link>
+              </Button>
+              <Button variant="outline" size="lg" className="cursor-pointer text-base" asChild>
+                <Link href={hero.secondaryCta.href}>{hero.secondaryCta.label}</Link>
+              </Button>
+            </div>
           </div>
 
-          {/* Main Headline */}
-          <h1 className="mb-6 text-4xl font-bold tracking-tight sm:text-6xl lg:text-7xl">
-            {hero.headlineStart}
-            <span className="bg-gradient-to-r from-primary to-primary/60 bg-clip-text text-transparent">
-              {" "}{hero.headlineHighlight}{" "}
-            </span>
-            {hero.headlineEnd}
-          </h1>
-
-          {/* Subheading */}
-          <p className="mx-auto mb-10 max-w-2xl text-lg text-muted-foreground sm:text-xl">
-            {hero.subheadline}
-          </p>
-
-          {/* CTA Buttons */}
-          <div className="flex flex-col gap-4 sm:flex-row sm:justify-center">
-            <Button variant="brand" size="lg" className="text-base cursor-pointer" asChild>
-              <Link href={hero.primaryCta.href}>
-                {hero.primaryCta.label}
-                <ArrowRight className="ml-2 h-4 w-4" />
-              </Link>
-            </Button>
-            <Button variant="outline" size="lg" className="text-base cursor-pointer" asChild>
-              <Link href={hero.secondaryCta.href}>
-                {hero.secondaryCta.label}
-              </Link>
-            </Button>
+          {/* 우: 실제 운영 데이터 */}
+          <div className="lg:col-span-5">
+            <HeroOpsPanel />
           </div>
         </div>
-        {/*
-          예전에는 여기에 대시보드 미리보기 이미지가 있었습니다.
-
-          원본 템플릿(shadcnstore)의 스크린샷이라 우리 서비스와 아무 관계가 없는
-          화면이었습니다 — "ShadcnStore Admin Dashboard" 제목에 Total Revenue $1,250,
-          New Customers 1,234 같은 가짜 수치, 이미 지운 메뉴(Mail·Tasks·Calendar 등)까지
-          그대로 노출됐습니다. 실제 화면을 담은 이미지가 준비되면 그때 다시 넣으세요.
-
-          바로 아래 실적 수치(StatsSection)와 파트너사 바(PartnersBar)가 이어지므로
-          히어로는 CTA 에서 끝나도 비어 보이지 않습니다.
-        */}
       </div>
     </section>
   )

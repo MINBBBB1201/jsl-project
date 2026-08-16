@@ -599,6 +599,79 @@ exports.getDelaySummary = async (req, res) => {
  * 여기서는 배송 상태 확인에 필요한 필드만 골라서 내려준다.
  */
 /**
+ * 랜딩 히어로의 운영 현황 패널용 공개 집계.
+ *
+ * ⚠️ 공개 엔드포인트다. 대시보드용 /delay-summary 는 로그인이 필요하지만,
+ *    이쪽은 랜딩(비로그인)에서 부른다. 그래서 운송장번호·구간·고객 정보는
+ *    일절 내려주지 않고 등급별 "건수"만 반환한다. 화물 단위 정보가 하나도
+ *    없으므로 특정 화주의 배송을 추적하는 데 쓸 수 없다.
+ *
+ *    다만 회사의 대략적인 운영 규모(진행 중 화물 수)는 공개된다.
+ *    이를 공개하고 싶지 않다면 이 엔드포인트를 지우고 히어로 패널을
+ *    고정 수치로 바꾸면 된다.
+ *
+ * dataSource: 시드 합성 데이터(DEMO-)가 섞여 있는지 알려준다.
+ *    화면에서 "데모 데이터 기준" 이라고 밝히기 위한 값이다. 합성 수치를
+ *    실제 운영 실적처럼 보여주지 않기 위해 서버가 판단해서 내려준다.
+ */
+exports.getPublicSummary = async (req, res) => {
+  try {
+    const now = new Date();
+
+    const shipments = await Shipment.find({
+      status: { $ne: 'delivered' },
+      shippedAt: { $ne: null },
+      transportMode: { $ne: null }
+    })
+      .select('transportMode shippedAt status trackingNumber')
+      .lean();
+
+    const counts = {
+      [RISK_LEVELS.NORMAL]: 0,
+      [RISK_LEVELS.AT_RISK]: 0,
+      [RISK_LEVELS.DELAYED]: 0
+    };
+
+    let demoCount = 0;
+
+    for (const shipment of shipments) {
+      const { level } = calculateDelayRisk(shipment, TRANSIT_TIMES, { now });
+      if (level) counts[level] += 1;
+      if (String(shipment.trackingNumber).startsWith('DEMO-')) demoCount += 1;
+    }
+
+    const inTransit =
+      counts[RISK_LEVELS.NORMAL] + counts[RISK_LEVELS.AT_RISK] + counts[RISK_LEVELS.DELAYED];
+
+    const dataSource =
+      shipments.length === 0 ? 'empty'
+        : demoCount === shipments.length ? 'demo'
+          : demoCount > 0 ? 'mixed'
+            : 'live';
+
+    res.status(200).json({
+      success: true,
+      data: {
+        inTransit,
+        normal: counts[RISK_LEVELS.NORMAL],
+        atRisk: counts[RISK_LEVELS.AT_RISK],
+        delayed: counts[RISK_LEVELS.DELAYED],
+        // 정시 운송 비율 — 화면에서 다시 계산하지 않도록 서버에서 내려준다
+        onTimeRate: inTransit === 0 ? null : Math.round((counts[RISK_LEVELS.NORMAL] / inTransit) * 100),
+        dataSource,
+        updatedAt: now.toISOString()
+      }
+    });
+  } catch (error) {
+    logger.error('Error building public summary:', error);
+    res.status(500).json({
+      success: false,
+      error: '운영 현황을 불러오지 못했습니다.'
+    });
+  }
+};
+
+/**
  * 공개 조회 페이지의 "예시 운송장번호" 안내용.
  *
  * 목록 API(GET /api/shipments)는 구간·상태가 전부 담겨 있어 로그인 뒤로 옮겼는데,

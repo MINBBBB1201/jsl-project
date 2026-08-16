@@ -43,6 +43,14 @@
     "primaryCta": "Yêu cầu báo giá",
     "secondaryCta": "Tìm hiểu dịch vụ"
   },
+  "heroPanel": {
+    "title": "Tình hình vận hành",
+    "inTransitLabel": "Đang chạy",
+    "onTimeRate": "Tỷ lệ đúng hạn",
+    "unit": "",
+    "demoNote": "Được hệ thống phát hiện chậm trễ tính theo thời gian thực. Số liệu hiển thị dựa trên dữ liệu demo.",
+    "liveNote": "Được hệ thống phát hiện chậm trễ tính theo thời gian thực cho các lô hàng đang vận chuyển."
+  },
   "stats": {
     "revenue": {
       "value": "18 tỷ KRW",

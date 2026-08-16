@@ -51,6 +51,10 @@ router.get(
 //    트래킹 번호로 해석돼 404 가 난다.
 router.get('/delay-summary', requireAuth, shipmentController.getDelaySummary);
 
+// 랜딩 히어로용 공개 집계 (등급별 건수만 — 화물 단위 정보 없음).
+// ⚠️ '/:trackingNumber' 보다 먼저 선언해야 한다.
+router.get('/public-summary', shipmentController.getPublicSummary);
+
 // 공개 조회 화면의 예시 번호 안내용 (번호만 반환).
 // ⚠️ '/:trackingNumber' 보다 먼저 선언해야 한다.
 router.get(

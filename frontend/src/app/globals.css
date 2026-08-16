@@ -279,6 +279,45 @@ html {
   }
 }
 
+/**
+ * 히어로 배경 노선 파선의 흐름.
+ * 아주 느리게(12초) 한 방향으로만 흐른다 — 시선을 끌면 실패다.
+ * prefers-reduced-motion 전역 규칙이 이 애니메이션도 멈춘다.
+ */
+@keyframes route-dash {
+  to {
+    stroke-dashoffset: -32;
+  }
+}
+
+.animate-route-dash {
+  animation: route-dash 12s linear infinite;
+}
+
+/**
+ * 무한 스크롤 마퀴 (파트너 로고 바)
+ *
+ * 같은 목록을 두 벌 이어 붙이고 정확히 절반만큼 밀면 이음매 없이 반복된다.
+ * --marquee-duration 으로 속도를 조절한다.
+ */
+@keyframes marquee-scroll {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-50%);
+  }
+}
+
+.animate-marquee {
+  animation: marquee-scroll var(--marquee-duration, 40s) linear infinite;
+}
+
+/* 마우스를 올리면 멈춘다 — 읽고 싶은 항목을 붙잡을 수 있어야 한다 */
+.marquee-track:hover .animate-marquee {
+  animation-play-state: paused;
+}
+
 /* Logo carousel animation */
 @keyframes logo-scroll {
   0% {

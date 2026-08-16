@@ -43,6 +43,14 @@
     "primaryCta": "立即询价",
     "secondaryCta": "了解服务"
   },
+  "heroPanel": {
+    "title": "运营状况",
+    "inTransitLabel": "进行中",
+    "onTimeRate": "准时率",
+    "unit": "件",
+    "demoNote": "由延误检测系统实时计算。当前显示的数值基于演示数据。",
+    "liveNote": "由延误检测系统对运输中货物实时计算。"
+  },
   "stats": {
     "revenue": {
       "value": "180亿韩元",
