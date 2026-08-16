@@ -399,7 +399,7 @@ export const network = {
       cityEn: "Seoul",
       role: "본사 (HQ)",
       headcount: 4,
-      description: "전사 운영 총괄, 영업 및 견적, 한국発 항공·특송 운영.",
+      description: "전사 운영 총괄, 영업 및 견적, 한국발 항공·특송 운영.",
     },
     {
       icon: MapPin,
