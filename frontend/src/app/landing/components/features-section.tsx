@@ -4,7 +4,6 @@ import { ArrowRight, Check } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { Card, CardContent } from '@/components/ui/card'
-import { Image3D } from '@/components/image-3d'
 import { useContent } from '@/config/use-content'
 
 export function FeaturesSection() {
@@ -66,56 +65,52 @@ export function FeaturesSection() {
           ))}
         </div>
 
-        {/* Second Feature Section - Flipped Layout */}
-        <div className="grid items-center gap-12 lg:grid-cols-2 lg:gap-8 xl:gap-16">
-          {/* Left Content */}
-          <div className="space-y-6 order-2 lg:order-1">
-            <div className="space-y-4">
-              <h3 className="text-2xl font-semibold tracking-tight text-balance sm:text-3xl">
-                {valueAdded.title}
-              </h3>
-              <p className="text-muted-foreground text-base text-pretty">
-                {valueAdded.description}
-              </p>
-            </div>
+        {/*
+          부가 서비스
 
-            <ul className="grid gap-4 sm:grid-cols-2">
-              {valueAdded.items.map((feature, index) => (
-                <li key={index} className="group hover:bg-accent/5 flex items-start gap-3 p-2 rounded-lg transition-colors">
-                  <div className="mt-0.5 flex shrink-0 items-center justify-center">
-                    <feature.icon className="size-5 text-primary" aria-hidden="true" />
-                  </div>
-                  <div>
-                    <h3 className="text-foreground font-medium">{feature.title}</h3>
-                    <p className="text-muted-foreground mt-1 text-sm">{feature.description}</p>
-                  </div>
-                </li>
-              ))}
-            </ul>
-
-            <div className="flex flex-col sm:flex-row gap-4 pe-4 pt-2">
-              <Button size="lg" className="cursor-pointer" asChild>
-                <a href={valueAdded.primaryCta.href} className='flex items-center'>
-                  {valueAdded.primaryCta.label}
-                  <ArrowRight className="ms-2 size-4" aria-hidden="true" />
-                </a>
-              </Button>
-              <Button size="lg" variant="outline" className="cursor-pointer" asChild>
-                <a href={valueAdded.secondaryCta.href}>
-                  {valueAdded.secondaryCta.label}
-                </a>
-              </Button>
-            </div>
+          오른쪽에 "창고 재고 관리 화면"이라는 설명을 달고 템플릿 스크린샷을 띄우고
+          있었는데, 실제로는 Sarah Johnson·sarah.johnson@example.com 같은 가짜 사용자
+          목록에 Enterprise/Professional 요금제와 Paypal·UPI 결제 수단이 담긴 화면이라
+          창고 재고와 아무 관계가 없었습니다. 실제 화면 이미지가 준비되면 그때
+          2단 배치로 되돌리세요.
+        */}
+        <div className="mx-auto max-w-3xl space-y-6">
+          <div className="space-y-4">
+            <h3 className="text-2xl font-semibold tracking-tight text-balance sm:text-3xl">
+              {valueAdded.title}
+            </h3>
+            <p className="text-muted-foreground text-base text-pretty">
+              {valueAdded.description}
+            </p>
           </div>
 
-          {/* Right Image */}
-          <Image3D
-            lightSrc="/feature-2-light.png"
-            darkSrc="/feature-2-dark.png"
-            alt="창고 재고 관리 화면"
-            direction="right"
-            className="order-1 lg:order-2"
-          />
+          <ul className="grid gap-4 sm:grid-cols-2">
+            {valueAdded.items.map((feature, index) => (
+              <li key={index} className="group hover:bg-accent/5 flex items-start gap-3 p-2 rounded-lg transition-colors">
+                <div className="mt-0.5 flex shrink-0 items-center justify-center">
+                  <feature.icon className="size-5 text-primary" aria-hidden="true" />
+                </div>
+                <div>
+                  <h3 className="text-foreground font-medium">{feature.title}</h3>
+                  <p className="text-muted-foreground mt-1 text-sm">{feature.description}</p>
+                </div>
+              </li>
+            ))}
+          </ul>
+
+          <div className="flex flex-col sm:flex-row gap-4 pt-2">
+            <Button size="lg" className="cursor-pointer" asChild>
+              <a href={valueAdded.primaryCta.href} className='flex items-center'>
+                {valueAdded.primaryCta.label}
+                <ArrowRight className="ms-2 size-4" aria-hidden="true" />
+              </a>
+            </Button>
+            <Button size="lg" variant="outline" className="cursor-pointer" asChild>
+              <a href={valueAdded.secondaryCta.href}>
+                {valueAdded.secondaryCta.label}
+              </a>
+            </Button>
+          </div>
         </div>
       </div>
     </section>

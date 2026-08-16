@@ -1,7 +1,6 @@
 "use client"
 
 import Link from 'next/link'
-import Image from 'next/image'
 import { ArrowRight, Ship } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
@@ -10,7 +9,7 @@ import { useContent } from '@/config/use-content'
 export function HeroSection() {
   const { hero } = useContent()
   return (
-    <section id="hero" className="relative overflow-hidden bg-gradient-to-b from-background to-background/80 pt-16 sm:pt-20 pb-16">
+    <section id="hero" className="relative overflow-hidden bg-gradient-to-b from-background to-background/80 pt-16 sm:pt-20 pb-20 sm:pb-24">
       {/* Background Pattern */}
       <div className="absolute inset-0">
         {/* Dot pattern overlay using reusable component */}
@@ -56,39 +55,17 @@ export function HeroSection() {
             </Button>
           </div>
         </div>
+        {/*
+          예전에는 여기에 대시보드 미리보기 이미지가 있었습니다.
 
-        {/* Hero Image/Visual */}
-        <div className="mx-auto mt-20 max-w-6xl">
-          <div className="relative group">
-            {/* Top background glow effect - positioned above the image */}
-            <div className="absolute top-2 lg:-top-8 left-1/2 transform -translate-x-1/2 w-[90%] mx-auto h-24 lg:h-80 bg-primary/50 rounded-full blur-3xl"></div>
+          원본 템플릿(shadcnstore)의 스크린샷이라 우리 서비스와 아무 관계가 없는
+          화면이었습니다 — "ShadcnStore Admin Dashboard" 제목에 Total Revenue $1,250,
+          New Customers 1,234 같은 가짜 수치, 이미 지운 메뉴(Mail·Tasks·Calendar 등)까지
+          그대로 노출됐습니다. 실제 화면을 담은 이미지가 준비되면 그때 다시 넣으세요.
 
-            <div className="relative rounded-xl border bg-card shadow-2xl">
-              {/* Light mode dashboard image */}
-              <Image
-                src="/dashboard-light.png"
-                alt="물류 운영 대시보드 미리보기 - 라이트 모드"
-                width={1200}
-                height={800}
-                className="w-full rounded-xl object-cover block dark:hidden"
-                priority
-              />
-
-              {/* Dark mode dashboard image */}
-              <Image
-                src="/dashboard-dark.png"
-                alt="물류 운영 대시보드 미리보기 - 다크 모드"
-                width={1200}
-                height={800}
-                className="w-full rounded-xl object-cover hidden dark:block"
-                priority
-              />
-
-              {/* Bottom fade effect - gradient overlay that fades the image to background */}
-              <div className="absolute bottom-0 left-0 w-full h-32 md:h-40 lg:h-48 bg-gradient-to-b from-background/0 via-background/70 to-background rounded-b-xl"></div>
-            </div>
-          </div>
-        </div>
+          바로 아래 실적 수치(StatsSection)와 파트너사 바(PartnersBar)가 이어지므로
+          히어로는 CTA 에서 끝나도 비어 보이지 않습니다.
+        */}
       </div>
     </section>
   )
