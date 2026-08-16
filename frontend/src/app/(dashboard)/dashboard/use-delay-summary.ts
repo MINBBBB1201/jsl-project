@@ -46,7 +46,7 @@ export interface RiskShipment {
   estimatedArrivalAt: string | null
   origin?: { address?: string }
   destination?: { address?: string }
-  customer?: { name?: string }
+  // customer 는 서버가 더 이상 내려주지 않는다 (인증 없는 API 라 개인정보 제외)
   delayRisk: DelayRisk
 }
 

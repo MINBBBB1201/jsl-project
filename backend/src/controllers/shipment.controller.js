@@ -10,6 +10,30 @@ const {
 } = require('../utils/delay-risk');
 
 /**
+ * 조회 응답에서 제외할 고객 개인정보.
+ *
+ * ⚠️ 이 프로젝트에는 아직 인증이 없다. auth.middleware 의 checkDbAuth 는
+ *    이름과 달리 로그인 검사가 아니라 mongoose 연결 상태만 본다. 따라서
+ *    /api/shipments 이하 모든 엔드포인트는 사실상 공개 상태다.
+ *
+ *    그 상태에서 customer(이름·이메일·전화번호)를 그대로 내려주면 운송장번호만
+ *    알면, 혹은 목록 조회만으로 전체 고객 연락처를 긁어갈 수 있다.
+ *    개인정보처리방침의 최소수집·최소제공 원칙에도 어긋난다.
+ *
+ * TODO: 실제 로그인/권한 체계를 붙인 뒤, 인증된 관리자 요청에 한해
+ *       customer 를 포함하는 경로를 따로 열 것.
+ */
+const PII_EXCLUDED_FIELDS = '-customer';
+
+/** 이미 조회된 문서에서 고객 개인정보를 떼어낸다 (select 를 못 쓰는 경우용) */
+const stripPii = (shipment) => {
+  if (!shipment) return shipment;
+  const plain = typeof shipment.toObject === 'function' ? shipment.toObject() : { ...shipment };
+  delete plain.customer;
+  return plain;
+};
+
+/**
  * 저장된 delayRiskScore/Level 은 시간이 지나면 낡으므로, 응답을 만들 때
  * 조회 시점 기준으로 다시 계산해 덮어쓴다.
  */
@@ -204,7 +228,7 @@ exports.createShipment = async (req, res) => {
     
     res.status(201).json({
       success: true,
-      data: savedShipment,
+      data: stripPii(savedShipment),
       message: 'Shipment created successfully'
     });
   } catch (error) {
@@ -233,16 +257,17 @@ exports.createShipment = async (req, res) => {
 exports.getShipmentByTrackingNumber = async (req, res) => {
   try {
     const { trackingNumber } = req.params;
-    
-    const shipment = await Shipment.findOne({ trackingNumber });
-    
+
+    // 인증이 없는 상태라 고객 개인정보는 내려주지 않는다 (PII_EXCLUDED_FIELDS 주석 참고)
+    const shipment = await Shipment.findOne({ trackingNumber }).select(PII_EXCLUDED_FIELDS);
+
     if (!shipment) {
       return res.status(404).json({
         success: false,
         error: 'Shipment not found'
       });
     }
-    
+
     res.status(200).json({
       success: true,
       data: shipment
@@ -290,7 +315,7 @@ exports.updateShipmentLocation = async (req, res) => {
     
     res.status(200).json({
       success: true,
-      data: updatedShipment,
+      data: stripPii(updatedShipment),
       message: 'Shipment location updated successfully'
     });
   } catch (error) {
@@ -432,7 +457,7 @@ exports.getAllShipments = async (req, res) => {
         .sort(sortOptions)
         .skip(skip)
         .limit(limitValue)
-        .select('-__v');
+        .select(`-__v ${PII_EXCLUDED_FIELDS}`);
     } catch (fetchError) {
       // If first fetch fails, try one more time
       if (fetchError.name === 'MongoNetworkError' || 
@@ -451,7 +476,7 @@ exports.getAllShipments = async (req, res) => {
             .sort(sortOptions)
             .skip(skip)
             .limit(limitValue)
-            .select('-__v');
+            .select(`-__v ${PII_EXCLUDED_FIELDS}`);
             
           logger.info('Shipments fetched successfully after retry');
         } catch (retryError) {
