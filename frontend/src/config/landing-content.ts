@@ -59,9 +59,10 @@ export const company = {
   contact: {
     email: "hq@jsl-logis.com",
     // TODO: 대표 전화번호 확정 시 교체
-    phone: "[대표번호 확정 예정]",
+    // 미확정 값은 어느 언어에서도 그대로 노출되므로 언어 중립 표기를 쓴다
+    phone: "TBD",
     // TODO: 본사 도로명 주소 확정 시 교체
-    address: "서울특별시 [주소 확정 예정]",
+    address: "Seoul, Korea (TBD)",
     businessHours: "평일 09:00 - 18:00",
   },
 }

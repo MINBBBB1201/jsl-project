@@ -24,7 +24,10 @@ export function Image3D({
     <div className={cn("group relative aspect-[4/3] w-full", className)}>
       <div className="perspective-distant transform-3d">
         {/* Animated background glow */}
-        <div className="absolute sm:-inset-8 rounded-3xl bg-gradient-to-r from-primary/10 via-blue-500/10 to-purple-500/10 opacity-0 group-hover:opacity-100 transition-all duration-1000 blur-2xl" />
+        {/* 장식용 글로우. sm 이상에서 -inset-8 로 바깥으로 번진다.
+            여기서 overflow-hidden 으로 자르면 3D hover 변형까지 잘리므로,
+            문서 차원의 가로 넘침은 globals.css 의 body overflow-x: clip 이 막는다. */}
+        <div className="pointer-events-none absolute sm:-inset-8 rounded-3xl bg-gradient-to-r from-primary/10 via-blue-500/10 to-purple-500/10 opacity-0 group-hover:opacity-100 transition-all duration-1000 blur-2xl" />
 
         {/* Main 3D container */}
         <div className="relative size-full transform-3d group-hover:rotate-x-8 group-hover:rotate-y-12 group-hover:translate-z-16 transition-all duration-700 ease-out">

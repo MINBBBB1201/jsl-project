@@ -28,18 +28,12 @@ import { Logo } from '@/components/logo'
 import { MegaMenu } from '@/components/landing/mega-menu'
 import { ModeToggle } from '@/components/mode-toggle'
 import { useTheme } from '@/hooks/use-theme'
-import { company, navigation } from '@/config/landing-content'
-
-const navigationItems = navigation.items
+import { useContent } from '@/config/use-content'
+import { LanguageSwitcher } from '@/components/language-switcher'
 
 // 모바일 메뉴용 — 데스크톱 메가메뉴와 동일한 항목을 평탄화해서 사용
 type MobileMenuEntry = { title: string; name?: undefined; href?: undefined }
   | { title?: undefined; name: string; href: string }
-
-const solutionsItems: MobileMenuEntry[] = navigation.megaMenu.flatMap((section) => [
-  { title: section.title },
-  ...section.items.map((item) => ({ name: item.title, href: item.href })),
-])
 
 // Smooth scroll function
 const smoothScrollTo = (targetId: string) => {
@@ -58,28 +52,38 @@ export function LandingNavbar() {
   const [isOpen, setIsOpen] = useState(false)
   const [solutionsOpen, setSolutionsOpen] = useState(false)
   const { setTheme, theme } = useTheme()
+  const { company, navigation } = useContent()
+
+  const navigationItems = navigation.items
+  const solutionsItems: MobileMenuEntry[] = navigation.megaMenu.flatMap((section) => [
+    { title: section.title },
+    ...section.items.map((item) => ({ name: item.title, href: item.href })),
+  ])
 
   return (
     <header className="sticky top-0 z-50 w-full border-b bg-background/80 backdrop-blur-xl supports-[backdrop-filter]:bg-background/60">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8 flex h-16 items-center justify-between">
         {/* Logo */}
-        <div className="flex items-center space-x-2">
-          <Link href="/landing" className="flex items-center space-x-2 cursor-pointer">
-            <Logo size={32} />
-            <span className="font-bold">
+        <div className="flex min-w-0 items-center space-x-2">
+          <Link href="/landing" className="flex min-w-0 items-center space-x-2 cursor-pointer">
+            <Logo size={32} className="shrink-0" />
+            {/* 데스크톱 네비가 켜지는 폭에서는 워드마크를 숨긴다.
+                로고 마크에 이미 JSL 이 들어있고, 베트남어처럼 라벨이 긴 언어에서
+                이 텍스트가 첫 네비 항목과 겹쳤다. */}
+            <span className="truncate font-bold 2xl:hidden">
               {company.name}
             </span>
           </Link>
         </div>
 
         {/* Desktop Navigation */}
-        <NavigationMenu className="hidden xl:flex">
+        <NavigationMenu className="hidden min-w-0 flex-1 justify-center 2xl:flex">
           <NavigationMenuList>
             {navigationItems.map((item) => (
               <NavigationMenuItem key={item.name}>
                 {item.hasMegaMenu ? (
                   <>
-                    <NavigationMenuTrigger className="bg-transparent hover:bg-transparent focus:bg-transparent data-[active]:bg-transparent data-[state=open]:bg-transparent px-4 py-2 text-sm font-medium transition-colors hover:text-primary focus:text-primary cursor-pointer">
+                    <NavigationMenuTrigger className="bg-transparent hover:bg-transparent focus:bg-transparent data-[active]:bg-transparent data-[state=open]:bg-transparent whitespace-nowrap px-2.5 py-2 text-sm font-medium transition-colors hover:text-primary focus:text-primary cursor-pointer">
                       {item.name}
                     </NavigationMenuTrigger>
                     <NavigationMenuContent>
@@ -94,7 +98,7 @@ export function LandingNavbar() {
                   // 페이지 내 앵커(#)일 때만 기본 동작을 막고 부드럽게 스크롤한다.
                   <NavigationMenuLink
                     href={item.href}
-                    className="group inline-flex h-10 w-max items-center justify-center px-4 py-2 text-sm font-medium transition-colors hover:text-primary focus:text-primary focus:outline-none cursor-pointer"
+                    className="group inline-flex h-10 w-max items-center justify-center whitespace-nowrap px-2.5 py-2 text-sm font-medium transition-colors hover:text-primary focus:text-primary focus:outline-none cursor-pointer"
                     onClick={(e: React.MouseEvent) => {
                       if (item.href.startsWith('#')) {
                         e.preventDefault()
@@ -111,25 +115,26 @@ export function LandingNavbar() {
         </NavigationMenu>
 
         {/* Desktop CTA */}
-        <div className="hidden xl:flex items-center space-x-2">
+        <div className="hidden shrink-0 items-center space-x-1 2xl:flex">
+          <LanguageSwitcher />
           <ModeToggle variant="ghost" />
           <Button variant="outline" asChild className="cursor-pointer">
             <Link href="/dashboard" target="_blank" rel="noopener noreferrer">
               <LayoutDashboard className="h-4 w-4 mr-2" />
-              대시보드
+              {navigation.dashboard}
             </Link>
           </Button>
           <Button variant="ghost" asChild className="cursor-pointer">
-            <Link href="/sign-in">로그인</Link>
+            <Link href="/sign-in">{navigation.signIn}</Link>
           </Button>
           <Button variant="brand" asChild className="cursor-pointer">
-            <Link href="#contact">견적 문의</Link>
+            <Link href="#contact">{navigation.quoteCta}</Link>
           </Button>
         </div>
 
         {/* Mobile Menu */}
         <Sheet open={isOpen} onOpenChange={setIsOpen}>
-          <SheetTrigger asChild className="xl:hidden">
+          <SheetTrigger asChild className="2xl:hidden">
             <Button variant="ghost" size="icon" className="cursor-pointer">
               <Menu className="h-5 w-5" />
               <span className="sr-only">Toggle menu</span>
@@ -144,7 +149,9 @@ export function LandingNavbar() {
                     <Logo size={16} />
                   </div>
                   <SheetTitle className="text-lg font-semibold">{company.name}</SheetTitle>
-                  <div className="ml-auto flex items-center gap-2">
+                  <div className="ml-auto flex items-center gap-1">
+                    {/* 데스크톱 네비가 2xl 부터라, 그 아래 폭에서는 여기가 유일한 언어 전환 지점이다 */}
+                    <LanguageSwitcher align="end" />
                     <Button
                       variant="ghost"
                       size="icon"
@@ -228,13 +235,13 @@ export function LandingNavbar() {
                   <Button variant="outline" size="lg" asChild className="w-full cursor-pointer">
                     <Link href="/dashboard">
                       <LayoutDashboard className="size-4" />
-                      대시보드
+                      {navigation.dashboard}
                     </Link>
                   </Button>
 
                   <div className="grid grid-cols-2 gap-3">
                     <Button variant="outline" size="lg" asChild className="cursor-pointer">
-                      <Link href="/sign-in">로그인</Link>
+                      <Link href="/sign-in">{navigation.signIn}</Link>
                     </Button>
                     <Button variant="brand" asChild size="lg" className="cursor-pointer" >
                       <Link href="#contact" onClick={() => setIsOpen(false)}>견적 문의</Link>

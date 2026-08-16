@@ -1,8 +1,13 @@
-import Link from 'next/link'
+"use client"
+
+import { Link } from '@/i18n/navigation'
 import { ArrowLeft } from 'lucide-react'
 
 import { Logo } from '@/components/logo'
 import { LandingFooter } from '@/app/landing/components/footer'
+import { useTranslations } from 'next-intl'
+import { LanguageSwitcher } from '@/components/language-switcher'
+
 import { company } from '@/config/landing-content'
 
 /**
@@ -13,6 +18,8 @@ import { company } from '@/config/landing-content'
  * /privacy, /terms, /tracking, /consulting 이 함께 사용한다.
  */
 export function PublicPageShell({ children }: { children: React.ReactNode }) {
+  const t = useTranslations('common')
+
   return (
     <div className="min-h-screen bg-background flex flex-col">
       <header className="border-b sticky top-0 z-40 bg-background/80 backdrop-blur-sm">
@@ -25,13 +32,16 @@ export function PublicPageShell({ children }: { children: React.ReactNode }) {
             <span className="font-bold text-xl truncate">{company.name}</span>
           </Link>
 
-          <Link
-            href="/landing"
-            className="inline-flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground transition-colors shrink-0"
-          >
-            <ArrowLeft className="h-4 w-4" aria-hidden />
-            <span className="max-sm:sr-only">홈으로 돌아가기</span>
-          </Link>
+          <div className="flex shrink-0 items-center gap-1">
+            <LanguageSwitcher />
+            <Link
+              href="/landing"
+              className="inline-flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground transition-colors"
+            >
+              <ArrowLeft className="h-4 w-4" aria-hidden />
+              <span className="max-sm:sr-only">{t('backHome')}</span>
+            </Link>
+          </div>
         </div>
       </header>
 

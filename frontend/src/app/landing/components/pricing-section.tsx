@@ -3,9 +3,10 @@
 import { Check } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
-import { plans } from '@/config/landing-content'
-
+import { useContent } from '@/config/use-content'
 export function PricingSection() {
+  const { plans } = useContent()
+
   return (
     <section id="pricing" className="py-24 sm:py-32 bg-muted/40">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">

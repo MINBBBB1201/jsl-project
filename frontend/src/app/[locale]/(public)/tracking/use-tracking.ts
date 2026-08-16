@@ -1,6 +1,7 @@
 "use client"
 
 import { useCallback, useEffect, useState } from "react"
+import { useTranslations } from "next-intl"
 import { API_BASE_URL } from "@/lib/api"
 import type { RiskLevel, TransportMode } from "@/lib/transport-modes"
 
@@ -61,6 +62,7 @@ export function useSampleTrackingNumbers(count = 4) {
 }
 
 export function useTracking() {
+  const t = useTranslations("tracking")
   const [shipment, setShipment] = useState<TrackedShipment | null>(null)
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
@@ -69,7 +71,7 @@ export function useTracking() {
   const track = useCallback(async (trackingNumber: string) => {
     const trimmed = trackingNumber.trim()
     if (!trimmed) {
-      setError("운송장번호를 입력해 주세요.")
+      setError(t("errorEmpty"))
       setShipment(null)
       setSearched(true)
       return
@@ -97,15 +99,13 @@ export function useTracking() {
       setShipment(json.data as TrackedShipment)
     } catch (err) {
       setError(
-        err instanceof Error
-          ? `서버에 연결할 수 없습니다. (${err.message})`
-          : "서버에 연결할 수 없습니다. 잠시 후 다시 시도해 주세요."
+        err instanceof Error ? `${t("errorNetwork")} (${err.message})` : t("errorNetwork")
       )
     } finally {
       setIsLoading(false)
       setSearched(true)
     }
-  }, [])
+  }, [t])
 
   return { shipment, isLoading, error, searched, track }
 }

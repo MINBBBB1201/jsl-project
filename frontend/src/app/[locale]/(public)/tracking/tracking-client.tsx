@@ -1,6 +1,7 @@
 "use client"
 
 import { useState } from "react"
+import { useTranslations } from "next-intl"
 import {
   AlertCircle,
   ArrowRight,
@@ -18,7 +19,7 @@ import { Input } from "@/components/ui/input"
 import { Progress } from "@/components/ui/progress"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { cn } from "@/lib/utils"
-import { RISK_LEVEL_STYLE, modeLabel } from "@/lib/transport-modes"
+import { RISK_LEVEL_STYLE, type RiskLevel } from "@/lib/transport-modes"
 import { useSampleTrackingNumbers, useTracking } from "./use-tracking"
 
 const formatDate = (value: string | null) => {
@@ -37,10 +38,26 @@ function ResultCard({
 }: {
   shipment: NonNullable<ReturnType<typeof useTracking>["shipment"]>
 }) {
+  const t = useTranslations("tracking")
+  const tModes = useTranslations("modes")
+  const tRisk = useTranslations("riskLevels")
+
   const { delayRisk: risk } = shipment
   const level = risk.level
   const style = level ? RISK_LEVEL_STYLE[level] : null
   const pct = risk.score === null ? null : Math.round(risk.score * 100)
+
+  // 등급 라벨/설명을 현재 언어로
+  const RISK_KEY: Record<RiskLevel, "normal" | "atRisk" | "delayed"> = {
+    정상: "normal",
+    지연위험: "atRisk",
+    지연: "delayed",
+  }
+  const RISK_DESC: Record<RiskLevel, string> = {
+    정상: t("riskNormal"),
+    지연위험: t("riskAtRisk"),
+    지연: t("riskDelayed"),
+  }
 
   return (
     <Card>
@@ -49,11 +66,13 @@ function ResultCard({
           <PackageSearch className="size-5" aria-hidden />
           <span className="font-mono">{shipment.trackingNumber}</span>
           {level && style && (
-            <Badge className={cn("border-0", style.badge)}>{level}</Badge>
+            <Badge className={cn("border-0", style.badge)}>
+              {tRisk(RISK_KEY[level])}
+            </Badge>
           )}
         </CardTitle>
-        {style && (
-          <p className="text-sm text-muted-foreground">{style.description}</p>
+        {level && (
+          <p className="text-sm text-muted-foreground">{RISK_DESC[level]}</p>
         )}
       </CardHeader>
 
@@ -66,7 +85,7 @@ function ResultCard({
           <span className="font-medium">{shipment.destination ?? "—"}</span>
           <Badge variant="outline" className="ms-auto">
             <Truck className="size-3" aria-hidden />
-            {modeLabel(shipment.transportMode)}
+            {shipment.transportMode ? tModes(shipment.transportMode) : "—"}
           </Badge>
         </div>
 
@@ -75,14 +94,14 @@ function ResultCard({
           <div className="rounded-lg border p-4">
             <dt className="flex items-center gap-1.5 text-sm text-muted-foreground">
               <CalendarDays className="size-3.5" aria-hidden />
-              집하일
+              {t("shippedAt")}
             </dt>
             <dd className="mt-1 font-medium">{formatDate(shipment.shippedAt)}</dd>
           </div>
           <div className="rounded-lg border p-4">
             <dt className="flex items-center gap-1.5 text-sm text-muted-foreground">
               <CalendarDays className="size-3.5" aria-hidden />
-              예상 도착일
+              {t("estimatedArrival")}
             </dt>
             <dd className="mt-1 font-medium">
               {formatDate(shipment.estimatedArrivalAt)}
@@ -94,19 +113,21 @@ function ResultCard({
         {pct !== null && (
           <div className="space-y-2">
             <div className="flex items-center justify-between text-sm">
-              <span className="text-muted-foreground">경과율</span>
+              <span className="text-muted-foreground">{t("elapsedRatio")}</span>
               <span className="font-medium tabular-nums">
                 {pct}%
                 <span className="ms-2 font-normal text-muted-foreground">
-                  ({risk.elapsedDays}일 경과 / 표준 {risk.standardDays}일)
+                  {t("elapsedDetail", {
+                    elapsed: risk.elapsedDays ?? 0,
+                    standard: risk.standardDays ?? 0,
+                  })}
                 </span>
               </span>
             </div>
             <Progress value={Math.min(pct, 100)} />
             {risk.standardSource === "estimate" && (
               <p className="text-xs text-muted-foreground">
-                표준 소요일은 업계 평균 추정치이며 실제 소요 기간과 다를 수
-                있습니다.
+                {t("estimateNote")}
               </p>
             )}
           </div>
@@ -114,7 +135,7 @@ function ResultCard({
 
         {shipment.currentLocation && (
           <p className="text-sm text-muted-foreground">
-            현재 위치: {shipment.currentLocation}
+            {t("currentLocation")}: {shipment.currentLocation}
           </p>
         )}
       </CardContent>
@@ -123,6 +144,7 @@ function ResultCard({
 }
 
 export function TrackingClient() {
+  const t = useTranslations("tracking")
   const { shipment, isLoading, error, searched, track } = useTracking()
   const samples = useSampleTrackingNumbers(4)
   const [value, setValue] = useState("")
@@ -137,11 +159,10 @@ export function TrackingClient() {
     <div className="container mx-auto max-w-3xl px-4 py-16 sm:px-6 sm:py-24 lg:px-8">
       <header className="mb-10 text-center">
         <h1 className="text-3xl font-bold tracking-tight sm:text-4xl">
-          화물 추적
+          {t("title")}
         </h1>
         <p className="mt-3 text-muted-foreground">
-          운송장번호를 입력하시면 현재 운송 상태와 예상 도착일을 확인하실 수
-          있습니다.
+          {t("subtitle")}
         </p>
       </header>
 
@@ -156,8 +177,8 @@ export function TrackingClient() {
         <Input
           value={value}
           onChange={(e) => setValue(e.target.value)}
-          placeholder="운송장번호를 입력하세요"
-          aria-label="운송장번호"
+          placeholder={t("inputPlaceholder")}
+          aria-label={t("inputLabel")}
           className="flex-1"
           disabled={isLoading}
         />
@@ -167,7 +188,7 @@ export function TrackingClient() {
           ) : (
             <Search className="size-4" />
           )}
-          {isLoading ? "조회 중..." : "조회하기"}
+          {isLoading ? t("searching") : t("search")}
         </Button>
       </form>
 
@@ -182,7 +203,7 @@ export function TrackingClient() {
         )}
       >
         <p className="text-sm text-muted-foreground">
-          현재는 데모용 데이터만 등록되어 있습니다. 아래 번호로 조회해 보세요.
+          {t("demoNotice")}
         </p>
         <div className="mt-2 flex flex-wrap gap-2">
           {samples.map((tn) => (
@@ -209,7 +230,7 @@ export function TrackingClient() {
                 aria-hidden
               />
               <div className="space-y-1">
-                <p className="font-medium text-destructive">조회 결과가 없습니다</p>
+                <p className="font-medium text-destructive">{t("notFoundTitle")}</p>
                 <p className="text-sm text-muted-foreground">{error}</p>
               </div>
             </CardContent>
@@ -218,7 +239,7 @@ export function TrackingClient() {
           <ResultCard shipment={shipment} />
         ) : searched ? null : (
           <p className="py-8 text-center text-sm text-muted-foreground">
-            운송장번호를 입력하고 조회하기를 눌러주세요.
+            {t("emptyPrompt")}
           </p>
         )}
       </div>

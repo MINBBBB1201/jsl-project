@@ -15,7 +15,8 @@ import {
 } from "@/components/ui/form"
 import { Logo } from '@/components/logo'
 import { Mail, Phone, MapPin } from 'lucide-react'
-import { company, footer } from '@/config/landing-content'
+import { company } from '@/config/landing-content'
+import { useContent } from '@/config/use-content'
 
 const newsletterSchema = z.object({
   email: z.string().email({
@@ -23,13 +24,16 @@ const newsletterSchema = z.object({
   }),
 })
 
-const contactLines = [
-  { icon: Mail, value: company.contact.email },
-  { icon: Phone, value: company.contact.phone },
-  { icon: MapPin, value: company.contact.address },
-]
 
 export function LandingFooter() {
+  const { footer } = useContent()
+
+  const contactLines = [
+    { icon: Mail, value: company.contact.email },
+    { icon: Phone, value: company.contact.phone },
+    { icon: MapPin, value: company.contact.address },
+  ]
+
   const form = useForm<z.infer<typeof newsletterSchema>>({
     resolver: zodResolver(newsletterSchema),
     defaultValues: {
@@ -130,10 +134,10 @@ export function LandingFooter() {
           <div className="flex flex-col sm:flex-row items-center gap-2 text-muted-foreground text-sm">
             <span className="font-semibold text-foreground">{company.name}</span>
             <span className="hidden sm:inline">•</span>
-            <span>© {new Date().getFullYear()} All rights reserved.</span>
+            <span>© {new Date().getFullYear()} {footer.rights}</span>
           </div>
           <div className="flex items-center space-x-4 text-sm text-muted-foreground mt-4 md:mt-0">
-            {footer.links.약관.map((link) => (
+            {footer.legalLinks.map((link) => (
               <a
                 key={link.name}
                 href={link.href}

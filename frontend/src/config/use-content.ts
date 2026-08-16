@@ -1,0 +1,446 @@
+"use client"
+
+import { useMessages } from "next-intl"
+import {
+  BadgeCheck,
+  Boxes,
+  Building2,
+  ClipboardCheck,
+  Container,
+  Factory,
+  FileCheck2,
+  Globe2,
+  Handshake,
+  Layers,
+  LayoutDashboard,
+  Mail,
+  MapPin,
+  Package,
+  PlaneTakeoff,
+  Radar,
+  Route,
+  ShoppingCart,
+  Ship,
+  TrainFront,
+  TrendingUp,
+  Truck,
+  Users,
+  Warehouse,
+  Zap,
+  type LucideIcon,
+} from "lucide-react"
+
+import { company } from "./landing-content"
+
+/**
+ * 로케일별 랜딩 콘텐츠 조립기
+ *
+ * 문구는 src/messages/{locale}.json 에서, 아이콘·링크·수치 단위 같은
+ * 언어와 무관한 것들은 여기서 붙인다. 반환 형태를 기존 landing-content.ts 의
+ * export 와 똑같이 맞춰서, 컴포넌트는 import 한 줄만 바꾸면 된다.
+ *
+ * ⚠️ 회사명·이메일·거점 인원수·물동량 숫자처럼 언어가 달라도 바뀌면 안 되는
+ *    값은 messages 가 아니라 landing-content.ts 의 company 와 아래 상수에서 온다.
+ */
+
+/** 아이콘 매핑 — 메시지 키 → lucide 아이콘 */
+const MODE_ICONS: Record<string, LucideIcon> = {
+  AIR: PlaneTakeoff,
+  SEA: Ship,
+  TRUCK: Truck,
+  RAIL: TrainFront,
+  EXPRESS: Zap,
+}
+
+const ABOUT_VALUE_ICONS: Record<string, LucideIcon> = {
+  fullLineup: Layers,
+  ownedNetwork: Building2,
+  manufacturing: Factory,
+  platform: LayoutDashboard,
+}
+
+const CONSULTING_ICONS: Record<string, LucideIcon> = {
+  diagnosis: ClipboardCheck,
+  routing: Route,
+  vendor: Boxes,
+  ecommerce: ShoppingCart,
+  marketEntry: Globe2,
+  entitySetup: Building2,
+  matching: Handshake,
+  funding: BadgeCheck,
+}
+
+const VALUE_ADDED_ICONS: Record<string, LucideIcon> = {
+  customs: FileCheck2,
+  warehouse: Warehouse,
+  inventory: Boxes,
+  reporting: ClipboardCheck,
+}
+
+/** 언어와 무관한 값들 — 절대 번역 대상이 아니다 */
+const OFFICE_FACTS = [
+  { key: "seoul", cityEn: "Seoul", role: "hq", headcount: 4 },
+  { key: "shanghai", cityEn: "Shanghai", role: "branch", headcount: 2 },
+  { key: "weihai", cityEn: "Weihai", role: "branch", headcount: 3 },
+  { key: "guangzhou", cityEn: "Guangzhou", role: "branch", headcount: 5 },
+  { key: "hanoi", cityEn: "Hanoi", role: "branch", headcount: 6 },
+] as const
+
+const TOTAL_HEADCOUNT = 20
+
+const VOLUME_FACTS = [
+  { icon: PlaneTakeoff, mode: "AIR", value: "200", unitKey: "airUnit" },
+  { icon: Ship, mode: "SEA", value: "100", unitKey: "seaUnit" },
+  { icon: Truck, mode: "TRUCK", value: "350", unitKey: "truckUnit" },
+] as const
+
+const CONSULTING_CLIENT_KEYS = ["diagnosis", "routing", "vendor", "ecommerce"] as const
+const CONSULTING_FORWARDER_KEYS = ["marketEntry", "entitySetup", "matching", "funding"] as const
+
+type Msg = Record<string, any> // eslint-disable-line @typescript-eslint/no-explicit-any
+
+export function useContent() {
+  const m = useMessages() as unknown as Msg
+
+  const hero = {
+    badge: m.hero.badge as string,
+    headlineStart: m.hero.headlineStart as string,
+    headlineHighlight: m.hero.headlineHighlight as string,
+    headlineEnd: m.hero.headlineEnd as string,
+    subheadline: m.hero.subheadline as string,
+    primaryCta: { label: m.hero.primaryCta as string, href: "#contact" },
+    secondaryCta: { label: m.hero.secondaryCta as string, href: "#features" },
+  }
+
+  const stats = [
+    { icon: TrendingUp, ...m.stats.revenue },
+    { icon: Globe2, ...m.stats.locations },
+    { icon: Users, ...m.stats.clients },
+    { icon: Handshake, ...m.stats.partners },
+  ]
+
+  const monthlyVolumes = VOLUME_FACTS.map((v) => ({
+    icon: v.icon,
+    mode: v.mode,
+    value: v.value,
+    unit: m.volumes[v.unitKey],
+  }))
+
+  const volumesHeading = { title: m.volumes.title, description: m.volumes.description }
+
+  const partners = {
+    title: m.partners.title,
+    description: m.partners.description,
+    note: m.partners.note,
+    groups: [
+      {
+        label: m.partners.groupAir,
+        items: [
+          { name: m.partners.koreanAir, nameEn: "Korean Air" },
+          { name: m.partners.chinaEastern, nameEn: "China Eastern" },
+        ],
+      },
+      {
+        label: m.partners.groupExpress,
+        items: [
+          { name: "Royal Mail" },
+          { name: "Deutsche Post" },
+          { name: "DHL" },
+          { name: "dpd" },
+        ],
+      },
+    ],
+  }
+
+  const about = {
+    badge: m.about.badge,
+    title: m.about.title,
+    description: m.about.description,
+    valuesTitle: m.about.valuesTitle,
+    values: Object.entries(ABOUT_VALUE_ICONS).map(([key, icon]) => ({
+      icon,
+      title: m.about.values[key].title,
+      description: m.about.values[key].description,
+    })),
+    ctaText: m.about.ctaText,
+    primaryCta: { label: m.about.primaryCta, href: "#contact" },
+    secondaryCta: { label: m.about.secondaryCta, href: "#features" },
+  }
+
+  const services = {
+    badge: m.services.badge,
+    title: m.services.title,
+    description: m.services.description,
+    modes: Object.entries(MODE_ICONS).map(([code, icon]) => ({
+      icon,
+      code,
+      title: m.services.modes[code].title,
+      summary: m.services.modes[code].summary,
+      highlights: m.services.modes[code].highlights as string[],
+    })),
+    valueAdded: {
+      title: m.services.valueAdded.title,
+      description: m.services.valueAdded.description,
+      items: Object.entries(VALUE_ADDED_ICONS).map(([key, icon]) => ({
+        icon,
+        title: m.services.valueAdded[key].title,
+        description: m.services.valueAdded[key].description,
+      })),
+      primaryCta: { label: m.services.valueAdded.primaryCta, href: "#contact" },
+      secondaryCta: { label: m.services.valueAdded.secondaryCta, href: "#pricing" },
+    },
+  }
+
+  const consultingItem = (key: string) => ({
+    icon: CONSULTING_ICONS[key],
+    title: m.consulting.items[key].title,
+    subtitle: m.consulting.items[key].subtitle,
+    description: m.consulting.items[key].description,
+    detail: m.consulting.items[key].detail,
+  })
+
+  const consulting = {
+    badge: m.consulting.badge,
+    title: m.consulting.title,
+    description: m.consulting.description,
+    groups: [
+      {
+        audience: m.consulting.clientAudience,
+        description: m.consulting.clientDescription,
+        items: CONSULTING_CLIENT_KEYS.map(consultingItem),
+      },
+      {
+        audience: m.consulting.forwarderAudience,
+        description: m.consulting.forwarderDescription,
+        items: CONSULTING_FORWARDER_KEYS.map(consultingItem),
+      },
+    ],
+    primaryCta: { label: m.consulting.primaryCta, href: "/landing#contact" },
+    detailCta: { label: m.consulting.detailCta, href: "/consulting" },
+    page: {
+      eyebrow: m.consulting.badge,
+      title: m.consulting.title,
+      lead: m.consulting.page.lead,
+      note: m.consulting.page.note,
+      contact: {
+        title: m.consulting.page.contactTitle,
+        description: m.consulting.page.contactDescription,
+        primaryCta: { label: m.consulting.page.contactCta, href: "/landing#contact" },
+      },
+    },
+  }
+
+  const network = {
+    badge: m.network.badge,
+    title: m.network.title,
+    description: m.network.description,
+    totalHeadcount: TOTAL_HEADCOUNT,
+    totalLabel: (m.network.totalLabel as string).replace("{count}", String(TOTAL_HEADCOUNT)),
+    headcountUnit: m.network.headcountUnit,
+    items: OFFICE_FACTS.map((o) => ({
+      icon: MapPin,
+      city: m.network.offices[o.key].city,
+      cityEn: o.cityEn,
+      role: o.role === "hq" ? m.network.roleHq : m.network.roleBranch,
+      headcount: o.headcount,
+      description: m.network.offices[o.key].description,
+    })),
+  }
+
+  /**
+   * 요금 안내.
+   * ⚠️ 실제 요금 정책이 확정되지 않은 임시 구성이다. 확정되면 messages 의
+   *    plans 블록을 교체해야 한다.
+   */
+  const planKeys = ["spot", "contract", "tpl"] as const
+  const plans = {
+    badge: m.plans.badge as string,
+    title: m.plans.title as string,
+    description: m.plans.description as string,
+    note: m.plans.note as string,
+    noteCta: { label: m.plans.noteCta as string, href: "#contact" },
+    items: planKeys.map((key, i) => ({
+      name: m.plans[key].name as string,
+      description: m.plans[key].description as string,
+      priceLabel: m.plans[key].priceLabel as string,
+      priceCaption: m.plans[key].priceCaption as string,
+      features: m.plans[key].features as string[],
+      cta: m.plans[key].cta as string,
+      popular: key === "contract",
+      // 앞 등급 포함 문구는 두 번째 등급부터
+      includesPrevious:
+        i === 0
+          ? undefined
+          : (m.plans.includesPrevious as string).replace(
+              "{plan}",
+              m.plans[planKeys[i - 1]].name as string
+            ),
+    })),
+  }
+
+  const faq = {
+    badge: m.faq.badge,
+    title: m.faq.title,
+    description: m.faq.description,
+    items: (m.faq.items as { question: string; answer: string }[]).map((it, i) => ({
+      value: `item-${i + 1}`,
+      ...it,
+    })),
+    contactPrompt: m.faq.contactPrompt,
+    contactCta: { label: m.faq.contactCta, href: "#contact" },
+  }
+
+  const cta = {
+    badge: m.cta.badge as string,
+    headlineStart: m.cta.headlineStart as string,
+    headlineHighlight: m.cta.headlineHighlight as string,
+    headlineEnd: m.cta.headlineEnd as string,
+    description: m.cta.description as string,
+    highlights: m.cta.highlights as string[],
+    trustIndicators: m.cta.trustIndicators as string[],
+    primaryCta: { label: m.cta.primaryCta as string, href: "#contact" },
+    secondaryCta: { label: m.cta.secondaryCta as string, href: "#features" },
+  }
+
+  const contact = {
+    badge: m.contact.badge,
+    title: m.contact.title,
+    description: m.contact.description,
+    channels: [
+      { icon: Package, ...m.contact.channelQuote },
+      { icon: MapPin, ...m.contact.channelTracking },
+      {
+        icon: Mail,
+        title: m.contact.channelEmail.title,
+        description: `${company.contact.email} · ${m.contact.businessHours}`,
+      },
+    ],
+    formTitle: m.contact.formTitle,
+    fields: {
+      company: m.contact.fieldCompany,
+      name: m.contact.fieldName,
+      email: m.contact.fieldEmail,
+      subject: m.contact.fieldSubject,
+      message: m.contact.fieldMessage,
+    },
+    formPlaceholders: {
+      company: m.contact.placeholderCompany,
+      name: m.contact.placeholderName,
+      email: m.contact.placeholderEmail,
+      subject: m.contact.placeholderSubject,
+      message: m.contact.placeholderMessage,
+    },
+    consentLabel: m.contact.consentLabel,
+    consentLink: m.contact.consentLink,
+    consentDetail: m.contact.consentDetail,
+    submitLabel: m.contact.submit,
+    submittingLabel: m.contact.submitting,
+    successTitle: m.contact.successTitle,
+    successDescription: m.contact.successDescription,
+    errorTitle: m.contact.errorTitle,
+  }
+
+  const footer = {
+    description: m.footer.description,
+    newsletter: {
+      title: m.footer.newsletterTitle,
+      description: m.footer.newsletterDescription,
+      placeholder: m.footer.newsletterPlaceholder,
+      submitLabel: m.footer.newsletterSubmit,
+    },
+    links: {
+      [m.footer.colServices]: [
+        { name: m.services.modes.AIR.title, href: "/landing#features" },
+        { name: m.services.modes.SEA.title, href: "/landing#features" },
+        { name: m.services.modes.TRUCK.title, href: "/landing#features" },
+        { name: m.services.modes.RAIL.title, href: "/landing#features" },
+        { name: m.services.modes.EXPRESS.title, href: "/landing#features" },
+      ],
+      [m.footer.colCompany]: [
+        { name: m.nav.about, href: "/landing#about" },
+        { name: m.nav.consulting, href: "/consulting" },
+        { name: m.nav.network, href: "/landing#network" },
+        { name: m.nav.contact, href: "/landing#contact" },
+      ],
+      [m.footer.colSupport]: [
+        { name: m.nav.faq, href: "/landing#faq" },
+        { name: m.nav.tracking, href: "/tracking" },
+        { name: m.footer.linkQuote, href: "/landing#contact" },
+        { name: m.footer.linkNotice, href: "#" },
+      ],
+      [m.footer.colLegal]: [
+        { name: m.footer.linkTerms, href: "/terms" },
+        { name: m.footer.linkPrivacy, href: "/privacy" },
+      ],
+    },
+    legalLinks: [
+      { name: m.footer.linkTerms, href: "/terms" },
+      { name: m.footer.linkPrivacy, href: "/privacy" },
+    ],
+    rights: m.footer.rights,
+  }
+
+  const navigation = {
+    items: [
+      { name: m.nav.home, href: "#hero" },
+      { name: m.nav.about, href: "#about" },
+      { name: m.nav.services, href: "#features", hasMegaMenu: true },
+      { name: m.nav.consulting, href: "/consulting" },
+      { name: m.nav.network, href: "#network" },
+      { name: m.nav.tracking, href: "/tracking" },
+      { name: m.nav.faq, href: "#faq" },
+      { name: m.nav.contact, href: "#contact" },
+    ],
+    megaMenu: [
+      {
+        title: m.services.badge,
+        items: Object.entries(MODE_ICONS).map(([code, icon]) => ({
+          title: m.services.modes[code].title,
+          description: m.services.modes[code].summary,
+          icon,
+          href: "/landing#features",
+        })),
+      },
+      {
+        title: m.consulting.title,
+        items: CONSULTING_CLIENT_KEYS.map((key) => ({
+          title: m.consulting.items[key].title,
+          description: m.consulting.items[key].description,
+          icon: CONSULTING_ICONS[key],
+          href: "/consulting",
+        })),
+      },
+      {
+        title: m.nav.contact,
+        items: [
+          { title: m.nav.network, description: m.network.title, icon: Globe2, href: "/landing#network" },
+          { title: m.nav.tracking, description: m.tracking.subtitle, icon: Radar, href: "/tracking" },
+          { title: m.nav.faq, description: m.faq.description, icon: BadgeCheck, href: "/landing#faq" },
+          { title: m.footer.linkQuote, description: m.contact.channelQuote.title, icon: Container, href: "/landing#contact" },
+        ],
+      },
+    ],
+    dashboard: m.nav.dashboard,
+    signIn: m.nav.signIn,
+    quoteCta: m.nav.quoteCta,
+  }
+
+  return {
+    company,
+    hero,
+    stats,
+    monthlyVolumes,
+    volumesHeading,
+    partners,
+    about,
+    services,
+    consulting,
+    network,
+    plans,
+    faq,
+    cta,
+    contact,
+    footer,
+    navigation,
+  }
+}

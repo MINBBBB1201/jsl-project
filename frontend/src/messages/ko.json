@@ -1,0 +1,456 @@
+{
+  "common": {
+    "companyName": "JSL Logistics",
+    "backHome": "홈으로 돌아가기",
+    "languageLabel": "언어 선택"
+  },
+  "nav": {
+    "home": "홈",
+    "about": "회사 소개",
+    "services": "서비스",
+    "consulting": "물류 컨설팅",
+    "network": "글로벌 네트워크",
+    "tracking": "화물추적",
+    "faq": "FAQ",
+    "contact": "문의",
+    "dashboard": "대시보드",
+    "signIn": "로그인",
+    "quoteCta": "견적 문의"
+  },
+  "hero": {
+    "badge": "항공 · 해상 · 육상 · 철도 · 특송",
+    "headlineStart": "한국 · 중국 · 베트남을 잇는",
+    "headlineHighlight": "5+1 종합물류",
+    "headlineEnd": "파트너",
+    "subheadline": "2023년 설립 이후 서울·상해·위해·광주·하노이 5개 거점을 직접 운영하며, 5개 운송 모드와 물류 컨설팅을 하나의 창구에서 제공합니다.",
+    "primaryCta": "견적 문의하기",
+    "secondaryCta": "서비스 알아보기"
+  },
+  "stats": {
+    "revenue": {
+      "value": "180억원",
+      "label": "연간 매출",
+      "description": "2025 회계연도 기준"
+    },
+    "locations": {
+      "value": "5개",
+      "label": "글로벌 거점",
+      "description": "서울 본사 + 해외법인 4개 직영"
+    },
+    "clients": {
+      "value": "30개사+",
+      "label": "고객사",
+      "description": "제조 · 이커머스 · 유통"
+    },
+    "partners": {
+      "value": "50개사+",
+      "label": "파트너사",
+      "description": "글로벌 협력 네트워크"
+    }
+  },
+  "volumes": {
+    "title": "월간 처리 물동량",
+    "description": "항공·해상·육상 3개 모드 기준 월 평균 처리량입니다.",
+    "airUnit": "톤 / 월",
+    "seaUnit": "TEU / 월",
+    "truckUnit": "대 / 월"
+  },
+  "partners": {
+    "title": "제휴 항공사 · 특송 파트너",
+    "description": "주요 노선에서 아래 항공사·특송사와 협력해 운송합니다.",
+    "groupAir": "항공",
+    "groupExpress": "특송 라스트마일",
+    "koreanAir": "대한항공",
+    "chinaEastern": "동방항공",
+    "note": "각 사의 상표는 해당 회사에 귀속됩니다."
+  },
+  "about": {
+    "badge": "회사 소개",
+    "title": "5개 운송 모드를 하나의 파트너로",
+    "description": "JSL LOGISTICS는 2023년 설립된 종합 물류 기업으로, 서울 본사를 중심으로 상해·위해·광주·하노이 4개 해외법인을 직접 운영하며 항공·해상·육상·철도·특송 5개 운송 모드를 아우르는 원스톱 물류 서비스를 제공합니다.",
+    "valuesTitle": "왜 JSL인가",
+    "values": {
+      "fullLineup": {
+        "title": "5+1 풀라인업 종합물류",
+        "description": "항공·해상·육상·철도·특송 5개 운송 모드에 물류 컨설팅까지, 하나의 파트너로 해결합니다."
+      },
+      "ownedNetwork": {
+        "title": "직접 운영하는 글로벌 거점",
+        "description": "한국·중국·베트남 현지법인을 직접 운영해 중간 대리점 없이 안정적인 서비스를 제공합니다."
+      },
+      "manufacturing": {
+        "title": "글로벌 제조기업 운영 경험",
+        "description": "대기업 공급망 운영 노하우를 보유한 인력이 화주 관점에서 물류를 설계합니다."
+      },
+      "platform": {
+        "title": "자체 디지털 운영 플랫폼",
+        "description": "JSL-EXPRESS 등 자체 시스템으로 실시간 화물 가시성과 배송 상태 연동을 제공합니다."
+      }
+    },
+    "ctaText": "화물 종류와 노선에 맞는 운송 방안을 안내해 드립니다.",
+    "primaryCta": "견적 문의하기",
+    "secondaryCta": "서비스 보기"
+  },
+  "services": {
+    "badge": "서비스 안내",
+    "title": "5개 운송 모드 풀라인업",
+    "description": "납기와 비용 조건에 따라 항공·해상·육상·철도·특송을 조합해 최적의 경로를 설계합니다.",
+    "modes": {
+      "AIR": {
+        "title": "항공운송",
+        "summary": "전자제품·이커머스 화물에 특화된 항공 운송 서비스입니다.",
+        "highlights": [
+          "화남 → 산동, 산동 → 인천(ICN) 주요 항로 운영",
+          "인천 → 유럽 / LAX / ORD 등 장거리 노선 연계",
+          "월 200톤 처리"
+        ]
+      },
+      "SEA": {
+        "title": "해상 · 해상-항공 복합운송",
+        "summary": "광동-상해 CFS 통합과 중국 내륙 트럭킹·페리를 연계한 해상 및 SEA-AIR 복합운송입니다.",
+        "highlights": [
+          "광동-상해 CFS 통합 + 중국 내륙 트럭킹 + 페리 연계",
+          "인천 환적을 통한 미국·유럽행 SEA-AIR 복합운송",
+          "상해 CFS 입고부터 공항창고 입고까지 8단계 표준 프로세스",
+          "월 100TEU 처리"
+        ]
+      },
+      "TRUCK": {
+        "title": "육상운송",
+        "summary": "중국 전역과 동남아 국경통과 트럭킹을 직접 운영합니다.",
+        "highlights": [
+          "중국 전역 31개 성 FTL / LTL 대응, 월 300대",
+          "베트남·태국행 국경통과 트럭킹 월 150대 직접 운영"
+        ]
+      },
+      "RAIL": {
+        "title": "철도운송",
+        "summary": "중국-유럽을 잇는 유라시아 철도와 Sea&Rail 복합운송을 제공합니다.",
+        "highlights": [
+          "중국 → 유럽 / 러시아 / 중앙아시아 유라시아 철도",
+          "시안 · 청두 · 충칭 등 중국 내륙 거점 연계",
+          "인천 · 부산 연계 Sea&Rail 복합운송"
+        ]
+      },
+      "EXPRESS": {
+        "title": "특송",
+        "summary": "자체 구축 API 시스템으로 배송 상태를 실시간 연동하는 door-to-door 특송입니다.",
+        "highlights": [
+          "한국 → 유럽 5~7일 door-to-door",
+          "자체 시스템 'JSL-EXPRESS Logistics' API 실시간 연동",
+          "Royal Mail · Deutsche Post · DHL · dpd 등 현지 라스트마일 파트너"
+        ]
+      }
+    },
+    "valueAdded": {
+      "title": "통관과 보관까지 한 번에",
+      "description": "관세사 협업을 통한 통관 대행과 물류센터 보관·재고 관리로 입고 이후 과정까지 지원합니다.",
+      "customs": {
+        "title": "통관 대행",
+        "description": "수출입 신고, 관세 산출, 요건 확인 등 통관 절차 대행."
+      },
+      "warehouse": {
+        "title": "창고 보관",
+        "description": "상온·정온 보관 및 항만 인근 보세창고 운영."
+      },
+      "inventory": {
+        "title": "재고 · 유통가공",
+        "description": "입출고 관리, 피킹·패킹, 라벨링 등 부가 작업 처리."
+      },
+      "reporting": {
+        "title": "화물 추적 · 리포트",
+        "description": "운송 현황 실시간 조회와 월간 물류 실적 리포트 제공."
+      },
+      "primaryCta": "상담 신청",
+      "secondaryCta": "요금 안내"
+    }
+  },
+  "consulting": {
+    "badge": "NEW",
+    "title": "물류 컨설팅",
+    "description": "운송 대행을 넘어 공급망 구조와 해외 진출 전략까지 함께 설계합니다. 화주와 포워더 각각의 과제에 맞춘 컨설팅을 제공합니다.",
+    "clientAudience": "화주 (Client)",
+    "clientDescription": "공급망 구조를 진단하고 비용·리드타임을 다시 설계합니다.",
+    "forwarderAudience": "포워더 (Forwarder)",
+    "forwarderDescription": "해외 진출 단계별로 현지 실행까지 동행합니다.",
+    "items": {
+      "diagnosis": {
+        "title": "공급망 진단",
+        "subtitle": "Supply Chain Diagnosis",
+        "description": "현재 물류 구조의 비용·리드타임 병목을 분석합니다.",
+        "detail": "현재 운영 중인 물류 흐름을 구간별로 나누어 살펴보고, 비용과 리드타임이 어디에서 발생하는지 정리해 드립니다. 개선이 필요한 지점을 우선순위와 함께 제안합니다."
+      },
+      "routing": {
+        "title": "멀티모드 라우팅 설계",
+        "subtitle": "Multi-mode Routing",
+        "description": "항공·해상·육상·철도를 조합해 납기와 비용 조건에 맞는 경로를 설계합니다.",
+        "detail": "항공·해상·육상·철도·특송을 조합해 납기와 비용 조건에 맞는 운송 경로를 설계합니다. 단일 모드로 처리하던 구간을 복합운송으로 바꿔 조건을 맞추는 방안도 함께 검토합니다."
+      },
+      "vendor": {
+        "title": "물류파트너 최적화",
+        "subtitle": "Vendor Consolidation",
+        "description": "분산된 벤더를 통합해 관리 포인트와 단가 구조를 정리합니다.",
+        "detail": "여러 곳으로 나뉜 물류 파트너를 정리해 관리 창구를 줄이고 단가 구조를 다시 잡습니다. 구간별로 어떤 파트너를 유지하고 통합할지 함께 결정합니다."
+      },
+      "ecommerce": {
+        "title": "이커머스 / FBA 물류 자문",
+        "subtitle": "E-commerce & FBA",
+        "description": "이커머스 물동 특성과 FBA 입고 요건에 맞춘 물류 운영을 자문합니다.",
+        "detail": "주문 단위가 작고 변동이 큰 이커머스 물동의 특성과 FBA 입고 요건에 맞춰 운영 방식을 자문합니다. 입고 규격과 리드타임을 고려한 운송 계획을 함께 세웁니다."
+      },
+      "marketEntry": {
+        "title": "해외진출 전략 자문",
+        "subtitle": "Market Entry Strategy",
+        "description": "진출 국가와 시장 진입 방식, 초기 운영 구조를 함께 설계합니다.",
+        "detail": "어느 국가에 어떤 방식으로 진출할지, 초기 운영 조직을 어떻게 구성할지 함께 검토합니다. 현지에서 직접 겪은 운영 경험을 기준으로 조언드립니다."
+      },
+      "entitySetup": {
+        "title": "현지법인 설립 동행",
+        "subtitle": "Local Entity Setup",
+        "description": "한국·중국·베트남 현지법인 운영 경험을 바탕으로 설립 전 과정을 지원합니다.",
+        "detail": "상해·위해·광주·하노이에서 법인을 직접 운영하며 쌓은 경험을 바탕으로 설립 절차를 함께 진행합니다. 준비 서류와 진행 순서를 안내하고 현지 실무까지 동행합니다."
+      },
+      "matching": {
+        "title": "파트너 매칭",
+        "subtitle": "Partner Matching",
+        "description": "현지 검증된 협력사 네트워크를 연결해 초기 영업 기반을 확보합니다.",
+        "detail": "직접 거래하며 확인한 현지 협력사를 연결해 드립니다. 초기 영업 기반을 빠르게 만들 수 있도록 필요한 구간의 파트너부터 소개합니다."
+      },
+      "funding": {
+        "title": "정부지원금 확보 지원",
+        "subtitle": "Government Funding",
+        "description": "해외진출 관련 정부지원 사업 발굴과 신청 절차를 지원합니다.",
+        "detail": "해외진출과 관련된 정부지원 사업을 찾아 안내하고 신청 절차를 함께 준비합니다. 지원 대상 여부와 필요한 요건을 먼저 확인해 드립니다."
+      }
+    },
+    "primaryCta": "컨설팅 문의",
+    "detailCta": "자세히 보기",
+    "page": {
+      "lead": "운송을 대행하는 데서 그치지 않고, 공급망 구조와 해외 진출 전략까지 함께 설계합니다. 화주와 포워더는 마주하는 과제가 달라 접근 방식도 다르게 잡습니다.",
+      "note": "서울 본사와 상해·위해·광주·하노이 4개 해외법인을 직접 운영하며 쌓은 현장 경험을 기준으로 자문합니다.",
+      "contactTitle": "컨설팅이 필요하신가요?",
+      "contactDescription": "현재 물류 구조와 고민하고 계신 부분을 알려주시면 담당자가 확인 후 연락드립니다.",
+      "contactCta": "문의 남기기"
+    }
+  },
+  "network": {
+    "badge": "글로벌 네트워크",
+    "title": "5개 거점을 직접 운영합니다",
+    "description": "서울 본사와 상해·위해·광주·하노이 4개 해외법인을 직영으로 운영합니다. 중간 대리점을 거치지 않아 현지 상황에 바로 대응할 수 있습니다.",
+    "roleHq": "본사 (HQ)",
+    "roleBranch": "해외법인",
+    "headcountUnit": "명",
+    "totalLabel": "5개 거점 총 인력 약 {count}명",
+    "offices": {
+      "seoul": {
+        "city": "서울",
+        "description": "전사 운영 총괄, 영업 및 견적, 한국발 항공·특송 운영."
+      },
+      "shanghai": {
+        "city": "상해",
+        "description": "CFS 통합 운영과 SEA / SEA-AIR 복합운송 거점."
+      },
+      "weihai": {
+        "city": "위해",
+        "description": "산동-인천 항로와 페리 연계 운송을 담당합니다."
+      },
+      "guangzhou": {
+        "city": "광주",
+        "description": "화남 지역 집하와 광동-상해 CFS 연계를 담당합니다."
+      },
+      "hanoi": {
+        "city": "하노이",
+        "description": "베트남 내륙 운송과 국경통과 트럭킹 운영 거점."
+      }
+    }
+  },
+  "tracking": {
+    "title": "화물 추적",
+    "subtitle": "운송장번호를 입력하시면 현재 운송 상태와 예상 도착일을 확인하실 수 있습니다.",
+    "inputPlaceholder": "운송장번호를 입력하세요",
+    "inputLabel": "운송장번호",
+    "search": "조회하기",
+    "searching": "조회 중...",
+    "emptyPrompt": "운송장번호를 입력하고 조회하기를 눌러주세요.",
+    "demoNotice": "현재는 데모용 데이터만 등록되어 있습니다. 아래 번호로 조회해 보세요.",
+    "notFoundTitle": "조회 결과가 없습니다",
+    "shippedAt": "집하일",
+    "estimatedArrival": "예상 도착일",
+    "elapsedRatio": "경과율",
+    "elapsedDetail": "({elapsed}일 경과 / 표준 {standard}일)",
+    "estimateNote": "표준 소요일은 업계 평균 추정치이며 실제 소요 기간과 다를 수 있습니다.",
+    "currentLocation": "현재 위치",
+    "errorEmpty": "운송장번호를 입력해 주세요.",
+    "errorNetwork": "서버에 연결할 수 없습니다. 잠시 후 다시 시도해 주세요.",
+    "riskNormal": "예상 소요일 대비 정상 범위에서 운송 중입니다.",
+    "riskAtRisk": "예상 도착일이 임박했습니다. 지연될 수 있습니다.",
+    "riskDelayed": "예상 소요일을 초과했습니다. 담당자에게 문의해 주세요."
+  },
+  "modes": {
+    "AIR": "항공",
+    "SEA": "해상",
+    "SEA_AIR": "해상-항공",
+    "TRUCK_DOMESTIC": "육상(국내)",
+    "TRUCK_CROSSBORDER": "육상(국경)",
+    "RAIL": "철도",
+    "EXPRESS": "특송"
+  },
+  "riskLevels": {
+    "normal": "정상",
+    "atRisk": "지연위험",
+    "delayed": "지연"
+  },
+  "faq": {
+    "badge": "자주 묻는 질문",
+    "title": "자주 묻는 질문",
+    "description": "견적, 운송 기간, 통관 절차에 대해 자주 문의하시는 내용을 정리했습니다.",
+    "items": [
+      {
+        "question": "견적은 어떻게 요청하나요?",
+        "answer": "출발지와 도착지, 화물의 품목과 중량·부피, 희망 납기를 알려주시면 담당자가 확인 후 견적을 안내해 드립니다. 페이지 하단 문의 양식이나 대표 이메일로 접수하실 수 있습니다."
+      },
+      {
+        "question": "어떤 운송 모드를 이용할 수 있나요?",
+        "answer": "항공, 해상(SEA / SEA-AIR 복합운송), 육상, 철도, 특송 5개 모드를 모두 운영합니다. 납기와 비용 조건을 알려주시면 단일 모드 또는 복합운송으로 최적 경로를 설계해 드립니다."
+      },
+      {
+        "question": "중국·베트남 현지 운송도 가능한가요?",
+        "answer": "가능합니다. 상해·위해·광주·하노이 현지법인을 직접 운영하고 있어 중국 전역 31개 성 FTL/LTL과 베트남·태국행 국경통과 트럭킹을 직접 처리합니다."
+      },
+      {
+        "question": "운송 기간은 얼마나 걸리나요?",
+        "answer": "운송 수단과 노선에 따라 다릅니다. 특송은 한국에서 유럽까지 5~7일 door-to-door, 항공은 통상 수일, 해상은 노선에 따라 수 주가 소요되며 통관 시간이 추가될 수 있습니다."
+      },
+      {
+        "question": "화물 위치는 어떻게 확인하나요?",
+        "answer": "자체 구축한 JSL-EXPRESS 시스템의 API 연동으로 배송 상태를 실시간 확인하실 수 있으며, 정기 계약 고객사는 대시보드에서 진행 중인 건을 직접 조회하실 수 있습니다."
+      },
+      {
+        "question": "물류 컨설팅은 어떤 내용인가요?",
+        "answer": "화주에게는 공급망 진단, 멀티모드 라우팅 설계, 물류파트너 최적화, 이커머스·FBA 자문을 제공합니다. 포워더에게는 해외진출 전략 자문, 현지법인 설립 동행, 파트너 매칭, 정부지원금 확보를 지원합니다."
+      }
+    ],
+    "contactPrompt": "찾으시는 답변이 없다면 언제든 문의해 주세요.",
+    "contactCta": "문의하기"
+  },
+  "cta": {
+    "badge": "물류 상담",
+    "highlights": [
+      "항공 · 해상 · 육상 · 철도 · 특송",
+      "물류 컨설팅",
+      "현지법인 직영"
+    ],
+    "headlineStart": "복잡한 국제물류,",
+    "headlineHighlight": "한 곳에서",
+    "headlineEnd": "해결하세요",
+    "description": "노선과 화물 조건만 알려주시면 담당자가 최적의 운송 방안과 예상 비용을 정리해 드립니다.",
+    "primaryCta": "견적 문의하기",
+    "secondaryCta": "서비스 알아보기",
+    "trustIndicators": [
+      "5개 거점 직영 운영",
+      "5+1 풀라인업",
+      "실시간 화물 가시성"
+    ]
+  },
+  "contact": {
+    "badge": "문의하기",
+    "title": "화물 운송이 필요하신가요?",
+    "description": "노선과 화물 정보를 남겨주시면 담당자가 확인 후 견적과 스케줄을 안내해 드립니다.",
+    "channelQuote": {
+      "title": "견적 문의",
+      "description": "출발지·도착지와 화물 정보를 알려주시면 운송 방안과 예상 비용을 안내해 드립니다."
+    },
+    "channelTracking": {
+      "title": "화물 추적",
+      "description": "진행 중인 건의 운송 현황이 궁금하시면 예약 번호와 함께 문의해 주세요."
+    },
+    "channelEmail": {
+      "title": "이메일 문의"
+    },
+    "formTitle": "문의 남기기",
+    "fieldCompany": "회사명",
+    "fieldName": "담당자명",
+    "fieldEmail": "이메일",
+    "fieldSubject": "제목",
+    "fieldMessage": "문의 내용",
+    "placeholderCompany": "(주)예시상사",
+    "placeholderName": "홍길동",
+    "placeholderEmail": "name@example.com",
+    "placeholderSubject": "인천 → 유럽 특송 견적 문의",
+    "placeholderMessage": "화물 품목, 중량·부피, 출발지와 도착지, 희망 납기를 함께 적어주시면 더 빠르게 안내해 드립니다.",
+    "consentLabel": "개인정보 수집·이용에 동의합니다. (필수)",
+    "consentLink": "개인정보처리방침 전문 보기",
+    "consentDetail": "수집항목: 회사명, 담당자명, 이메일, 문의 내용 · 이용목적: 문의 답변 및 상담 · 보유기간: 3년",
+    "submit": "문의 보내기",
+    "submitting": "전송 중...",
+    "successTitle": "문의가 접수되었습니다.",
+    "successDescription": "담당자가 확인 후 빠르게 연락드리겠습니다.",
+    "errorTitle": "문의 접수에 실패했습니다.",
+    "businessHours": "평일 09:00 - 18:00"
+  },
+  "footer": {
+    "description": "2023년 설립된 종합 물류 기업으로, 서울·상해·위해·광주·하노이 5개 거점을 직접 운영하며 항공·해상·육상·철도·특송과 물류 컨설팅을 제공합니다.",
+    "newsletterTitle": "물류 소식 받아보기",
+    "newsletterDescription": "운임 동향과 노선 공지를 이메일로 보내드립니다.",
+    "newsletterPlaceholder": "이메일 주소를 입력하세요",
+    "newsletterSubmit": "구독하기",
+    "colServices": "서비스",
+    "colCompany": "회사",
+    "colSupport": "고객지원",
+    "colLegal": "약관",
+    "linkQuote": "견적 요청",
+    "linkNotice": "공지사항",
+    "linkTerms": "이용약관",
+    "linkPrivacy": "개인정보처리방침",
+    "rights": "All rights reserved."
+  },
+  "plans": {
+    "badge": "요금 안내",
+    "title": "화물 조건에 맞춰 견적을 산출합니다",
+    "description": "운송 구간, 화물 중량과 부피, 납기 조건에 따라 요금이 달라집니다. 아래 이용 형태를 참고해 문의해 주시면 상세 견적을 안내해 드립니다.",
+    "note": "노선과 물량에 따라 조건이 달라집니다.",
+    "noteCta": "담당자에게 문의하기",
+    "includesPrevious": "{plan} 제공 범위 포함",
+    "spot": {
+      "name": "스팟 운송",
+      "description": "건별로 필요한 구간만 이용하는 단발성 운송",
+      "priceLabel": "건별 견적",
+      "priceCaption": "화물 조건에 따라 산출",
+      "cta": "견적 문의",
+      "features": [
+        "항공 · 해상 · 육상 단일 구간 운송",
+        "건별 견적 및 스케줄 안내",
+        "기본 화물 추적 제공",
+        "통관 대행 선택 이용"
+      ]
+    },
+    "contract": {
+      "name": "정기 계약",
+      "description": "정기적으로 발생하는 물량을 계약 단가로 운영",
+      "priceLabel": "월 정액 견적",
+      "priceCaption": "물량 기준 단가 협의",
+      "cta": "상담 신청",
+      "features": [
+        "노선별 계약 단가 적용",
+        "전담 담당자 배정",
+        "정기 스케줄 사전 배정",
+        "월간 물류 실적 리포트",
+        "창고 보관 연계 이용"
+      ]
+    },
+    "tpl": {
+      "name": "3PL 위탁",
+      "description": "보관부터 배송까지 물류 전 과정을 위탁 운영",
+      "priceLabel": "맞춤 견적",
+      "priceCaption": "운영 범위에 따라 협의",
+      "cta": "도입 문의",
+      "features": [
+        "물류센터 보관 및 재고 관리",
+        "입출고 · 유통가공 대행",
+        "주문 연동 출고 처리",
+        "전용 운영 인력 배치",
+        "맞춤 리포트 및 정산 지원"
+      ]
+    }
+  }
+}

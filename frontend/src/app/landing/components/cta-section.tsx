@@ -5,8 +5,7 @@ import { ArrowRight, TrendingUp, Package } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { Separator } from '@/components/ui/separator'
-import { cta } from '@/config/landing-content'
-
+import { useContent } from '@/config/use-content'
 const indicatorDotColors = [
   'bg-green-600 dark:bg-green-400',
   'bg-blue-600 dark:bg-blue-400',
@@ -14,6 +13,7 @@ const indicatorDotColors = [
 ]
 
 export function CTASection() {
+  const { cta } = useContent()
   return (
     <section className='py-16 lg:py-24 bg-muted/80'>
       <div className='container mx-auto px-4 lg:px-8'>

@@ -1,0 +1,456 @@
+{
+  "common": {
+    "companyName": "JSL Logistics",
+    "backHome": "Back to home",
+    "languageLabel": "Select language"
+  },
+  "nav": {
+    "home": "Home",
+    "about": "About",
+    "services": "Services",
+    "consulting": "Consulting",
+    "network": "Global Network",
+    "tracking": "Track Shipment",
+    "faq": "FAQ",
+    "contact": "Contact",
+    "dashboard": "Dashboard",
+    "signIn": "Sign in",
+    "quoteCta": "Request a quote"
+  },
+  "hero": {
+    "badge": "Air · Ocean · Road · Rail · Express",
+    "headlineStart": "Connecting Korea, China and Vietnam",
+    "headlineHighlight": "5+1 Integrated Logistics",
+    "headlineEnd": "Partner",
+    "subheadline": "Founded in 2023, we directly operate 5 locations across Seoul, Shanghai, Weihai, Guangzhou and Hanoi, offering 5 transport modes and logistics consulting through a single point of contact.",
+    "primaryCta": "Request a quote",
+    "secondaryCta": "Explore services"
+  },
+  "stats": {
+    "revenue": {
+      "value": "KRW 18B",
+      "label": "Annual revenue",
+      "description": "FY2025"
+    },
+    "locations": {
+      "value": "5",
+      "label": "Global locations",
+      "description": "Seoul HQ + 4 wholly owned overseas entities"
+    },
+    "clients": {
+      "value": "30+",
+      "label": "Clients",
+      "description": "Manufacturing · E-commerce · Distribution"
+    },
+    "partners": {
+      "value": "50+",
+      "label": "Partners",
+      "description": "Global partner network"
+    }
+  },
+  "volumes": {
+    "title": "Monthly handling volume",
+    "description": "Monthly average across air, ocean and road.",
+    "airUnit": "tons / month",
+    "seaUnit": "TEU / month",
+    "truckUnit": "trucks / month"
+  },
+  "partners": {
+    "title": "Airline & express partners",
+    "description": "We operate key lanes together with the airlines and express carriers below.",
+    "groupAir": "Air",
+    "groupExpress": "Express last mile",
+    "koreanAir": "Korean Air",
+    "chinaEastern": "China Eastern",
+    "note": "All trademarks belong to their respective owners."
+  },
+  "about": {
+    "badge": "About us",
+    "title": "Five transport modes, one partner",
+    "description": "Founded in 2023, JSL LOGISTICS is an integrated logistics company. From our Seoul headquarters we directly operate four overseas entities in Shanghai, Weihai, Guangzhou and Hanoi, providing one-stop logistics across five transport modes: air, ocean, road, rail and express.",
+    "valuesTitle": "Why JSL",
+    "values": {
+      "fullLineup": {
+        "title": "5+1 full-line logistics",
+        "description": "Air, ocean, road, rail and express plus logistics consulting — all handled by a single partner."
+      },
+      "ownedNetwork": {
+        "title": "Directly operated global network",
+        "description": "We run our own entities in Korea, China and Vietnam, delivering consistent service without intermediary agents."
+      },
+      "manufacturing": {
+        "title": "Global manufacturing experience",
+        "description": "Our team brings large-enterprise supply chain know-how and designs logistics from the shipper's point of view."
+      },
+      "platform": {
+        "title": "In-house digital platform",
+        "description": "Our own systems, including JSL-EXPRESS, provide real-time cargo visibility and delivery status integration."
+      }
+    },
+    "ctaText": "We will propose a transport plan that fits your cargo type and lane.",
+    "primaryCta": "Request a quote",
+    "secondaryCta": "View services"
+  },
+  "services": {
+    "badge": "Services",
+    "title": "A full line-up of five transport modes",
+    "description": "We combine air, ocean, road, rail and express to design the optimal route for your lead time and budget.",
+    "modes": {
+      "AIR": {
+        "title": "Air freight",
+        "summary": "Air freight specialised in electronics and e-commerce cargo.",
+        "highlights": [
+          "Key lanes: South China → Shandong, Shandong → Incheon (ICN)",
+          "Long-haul connections from Incheon to Europe / LAX / ORD",
+          "200 tons handled per month"
+        ]
+      },
+      "SEA": {
+        "title": "Ocean & sea-air multimodal",
+        "summary": "Ocean and SEA-AIR multimodal transport combining Guangdong–Shanghai CFS consolidation with inland trucking and ferry links in China.",
+        "highlights": [
+          "Guangdong–Shanghai CFS consolidation + inland trucking + ferry connection",
+          "SEA-AIR multimodal to the US and Europe via Incheon transhipment",
+          "Standardised 8-step process from Shanghai CFS receipt to airport warehouse",
+          "100 TEU handled per month"
+        ]
+      },
+      "TRUCK": {
+        "title": "Road freight",
+        "summary": "We directly operate trucking across China and cross-border routes into Southeast Asia.",
+        "highlights": [
+          "FTL / LTL coverage across all 31 provinces of China, 300 trucks per month",
+          "Cross-border trucking to Vietnam and Thailand, 150 trucks per month, directly operated"
+        ]
+      },
+      "RAIL": {
+        "title": "Rail freight",
+        "summary": "Eurasian rail connecting China and Europe, plus Sea&Rail multimodal service.",
+        "highlights": [
+          "Eurasian rail from China to Europe / Russia / Central Asia",
+          "Connections via Chinese inland hubs such as Xi'an, Chengdu and Chongqing",
+          "Sea&Rail multimodal via Incheon and Busan"
+        ]
+      },
+      "EXPRESS": {
+        "title": "Express",
+        "summary": "Door-to-door express with real-time status integration through our own API system.",
+        "highlights": [
+          "Korea → Europe in 5–7 days, door-to-door",
+          "Real-time API integration with our own 'JSL-EXPRESS Logistics' system",
+          "Local last-mile partners including Royal Mail, Deutsche Post, DHL and dpd"
+        ]
+      }
+    },
+    "valueAdded": {
+      "title": "Customs clearance and warehousing in one place",
+      "description": "We handle customs clearance with licensed brokers and support post-arrival processes through warehousing and inventory management.",
+      "customs": {
+        "title": "Customs clearance",
+        "description": "Import/export declarations, duty calculation and requirement checks."
+      },
+      "warehouse": {
+        "title": "Warehousing",
+        "description": "Ambient and temperature-controlled storage, plus bonded warehouses near ports."
+      },
+      "inventory": {
+        "title": "Inventory & value-added work",
+        "description": "Inbound/outbound management, picking, packing and labelling."
+      },
+      "reporting": {
+        "title": "Tracking & reporting",
+        "description": "Real-time shipment status and monthly logistics performance reports."
+      },
+      "primaryCta": "Book a consultation",
+      "secondaryCta": "Pricing"
+    }
+  },
+  "consulting": {
+    "badge": "NEW",
+    "title": "Logistics consulting",
+    "description": "Beyond freight forwarding, we help design your supply chain structure and overseas expansion strategy. Shippers and forwarders face different challenges, so we tailor our approach to each.",
+    "clientAudience": "Shippers (Client)",
+    "clientDescription": "We diagnose your supply chain and redesign cost and lead time.",
+    "forwarderAudience": "Forwarders",
+    "forwarderDescription": "We accompany you through each stage of overseas expansion, down to local execution.",
+    "items": {
+      "diagnosis": {
+        "title": "Supply chain diagnosis",
+        "subtitle": "Supply Chain Diagnosis",
+        "description": "We analyse cost and lead-time bottlenecks in your current logistics structure.",
+        "detail": "We review your current logistics flow leg by leg and map out where cost and lead time are generated. We then propose the points that need improvement, together with priorities."
+      },
+      "routing": {
+        "title": "Multi-mode routing design",
+        "subtitle": "Multi-mode Routing",
+        "description": "We combine air, ocean, road and rail to design routes that meet your lead time and cost conditions.",
+        "detail": "We combine air, ocean, road, rail and express to design routes that meet your lead time and cost conditions. We also review switching legs currently handled by a single mode to multimodal transport."
+      },
+      "vendor": {
+        "title": "Logistics partner optimisation",
+        "subtitle": "Vendor Consolidation",
+        "description": "We consolidate scattered vendors to simplify management and restructure rates.",
+        "detail": "We consolidate logistics partners spread across multiple vendors, reducing points of contact and restructuring your rate base. We decide together which partners to keep and which to merge, leg by leg."
+      },
+      "ecommerce": {
+        "title": "E-commerce / FBA logistics advisory",
+        "subtitle": "E-commerce & FBA",
+        "description": "We advise on logistics operations tailored to e-commerce flows and FBA inbound requirements.",
+        "detail": "We advise on operating models suited to e-commerce cargo, which comes in small and highly variable order units, and to FBA inbound requirements. We build a transport plan that accounts for inbound specifications and lead times."
+      },
+      "marketEntry": {
+        "title": "Overseas expansion strategy",
+        "subtitle": "Market Entry Strategy",
+        "description": "We help design your target markets, entry model and initial operating structure.",
+        "detail": "We review together which countries to enter, in what form, and how to structure your initial operating team. Our advice is based on operating experience gained on the ground."
+      },
+      "entitySetup": {
+        "title": "Local entity setup support",
+        "subtitle": "Local Entity Setup",
+        "description": "We support the full setup process based on our experience operating entities in Korea, China and Vietnam.",
+        "detail": "Drawing on our experience directly operating entities in Shanghai, Weihai, Guangzhou and Hanoi, we work through the setup process with you. We guide you on required documents and sequencing, and accompany you through local execution."
+      },
+      "matching": {
+        "title": "Partner matching",
+        "subtitle": "Partner Matching",
+        "description": "We connect you with a vetted network of local partners to establish an initial commercial base.",
+        "detail": "We introduce local partners we have verified through direct business. To help you build a commercial base quickly, we start with partners for the legs you need most."
+      },
+      "funding": {
+        "title": "Government funding support",
+        "subtitle": "Government Funding",
+        "description": "We help identify government support programmes for overseas expansion and prepare applications.",
+        "detail": "We identify and explain government support programmes related to overseas expansion, and prepare the application process with you. We first confirm your eligibility and the requirements involved."
+      }
+    },
+    "primaryCta": "Consulting enquiry",
+    "detailCta": "Learn more",
+    "page": {
+      "lead": "We do more than move freight — we help design your supply chain structure and overseas expansion strategy. Shippers and forwarders face different challenges, so our approach differs for each.",
+      "note": "Our advice is grounded in field experience from directly operating our Seoul headquarters and four overseas entities in Shanghai, Weihai, Guangzhou and Hanoi.",
+      "contactTitle": "Need logistics consulting?",
+      "contactDescription": "Tell us about your current logistics structure and what you are working through, and our team will get back to you.",
+      "contactCta": "Send an enquiry"
+    }
+  },
+  "network": {
+    "badge": "Global network",
+    "title": "Five directly operated locations",
+    "description": "We wholly operate our Seoul headquarters and four overseas entities in Shanghai, Weihai, Guangzhou and Hanoi. Without intermediary agents, we respond to local conditions immediately.",
+    "roleHq": "Headquarters (HQ)",
+    "roleBranch": "Overseas entity",
+    "headcountUnit": "staff",
+    "totalLabel": "Approximately {count} staff across 5 locations",
+    "offices": {
+      "seoul": {
+        "city": "Seoul",
+        "description": "Group operations, sales and quotations, air and express operations ex-Korea."
+      },
+      "shanghai": {
+        "city": "Shanghai",
+        "description": "CFS consolidation hub for SEA and SEA-AIR multimodal transport."
+      },
+      "weihai": {
+        "city": "Weihai",
+        "description": "Handles the Shandong–Incheon lane and ferry-linked transport."
+      },
+      "guangzhou": {
+        "city": "Guangzhou",
+        "description": "Cargo collection across South China and connection to the Guangdong–Shanghai CFS."
+      },
+      "hanoi": {
+        "city": "Hanoi",
+        "description": "Hub for domestic Vietnamese transport and cross-border trucking."
+      }
+    }
+  },
+  "tracking": {
+    "title": "Track your shipment",
+    "subtitle": "Enter your tracking number to see the current transport status and estimated arrival date.",
+    "inputPlaceholder": "Enter your tracking number",
+    "inputLabel": "Tracking number",
+    "search": "Track",
+    "searching": "Searching...",
+    "emptyPrompt": "Enter a tracking number and press Track.",
+    "demoNotice": "Only demo data is currently registered. Try one of the numbers below.",
+    "notFoundTitle": "No results found",
+    "shippedAt": "Pickup date",
+    "estimatedArrival": "Estimated arrival",
+    "elapsedRatio": "Elapsed ratio",
+    "elapsedDetail": "({elapsed} days elapsed / {standard} days standard)",
+    "estimateNote": "Standard transit times are industry averages and may differ from actual transit.",
+    "currentLocation": "Current location",
+    "errorEmpty": "Please enter a tracking number.",
+    "errorNetwork": "Cannot reach the server. Please try again shortly.",
+    "riskNormal": "In transit and within the expected transit time.",
+    "riskAtRisk": "The estimated arrival date is approaching. A delay is possible.",
+    "riskDelayed": "The expected transit time has been exceeded. Please contact us."
+  },
+  "modes": {
+    "AIR": "Air",
+    "SEA": "Ocean",
+    "SEA_AIR": "Sea-Air",
+    "TRUCK_DOMESTIC": "Road (domestic)",
+    "TRUCK_CROSSBORDER": "Road (cross-border)",
+    "RAIL": "Rail",
+    "EXPRESS": "Express"
+  },
+  "riskLevels": {
+    "normal": "On track",
+    "atRisk": "At risk",
+    "delayed": "Delayed"
+  },
+  "faq": {
+    "badge": "FAQ",
+    "title": "Frequently asked questions",
+    "description": "Common questions about quotations, transit times and customs procedures.",
+    "items": [
+      {
+        "question": "How do I request a quote?",
+        "answer": "Let us know the origin and destination, the commodity, weight and volume, and your required delivery date, and our team will come back to you with a quotation. You can use the enquiry form at the bottom of this page or our main email address."
+      },
+      {
+        "question": "Which transport modes are available?",
+        "answer": "We operate all five modes: air, ocean (including SEA / SEA-AIR multimodal), road, rail and express. Tell us your lead time and budget and we will design the optimal route using a single mode or multimodal transport."
+      },
+      {
+        "question": "Do you handle domestic transport in China and Vietnam?",
+        "answer": "Yes. Because we directly operate entities in Shanghai, Weihai, Guangzhou and Hanoi, we handle FTL/LTL across all 31 provinces of China and cross-border trucking to Vietnam and Thailand ourselves."
+      },
+      {
+        "question": "How long does transport take?",
+        "answer": "It depends on the mode and the lane. Express runs 5–7 days door-to-door from Korea to Europe, air freight typically takes several days, and ocean freight takes several weeks depending on the lane. Customs clearance may add further time."
+      },
+      {
+        "question": "How can I check where my cargo is?",
+        "answer": "API integration with our own JSL-EXPRESS system lets you check delivery status in real time. Contract clients can also look up shipments in progress directly from the dashboard."
+      },
+      {
+        "question": "What does logistics consulting cover?",
+        "answer": "For shippers we provide supply chain diagnosis, multi-mode routing design, logistics partner optimisation and e-commerce/FBA advisory. For forwarders we support overseas expansion strategy, local entity setup, partner matching and government funding applications."
+      }
+    ],
+    "contactPrompt": "If you cannot find the answer you need, please get in touch.",
+    "contactCta": "Contact us"
+  },
+  "cta": {
+    "badge": "Logistics consultation",
+    "highlights": [
+      "Air · Ocean · Road · Rail · Express",
+      "Logistics consulting",
+      "Wholly owned local entities"
+    ],
+    "headlineStart": "Complex international logistics,",
+    "headlineHighlight": "solved in one place",
+    "headlineEnd": "",
+    "description": "Tell us your lane and cargo details, and our team will put together the best transport plan and an estimated cost.",
+    "primaryCta": "Request a quote",
+    "secondaryCta": "Explore services",
+    "trustIndicators": [
+      "5 directly operated locations",
+      "5+1 full line-up",
+      "Real-time cargo visibility"
+    ]
+  },
+  "contact": {
+    "badge": "Contact",
+    "title": "Need to move cargo?",
+    "description": "Leave us your lane and cargo details and our team will follow up with a quotation and schedule.",
+    "channelQuote": {
+      "title": "Quotation enquiry",
+      "description": "Share your origin, destination and cargo details and we will propose a transport plan with estimated costs."
+    },
+    "channelTracking": {
+      "title": "Shipment tracking",
+      "description": "For the status of a shipment in progress, contact us with your booking number."
+    },
+    "channelEmail": {
+      "title": "Email enquiry"
+    },
+    "formTitle": "Send an enquiry",
+    "fieldCompany": "Company",
+    "fieldName": "Contact name",
+    "fieldEmail": "Email",
+    "fieldSubject": "Subject",
+    "fieldMessage": "Message",
+    "placeholderCompany": "Example Trading Co., Ltd.",
+    "placeholderName": "Jane Doe",
+    "placeholderEmail": "name@example.com",
+    "placeholderSubject": "Quote request: Incheon → Europe express",
+    "placeholderMessage": "Including the commodity, weight and volume, origin and destination, and your required delivery date helps us respond faster.",
+    "consentLabel": "I agree to the collection and use of my personal data. (Required)",
+    "consentLink": "Read the full privacy policy",
+    "consentDetail": "Data collected: company, contact name, email, enquiry content · Purpose: responding to enquiries · Retention: 3 years",
+    "submit": "Send enquiry",
+    "submitting": "Sending...",
+    "successTitle": "Your enquiry has been received.",
+    "successDescription": "Our team will review it and get back to you shortly.",
+    "errorTitle": "Failed to submit your enquiry.",
+    "businessHours": "Weekdays 09:00 - 18:00 (KST)"
+  },
+  "footer": {
+    "description": "Founded in 2023, we are an integrated logistics company directly operating five locations across Seoul, Shanghai, Weihai, Guangzhou and Hanoi, offering air, ocean, road, rail and express transport plus logistics consulting.",
+    "newsletterTitle": "Logistics updates",
+    "newsletterDescription": "We send freight rate trends and lane announcements by email.",
+    "newsletterPlaceholder": "Enter your email address",
+    "newsletterSubmit": "Subscribe",
+    "colServices": "Services",
+    "colCompany": "Company",
+    "colSupport": "Support",
+    "colLegal": "Legal",
+    "linkQuote": "Request a quote",
+    "linkNotice": "Notices",
+    "linkTerms": "Terms of Service",
+    "linkPrivacy": "Privacy Policy",
+    "rights": "All rights reserved."
+  },
+  "plans": {
+    "badge": "Pricing",
+    "title": "Quotes tailored to your cargo",
+    "description": "Rates vary with the transport leg, cargo weight and volume, and delivery deadline. Use the service types below as a guide and contact us for a detailed quotation.",
+    "note": "Terms vary by lane and volume.",
+    "noteCta": "Talk to our team",
+    "includesPrevious": "Includes everything in {plan}",
+    "spot": {
+      "name": "Spot shipment",
+      "description": "One-off transport for a single leg, as needed",
+      "priceLabel": "Per-shipment quote",
+      "priceCaption": "Calculated from cargo details",
+      "cta": "Request a quote",
+      "features": [
+        "Single-leg air, ocean or road transport",
+        "Per-shipment quotation and schedule",
+        "Basic shipment tracking",
+        "Optional customs clearance"
+      ]
+    },
+    "contract": {
+      "name": "Term contract",
+      "description": "Recurring volume handled at contracted rates",
+      "priceLabel": "Monthly contract quote",
+      "priceCaption": "Rates negotiated by volume",
+      "cta": "Book a consultation",
+      "features": [
+        "Contracted rates by lane",
+        "Dedicated account manager",
+        "Pre-allocated regular schedules",
+        "Monthly logistics performance report",
+        "Linked warehousing"
+      ]
+    },
+    "tpl": {
+      "name": "3PL outsourcing",
+      "description": "Full logistics operations outsourced, from storage to delivery",
+      "priceLabel": "Custom quote",
+      "priceCaption": "Negotiated by scope of operations",
+      "cta": "Enquire about 3PL",
+      "features": [
+        "Warehousing and inventory management",
+        "Inbound/outbound and value-added work",
+        "Order-linked dispatch",
+        "Dedicated operations staff",
+        "Custom reporting and settlement support"
+      ]
+    }
+  }
+}

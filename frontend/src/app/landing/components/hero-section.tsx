@@ -6,9 +6,9 @@ import { ArrowRight, Ship } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { DotPattern } from '@/components/dot-pattern'
-import { hero } from '@/config/landing-content'
-
+import { useContent } from '@/config/use-content'
 export function HeroSection() {
+  const { hero } = useContent()
   return (
     <section id="hero" className="relative overflow-hidden bg-gradient-to-b from-background to-background/80 pt-16 sm:pt-20 pb-16">
       {/* Background Pattern */}

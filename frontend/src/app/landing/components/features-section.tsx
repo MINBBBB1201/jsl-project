@@ -5,11 +5,12 @@ import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { Card, CardContent } from '@/components/ui/card'
 import { Image3D } from '@/components/image-3d'
-import { services } from '@/config/landing-content'
-
-const { modes, valueAdded } = services
+import { useContent } from '@/config/use-content'
 
 export function FeaturesSection() {
+  const { services } = useContent()
+  const { modes, valueAdded } = services
+
   return (
     <section id="features" className="py-24 sm:py-32 bg-muted/30">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">

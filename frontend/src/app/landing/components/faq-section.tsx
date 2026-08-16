@@ -4,9 +4,11 @@ import { CircleHelp } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion'
 import { Badge } from '@/components/ui/badge'
-import { faq } from '@/config/landing-content'
+import { useContent } from '@/config/use-content'
 
 const FaqSection = () => {
+  const { faq } = useContent()
+
   return (
     <section id="faq" className="py-24 sm:py-32">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">

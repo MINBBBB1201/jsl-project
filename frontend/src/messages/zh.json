@@ -1,0 +1,456 @@
+{
+  "common": {
+    "companyName": "JSL Logistics",
+    "backHome": "返回首页",
+    "languageLabel": "选择语言"
+  },
+  "nav": {
+    "home": "首页",
+    "about": "公司简介",
+    "services": "服务",
+    "consulting": "物流咨询",
+    "network": "全球网络",
+    "tracking": "货物追踪",
+    "faq": "常见问题",
+    "contact": "联系我们",
+    "dashboard": "管理后台",
+    "signIn": "登录",
+    "quoteCta": "询价"
+  },
+  "hero": {
+    "badge": "空运 · 海运 · 陆运 · 铁路 · 快递",
+    "headlineStart": "连接韩国 · 中国 · 越南的",
+    "headlineHighlight": "5+1 综合物流",
+    "headlineEnd": "伙伴",
+    "subheadline": "自2023年成立以来，我们直接运营首尔、上海、威海、广州、河内5个据点，通过统一窗口提供5种运输模式与物流咨询服务。",
+    "primaryCta": "立即询价",
+    "secondaryCta": "了解服务"
+  },
+  "stats": {
+    "revenue": {
+      "value": "180亿韩元",
+      "label": "年营业额",
+      "description": "2025财年基准"
+    },
+    "locations": {
+      "value": "5个",
+      "label": "全球据点",
+      "description": "首尔总部 + 4家海外全资法人"
+    },
+    "clients": {
+      "value": "30家以上",
+      "label": "客户",
+      "description": "制造 · 电商 · 流通"
+    },
+    "partners": {
+      "value": "50家以上",
+      "label": "合作伙伴",
+      "description": "全球合作网络"
+    }
+  },
+  "volumes": {
+    "title": "月处理货量",
+    "description": "空运、海运、陆运3种模式的月平均处理量。",
+    "airUnit": "吨 / 月",
+    "seaUnit": "TEU / 月",
+    "truckUnit": "车 / 月"
+  },
+  "partners": {
+    "title": "合作航空公司 · 快递伙伴",
+    "description": "在主要航线上，我们与以下航空公司及快递公司合作运输。",
+    "groupAir": "空运",
+    "groupExpress": "快递末端配送",
+    "koreanAir": "大韩航空",
+    "chinaEastern": "东方航空",
+    "note": "各公司商标归其所有者所有。"
+  },
+  "about": {
+    "badge": "公司简介",
+    "title": "5种运输模式，一个伙伴",
+    "description": "JSL LOGISTICS 是2023年成立的综合物流企业。以首尔总部为中心，直接运营上海、威海、广州、河内4家海外法人，提供涵盖空运、海运、陆运、铁路、快递5种运输模式的一站式物流服务。",
+    "valuesTitle": "为什么选择 JSL",
+    "values": {
+      "fullLineup": {
+        "title": "5+1 全线综合物流",
+        "description": "空运、海运、陆运、铁路、快递5种运输模式，加上物流咨询，由一个伙伴完成。"
+      },
+      "ownedNetwork": {
+        "title": "自主运营的全球据点",
+        "description": "在韩国、中国、越南直接运营当地法人，无需中间代理，提供稳定的服务。"
+      },
+      "manufacturing": {
+        "title": "全球制造企业运营经验",
+        "description": "具备大企业供应链运营经验的人员，从货主视角设计物流方案。"
+      },
+      "platform": {
+        "title": "自主数字化运营平台",
+        "description": "通过 JSL-EXPRESS 等自有系统，提供实时货物可视化与配送状态对接。"
+      }
+    },
+    "ctaText": "我们会根据货物种类与航线提供合适的运输方案。",
+    "primaryCta": "立即询价",
+    "secondaryCta": "查看服务"
+  },
+  "services": {
+    "badge": "服务介绍",
+    "title": "5种运输模式全线服务",
+    "description": "根据交期与成本条件，组合空运、海运、陆运、铁路、快递，设计最优路线。",
+    "modes": {
+      "AIR": {
+        "title": "空运",
+        "summary": "专注于电子产品与电商货物的空运服务。",
+        "highlights": [
+          "运营华南 → 山东、山东 → 仁川(ICN)等主要航线",
+          "衔接仁川 → 欧洲 / LAX / ORD 等长途航线",
+          "月处理200吨"
+        ]
+      },
+      "SEA": {
+        "title": "海运 · 海空联运",
+        "summary": "整合广东-上海 CFS，衔接中国内陆卡车运输与轮渡的海运及 SEA-AIR 联运服务。",
+        "highlights": [
+          "广东-上海 CFS 整合 + 中国内陆卡车运输 + 轮渡衔接",
+          "经仁川中转的美国·欧洲方向 SEA-AIR 联运",
+          "从上海 CFS 入库到机场仓库入库的8步标准流程",
+          "月处理100TEU"
+        ]
+      },
+      "TRUCK": {
+        "title": "陆运",
+        "summary": "直接运营覆盖中国全境及东南亚跨境的卡车运输。",
+        "highlights": [
+          "覆盖中国全境31个省的 FTL / LTL，月300车",
+          "越南·泰国方向跨境卡车运输，月150车，自主运营"
+        ]
+      },
+      "RAIL": {
+        "title": "铁路运输",
+        "summary": "提供连接中国与欧洲的欧亚铁路及 Sea&Rail 联运服务。",
+        "highlights": [
+          "中国 → 欧洲 / 俄罗斯 / 中亚 欧亚铁路",
+          "衔接西安 · 成都 · 重庆等中国内陆据点",
+          "经仁川 · 釜山的 Sea&Rail 联运"
+        ]
+      },
+      "EXPRESS": {
+        "title": "快递",
+        "summary": "通过自建 API 系统实时对接配送状态的门到门快递服务。",
+        "highlights": [
+          "韩国 → 欧洲 5~7天 门到门",
+          "自有系统 'JSL-EXPRESS Logistics' API 实时对接",
+          "Royal Mail · Deutsche Post · DHL · dpd 等当地末端配送伙伴"
+        ]
+      }
+    },
+    "valueAdded": {
+      "title": "通关与仓储一站式办理",
+      "description": "通过与报关行合作代办通关，并以物流中心仓储及库存管理支持入库后的全过程。",
+      "customs": {
+        "title": "通关代办",
+        "description": "进出口申报、关税核算、要件确认等通关手续代办。"
+      },
+      "warehouse": {
+        "title": "仓储保管",
+        "description": "常温·恒温保管及港口附近保税仓库运营。"
+      },
+      "inventory": {
+        "title": "库存 · 流通加工",
+        "description": "出入库管理、拣货打包、贴标等增值作业。"
+      },
+      "reporting": {
+        "title": "货物追踪 · 报表",
+        "description": "运输状况实时查询与月度物流绩效报表。"
+      },
+      "primaryCta": "咨询申请",
+      "secondaryCta": "费用说明"
+    }
+  },
+  "consulting": {
+    "badge": "NEW",
+    "title": "物流咨询",
+    "description": "不止于运输代办，我们还共同设计供应链结构与海外拓展战略。货主与货代面临的课题不同，我们分别提供针对性的咨询。",
+    "clientAudience": "货主 (Client)",
+    "clientDescription": "诊断供应链结构，重新设计成本与交付周期。",
+    "forwarderAudience": "货代 (Forwarder)",
+    "forwarderDescription": "在海外拓展的各个阶段，陪同至当地落地执行。",
+    "items": {
+      "diagnosis": {
+        "title": "供应链诊断",
+        "subtitle": "Supply Chain Diagnosis",
+        "description": "分析当前物流结构在成本与交付周期上的瓶颈。",
+        "detail": "我们会按区段梳理目前运行的物流流程，整理成本与交付周期产生在哪些环节，并提出需要改善的要点及其优先级。"
+      },
+      "routing": {
+        "title": "多式联运路线设计",
+        "subtitle": "Multi-mode Routing",
+        "description": "组合空运、海运、陆运、铁路，设计符合交期与成本条件的路线。",
+        "detail": "组合空运、海运、陆运、铁路、快递，设计符合交期与成本条件的运输路线。也会一并评估将原本单一模式处理的区段改为联运的方案。"
+      },
+      "vendor": {
+        "title": "物流伙伴优化",
+        "subtitle": "Vendor Consolidation",
+        "description": "整合分散的供应商，简化管理接口并重新梳理单价结构。",
+        "detail": "整合分散在多处的物流伙伴，减少管理窗口并重新梳理单价结构。按区段共同决定保留哪些伙伴、整合哪些伙伴。"
+      },
+      "ecommerce": {
+        "title": "电商 / FBA 物流咨询",
+        "subtitle": "E-commerce & FBA",
+        "description": "针对电商货量特性与 FBA 入库要求提供物流运营咨询。",
+        "detail": "针对订单单位小、波动大的电商货量特性以及 FBA 入库要求，提供运营方式咨询。并结合入库规格与交付周期共同制定运输计划。"
+      },
+      "marketEntry": {
+        "title": "海外拓展战略咨询",
+        "subtitle": "Market Entry Strategy",
+        "description": "共同设计目标国家、市场进入方式与初期运营架构。",
+        "detail": "共同探讨进入哪个国家、以何种方式进入，以及如何组建初期运营团队。我们以在当地亲身积累的运营经验为依据提供建议。"
+      },
+      "entitySetup": {
+        "title": "当地法人设立陪同",
+        "subtitle": "Local Entity Setup",
+        "description": "基于韩国·中国·越南当地法人的运营经验，支持设立全过程。",
+        "detail": "基于在上海、威海、广州、河内直接运营法人所积累的经验，与您一同推进设立流程。我们会说明所需材料与办理顺序，并陪同处理当地实务。"
+      },
+      "matching": {
+        "title": "伙伴对接",
+        "subtitle": "Partner Matching",
+        "description": "对接经过验证的当地合作方网络，帮助建立初期业务基础。",
+        "detail": "为您对接我们通过实际业务验证过的当地合作方。为帮助您尽快建立业务基础，会从您最需要的区段伙伴开始介绍。"
+      },
+      "funding": {
+        "title": "政府扶持资金申请支持",
+        "subtitle": "Government Funding",
+        "description": "协助发掘海外拓展相关的政府扶持项目并办理申请手续。",
+        "detail": "我们会寻找并说明与海外拓展相关的政府扶持项目，并共同准备申请流程。会先确认是否符合申报条件及所需要件。"
+      }
+    },
+    "primaryCta": "咨询洽谈",
+    "detailCta": "查看详情",
+    "page": {
+      "lead": "我们不止于代办运输，还会共同设计供应链结构与海外拓展战略。货主与货代面临的课题不同，因此我们采取不同的切入方式。",
+      "note": "我们以直接运营首尔总部及上海、威海、广州、河内4家海外法人所积累的现场经验为依据提供咨询。",
+      "contactTitle": "需要物流咨询吗？",
+      "contactDescription": "请告诉我们目前的物流结构与您正在考虑的问题，负责人确认后会与您联系。",
+      "contactCta": "留下咨询"
+    }
+  },
+  "network": {
+    "badge": "全球网络",
+    "title": "直接运营5个据点",
+    "description": "首尔总部与上海、威海、广州、河内4家海外法人均为直营。不经过中间代理，可即时应对当地情况。",
+    "roleHq": "总部 (HQ)",
+    "roleBranch": "海外法人",
+    "headcountUnit": "人",
+    "totalLabel": "5个据点总人力约 {count} 人",
+    "offices": {
+      "seoul": {
+        "city": "首尔",
+        "description": "全公司运营统筹、销售与报价、韩国出发的空运·快递运营。"
+      },
+      "shanghai": {
+        "city": "上海",
+        "description": "CFS 整合运营与 SEA / SEA-AIR 联运据点。"
+      },
+      "weihai": {
+        "city": "威海",
+        "description": "负责山东-仁川航线及轮渡衔接运输。"
+      },
+      "guangzhou": {
+        "city": "广州",
+        "description": "负责华南地区集货与广东-上海 CFS 衔接。"
+      },
+      "hanoi": {
+        "city": "河内",
+        "description": "越南内陆运输与跨境卡车运输的运营据点。"
+      }
+    }
+  },
+  "tracking": {
+    "title": "货物追踪",
+    "subtitle": "输入运单号即可查询当前运输状态与预计到达日期。",
+    "inputPlaceholder": "请输入运单号",
+    "inputLabel": "运单号",
+    "search": "查询",
+    "searching": "查询中...",
+    "emptyPrompt": "请输入运单号后点击查询。",
+    "demoNotice": "目前仅登记了演示数据。请使用以下单号试查。",
+    "notFoundTitle": "未查询到结果",
+    "shippedAt": "集货日",
+    "estimatedArrival": "预计到达日",
+    "elapsedRatio": "已用时比例",
+    "elapsedDetail": "(已过 {elapsed} 天 / 标准 {standard} 天)",
+    "estimateNote": "标准运输天数为行业平均估算值，可能与实际所需时间不同。",
+    "currentLocation": "当前位置",
+    "errorEmpty": "请输入运单号。",
+    "errorNetwork": "无法连接服务器。请稍后重试。",
+    "riskNormal": "运输中，处于预计运输天数的正常范围内。",
+    "riskAtRisk": "预计到达日临近，可能发生延误。",
+    "riskDelayed": "已超过预计运输天数，请联系负责人。"
+  },
+  "modes": {
+    "AIR": "空运",
+    "SEA": "海运",
+    "SEA_AIR": "海空联运",
+    "TRUCK_DOMESTIC": "陆运(国内)",
+    "TRUCK_CROSSBORDER": "陆运(跨境)",
+    "RAIL": "铁路",
+    "EXPRESS": "快递"
+  },
+  "riskLevels": {
+    "normal": "正常",
+    "atRisk": "延误风险",
+    "delayed": "延误"
+  },
+  "faq": {
+    "badge": "常见问题",
+    "title": "常见问题",
+    "description": "整理了关于报价、运输时间、通关手续的常见咨询内容。",
+    "items": [
+      {
+        "question": "如何申请报价？",
+        "answer": "请告知起运地与目的地、货物品名与重量·体积、期望交期，负责人确认后会提供报价。可通过页面下方的咨询表单或公司邮箱提交。"
+      },
+      {
+        "question": "可以使用哪些运输模式？",
+        "answer": "我们运营空运、海运(SEA / SEA-AIR 联运)、陆运、铁路、快递5种模式。告知交期与成本条件后，我们会以单一模式或联运方式设计最优路线。"
+      },
+      {
+        "question": "可以承接中国·越南当地运输吗？",
+        "answer": "可以。我们直接运营上海、威海、广州、河内当地法人，自主处理中国全境31个省的 FTL/LTL 以及越南·泰国方向的跨境卡车运输。"
+      },
+      {
+        "question": "运输需要多长时间？",
+        "answer": "视运输方式与航线而定。快递从韩国至欧洲为5~7天门到门，空运通常需数日，海运视航线需数周，另需加上通关时间。"
+      },
+      {
+        "question": "如何确认货物位置？",
+        "answer": "通过自建 JSL-EXPRESS 系统的 API 对接，可实时确认配送状态；长期合约客户还可在管理后台直接查询进行中的货件。"
+      },
+      {
+        "question": "物流咨询包含哪些内容？",
+        "answer": "面向货主提供供应链诊断、多式联运路线设计、物流伙伴优化、电商·FBA 咨询。面向货代支持海外拓展战略咨询、当地法人设立陪同、伙伴对接、政府扶持资金申请。"
+      }
+    ],
+    "contactPrompt": "如果没有找到您需要的答案，欢迎随时联系我们。",
+    "contactCta": "联系我们"
+  },
+  "cta": {
+    "badge": "物流咨询",
+    "highlights": [
+      "空运 · 海运 · 陆运 · 铁路 · 快递",
+      "物流咨询",
+      "当地法人直营"
+    ],
+    "headlineStart": "复杂的国际物流，",
+    "headlineHighlight": "在一处",
+    "headlineEnd": "解决",
+    "description": "只需告知航线与货物条件，负责人便会为您整理最优运输方案与预估费用。",
+    "primaryCta": "立即询价",
+    "secondaryCta": "了解服务",
+    "trustIndicators": [
+      "5个据点直营运营",
+      "5+1 全线服务",
+      "实时货物可视化"
+    ]
+  },
+  "contact": {
+    "badge": "联系我们",
+    "title": "需要运输货物吗？",
+    "description": "留下航线与货物信息，负责人确认后会为您提供报价与船期。",
+    "channelQuote": {
+      "title": "报价咨询",
+      "description": "告知起运地·目的地与货物信息，我们会提供运输方案与预估费用。"
+    },
+    "channelTracking": {
+      "title": "货物追踪",
+      "description": "如需了解进行中货件的运输状况，请提供预订号后联系我们。"
+    },
+    "channelEmail": {
+      "title": "邮件咨询"
+    },
+    "formTitle": "留下咨询",
+    "fieldCompany": "公司名称",
+    "fieldName": "联系人",
+    "fieldEmail": "邮箱",
+    "fieldSubject": "主题",
+    "fieldMessage": "咨询内容",
+    "placeholderCompany": "示例贸易有限公司",
+    "placeholderName": "张三",
+    "placeholderEmail": "name@example.com",
+    "placeholderSubject": "仁川 → 欧洲 快递报价咨询",
+    "placeholderMessage": "同时写明货物品名、重量·体积、起运地与目的地、期望交期，我们可以更快回复。",
+    "consentLabel": "我同意收集与使用个人信息。(必填)",
+    "consentLink": "查看隐私政策全文",
+    "consentDetail": "收集项目：公司名称、联系人、邮箱、咨询内容 · 使用目的：咨询答复 · 保存期限：3年",
+    "submit": "发送咨询",
+    "submitting": "发送中...",
+    "successTitle": "咨询已提交。",
+    "successDescription": "负责人确认后会尽快与您联系。",
+    "errorTitle": "咨询提交失败。",
+    "businessHours": "工作日 09:00 - 18:00 (韩国时间)"
+  },
+  "footer": {
+    "description": "2023年成立的综合物流企业，直接运营首尔、上海、威海、广州、河内5个据点，提供空运·海运·陆运·铁路·快递及物流咨询服务。",
+    "newsletterTitle": "订阅物流资讯",
+    "newsletterDescription": "我们会通过邮件发送运价动态与航线通知。",
+    "newsletterPlaceholder": "请输入邮箱地址",
+    "newsletterSubmit": "订阅",
+    "colServices": "服务",
+    "colCompany": "公司",
+    "colSupport": "客户支持",
+    "colLegal": "条款",
+    "linkQuote": "申请报价",
+    "linkNotice": "公告",
+    "linkTerms": "使用条款",
+    "linkPrivacy": "隐私政策",
+    "rights": "All rights reserved."
+  },
+  "plans": {
+    "badge": "费用说明",
+    "title": "根据货物条件核算报价",
+    "description": "费用因运输区段、货物重量与体积、交期条件而异。请参考以下使用形态并与我们联系，我们会提供详细报价。",
+    "note": "条件因航线与货量而异。",
+    "noteCta": "联系负责人",
+    "includesPrevious": "包含 {plan} 的提供范围",
+    "spot": {
+      "name": "临时运输",
+      "description": "按单次需要使用所需区段的一次性运输",
+      "priceLabel": "按单报价",
+      "priceCaption": "依货物条件核算",
+      "cta": "咨询报价",
+      "features": [
+        "空运 · 海运 · 陆运 单一区段运输",
+        "按单报价及船期告知",
+        "提供基础货物追踪",
+        "可选择通关代办"
+      ]
+    },
+    "contract": {
+      "name": "长期合约",
+      "description": "以合约单价运营定期产生的货量",
+      "priceLabel": "月度定额报价",
+      "priceCaption": "按货量协商单价",
+      "cta": "申请咨询",
+      "features": [
+        "按航线适用合约单价",
+        "配置专属负责人",
+        "定期船期预先分配",
+        "月度物流绩效报表",
+        "衔接仓储服务"
+      ]
+    },
+    "tpl": {
+      "name": "3PL 委托",
+      "description": "从仓储到配送的物流全流程委托运营",
+      "priceLabel": "定制报价",
+      "priceCaption": "按运营范围协商",
+      "cta": "咨询导入",
+      "features": [
+        "物流中心仓储及库存管理",
+        "出入库 · 流通加工代办",
+        "订单联动出库处理",
+        "配置专职运营人员",
+        "定制报表及结算支持"
+      ]
+    }
+  }
+}

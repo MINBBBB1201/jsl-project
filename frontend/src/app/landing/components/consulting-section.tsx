@@ -5,9 +5,9 @@ import { ArrowRight } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { Card, CardContent } from '@/components/ui/card'
-import { consulting } from '@/config/landing-content'
-
+import { useContent } from '@/config/use-content'
 export function ConsultingSection() {
+  const { consulting } = useContent()
   return (
     <section id="consulting" className="py-24 sm:py-32">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">

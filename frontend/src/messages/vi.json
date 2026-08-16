@@ -1,0 +1,456 @@
+{
+  "common": {
+    "companyName": "JSL Logistics",
+    "backHome": "Về trang chủ",
+    "languageLabel": "Chọn ngôn ngữ"
+  },
+  "nav": {
+    "home": "Trang chủ",
+    "about": "Giới thiệu",
+    "services": "Dịch vụ",
+    "consulting": "Tư vấn logistics",
+    "network": "Mạng lưới toàn cầu",
+    "tracking": "Tra cứu vận đơn",
+    "faq": "Câu hỏi thường gặp",
+    "contact": "Liên hệ",
+    "dashboard": "Bảng điều khiển",
+    "signIn": "Đăng nhập",
+    "quoteCta": "Yêu cầu báo giá"
+  },
+  "hero": {
+    "badge": "Hàng không · Đường biển · Đường bộ · Đường sắt · Chuyển phát nhanh",
+    "headlineStart": "Kết nối Hàn Quốc · Trung Quốc · Việt Nam",
+    "headlineHighlight": "Đối tác logistics tổng hợp 5+1",
+    "headlineEnd": "",
+    "subheadline": "Từ khi thành lập năm 2023, chúng tôi trực tiếp vận hành 5 cơ sở tại Seoul, Thượng Hải, Uy Hải, Quảng Châu và Hà Nội, cung cấp 5 phương thức vận tải cùng dịch vụ tư vấn logistics qua một đầu mối duy nhất.",
+    "primaryCta": "Yêu cầu báo giá",
+    "secondaryCta": "Tìm hiểu dịch vụ"
+  },
+  "stats": {
+    "revenue": {
+      "value": "18 tỷ KRW",
+      "label": "Doanh thu năm",
+      "description": "Năm tài chính 2025"
+    },
+    "locations": {
+      "value": "5",
+      "label": "Cơ sở toàn cầu",
+      "description": "Trụ sở Seoul + 4 pháp nhân nước ngoài trực thuộc"
+    },
+    "clients": {
+      "value": "30+",
+      "label": "Khách hàng",
+      "description": "Sản xuất · Thương mại điện tử · Phân phối"
+    },
+    "partners": {
+      "value": "50+",
+      "label": "Đối tác",
+      "description": "Mạng lưới đối tác toàn cầu"
+    }
+  },
+  "volumes": {
+    "title": "Sản lượng xử lý hàng tháng",
+    "description": "Sản lượng trung bình tháng của 3 phương thức: hàng không, đường biển, đường bộ.",
+    "airUnit": "tấn / tháng",
+    "seaUnit": "TEU / tháng",
+    "truckUnit": "xe / tháng"
+  },
+  "partners": {
+    "title": "Hãng hàng không & đối tác chuyển phát",
+    "description": "Trên các tuyến chính, chúng tôi phối hợp vận chuyển cùng các hãng hàng không và chuyển phát dưới đây.",
+    "groupAir": "Hàng không",
+    "groupExpress": "Chặng cuối chuyển phát",
+    "koreanAir": "Korean Air",
+    "chinaEastern": "China Eastern",
+    "note": "Các thương hiệu thuộc quyền sở hữu của công ty tương ứng."
+  },
+  "about": {
+    "badge": "Giới thiệu",
+    "title": "Năm phương thức vận tải, một đối tác",
+    "description": "JSL LOGISTICS là doanh nghiệp logistics tổng hợp được thành lập năm 2023. Từ trụ sở tại Seoul, chúng tôi trực tiếp vận hành 4 pháp nhân nước ngoài tại Thượng Hải, Uy Hải, Quảng Châu và Hà Nội, cung cấp dịch vụ logistics trọn gói trên 5 phương thức: hàng không, đường biển, đường bộ, đường sắt và chuyển phát nhanh.",
+    "valuesTitle": "Vì sao chọn JSL",
+    "values": {
+      "fullLineup": {
+        "title": "Logistics trọn gói 5+1",
+        "description": "Năm phương thức vận tải cùng dịch vụ tư vấn logistics, tất cả từ một đối tác duy nhất."
+      },
+      "ownedNetwork": {
+        "title": "Cơ sở toàn cầu tự vận hành",
+        "description": "Chúng tôi trực tiếp vận hành pháp nhân tại Hàn Quốc, Trung Quốc và Việt Nam, cung cấp dịch vụ ổn định mà không qua đại lý trung gian."
+      },
+      "manufacturing": {
+        "title": "Kinh nghiệm vận hành cho doanh nghiệp sản xuất toàn cầu",
+        "description": "Đội ngũ có kinh nghiệm vận hành chuỗi cung ứng cho tập đoàn lớn, thiết kế logistics từ góc nhìn của chủ hàng."
+      },
+      "platform": {
+        "title": "Nền tảng vận hành số tự phát triển",
+        "description": "Các hệ thống nội bộ như JSL-EXPRESS cung cấp khả năng theo dõi hàng hóa và trạng thái giao nhận theo thời gian thực."
+      }
+    },
+    "ctaText": "Chúng tôi sẽ đề xuất phương án vận chuyển phù hợp với loại hàng và tuyến của bạn.",
+    "primaryCta": "Yêu cầu báo giá",
+    "secondaryCta": "Xem dịch vụ"
+  },
+  "services": {
+    "badge": "Dịch vụ",
+    "title": "Trọn bộ 5 phương thức vận tải",
+    "description": "Chúng tôi kết hợp hàng không, đường biển, đường bộ, đường sắt và chuyển phát nhanh để thiết kế tuyến tối ưu theo thời gian giao hàng và chi phí.",
+    "modes": {
+      "AIR": {
+        "title": "Vận tải hàng không",
+        "summary": "Dịch vụ hàng không chuyên cho hàng điện tử và thương mại điện tử.",
+        "highlights": [
+          "Các tuyến chính: Hoa Nam → Sơn Đông, Sơn Đông → Incheon (ICN)",
+          "Kết nối chặng dài từ Incheon đi châu Âu / LAX / ORD",
+          "Xử lý 200 tấn mỗi tháng"
+        ]
+      },
+      "SEA": {
+        "title": "Đường biển · Vận tải kết hợp biển-hàng không",
+        "summary": "Vận tải đường biển và SEA-AIR kết hợp gom hàng CFS Quảng Đông–Thượng Hải với vận tải đường bộ nội địa Trung Quốc và phà.",
+        "highlights": [
+          "Gom hàng CFS Quảng Đông–Thượng Hải + vận tải bộ nội địa Trung Quốc + kết nối phà",
+          "Vận tải SEA-AIR đi Mỹ và châu Âu qua trung chuyển Incheon",
+          "Quy trình chuẩn 8 bước từ nhập kho CFS Thượng Hải đến nhập kho sân bay",
+          "Xử lý 100 TEU mỗi tháng"
+        ]
+      },
+      "TRUCK": {
+        "title": "Vận tải đường bộ",
+        "summary": "Chúng tôi trực tiếp vận hành vận tải đường bộ khắp Trung Quốc và qua biên giới sang Đông Nam Á.",
+        "highlights": [
+          "FTL / LTL phủ 31 tỉnh của Trung Quốc, 300 xe mỗi tháng",
+          "Vận tải xuyên biên giới đi Việt Nam và Thái Lan, 150 xe mỗi tháng, tự vận hành"
+        ]
+      },
+      "RAIL": {
+        "title": "Vận tải đường sắt",
+        "summary": "Đường sắt Á–Âu nối Trung Quốc với châu Âu, cùng dịch vụ kết hợp Sea&Rail.",
+        "highlights": [
+          "Đường sắt Á–Âu từ Trung Quốc đi châu Âu / Nga / Trung Á",
+          "Kết nối các trung tâm nội địa Trung Quốc như Tây An, Thành Đô, Trùng Khánh",
+          "Vận tải kết hợp Sea&Rail qua Incheon và Busan"
+        ]
+      },
+      "EXPRESS": {
+        "title": "Chuyển phát nhanh",
+        "summary": "Chuyển phát door-to-door với trạng thái giao nhận cập nhật thời gian thực qua hệ thống API tự phát triển.",
+        "highlights": [
+          "Hàn Quốc → châu Âu 5–7 ngày, door-to-door",
+          "Tích hợp API thời gian thực với hệ thống 'JSL-EXPRESS Logistics' của chúng tôi",
+          "Đối tác chặng cuối tại địa phương gồm Royal Mail, Deutsche Post, DHL và dpd"
+        ]
+      }
+    },
+    "valueAdded": {
+      "title": "Thông quan và lưu kho tại một đầu mối",
+      "description": "Chúng tôi thực hiện thủ tục thông quan cùng đại lý hải quan và hỗ trợ các khâu sau nhập hàng qua dịch vụ lưu kho và quản lý tồn kho.",
+      "customs": {
+        "title": "Dịch vụ thông quan",
+        "description": "Khai báo xuất nhập khẩu, tính thuế, kiểm tra điều kiện và các thủ tục liên quan."
+      },
+      "warehouse": {
+        "title": "Lưu kho",
+        "description": "Kho thường và kho kiểm soát nhiệt độ, cùng kho ngoại quan gần cảng."
+      },
+      "inventory": {
+        "title": "Tồn kho · Gia công phân phối",
+        "description": "Quản lý xuất nhập kho, lấy hàng, đóng gói và dán nhãn."
+      },
+      "reporting": {
+        "title": "Theo dõi & báo cáo",
+        "description": "Tra cứu tình trạng vận chuyển thời gian thực và báo cáo kết quả logistics hàng tháng."
+      },
+      "primaryCta": "Đăng ký tư vấn",
+      "secondaryCta": "Bảng giá"
+    }
+  },
+  "consulting": {
+    "badge": "NEW",
+    "title": "Tư vấn logistics",
+    "description": "Không dừng ở vận chuyển, chúng tôi cùng bạn thiết kế cấu trúc chuỗi cung ứng và chiến lược mở rộng ra nước ngoài. Chủ hàng và công ty giao nhận có bài toán khác nhau nên cách tiếp cận cũng khác nhau.",
+    "clientAudience": "Chủ hàng (Client)",
+    "clientDescription": "Chúng tôi chẩn đoán cấu trúc chuỗi cung ứng và thiết kế lại chi phí cùng thời gian giao hàng.",
+    "forwarderAudience": "Công ty giao nhận (Forwarder)",
+    "forwarderDescription": "Chúng tôi đồng hành theo từng giai đoạn mở rộng ra nước ngoài, đến tận khâu triển khai tại địa phương.",
+    "items": {
+      "diagnosis": {
+        "title": "Chẩn đoán chuỗi cung ứng",
+        "subtitle": "Supply Chain Diagnosis",
+        "description": "Phân tích các điểm nghẽn về chi phí và thời gian trong cấu trúc logistics hiện tại.",
+        "detail": "Chúng tôi rà soát dòng logistics đang vận hành theo từng chặng và chỉ ra chi phí cùng thời gian phát sinh ở đâu. Sau đó đề xuất những điểm cần cải thiện kèm thứ tự ưu tiên."
+      },
+      "routing": {
+        "title": "Thiết kế tuyến đa phương thức",
+        "subtitle": "Multi-mode Routing",
+        "description": "Kết hợp hàng không, đường biển, đường bộ và đường sắt để thiết kế tuyến phù hợp thời gian và chi phí.",
+        "detail": "Chúng tôi kết hợp hàng không, đường biển, đường bộ, đường sắt và chuyển phát nhanh để thiết kế tuyến phù hợp với điều kiện thời gian và chi phí. Đồng thời xem xét chuyển các chặng đang dùng một phương thức sang vận tải kết hợp."
+      },
+      "vendor": {
+        "title": "Tối ưu đối tác logistics",
+        "subtitle": "Vendor Consolidation",
+        "description": "Hợp nhất các nhà cung cấp phân tán để giảm đầu mối quản lý và sắp xếp lại cơ cấu đơn giá.",
+        "detail": "Chúng tôi hợp nhất các đối tác logistics đang phân tán, giảm số đầu mối quản lý và sắp xếp lại cơ cấu đơn giá. Cùng bạn quyết định giữ lại và hợp nhất đối tác nào theo từng chặng."
+      },
+      "ecommerce": {
+        "title": "Tư vấn logistics thương mại điện tử / FBA",
+        "subtitle": "E-commerce & FBA",
+        "description": "Tư vấn vận hành logistics phù hợp đặc thù hàng thương mại điện tử và yêu cầu nhập kho FBA.",
+        "detail": "Chúng tôi tư vấn phương thức vận hành phù hợp với đặc thù hàng thương mại điện tử có đơn vị đặt hàng nhỏ và biến động lớn, cùng các yêu cầu nhập kho FBA. Kế hoạch vận chuyển được xây dựng có tính đến quy cách nhập kho và thời gian giao hàng."
+      },
+      "marketEntry": {
+        "title": "Tư vấn chiến lược mở rộng ra nước ngoài",
+        "subtitle": "Market Entry Strategy",
+        "description": "Cùng thiết kế thị trường mục tiêu, cách thức thâm nhập và cơ cấu vận hành ban đầu.",
+        "detail": "Chúng tôi cùng bạn xem xét nên vào thị trường nào, theo hình thức nào và tổ chức bộ máy vận hành ban đầu ra sao. Tư vấn dựa trên kinh nghiệm vận hành thực tế tại địa phương."
+      },
+      "entitySetup": {
+        "title": "Đồng hành thành lập pháp nhân địa phương",
+        "subtitle": "Local Entity Setup",
+        "description": "Hỗ trợ toàn bộ quá trình thành lập dựa trên kinh nghiệm vận hành pháp nhân tại Hàn Quốc, Trung Quốc và Việt Nam.",
+        "detail": "Dựa trên kinh nghiệm trực tiếp vận hành pháp nhân tại Thượng Hải, Uy Hải, Quảng Châu và Hà Nội, chúng tôi cùng bạn thực hiện quy trình thành lập. Chúng tôi hướng dẫn hồ sơ cần chuẩn bị, trình tự thực hiện và đồng hành đến khâu triển khai tại địa phương."
+      },
+      "matching": {
+        "title": "Kết nối đối tác",
+        "subtitle": "Partner Matching",
+        "description": "Kết nối mạng lưới đối tác địa phương đã được kiểm chứng để tạo nền tảng kinh doanh ban đầu.",
+        "detail": "Chúng tôi giới thiệu các đối tác địa phương đã kiểm chứng qua giao dịch trực tiếp. Để bạn nhanh chóng tạo nền tảng kinh doanh, chúng tôi bắt đầu từ đối tác ở chặng bạn cần nhất."
+      },
+      "funding": {
+        "title": "Hỗ trợ xin nguồn tài trợ chính phủ",
+        "subtitle": "Government Funding",
+        "description": "Hỗ trợ tìm kiếm các chương trình hỗ trợ của chính phủ liên quan đến mở rộng ra nước ngoài và thủ tục nộp hồ sơ.",
+        "detail": "Chúng tôi tìm và giới thiệu các chương trình hỗ trợ của chính phủ liên quan đến mở rộng ra nước ngoài, đồng thời cùng chuẩn bị quy trình nộp hồ sơ. Trước tiên chúng tôi xác nhận điều kiện tham gia và các yêu cầu cần thiết."
+      }
+    },
+    "primaryCta": "Liên hệ tư vấn",
+    "detailCta": "Xem chi tiết",
+    "page": {
+      "lead": "Chúng tôi không chỉ vận chuyển mà còn cùng bạn thiết kế cấu trúc chuỗi cung ứng và chiến lược mở rộng ra nước ngoài. Chủ hàng và công ty giao nhận đối mặt với những bài toán khác nhau nên cách tiếp cận cũng khác nhau.",
+      "note": "Chúng tôi tư vấn dựa trên kinh nghiệm thực địa từ việc trực tiếp vận hành trụ sở Seoul cùng 4 pháp nhân nước ngoài tại Thượng Hải, Uy Hải, Quảng Châu và Hà Nội.",
+      "contactTitle": "Bạn cần tư vấn logistics?",
+      "contactDescription": "Hãy cho chúng tôi biết cấu trúc logistics hiện tại và vấn đề bạn đang cân nhắc, bộ phận phụ trách sẽ liên hệ lại.",
+      "contactCta": "Gửi yêu cầu"
+    }
+  },
+  "network": {
+    "badge": "Mạng lưới toàn cầu",
+    "title": "Năm cơ sở do chúng tôi trực tiếp vận hành",
+    "description": "Trụ sở Seoul cùng 4 pháp nhân nước ngoài tại Thượng Hải, Uy Hải, Quảng Châu và Hà Nội đều do chúng tôi trực tiếp vận hành. Không qua đại lý trung gian nên có thể phản ứng ngay với tình hình tại địa phương.",
+    "roleHq": "Trụ sở (HQ)",
+    "roleBranch": "Pháp nhân nước ngoài",
+    "headcountUnit": "người",
+    "totalLabel": "Tổng nhân sự 5 cơ sở khoảng {count} người",
+    "offices": {
+      "seoul": {
+        "city": "Seoul",
+        "description": "Điều hành chung, kinh doanh và báo giá, vận hành hàng không · chuyển phát xuất phát từ Hàn Quốc."
+      },
+      "shanghai": {
+        "city": "Thượng Hải",
+        "description": "Trung tâm gom hàng CFS và vận tải kết hợp SEA / SEA-AIR."
+      },
+      "weihai": {
+        "city": "Uy Hải",
+        "description": "Phụ trách tuyến Sơn Đông–Incheon và vận tải kết nối phà."
+      },
+      "guangzhou": {
+        "city": "Quảng Châu",
+        "description": "Phụ trách gom hàng khu vực Hoa Nam và kết nối CFS Quảng Đông–Thượng Hải."
+      },
+      "hanoi": {
+        "city": "Hà Nội",
+        "description": "Cơ sở vận hành vận tải nội địa Việt Nam và vận tải xuyên biên giới."
+      }
+    }
+  },
+  "tracking": {
+    "title": "Tra cứu vận đơn",
+    "subtitle": "Nhập số vận đơn để xem tình trạng vận chuyển hiện tại và ngày dự kiến đến.",
+    "inputPlaceholder": "Nhập số vận đơn",
+    "inputLabel": "Số vận đơn",
+    "search": "Tra cứu",
+    "searching": "Đang tra cứu...",
+    "emptyPrompt": "Nhập số vận đơn rồi nhấn Tra cứu.",
+    "demoNotice": "Hiện chỉ có dữ liệu demo. Hãy thử với các số dưới đây.",
+    "notFoundTitle": "Không tìm thấy kết quả",
+    "shippedAt": "Ngày lấy hàng",
+    "estimatedArrival": "Ngày dự kiến đến",
+    "elapsedRatio": "Tỷ lệ thời gian đã trôi qua",
+    "elapsedDetail": "(đã qua {elapsed} ngày / tiêu chuẩn {standard} ngày)",
+    "estimateNote": "Số ngày vận chuyển tiêu chuẩn là ước tính trung bình ngành và có thể khác thời gian thực tế.",
+    "currentLocation": "Vị trí hiện tại",
+    "errorEmpty": "Vui lòng nhập số vận đơn.",
+    "errorNetwork": "Không kết nối được máy chủ. Vui lòng thử lại sau.",
+    "riskNormal": "Đang vận chuyển trong khoảng thời gian dự kiến.",
+    "riskAtRisk": "Ngày dự kiến đến đang tới gần. Có thể phát sinh chậm trễ.",
+    "riskDelayed": "Đã vượt quá thời gian vận chuyển dự kiến. Vui lòng liên hệ bộ phận phụ trách."
+  },
+  "modes": {
+    "AIR": "Hàng không",
+    "SEA": "Đường biển",
+    "SEA_AIR": "Biển-Hàng không",
+    "TRUCK_DOMESTIC": "Đường bộ (nội địa)",
+    "TRUCK_CROSSBORDER": "Đường bộ (xuyên biên giới)",
+    "RAIL": "Đường sắt",
+    "EXPRESS": "Chuyển phát nhanh"
+  },
+  "riskLevels": {
+    "normal": "Bình thường",
+    "atRisk": "Nguy cơ chậm",
+    "delayed": "Chậm trễ"
+  },
+  "faq": {
+    "badge": "Câu hỏi thường gặp",
+    "title": "Câu hỏi thường gặp",
+    "description": "Tổng hợp các câu hỏi thường gặp về báo giá, thời gian vận chuyển và thủ tục thông quan.",
+    "items": [
+      {
+        "question": "Làm thế nào để yêu cầu báo giá?",
+        "answer": "Vui lòng cho biết điểm đi và điểm đến, mặt hàng cùng trọng lượng · thể tích, và thời gian giao hàng mong muốn; bộ phận phụ trách sẽ kiểm tra và gửi báo giá. Bạn có thể gửi qua biểu mẫu ở cuối trang hoặc email chính của công ty."
+      },
+      {
+        "question": "Có thể sử dụng những phương thức vận tải nào?",
+        "answer": "Chúng tôi vận hành cả 5 phương thức: hàng không, đường biển (SEA / SEA-AIR kết hợp), đường bộ, đường sắt và chuyển phát nhanh. Hãy cho biết điều kiện thời gian và chi phí, chúng tôi sẽ thiết kế tuyến tối ưu bằng một phương thức hoặc vận tải kết hợp."
+      },
+      {
+        "question": "Có nhận vận chuyển nội địa tại Trung Quốc · Việt Nam không?",
+        "answer": "Có. Vì trực tiếp vận hành pháp nhân tại Thượng Hải, Uy Hải, Quảng Châu và Hà Nội, chúng tôi tự xử lý FTL/LTL khắp 31 tỉnh của Trung Quốc và vận tải xuyên biên giới đi Việt Nam · Thái Lan."
+      },
+      {
+        "question": "Thời gian vận chuyển mất bao lâu?",
+        "answer": "Tùy phương thức và tuyến. Chuyển phát nhanh từ Hàn Quốc đi châu Âu mất 5–7 ngày door-to-door, hàng không thường vài ngày, đường biển mất vài tuần tùy tuyến, và có thể cộng thêm thời gian thông quan."
+      },
+      {
+        "question": "Làm sao kiểm tra vị trí hàng hóa?",
+        "answer": "Thông qua tích hợp API của hệ thống JSL-EXPRESS do chúng tôi tự xây dựng, bạn có thể kiểm tra trạng thái giao nhận theo thời gian thực; khách hàng hợp đồng dài hạn còn có thể tra cứu trực tiếp các lô hàng đang chạy trên bảng điều khiển."
+      },
+      {
+        "question": "Tư vấn logistics gồm những nội dung gì?",
+        "answer": "Với chủ hàng, chúng tôi cung cấp chẩn đoán chuỗi cung ứng, thiết kế tuyến đa phương thức, tối ưu đối tác logistics và tư vấn thương mại điện tử · FBA. Với công ty giao nhận, chúng tôi hỗ trợ tư vấn chiến lược mở rộng ra nước ngoài, đồng hành thành lập pháp nhân địa phương, kết nối đối tác và xin nguồn tài trợ chính phủ."
+      }
+    ],
+    "contactPrompt": "Nếu chưa tìm thấy câu trả lời bạn cần, hãy liên hệ với chúng tôi bất cứ lúc nào.",
+    "contactCta": "Liên hệ"
+  },
+  "cta": {
+    "badge": "Tư vấn logistics",
+    "highlights": [
+      "Hàng không · Đường biển · Đường bộ · Đường sắt · Chuyển phát nhanh",
+      "Tư vấn logistics",
+      "Pháp nhân địa phương trực thuộc"
+    ],
+    "headlineStart": "Logistics quốc tế phức tạp,",
+    "headlineHighlight": "giải quyết tại một nơi",
+    "headlineEnd": "",
+    "description": "Chỉ cần cho biết tuyến và điều kiện hàng hóa, bộ phận phụ trách sẽ tổng hợp phương án vận chuyển tối ưu cùng chi phí dự kiến.",
+    "primaryCta": "Yêu cầu báo giá",
+    "secondaryCta": "Tìm hiểu dịch vụ",
+    "trustIndicators": [
+      "5 cơ sở trực tiếp vận hành",
+      "Trọn bộ 5+1",
+      "Theo dõi hàng hóa thời gian thực"
+    ]
+  },
+  "contact": {
+    "badge": "Liên hệ",
+    "title": "Bạn cần vận chuyển hàng hóa?",
+    "description": "Để lại thông tin tuyến và hàng hóa, bộ phận phụ trách sẽ kiểm tra và gửi báo giá cùng lịch trình.",
+    "channelQuote": {
+      "title": "Yêu cầu báo giá",
+      "description": "Cho biết điểm đi · điểm đến và thông tin hàng hóa, chúng tôi sẽ đề xuất phương án vận chuyển và chi phí dự kiến."
+    },
+    "channelTracking": {
+      "title": "Theo dõi hàng hóa",
+      "description": "Nếu cần biết tình trạng lô hàng đang chạy, vui lòng liên hệ kèm số booking."
+    },
+    "channelEmail": {
+      "title": "Liên hệ qua email"
+    },
+    "formTitle": "Gửi yêu cầu",
+    "fieldCompany": "Tên công ty",
+    "fieldName": "Người liên hệ",
+    "fieldEmail": "Email",
+    "fieldSubject": "Tiêu đề",
+    "fieldMessage": "Nội dung",
+    "placeholderCompany": "Công ty TNHH Thương mại Mẫu",
+    "placeholderName": "Nguyễn Văn A",
+    "placeholderEmail": "name@example.com",
+    "placeholderSubject": "Yêu cầu báo giá: Incheon → châu Âu, chuyển phát nhanh",
+    "placeholderMessage": "Ghi kèm mặt hàng, trọng lượng · thể tích, điểm đi và điểm đến, thời gian giao hàng mong muốn sẽ giúp chúng tôi phản hồi nhanh hơn.",
+    "consentLabel": "Tôi đồng ý cho thu thập và sử dụng thông tin cá nhân. (Bắt buộc)",
+    "consentLink": "Xem toàn văn chính sách bảo mật",
+    "consentDetail": "Thông tin thu thập: tên công ty, người liên hệ, email, nội dung yêu cầu · Mục đích: phản hồi yêu cầu · Thời gian lưu: 3 năm",
+    "submit": "Gửi yêu cầu",
+    "submitting": "Đang gửi...",
+    "successTitle": "Yêu cầu của bạn đã được tiếp nhận.",
+    "successDescription": "Bộ phận phụ trách sẽ kiểm tra và liên hệ lại sớm.",
+    "errorTitle": "Gửi yêu cầu không thành công.",
+    "businessHours": "Ngày thường 09:00 - 18:00 (giờ Hàn Quốc)"
+  },
+  "footer": {
+    "description": "Doanh nghiệp logistics tổng hợp thành lập năm 2023, trực tiếp vận hành 5 cơ sở tại Seoul, Thượng Hải, Uy Hải, Quảng Châu và Hà Nội, cung cấp vận tải hàng không · đường biển · đường bộ · đường sắt · chuyển phát nhanh cùng dịch vụ tư vấn logistics.",
+    "newsletterTitle": "Nhận tin logistics",
+    "newsletterDescription": "Chúng tôi gửi xu hướng cước phí và thông báo tuyến qua email.",
+    "newsletterPlaceholder": "Nhập địa chỉ email",
+    "newsletterSubmit": "Đăng ký",
+    "colServices": "Dịch vụ",
+    "colCompany": "Công ty",
+    "colSupport": "Hỗ trợ",
+    "colLegal": "Điều khoản",
+    "linkQuote": "Yêu cầu báo giá",
+    "linkNotice": "Thông báo",
+    "linkTerms": "Điều khoản sử dụng",
+    "linkPrivacy": "Chính sách bảo mật",
+    "rights": "All rights reserved."
+  },
+  "plans": {
+    "badge": "Bảng giá",
+    "title": "Báo giá theo điều kiện hàng hóa",
+    "description": "Giá thay đổi theo chặng vận chuyển, trọng lượng và thể tích hàng, cùng thời hạn giao hàng. Hãy tham khảo các hình thức dưới đây và liên hệ để nhận báo giá chi tiết.",
+    "note": "Điều kiện thay đổi theo tuyến và sản lượng.",
+    "noteCta": "Liên hệ bộ phận phụ trách",
+    "includesPrevious": "Bao gồm toàn bộ phạm vi của {plan}",
+    "spot": {
+      "name": "Vận chuyển lẻ",
+      "description": "Vận chuyển một lần cho từng chặng khi có nhu cầu",
+      "priceLabel": "Báo giá theo lô",
+      "priceCaption": "Tính theo điều kiện hàng hóa",
+      "cta": "Yêu cầu báo giá",
+      "features": [
+        "Vận chuyển một chặng bằng hàng không · đường biển · đường bộ",
+        "Báo giá và lịch trình theo từng lô",
+        "Theo dõi hàng hóa cơ bản",
+        "Tùy chọn dịch vụ thông quan"
+      ]
+    },
+    "contract": {
+      "name": "Hợp đồng định kỳ",
+      "description": "Vận hành sản lượng phát sinh định kỳ theo đơn giá hợp đồng",
+      "priceLabel": "Báo giá trọn gói theo tháng",
+      "priceCaption": "Thương lượng đơn giá theo sản lượng",
+      "cta": "Đăng ký tư vấn",
+      "features": [
+        "Áp dụng đơn giá hợp đồng theo tuyến",
+        "Bố trí người phụ trách riêng",
+        "Phân bổ trước lịch trình định kỳ",
+        "Báo cáo kết quả logistics hàng tháng",
+        "Kết nối dịch vụ lưu kho"
+      ]
+    },
+    "tpl": {
+      "name": "Thuê ngoài 3PL",
+      "description": "Thuê ngoài toàn bộ quy trình logistics, từ lưu kho đến giao hàng",
+      "priceLabel": "Báo giá riêng",
+      "priceCaption": "Thương lượng theo phạm vi vận hành",
+      "cta": "Liên hệ triển khai",
+      "features": [
+        "Lưu kho và quản lý tồn kho tại trung tâm logistics",
+        "Dịch vụ xuất nhập kho · gia công phân phối",
+        "Xử lý xuất hàng liên kết đơn hàng",
+        "Bố trí nhân sự vận hành riêng",
+        "Báo cáo tùy chỉnh và hỗ trợ quyết toán"
+      ]
+    }
+  }
+}

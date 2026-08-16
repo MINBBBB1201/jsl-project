@@ -2,9 +2,11 @@
 
 import { Card, CardContent } from '@/components/ui/card'
 import { DotPattern } from '@/components/dot-pattern'
-import { stats, monthlyVolumes, volumesHeading } from '@/config/landing-content'
+import { useContent } from '@/config/use-content'
 
 export function StatsSection() {
+  const { stats, monthlyVolumes, volumesHeading } = useContent()
+
   return (
     <section className="py-12 sm:py-16 relative">
       {/* Background with transparency */}

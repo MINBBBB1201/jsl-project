@@ -1,10 +1,11 @@
 "use client"
 
-import { navigation } from '@/config/landing-content'
-
-const menuSections = navigation.megaMenu
+import { useContent } from '@/config/use-content'
 
 export function MegaMenu() {
+  const { navigation } = useContent()
+  const menuSections = navigation.megaMenu
+
   return (
     <div className="w-[700px] max-w-[95vw] p-4 sm:p-6 lg:p-8 bg-background">
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8 lg:gap-12">

@@ -4,9 +4,9 @@ import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { Card, CardContent } from '@/components/ui/card'
 import { CardDecorator } from '@/components/ui/card-decorator'
-import { about } from '@/config/landing-content'
-
+import { useContent } from '@/config/use-content'
 export function AboutSection() {
+  const { about } = useContent()
   return (
     <section id="about" className="py-24 sm:py-32">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">

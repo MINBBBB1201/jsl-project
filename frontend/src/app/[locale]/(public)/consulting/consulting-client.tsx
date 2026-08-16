@@ -1,19 +1,16 @@
-import type { Metadata } from 'next'
-import Link from 'next/link'
+"use client"
+
 import { ArrowRight, Mail } from 'lucide-react'
 
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
 import { Separator } from '@/components/ui/separator'
-import { company, consulting } from '@/config/landing-content'
+import { Link } from '@/i18n/navigation'
+import { useContent } from '@/config/use-content'
 
-export const metadata: Metadata = {
-  title: '물류 컨설팅 - JSL Logistics',
-  description: consulting.page.lead,
-}
-
-export default function ConsultingPage() {
+export function ConsultingClient() {
+  const { company, consulting } = useContent()
   const { page, groups } = consulting
 
   return (
@@ -83,8 +80,8 @@ export default function ConsultingPage() {
           </p>
 
           <div className="mt-2 flex flex-col gap-3 sm:flex-row">
-            <Button asChild size="lg" className="cursor-pointer">
-              <Link href={page.contact.primaryCta.href}>
+            <Button asChild size="lg" variant="brand" className="cursor-pointer">
+              <Link href="/landing#contact">
                 {page.contact.primaryCta.label}
                 <ArrowRight className="ms-2 size-4" aria-hidden />
               </Link>

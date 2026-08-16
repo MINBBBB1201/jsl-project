@@ -20,7 +20,7 @@ import {
 } from "@/components/ui/form"
 import { Loader2, Mail } from 'lucide-react'
 import { toast } from 'sonner'
-import { contact } from '@/config/landing-content'
+import { useContent } from '@/config/use-content'
 import { API_BASE_URL } from '@/lib/api'
 
 const contactFormSchema = z.object({
@@ -46,6 +46,8 @@ const contactFormSchema = z.object({
 })
 
 export function ContactSection() {
+  const { contact } = useContent()
+
   const form = useForm<z.infer<typeof contactFormSchema>>({
     resolver: zodResolver(contactFormSchema),
     defaultValues: {
@@ -89,17 +91,17 @@ export function ContactSection() {
           response.status === 400 && serverDetail
             ? `입력값을 확인해 주세요. (${serverDetail})`
             : `잠시 후 다시 시도해 주세요. (HTTP ${response.status})`
-        toast.error('문의 접수에 실패했습니다.', { description })
+        toast.error(contact.errorTitle, { description })
         return
       }
 
-      toast.success('문의가 접수되었습니다.', {
-        description: '담당자가 확인 후 빠르게 연락드리겠습니다.',
+      toast.success(contact.successTitle, {
+        description: contact.successDescription,
       })
       form.reset()
     } catch (error) {
       // 네트워크 오류 / 서버 미기동 등 fetch 자체가 실패한 경우
-      toast.error('문의 접수에 실패했습니다.', {
+      toast.error(contact.errorTitle, {
         description:
           error instanceof Error
             ? `서버에 연결할 수 없습니다. (${error.message})`
@@ -159,7 +161,7 @@ export function ContactSection() {
                         name="company"
                         render={({ field }) => (
                           <FormItem>
-                            <FormLabel>회사명</FormLabel>
+                            <FormLabel>{contact.fields.company}</FormLabel>
                             <FormControl>
                               <Input placeholder={contact.formPlaceholders.company} {...field} />
                             </FormControl>
@@ -172,7 +174,7 @@ export function ContactSection() {
                         name="name"
                         render={({ field }) => (
                           <FormItem>
-                            <FormLabel>담당자명</FormLabel>
+                            <FormLabel>{contact.fields.name}</FormLabel>
                             <FormControl>
                               <Input placeholder={contact.formPlaceholders.name} {...field} />
                             </FormControl>
@@ -186,7 +188,7 @@ export function ContactSection() {
                       name="email"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel>이메일</FormLabel>
+                          <FormLabel>{contact.fields.email}</FormLabel>
                           <FormControl>
                             <Input type="email" placeholder={contact.formPlaceholders.email} {...field} />
                           </FormControl>
@@ -199,7 +201,7 @@ export function ContactSection() {
                       name="subject"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel>제목</FormLabel>
+                          <FormLabel>{contact.fields.subject}</FormLabel>
                           <FormControl>
                             <Input placeholder={contact.formPlaceholders.subject} {...field} />
                           </FormControl>
@@ -212,7 +214,7 @@ export function ContactSection() {
                       name="message"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel>문의 내용</FormLabel>
+                          <FormLabel>{contact.fields.message}</FormLabel>
                           <FormControl>
                             <Textarea
                               placeholder={contact.formPlaceholders.message}
@@ -246,7 +248,7 @@ export function ContactSection() {
                             */}
                             <div className="flex flex-wrap items-center gap-x-2">
                               <FormLabel className="font-normal cursor-pointer">
-                                개인정보 수집·이용에 동의합니다. (필수)
+                                {contact.consentLabel}
                               </FormLabel>
                               <Link
                                 href="/privacy"
@@ -254,15 +256,14 @@ export function ContactSection() {
                                 rel="noopener noreferrer"
                                 className="text-sm underline underline-offset-4 text-muted-foreground hover:text-primary"
                               >
-                                개인정보처리방침 전문 보기
+                                {contact.consentLink}
                               </Link>
                             </div>
                             <p
                               id="privacy-consent-detail"
                               className="text-xs text-muted-foreground"
                             >
-                              수집항목: 회사명, 담당자명, 이메일, 문의 내용 ·
-                              이용목적: 문의 답변 및 상담 · 보유기간: 3년
+                              {contact.consentDetail}
                             </p>
                             <FormMessage />
                           </div>
@@ -276,7 +277,7 @@ export function ContactSection() {
                       disabled={isSubmitting || !hasConsented}
                     >
                       {isSubmitting && <Loader2 className="h-4 w-4 animate-spin" />}
-                      {isSubmitting ? '전송 중...' : contact.submitLabel}
+                      {isSubmitting ? contact.submittingLabel : contact.submitLabel}
                     </Button>
                   </form>
                 </Form>

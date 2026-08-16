@@ -3,9 +3,9 @@
 import { Badge } from '@/components/ui/badge'
 import { Card, CardContent } from '@/components/ui/card'
 import { CardDecorator } from '@/components/ui/card-decorator'
-import { network } from '@/config/landing-content'
-
+import { useContent } from '@/config/use-content'
 export function NetworkSection() {
+  const { network } = useContent()
   return (
     <section id="network" className="py-24 sm:py-32 bg-muted/30">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
@@ -41,7 +41,7 @@ export function NetworkSection() {
                     {office.cityEn}
                   </p>
                   <p className="text-xs text-muted-foreground mb-3">
-                    {office.role} · {office.headcount}명
+                    {office.role} · {office.headcount}{network.headcountUnit}
                   </p>
 
                   <p className="text-sm text-muted-foreground leading-relaxed">
@@ -55,7 +55,7 @@ export function NetworkSection() {
 
         {/* 총 인력 */}
         <p className="mt-10 text-center text-sm text-muted-foreground">
-          5개 거점 총 인력 약 {network.totalHeadcount}명
+          {network.totalLabel}
         </p>
       </div>
     </section>

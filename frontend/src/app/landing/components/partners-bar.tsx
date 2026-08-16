@@ -1,6 +1,6 @@
 "use client"
 
-import { partners } from '@/config/landing-content'
+import { useContent } from '@/config/use-content'
 
 /**
  * 제휴 항공사·특송 파트너 신뢰신호 바
@@ -9,6 +9,8 @@ import { partners } from '@/config/landing-content'
  *    자세한 이유는 landing-content.ts 의 partners 주석 참고.
  */
 export function PartnersBar() {
+  const { partners } = useContent()
+
   return (
     <section className="border-y bg-muted/40 py-10 sm:py-12">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
@@ -27,7 +29,7 @@ export function PartnersBar() {
               key={group.label}
               className="flex flex-col items-center gap-3 sm:flex-row sm:gap-4"
             >
-              <span className="shrink-0 rounded-full border border-brand-orange/40 px-2.5 py-0.5 text-xs font-medium text-brand-orange">
+              <span className="shrink-0 rounded-full border border-brand-cta/40 px-2.5 py-0.5 text-xs font-medium text-brand-cta">
                 {group.label}
               </span>
 
