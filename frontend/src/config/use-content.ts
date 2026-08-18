@@ -121,26 +121,44 @@ const VOLUME_FACTS = [
  *    CI 를 바꿨는데 Commons 에 새 로고의 자유 이용 벡터가 아직 없다. 공식
  *    브랜드킷에서 새 로고를 받으면 교체할 것.
  *
- * ── 크기 ───────────────────────────────────────────────────────────────
- * height 는 로고마다 다르게 잡았다. 같은 높이로 맞추면 가로로 긴 워드마크
- * (대한항공 8.4:1)가 압도적으로 커 보이고, 색 배경 상자를 품은 로고
- * (DHL·Deutsche Post·Royal Mail)는 면적 때문에 더 무겁게 읽힌다. 눈으로
- * 같은 무게가 되는 지점을 찾아 높이를 조정했다 — 로고 자체의 비율은
- * 원본 그대로이므로 width 는 종횡비에서 계산한 값이다.
+ * ── height: 잉크 면적으로 맞춘 값 ──────────────────────────────────────
+ * 높이를 똑같이 맞추면 시각적 무게가 전혀 맞지 않는다. 로고마다 경계상자
+ * 안에서 실제로 잉크가 차지하는 비율이 다르기 때문이다. 각 SVG 를 높이
+ * 100px 로 래스터화해 불투명 픽셀을 세어 봤더니:
  *
+ *     Deutsche Post  잉크 100%   (노란 판이 상자를 꽉 채운다)
+ *     DHL            잉크 100%
+ *     Royal Mail     잉크  97%
+ *     대한항공        잉크  57%   (얇은 워드마크)
+ *     dpd            잉크  39%   (아이콘 + 소문자, 내부 여백이 많다)
+ *     동방항공        잉크  37%
+ *
+ * 예전 높이(17~26px)로는 잉크 면적이 dpd 622 ~ Deutsche Post 2621 로 4.2배나
+ * 벌어져 있었다 — 같은 흰 상자에 넣어 두니 더 들쭉날쭉해 보였던 원인이다.
+ *
+ * 잉크 면적을 완전히 균등하게 맞추면(면적은 높이의 제곱이므로 h = 100·√(T/I))
+ * 이번엔 dpd 가 42px, Deutsche Post 가 19px 로 dpd 가 압도한다. 여백이 많은
+ * 로고를 키워 여백까지 보상하는 꼴이라 그렇다. 그래서 기존 높이와 균등해 를
+ * 기하평균으로 절충했다(√(h_현재 · h_균등)). 결과 면적 편차 4.2배 → 2.0배.
+ *
+ * ── patch: 흰 배경 패치가 필요한가 ─────────────────────────────────────
+ * 같은 래스터화에서 잉크 픽셀의 밝기도 쟀다. 대한항공·동방항공·dpd 는 잉크의
+ * 96~100% 가 어두워서(네이비/진회색) 다크 배경 위에 그대로 올리면 묻힌다.
+ * 이 셋만 로고 크기에 맞춘 최소 흰 패치를 깔고, 자기 색 판을 이미 갖고 있는
+ * Deutsche Post·DHL(노랑)·Royal Mail(빨강)은 배경 위에 직접 올린다.
+ *
+ * ── width 는 레이아웃 예약용 근삿값 ────────────────────────────────────
  * 실제 렌더는 height 만 CSS 로 주고 width 는 auto 로 둔다 (partners-bar.tsx).
- * 아래 width 는 레이아웃 예약용 근삿값이라 원본 종횡비와 소수점 단위로
- * 어긋나도 화면에는 영향이 없다 — 폭은 브라우저가 원본에서 끌어낸다.
- * 다만 가장 넓은 대한항공(약 143px)이 카드 가용 폭(w-48 192px − px-4 32px −
- * border 2px = 158px) 안에 들어와야 한다. 넘으면 max-w-full 에 걸려 줄어든다.
+ * 아래 width 가 원본 종횡비와 소수점 단위로 어긋나도 화면에는 영향이 없다 —
+ * 폭은 브라우저가 원본에서 끌어내므로 왜곡이 수학적으로 0 이다.
  */
 const PARTNER_LOGOS = {
-  koreanAir: { src: "/logos/partners/korean-air.svg", width: 144, height: 17 },
-  chinaEastern: { src: "/logos/partners/china-eastern.svg", width: 114, height: 25 },
-  royalMail: { src: "/logos/partners/royal-mail.svg", width: 94, height: 24 },
-  deutschePost: { src: "/logos/partners/deutsche-post.svg", width: 109, height: 24 },
-  dhl: { src: "/logos/partners/dhl.svg", width: 109, height: 24 },
-  dpd: { src: "/logos/partners/dpd.svg", width: 62, height: 26 },
+  koreanAir: { src: "/logos/partners/korean-air.svg", width: 151, height: 18, patch: true },
+  chinaEastern: { src: "/logos/partners/china-eastern.svg", width: 128, height: 28, patch: true },
+  royalMail: { src: "/logos/partners/royal-mail.svg", width: 86, height: 22, patch: false },
+  deutschePost: { src: "/logos/partners/deutsche-post.svg", width: 95, height: 21, patch: false },
+  dhl: { src: "/logos/partners/dhl.svg", width: 95, height: 21, patch: false },
+  dpd: { src: "/logos/partners/dpd.svg", width: 79, height: 33, patch: true },
 } as const
 
 const CONSULTING_CLIENT_KEYS = ["diagnosis", "routing", "vendor", "ecommerce"] as const
