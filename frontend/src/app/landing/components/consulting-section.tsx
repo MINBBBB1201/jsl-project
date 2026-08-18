@@ -45,7 +45,7 @@ export function ConsultingSection() {
                           aria-hidden="true"
                         />
                       </div>
-                      <h4 className="font-medium text-foreground mb-2">
+                      <h4 className="font-semibold text-foreground mb-2">
                         {item.title}
                       </h4>
                       <p className="text-sm text-muted-foreground">

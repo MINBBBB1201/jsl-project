@@ -47,10 +47,34 @@ export function StatsSection() {
               className="border-r border-b border-white/15 p-6 sm:p-8"
             >
               <stat.icon className="mb-4 size-5 text-brand-slate" aria-hidden="true" />
-              <p className="tabular-figures text-3xl font-semibold text-white sm:text-4xl">
+              {/*
+                600 이 아니라 700 이다 — "180억원" 처럼 숫자(General Sans)와
+                한글(폴백)이 한 줄에 섞이는 자리라서 그렇다. 자세한 사정은
+                아래 라벨 주석 참고.
+              */}
+              <p className="tabular-figures text-3xl font-bold text-white sm:text-4xl">
                 {stat.value}
               </p>
-              <p className="mt-2 text-sm font-medium text-white">{stat.label}</p>
+              {/*
+                라벨은 600, 설명은 400.
+
+                ── 왜 500 을 쓰지 않는가 ─────────────────────────────────
+                한글에는 웹폰트를 싣지 않아 시스템 폰트로 떨어지는데(fonts.ts),
+                윈도우의 맑은 고딕은 Regular·Bold 두 굵기뿐이다. CSS 가 500 을
+                요구하면 브라우저는 Regular(400) 를 그리므로, 라벨(500)과
+                설명(400)이 한글에서는 글자 굵기가 완전히 같아진다 — 색 말고는
+                위계가 사라진다. 600 을 요구하면 Bold 가 잡혀 실제로 굵어진다.
+                (맥의 Apple SD Gothic Neo 는 굵기가 많아 500 도 제대로 나온다.
+                 즉 이건 윈도우에서만 보이는 문제다.)
+
+                같은 이유로 숫자는 700 이다. 500 에서는 라틴만 진짜 Medium 을
+                받아 한글보다 굵어 보이고, 600 에서는 반대로 한글이 Bold 로
+                잡혀 라틴보다 굵어 보인다. 700 은 양쪽 다 진짜 Bold 라 맞는다.
+
+                근본 해결은 굵기가 갖춰진 한글 웹폰트(Pretendard 등)를 싣는
+                것이다. 용량과 맞바꿔야 해서 보류 중이다.
+              */}
+              <p className="mt-2 text-sm font-semibold text-white">{stat.label}</p>
               <p className="mt-1 text-sm text-brand-slate">{stat.description}</p>
             </div>
           ))}

@@ -118,7 +118,7 @@ export function FeaturesSection() {
                   <feature.icon className="size-5 text-primary" aria-hidden="true" />
                 </div>
                 <div>
-                  <h3 className="text-foreground font-medium">{feature.title}</h3>
+                  <h3 className="text-foreground font-semibold">{feature.title}</h3>
                   <p className="text-muted-foreground mt-1 text-sm">{feature.description}</p>
                 </div>
               </li>
