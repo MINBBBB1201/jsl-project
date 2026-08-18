@@ -3,7 +3,6 @@
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { Card, CardContent } from '@/components/ui/card'
-import { CardDecorator } from '@/components/ui/card-decorator'
 import { useContent } from '@/config/use-content'
 export function AboutSection() {
   const { about } = useContent()
@@ -40,12 +39,19 @@ export function AboutSection() {
           {about.values.map((value, index) => (
             <Card key={index} className='group shadow-xs py-2'>
               <CardContent className='p-8'>
+                {/*
+                  아이콘은 배경 없이 홀로 세운다.
+
+                  예전에는 점무늬 사각형(CardDecorator) 위에 테두리 상자를 얹고 그
+                  안에 24px 아이콘을 넣었는데, 점무늬가 "여기 이미지가 들어갈 자리"
+                  라는 신호로 읽혀 카드 전체가 미완성처럼 보였다. 장식을 걷어내고
+                  아이콘을 32px 로 키워 브랜드 네이비 단색으로 두면, 같은 자리에서
+                  더 적은 요소로 더 크게 말한다.
+                */}
                 <div className='flex flex-col items-center text-center'>
-                  <CardDecorator>
-                    <value.icon className='h-6 w-6' aria-hidden />
-                  </CardDecorator>
-                  <h3 className='mt-6 font-medium text-balance'>{value.title}</h3>
-                  <p className='text-muted-foreground mt-3 text-sm'>{value.description}</p>
+                  <value.icon className='size-8 text-primary' aria-hidden />
+                  <h3 className='mt-5 font-semibold text-balance'>{value.title}</h3>
+                  <p className='text-muted-foreground mt-2 text-sm'>{value.description}</p>
                 </div>
               </CardContent>
             </Card>

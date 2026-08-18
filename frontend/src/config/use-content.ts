@@ -11,8 +11,6 @@ import {
   FileCheck2,
   Globe2,
   Handshake,
-  Layers,
-  LayoutDashboard,
   Mail,
   MapPin,
   Package,
@@ -52,11 +50,18 @@ const MODE_ICONS: Record<string, LucideIcon> = {
   EXPRESS: Zap,
 }
 
+/**
+ * "왜 JSL인가" 카드 아이콘.
+ *
+ * Layers·LayoutDashboard 같은 제네릭 대시보드 아이콘을 쓰고 있었는데,
+ * 어느 SaaS 랜딩에나 붙어 있는 그림이라 이 회사가 무엇을 하는지 전혀 말하지
+ * 않았다. 화물·거점·관제로 뜻이 좁혀지는 물류 아이콘으로 바꾼다.
+ */
 const ABOUT_VALUE_ICONS: Record<string, LucideIcon> = {
-  fullLineup: Layers,
-  ownedNetwork: Building2,
-  manufacturing: Factory,
-  platform: LayoutDashboard,
+  fullLineup: Container,      // 5+1 풀라인업 — 화물 컨테이너
+  ownedNetwork: Warehouse,    // 직접 운영하는 거점 — 자사 창고
+  manufacturing: Factory,     // 제조기업 공급망 경험
+  platform: Radar,            // 실시간 화물 가시성 — 관제
 }
 
 const CONSULTING_ICONS: Record<string, LucideIcon> = {
@@ -271,7 +276,8 @@ export function useContent() {
     totalLabel: (m.network.totalLabel as string).replace("{count}", String(TOTAL_HEADCOUNT)),
     headcountUnit: m.network.headcountUnit,
     items: OFFICE_FACTS.map((o) => ({
-      icon: MapPin,
+      // 다섯 칸 모두 지도핀이면 아이콘이 아무것도 구분하지 못한다 — 본사만 가른다
+      icon: o.role === "hq" ? Building2 : MapPin,
       city: m.network.offices[o.key].city,
       cityEn: o.cityEn,
       role: o.role === "hq" ? m.network.roleHq : m.network.roleBranch,

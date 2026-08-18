@@ -2,7 +2,6 @@
 
 import { Badge } from '@/components/ui/badge'
 import { Card, CardContent } from '@/components/ui/card'
-import { CardDecorator } from '@/components/ui/card-decorator'
 import { useContent } from '@/config/use-content'
 export function NetworkSection() {
   const { network } = useContent()
@@ -27,11 +26,15 @@ export function NetworkSection() {
           {network.items.map((office) => (
             <Card key={office.city} className="shadow-xs py-2">
               <CardContent className="p-4">
+                {/*
+                  아이콘의 점무늬 배경(CardDecorator)을 걷어냈다 — about 섹션과 같은
+                  이유다. 더불어 다섯 칸에 똑같이 붙어 있던 지도핀을 본사/지사로
+                  갈랐다. 같은 아이콘이 다섯 번 반복되면 아무것도 구분하지 못하는
+                  장식이지만, 갈라 두면 아이콘 자체가 "어디가 본사인가"를 말한다.
+                */}
                 <div className="text-center">
                   <div className="flex justify-center mb-4">
-                    <CardDecorator>
-                      <office.icon className="h-6 w-6" aria-hidden />
-                    </CardDecorator>
+                    <office.icon className="size-7 text-primary" aria-hidden />
                   </div>
 
                   <h3 className="text-lg font-semibold text-foreground mb-1">
