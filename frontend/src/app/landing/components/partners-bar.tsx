@@ -1,12 +1,11 @@
 "use client"
 
+import Image from 'next/image'
+
 import { useContent } from '@/config/use-content'
 
 /**
  * 제휴 항공사·특송 파트너 신뢰신호 바
- *
- * ⚠️ 로고 이미지 대신 텍스트 워드마크만 쓴다 (상표 문제).
- *    자세한 이유는 landing-content.ts 의 partners 주석 참고.
  *
  * 무한 스크롤(마퀴)로 흘린다. 파트너가 늘어도 줄바꿈으로 높이가 튀지 않고,
  * 정지된 목록보다 "네트워크가 돌아가고 있다"는 인상을 준다.
@@ -16,6 +15,22 @@ import { useContent } from '@/config/use-content'
  * (globals.css 의 marquee-scroll). JS 없이 CSS 만으로 돌아서 메인 스레드를
  * 쓰지 않고, 동작 줄이기 설정에서는 전역 규칙이 멈춘다.
  * 두 번째 벌은 스크린리더에 중복으로 읽히지 않도록 aria-hidden 이다.
+ *
+ * ── 왜 흰 카드에 담는가 ─────────────────────────────────────────────────
+ * 여섯 개 로고의 사정이 제각각이다. DHL·Deutsche Post·Royal Mail 은 노랑/빨강
+ * 배경 상자를 품고 있어 어디에 올려도 읽히지만, 대한항공(네이비)·중국동방항공
+ * (네이비+빨강)·dpd(짙은 회색 글자)는 흰 배경을 전제로 그려진 로고라 다크모드
+ * 배경에 그대로 올리면 글자가 묻힌다.
+ *
+ * 로고를 다크용으로 반전시키거나 흰색으로 덧칠하는 방법도 있지만 그건 상표를
+ * 변형하는 것이라 쓸 수 없다. 그래서 모든 로고를 같은 규격의 흰 카드에 담는다 —
+ * 원본을 한 픽셀도 건드리지 않으면서 라이트/다크 양쪽에서 같은 대비를 얻고,
+ * 카드 규격이 통일돼 로고 벽이 정돈돼 보인다.
+ *
+ * 로고 파일의 출처와 크기 산정 근거는 config/use-content.ts 의 PARTNER_LOGOS
+ * 주석에 정리돼 있다.
+ *
+ * ⚠️ 로고 노출은 실제 제휴 관계가 확인된 뒤라야 한다 (상표권은 각 사에 있다).
  */
 export function PartnersBar() {
   const { partners } = useContent()
@@ -25,7 +40,7 @@ export function PartnersBar() {
     group.items.map((item) => ({
       label: group.label,
       name: item.name,
-      nameEn: "nameEn" in item ? item.nameEn : undefined,
+      logo: item.logo,
     }))
   )
 
@@ -67,19 +82,31 @@ export function PartnersBar() {
               {entries.map((entry) => (
                 <li
                   key={`${copy}-${entry.name}`}
-                  className="mx-2 flex min-w-44 flex-col justify-center border-l px-6 py-1"
+                  className="mx-2 flex flex-col justify-center gap-2 px-4"
                 >
                   <span className="text-[10px] tracking-[0.12em] text-muted-foreground uppercase">
                     {entry.label}
                   </span>
-                  <span className="mt-1 text-base font-medium text-foreground">
-                    {entry.name}
-                  </span>
-                  {entry.nameEn && (
-                    <span className="text-xs text-muted-foreground">
-                      {entry.nameEn}
-                    </span>
-                  )}
+                  <div className="flex h-16 w-44 items-center justify-center rounded-md border bg-white px-4">
+                    <Image
+                      src={entry.logo.src}
+                      /*
+                        두 번째 벌은 aria-hidden 이라 스크린리더가 로고 이름을
+                        두 번 읽지 않는다. alt 는 회사명 그대로 — 로고 이미지의
+                        대체 텍스트는 그 회사를 가리키는 이름이어야 한다.
+                      */
+                      alt={entry.name}
+                      width={entry.logo.width}
+                      height={entry.logo.height}
+                      /*
+                        unoptimized: SVG 는 Next 이미지 최적화 대상이 아니고
+                        (dangerouslyAllowSVG 를 켜야 통과한다), 이미 벡터라
+                        래스터 리사이즈로 얻을 것도 없다. 원본을 그대로 서빙한다.
+                      */
+                      unoptimized
+                      className="h-auto w-auto max-h-full max-w-full object-contain"
+                    />
+                  </div>
                 </li>
               ))}
             </ul>

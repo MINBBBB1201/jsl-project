@@ -99,6 +99,48 @@ const VOLUME_FACTS = [
   { icon: Truck, mode: "TRUCK", value: "350", unitKey: "truckUnit" },
 ] as const
 
+/**
+ * 제휴 항공사·특송사 로고
+ *
+ * ── 원칙 ───────────────────────────────────────────────────────────────
+ * 파일은 아래 출처에서 받은 공식 벡터 로고 원본 그대로다. 색·비율·형태를
+ * 손대지 않았고, 최적화 도구로 다시 쓰지도 않았다 (바이트 단위로 출처와
+ * 대조할 수 있어야 나중에 검증이 된다). 교체할 때도 같은 원칙을 지킬 것.
+ * 전부 Wikimedia 기준 퍼블릭 도메인(PD-textlogo) 이지만, 저작권과 별개로
+ * 상표권은 각 사에 있다 — 실제 제휴 관계 확인 전에는 노출 범위를 넓히지 말 것.
+ *
+ * ── 출처 (2026-08-18 내려받음) ─────────────────────────────────────────
+ *  korean-air.svg     https://commons.wikimedia.org/wiki/File:KoreanAir_logo.svg
+ *  china-eastern.svg  https://en.wikipedia.org/wiki/File:China_Eastern_Airlines_logo.svg
+ *  royal-mail.svg     https://commons.wikimedia.org/wiki/File:Royal_Mail_logo.svg
+ *  deutsche-post.svg  https://commons.wikimedia.org/wiki/File:Logo_Deutsche_Post_2019.svg
+ *  dhl.svg            https://commons.wikimedia.org/wiki/File:DHL_Logo.svg
+ *  dpd.svg            https://commons.wikimedia.org/wiki/File:DPD_logo_(2015).svg
+ *
+ * ⚠️ korean-air.svg 는 1984–2025 년에 쓰인 이전 로고다. 대한항공이 2025년 3월
+ *    CI 를 바꿨는데 Commons 에 새 로고의 자유 이용 벡터가 아직 없다. 공식
+ *    브랜드킷에서 새 로고를 받으면 교체할 것.
+ *
+ * ── 크기 ───────────────────────────────────────────────────────────────
+ * height 는 로고마다 다르게 잡았다. 같은 높이로 맞추면 가로로 긴 워드마크
+ * (대한항공 8.4:1)가 압도적으로 커 보이고, 색 배경 상자를 품은 로고
+ * (DHL·Deutsche Post·Royal Mail)는 면적 때문에 더 무겁게 읽힌다. 눈으로
+ * 같은 무게가 되는 지점을 찾아 높이를 조정했다 — 로고 자체의 비율은
+ * 원본 그대로이므로 width 는 종횡비에서 계산한 값이다.
+ *
+ * 가장 넓은 대한항공(144px)이 카드의 가용 폭(w-44 176px − px-4 32px = 144px)에
+ * 딱 맞는다. 여기서 더 키우면 max-w-full 에 걸려 CSS 가 줄이므로 아래 숫자가
+ * 실제 렌더 크기와 달라진다.
+ */
+const PARTNER_LOGOS = {
+  koreanAir: { src: "/logos/partners/korean-air.svg", width: 144, height: 17 },
+  chinaEastern: { src: "/logos/partners/china-eastern.svg", width: 114, height: 25 },
+  royalMail: { src: "/logos/partners/royal-mail.svg", width: 86, height: 22 },
+  deutschePost: { src: "/logos/partners/deutsche-post.svg", width: 100, height: 22 },
+  dhl: { src: "/logos/partners/dhl.svg", width: 100, height: 22 },
+  dpd: { src: "/logos/partners/dpd.svg", width: 62, height: 26 },
+} as const
+
 const CONSULTING_CLIENT_KEYS = ["diagnosis", "routing", "vendor", "ecommerce"] as const
 const CONSULTING_FORWARDER_KEYS = ["marketEntry", "entitySetup", "matching", "funding"] as const
 
@@ -171,17 +213,17 @@ export function useContent() {
       {
         label: m.partners.groupAir,
         items: [
-          { name: m.partners.koreanAir, nameEn: "Korean Air" },
-          { name: m.partners.chinaEastern, nameEn: "China Eastern" },
+          { name: m.partners.koreanAir, logo: PARTNER_LOGOS.koreanAir },
+          { name: m.partners.chinaEastern, logo: PARTNER_LOGOS.chinaEastern },
         ],
       },
       {
         label: m.partners.groupExpress,
         items: [
-          { name: "Royal Mail" },
-          { name: "Deutsche Post" },
-          { name: "DHL" },
-          { name: "dpd" },
+          { name: "Royal Mail", logo: PARTNER_LOGOS.royalMail },
+          { name: "Deutsche Post", logo: PARTNER_LOGOS.deutschePost },
+          { name: "DHL", logo: PARTNER_LOGOS.dhl },
+          { name: "DPD", logo: PARTNER_LOGOS.dpd },
         ],
       },
     ],
