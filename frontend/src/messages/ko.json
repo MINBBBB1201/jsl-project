@@ -2,7 +2,8 @@
   "common": {
     "companyName": "JSL Logistics",
     "backHome": "홈으로 돌아가기",
-    "languageLabel": "언어 선택"
+    "languageLabel": "언어 선택",
+    "themeSettingsLabel": "테마 설정"
   },
   "nav": {
     "home": "홈",

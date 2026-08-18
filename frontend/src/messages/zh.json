@@ -2,7 +2,8 @@
   "common": {
     "companyName": "JSL Logistics",
     "backHome": "返回首页",
-    "languageLabel": "选择语言"
+    "languageLabel": "选择语言",
+    "themeSettingsLabel": "主题设置"
   },
   "nav": {
     "home": "首页",

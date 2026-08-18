@@ -2,7 +2,8 @@
   "common": {
     "companyName": "JSL Logistics",
     "backHome": "Về trang chủ",
-    "languageLabel": "Chọn ngôn ngữ"
+    "languageLabel": "Chọn ngôn ngữ",
+    "themeSettingsLabel": "Cài đặt giao diện"
   },
   "nav": {
     "home": "Trang chủ",

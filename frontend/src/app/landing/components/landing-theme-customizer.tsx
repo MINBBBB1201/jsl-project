@@ -1,6 +1,7 @@
 "use client"
 
 import React from 'react'
+import { useTranslations } from 'next-intl'
 import { Palette, RotateCcw, Settings, X, Dices, Upload, ExternalLink, Sun, Moon } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle } from '@/components/ui/sheet'
@@ -395,15 +396,23 @@ export function LandingThemeCustomizer({ open, onOpenChange }: LandingThemeCusto
 
 // Floating trigger button for landing page
 export function LandingThemeCustomizerTrigger({ onClick }: { onClick: () => void }) {
+  const t = useTranslations("common")
+
   return (
     <Button
       onClick={onClick}
       size="icon"
+      /*
+        아이콘만 있고 글자가 없는 버튼이라 aria-label 이 없으면 스크린리더가
+        "버튼"이라고만 읽는다 (axe: button-name). 톱니 아이콘은 aria-hidden 인
+        장식이므로 이름은 이 라벨에서만 나온다.
+      */
+      aria-label={t("themeSettingsLabel")}
       className={cn(
         "fixed top-1/2 -translate-y-1/2 h-12 w-12 rounded-full shadow-lg z-50 bg-primary hover:bg-primary/90 text-primary-foreground cursor-pointer right-4"
       )}
     >
-      <Settings className="h-5 w-5" />
+      <Settings className="h-5 w-5" aria-hidden="true" />
     </Button>
   )
 }

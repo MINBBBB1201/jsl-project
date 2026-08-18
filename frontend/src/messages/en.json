@@ -2,7 +2,8 @@
   "common": {
     "companyName": "JSL Logistics",
     "backHome": "Back to home",
-    "languageLabel": "Select language"
+    "languageLabel": "Select language",
+    "themeSettingsLabel": "Theme settings"
   },
   "nav": {
     "home": "Home",

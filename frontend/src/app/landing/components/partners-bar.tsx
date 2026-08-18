@@ -34,6 +34,12 @@ import { useContent } from '@/config/use-content'
  * 변형하는 것이라 쓸 수 없다. 패치는 로고를 건드리지 않고 바탕만 바꾼다.
  *
  * ⚠️ 로고 노출은 실제 제휴 관계가 확인된 뒤라야 한다 (상표권은 각 사에 있다).
+ *
+ * ⚠️ 이 섹션의 보조 글자에 --brand-slate 를 투명도 없이 쓴다. 처음엔 라벨과
+ *    주석을 text-brand-slate/70 으로 흐리게 뒀는데, 다크 배경 위에서 대비가
+ *    3.97:1 로 떨어져 WCAG AA(4.5:1)에 미달했다 (axe: color-contrast).
+ *    불투명하면 6.77:1 로 통과한다. 더 흐리게 만들고 싶으면 투명도가 아니라
+ *    대비를 계산한 별도 색 토큰을 만들 것.
  */
 export function PartnersBar() {
   const { partners } = useContent()
@@ -125,7 +131,7 @@ export function PartnersBar() {
                     key={`${copy}-${entry.name}`}
                     className="mx-7 flex flex-col items-center justify-start gap-3"
                   >
-                    <span className="text-brand-slate/70 text-[10px] tracking-[0.12em] uppercase">
+                    <span className="text-brand-slate text-[10px] tracking-[0.12em] uppercase">
                       {entry.label}
                     </span>
                     {/*
@@ -164,7 +170,7 @@ export function PartnersBar() {
       </div>
 
       <div className="container mx-auto mt-8 px-4 sm:px-6 lg:px-8">
-        <p className="text-brand-slate/70 text-xs">{partners.note}</p>
+        <p className="text-brand-slate text-xs">{partners.note}</p>
       </div>
     </section>
   )

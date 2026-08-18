@@ -74,7 +74,18 @@ export function StatsSection() {
         {/* 월간 처리 물동량 */}
         <div className="mt-10 md:mt-12">
           <div className="mb-6 max-w-xl">
-            <h3 className="text-lg font-semibold text-white">{volumesHeading.title}</h3>
+            {/*
+              h3 가 아니라 h2 다 (axe: heading-order).
+
+              문서 순서상 이 섹션 앞에는 히어로의 h1 뿐이고, 이 섹션 안에 다른
+              제목이 없다 — 위 4칸 지표는 제목 없는 수치 그리드다. 그래서 이것이
+              이 섹션의 최상위 제목이고, h3 로 두면 h1 다음에 h2 를 건너뛴 셈이
+              된다. 바로 아래 파트너 바의 제목도 같은 이유로 h2 다.
+
+              시각적 크기(text-lg)는 그대로다. 제목 단계는 화면 크기가 아니라
+              문서 구조를 나타내는 값이라 둘을 맞출 이유가 없다.
+            */}
+            <h2 className="text-lg font-semibold text-white">{volumesHeading.title}</h2>
             <p className="mt-1 text-sm text-brand-slate">{volumesHeading.description}</p>
           </div>
 
