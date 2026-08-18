@@ -53,6 +53,9 @@
   --color-brand-blue: var(--brand-blue);
   --color-brand-cta: var(--brand-cta);
   --color-brand-cta-foreground: var(--brand-cta-foreground);
+  /* 다크 풀블리드 띠 — bg-brand-navy-deep / text-brand-slate */
+  --color-brand-navy-deep: var(--brand-navy-deep);
+  --color-brand-slate: var(--brand-slate);
 }
 
 /**
@@ -74,6 +77,19 @@
  */
 :root {
   --radius: 0.625rem;
+
+  /*
+    다크 풀블리드 띠 전용 한 쌍 (#0c1a2e / #8fa3bd).
+
+    --background 나 --brand-navy 를 쓰지 않고 따로 둔 이유가 있다. 이 띠는
+    라이트·다크 어느 모드에서도 항상 어두워야 명암 리듬이 생기므로, 테마에
+    따라 뒤집히는 토큰을 쓰면 안 된다. 값이 모드에 무관하게 고정이라
+    .dark 블록에도 다시 선언하지 않는다.
+
+    대비: #8fa3bd on #0c1a2e = 6.8:1, 흰 숫자 = 17.5:1 (둘 다 WCAG AA 통과)
+  */
+  --brand-navy-deep: oklch(0.2169 0.0442 257.7); /* #0c1a2e */
+  --brand-slate: oklch(0.7088 0.0444 254.9); /* #8fa3bd */
 
   /* 브랜드 원색 (장식용 — 텍스트 배경으로 쓰지 말 것) */
   --brand-navy: oklch(0.28 0.089 254.6);
@@ -335,44 +351,18 @@ html {
 }
 
 /**
- * 브랜드 배경 패턴
- *
- * 단색 배경이 밋밋해 보이지 않도록 은은한 깊이감을 준다.
- * 색은 currentColor 가 아니라 브랜드 토큰을 참조하므로
- * 라이트/다크 모두에서 자동으로 맞는 톤이 적용된다.
- */
-
-/* 아주 옅은 도트 그리드 */
-.bg-brand-dots {
-  background-image: radial-gradient(
-    color-mix(in oklch, var(--brand-navy) 12%, transparent) 1px,
-    transparent 1px
-  );
-  background-size: 22px 22px;
-}
-
-/* 옅은 격자 */
-.bg-brand-grid {
-  background-image:
-    linear-gradient(
-      to right,
-      color-mix(in oklch, var(--brand-navy) 7%, transparent) 1px,
-      transparent 1px
-    ),
-    linear-gradient(
-      to bottom,
-      color-mix(in oklch, var(--brand-navy) 7%, transparent) 1px,
-      transparent 1px
-    );
-  background-size: 48px 48px;
-}
-
-/**
  * 블루프린트 격자 — 굵은 선 96px, 가는 선 24px 의 2단 격자.
  *
  * 설계 도면·운송 시간표의 괘선에서 가져온 결이다. 배경을 "채우는" 것이 아니라
  * 레이아웃 그리드가 실제로 존재한다는 것을 아주 옅게 드러내는 용도라,
  * 가장 진한 선도 알파 4% 를 넘지 않는다. 이 이상 올리면 배경이 말을 걸기 시작한다.
+ *
+ * ⚠️ 히어로 전용이다. 다른 섹션에 덧대지 말 것.
+ *    청사진 격자는 "이제부터 설계도를 펼친다"는 신호라서 첫 화면에서 한 번
+ *    쓸 때만 뜻이 있다. 페이지 전체에 깔면 아무 데서도 신호로 읽히지 않고
+ *    그냥 배경 질감으로 소비돼, 어느 템플릿에나 있는 무늬가 된다.
+ *    같은 이유로 예전에 있던 bg-brand-dots / bg-brand-grid / bg-brand-wash
+ *    (범용 도트·격자·틴트 유틸) 는 지웠다. 있으면 결국 덧대게 된다.
  */
 .bg-blueprint {
   background-image:
@@ -409,15 +399,6 @@ html {
     linear-gradient(to bottom, oklch(1 0 0 / 4%) 1px, transparent 1px),
     linear-gradient(to right, oklch(1 0 0 / 2%) 1px, transparent 1px),
     linear-gradient(to bottom, oklch(1 0 0 / 2%) 1px, transparent 1px);
-}
-
-/* 위에서 아래로 옅게 깔리는 네이비 틴트 */
-.bg-brand-wash {
-  background-image: linear-gradient(
-    180deg,
-    color-mix(in oklch, var(--brand-navy) 6%, transparent) 0%,
-    transparent 55%
-  );
 }
 
 /* 로고 워드마크용 오렌지 그라데이션 (플래그 색 재현) */

@@ -2,33 +2,56 @@
 
 import { useContent } from '@/config/use-content'
 
+/**
+ * 회사 규모 지표 — 다크 풀블리드 띠
+ *
+ * ── 왜 다크인가 ────────────────────────────────────────────────────────
+ * 이 페이지는 히어로부터 푸터까지 전부 흰 배경 + 1px 보더 카드였다. 구획선만
+ * 으로 나눈 화면은 조용하지만, 열두 개 섹션이 같은 밝기로 이어지면 어디서
+ * 이야기가 바뀌는지 알 수 없어 전체가 한 덩어리로 읽힌다 (대형 포워더 사이트가
+ * 다크/라이트를 과감히 교차시키는 이유다).
+ *
+ * 그 리듬을 만들 자리로 통계를 골랐다. 숫자는 이 회사의 규모를 말하는 가장
+ * 강한 카드라 배경째 뒤집어 무대를 만들 값어치가 있고, 위치가 첫 화면 바로
+ * 아래라 한 번 스크롤에 명암 전환이 걸린다.
+ *
+ * ── 색 ─────────────────────────────────────────────────────────────────
+ * 배경은 테마에 무관하게 고정인 --brand-navy-deep (#0c1a2e) 이다. --background
+ * 계열을 쓰면 다크모드에서 띠가 배경에 녹아 리듬이 사라진다.
+ * 숫자는 흰색, 라벨·설명은 --brand-slate (#8fa3bd) — 어두운 바탕에서 흰색을
+ * 세 단계로 늘어놓으면 위계가 뭉개져서, 보조 정보는 아예 다른 색으로 뺀다.
+ *
+ * ── 명암 균형 ──────────────────────────────────────────────────────────
+ * 바로 아래 파트너 마퀴는 밝은 bg-muted/30 이라 다크 띠가 연달아 붙지 않는다.
+ * 이 섹션을 옮기거나 파트너 바 배경을 어둡게 바꿀 때는 둘이 맞닿지 않는지
+ * 먼저 확인할 것.
+ *
+ * 구획선은 흰색 알파로 긋는다. --border 는 라이트 모드에서 밝은 회색이라
+ * 이 배경 위에서는 보이지 않는다.
+ */
 export function StatsSection() {
   const { stats, monthlyVolumes, volumesHeading } = useContent()
 
   return (
-    <section className="relative border-b py-12 sm:py-16">
-      {/*
-        예전에는 그라데이션 배경 + 도트 패턴 + 카드 blur 를 겹쳐 썼다.
-        색으로 만든 깊이감은 정보를 전달하지 않으면서 시선을 나눠 가져간다.
-        지금은 구획선(보더)과 그리드만 남기고, 색은 수치 자체에만 쓴다.
-      */}
+    <section className="bg-brand-navy-deep py-16 sm:py-20">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
         {/*
           스위스 양식의 표 조판 — 카드 대신 격자 구획선으로 항목을 나눈다.
-          네거티브 마진 + 셀 보더 조합이라 바깥 테두리가 겹쳐 두꺼워지지 않는다.
+          셀마다 오른쪽·아래 선을 주고 바깥에 위·왼쪽 선을 둘러, 겹쳐서
+          두꺼워지는 자리 없이 격자가 닫힌다.
         */}
-        <div className="grid grid-cols-2 border-t border-l lg:grid-cols-4">
+        <div className="grid grid-cols-2 border-t border-l border-white/15 lg:grid-cols-4">
           {stats.map((stat, index) => (
-            <div key={index} className="border-r border-b p-6 sm:p-8">
-              <stat.icon
-                className="mb-4 size-5 text-muted-foreground"
-                aria-hidden="true"
-              />
-              <p className="tabular-figures text-3xl font-semibold sm:text-4xl">
+            <div
+              key={index}
+              className="border-r border-b border-white/15 p-6 sm:p-8"
+            >
+              <stat.icon className="mb-4 size-5 text-brand-slate" aria-hidden="true" />
+              <p className="tabular-figures text-3xl font-semibold text-white sm:text-4xl">
                 {stat.value}
               </p>
-              <p className="mt-2 text-sm font-medium text-foreground">{stat.label}</p>
-              <p className="mt-1 text-sm text-muted-foreground">{stat.description}</p>
+              <p className="mt-2 text-sm font-medium text-white">{stat.label}</p>
+              <p className="mt-1 text-sm text-brand-slate">{stat.description}</p>
             </div>
           ))}
         </div>
@@ -36,32 +59,28 @@ export function StatsSection() {
         {/* 월간 처리 물동량 */}
         <div className="mt-10 md:mt-12">
           <div className="mb-6 max-w-xl">
-            <h3 className="text-lg font-semibold text-foreground">
-              {volumesHeading.title}
-            </h3>
-            <p className="mt-1 text-sm text-muted-foreground">
-              {volumesHeading.description}
-            </p>
+            <h3 className="text-lg font-semibold text-white">{volumesHeading.title}</h3>
+            <p className="mt-1 text-sm text-brand-slate">{volumesHeading.description}</p>
           </div>
 
-          <div className="grid grid-cols-1 border-t border-l sm:grid-cols-3">
+          <div className="grid grid-cols-1 border-t border-l border-white/15 sm:grid-cols-3">
             {monthlyVolumes.map((volume) => (
               <div
                 key={volume.mode}
-                className="flex items-center gap-4 border-r border-b p-5"
+                className="flex items-center gap-4 border-r border-b border-white/15 p-5"
               >
                 <volume.icon
-                  className="size-5 shrink-0 text-muted-foreground"
+                  className="size-5 shrink-0 text-brand-slate"
                   aria-hidden="true"
                 />
                 <div className="min-w-0">
                   {/* 운송모드 코드는 라벨이라 대문자 + 넓은 자간으로 본문과 구분한다 */}
-                  <p className="text-[11px] font-medium tracking-[0.14em] text-muted-foreground">
+                  <p className="text-[11px] font-medium tracking-[0.14em] text-brand-slate">
                     {volume.mode}
                   </p>
-                  <p className="tabular-figures text-xl font-semibold text-foreground">
+                  <p className="tabular-figures text-xl font-semibold text-white">
                     {volume.value}
-                    <span className="ms-1 text-sm font-normal text-muted-foreground">
+                    <span className="ms-1 text-sm font-normal text-brand-slate">
                       {volume.unit}
                     </span>
                   </p>
