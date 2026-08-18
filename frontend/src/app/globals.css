@@ -1,5 +1,10 @@
 @import "tailwindcss";
 @import "tw-animate-css";
+/*
+  한글 서체 Pretendard 의 @font-face 선언 (유니코드 구간별 동적 서브셋).
+  생성물이며 손으로 고치지 않는다 — 자세한 사정은 파일 상단 주석 참고.
+*/
+@import "./pretendard.css";
 
 @custom-variant dark (&:is(.dark *));
 
@@ -16,12 +21,18 @@
        제네릭을 중간에 넣으면 브라우저가 거기서 탐색을 끝내 뒤 항목이 전부
        죽는다. 이 프로젝트에서 두 번 그렇게 짜서 두 번 한글이 폴백으로 떨어졌다.
 
-    ⚠️ 두 변수 모두 <html> 의 className 으로 정의된다 (app/layout.tsx 에서
-       generalSans.variable 과 pretendard.variable 을 둘 다 붙여야 한다).
-       하나라도 빠지면 var() 가 비어 스택이 조용히 무너진다.
+    ⚠️ var(--font-general-sans) 는 <html> 의 className 으로 정의된다
+       (app/layout.tsx 의 generalSans.variable). 빠지면 var() 가 비어 스택이
+       조용히 무너진다.
+
+    ⚠️ Pretendard 만 var() 가 아니라 문자열인 것은 오타가 아니다. 이 이름은
+       pretendard.css 에서 우리가 @font-face 로 직접 선언하므로 문자열로
+       가리키는 것이 맞다. (예전에 next/font 로 실을 때는 패밀리명이 빌드
+       해시라 문자열로 쓰면 안 됐는데, 지금은 반대다. 사용자 PC 에 동명 폰트가
+       설치돼 있어도 @font-face 선언이 우선한다)
   */
   --font-sans:
-    var(--font-general-sans), var(--font-pretendard), 'Apple SD Gothic Neo',
+    var(--font-general-sans), 'Pretendard', 'Apple SD Gothic Neo',
     'Malgun Gothic', 'Noto Sans KR', system-ui, sans-serif;
   --radius-sm: calc(var(--radius) - 4px);
   --radius-md: calc(var(--radius) - 2px);
