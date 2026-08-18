@@ -87,7 +87,7 @@ export function PartnersBar() {
                   <span className="text-[10px] tracking-[0.12em] text-muted-foreground uppercase">
                     {entry.label}
                   </span>
-                  <div className="flex h-16 w-44 items-center justify-center rounded-md border bg-white px-4">
+                  <div className="flex h-16 w-48 items-center justify-center rounded-md border bg-white px-4">
                     <Image
                       src={entry.logo.src}
                       /*
@@ -104,7 +104,28 @@ export function PartnersBar() {
                         래스터 리사이즈로 얻을 것도 없다. 원본을 그대로 서빙한다.
                       */
                       unoptimized
-                      className="h-auto w-auto max-h-full max-w-full object-contain"
+                      /*
+                        마퀴는 쉬지 않고 돌아서 지금 화면 밖에 있는 항목이 곧
+                        들어온다. 기본값인 lazy 로 두면 흘러 들어오는 순간에야
+                        받기 시작해 빈 칸이 지나간다. 여섯 개 합쳐 100KB 미만이라
+                        처음부터 받는 편이 낫다.
+                      */
+                      loading="eager"
+                      /*
+                        높이만 지정하고 폭은 auto 로 둔다.
+
+                        width/height 를 CSS 로 둘 다 박으면 내가 계산한 종횡비가
+                        원본과 소수점 단위로 어긋나는 만큼 로고가 미세하게
+                        찌그러진다. 높이만 주면 폭은 브라우저가 원본 종횡비에서
+                        끌어내므로 왜곡이 수학적으로 0 이다.
+                        (props 의 width 는 레이아웃 예약용 근삿값이다.)
+
+                        예전에 h-auto w-auto max-w-full 로 뒀더니 width/height 가
+                        무시되고 원본 크기로 그려지다 카드 폭에 잘렸다 — dpd 가
+                        의도한 26px 대신 60px 로 나와 카드를 넘쳤다.
+                      */
+                      style={{ height: entry.logo.height, width: 'auto' }}
+                      className="max-w-full object-contain"
                     />
                   </div>
                 </li>

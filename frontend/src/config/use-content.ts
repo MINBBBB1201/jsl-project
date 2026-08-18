@@ -128,16 +128,18 @@ const VOLUME_FACTS = [
  * 같은 무게가 되는 지점을 찾아 높이를 조정했다 — 로고 자체의 비율은
  * 원본 그대로이므로 width 는 종횡비에서 계산한 값이다.
  *
- * 가장 넓은 대한항공(144px)이 카드의 가용 폭(w-44 176px − px-4 32px = 144px)에
- * 딱 맞는다. 여기서 더 키우면 max-w-full 에 걸려 CSS 가 줄이므로 아래 숫자가
- * 실제 렌더 크기와 달라진다.
+ * 실제 렌더는 height 만 CSS 로 주고 width 는 auto 로 둔다 (partners-bar.tsx).
+ * 아래 width 는 레이아웃 예약용 근삿값이라 원본 종횡비와 소수점 단위로
+ * 어긋나도 화면에는 영향이 없다 — 폭은 브라우저가 원본에서 끌어낸다.
+ * 다만 가장 넓은 대한항공(약 143px)이 카드 가용 폭(w-48 192px − px-4 32px −
+ * border 2px = 158px) 안에 들어와야 한다. 넘으면 max-w-full 에 걸려 줄어든다.
  */
 const PARTNER_LOGOS = {
   koreanAir: { src: "/logos/partners/korean-air.svg", width: 144, height: 17 },
   chinaEastern: { src: "/logos/partners/china-eastern.svg", width: 114, height: 25 },
-  royalMail: { src: "/logos/partners/royal-mail.svg", width: 86, height: 22 },
-  deutschePost: { src: "/logos/partners/deutsche-post.svg", width: 100, height: 22 },
-  dhl: { src: "/logos/partners/dhl.svg", width: 100, height: 22 },
+  royalMail: { src: "/logos/partners/royal-mail.svg", width: 94, height: 24 },
+  deutschePost: { src: "/logos/partners/deutsche-post.svg", width: 109, height: 24 },
+  dhl: { src: "/logos/partners/dhl.svg", width: 109, height: 24 },
   dpd: { src: "/logos/partners/dpd.svg", width: 62, height: 26 },
 } as const
 
