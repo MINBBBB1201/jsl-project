@@ -5,11 +5,24 @@
 
 @theme inline {
   /*
-    본문 서체 — General Sans (lib/fonts.ts 참고).
-    한글 폴백까지 포함한 전체 스택이 이 변수 하나에 들어 있으므로 여기서
-    폰트를 덧붙이지 않는다 (덧붙이면 제네릭 패밀리 뒤로 밀려 무시된다).
+    본문 서체 스택 — 라틴·숫자는 General Sans, 한글은 Pretendard (lib/fonts.ts).
+
+    ⚠️ 순서가 전부다. 브라우저는 글자 하나하나에 대해 이 목록을 왼쪽부터 훑어
+       그 글자를 가진 첫 폰트로 그린다. 그래서
+         1. General Sans 가 먼저 — 라틴·숫자를 가져간다 (한글 글리프가 없다)
+         2. Pretendard 가 그다음 — 한글을 가져간다
+         3. 시스템 한글 폰트 — Pretendard 서브셋에 없는 글자(한자 등)를 받는다
+         4. 제네릭(sans-serif)은 반드시 맨 끝
+       제네릭을 중간에 넣으면 브라우저가 거기서 탐색을 끝내 뒤 항목이 전부
+       죽는다. 이 프로젝트에서 두 번 그렇게 짜서 두 번 한글이 폴백으로 떨어졌다.
+
+    ⚠️ 두 변수 모두 <html> 의 className 으로 정의된다 (app/layout.tsx 에서
+       generalSans.variable 과 pretendard.variable 을 둘 다 붙여야 한다).
+       하나라도 빠지면 var() 가 비어 스택이 조용히 무너진다.
   */
-  --font-sans: var(--font-general-sans);
+  --font-sans:
+    var(--font-general-sans), var(--font-pretendard), 'Apple SD Gothic Neo',
+    'Malgun Gothic', 'Noto Sans KR', system-ui, sans-serif;
   --radius-sm: calc(var(--radius) - 4px);
   --radius-md: calc(var(--radius) - 2px);
   --radius-lg: var(--radius);
