@@ -28,11 +28,16 @@ const newsletterSchema = z.object({
 export function LandingFooter() {
   const { footer } = useContent()
 
-  const contactLines = [
-    { icon: Mail, value: company.contact.email },
-    { icon: Phone, value: company.contact.phone },
-    { icon: MapPin, value: company.contact.address },
-  ]
+  /*
+    아이콘만 여기서 붙인다. 값과 라벨(대표 문의 / 한국지사)은 use-content 가
+    company 와 messages 에서 조립해 준다 — 주소는 화면 언어에 따라 국문/영문이
+    갈리므로 컴포넌트에서 고르지 않는다.
+  */
+  const lineIcons = { email: Mail, phone: Phone, address: MapPin } as const
+  const contactLines = footer.contactLines.map((line) => ({
+    ...line,
+    icon: lineIcons[line.kind],
+  }))
 
   const form = useForm<z.infer<typeof newsletterSchema>>({
     resolver: zodResolver(newsletterSchema),
@@ -96,12 +101,20 @@ export function LandingFooter() {
             <p className="text-muted-foreground mb-6 max-lg:text-center">
               {footer.description}
             </p>
-            {/* TODO: 실제 연락처 확정 시 landing-content.ts의 company.contact 수정 */}
             <ul className="space-y-2 text-sm text-muted-foreground max-lg:flex max-lg:flex-col max-lg:items-center">
               {contactLines.map((line) => (
-                <li key={line.value} className="flex items-center gap-2">
-                  <line.icon className="h-4 w-4 shrink-0" aria-hidden />
-                  <span>{line.value}</span>
+                <li key={line.value} className="flex items-start gap-2">
+                  <line.icon className="mt-0.5 h-4 w-4 shrink-0" aria-hidden />
+                  <span>
+                    {/*
+                      메일이 둘이라 라벨 없이는 어느 쪽이 대표 문의인지 알 수 없다.
+                      라벨은 값과 같은 줄에 두되 한 단계 흐리게 둔다.
+                    */}
+                    {line.label ? (
+                      <span className="text-muted-foreground/70">{line.label} </span>
+                    ) : null}
+                    {line.value}
+                  </span>
                 </li>
               ))}
             </ul>
@@ -128,6 +141,29 @@ export function LandingFooter() {
         </div>
 
         <Separator className="my-8" />
+
+        {/*
+          사업자 정보 · 등록/인증
+
+          별도 섹션을 만들지 않고 푸터 하단에 텍스트로만 둔다. 이 푸터는
+          PublicPageShell 을 통해 /privacy, /terms, /tracking, /consulting 에서도
+          렌더되므로, 여기 한 번 적어 두면 공개 페이지 전체가 같은 표기를 갖는다.
+        */}
+        <div className="mb-8 space-y-1 text-xs text-muted-foreground max-lg:text-center">
+          <p className="flex flex-wrap gap-x-3 gap-y-1 max-lg:justify-center">
+            {footer.legalInfo.map((item) => (
+              <span key={item.label}>
+                <span className="text-muted-foreground/70">{item.label}</span>{" "}
+                {item.value}
+              </span>
+            ))}
+          </p>
+          <p className="flex flex-wrap gap-x-3 gap-y-1 max-lg:justify-center">
+            {footer.certifications.map((item) => (
+              <span key={item}>{item}</span>
+            ))}
+          </p>
+        </div>
 
         {/* Bottom Footer */}
         <div className="flex flex-col lg:flex-row justify-between items-center gap-2">

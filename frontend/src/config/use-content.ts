@@ -1,6 +1,6 @@
 "use client"
 
-import { useMessages } from "next-intl"
+import { useLocale, useMessages } from "next-intl"
 import {
   BadgeCheck,
   Boxes,
@@ -28,7 +28,12 @@ import {
   type LucideIcon,
 } from "lucide-react"
 
-import { company } from "./landing-content"
+import {
+  company,
+  getCompanyAddress,
+  getCompanyLegalName,
+  getCompanyRepresentative,
+} from "./landing-content"
 
 /**
  * 로케일별 랜딩 콘텐츠 조립기
@@ -93,6 +98,14 @@ const OFFICE_FACTS = [
 
 const TOTAL_HEADCOUNT = 20
 
+/**
+ * 월간 처리 물동량 — 출처: 회사소개서.
+ *
+ * ⚠️ TRUCK 350대/월 은 서비스 카드의 "중국 내수 300대 + 국경 보더 150대"
+ *    (= 450대) 와 맞지 않는다. 이건 구현 오류가 아니라 원본 회사소개서 PPT
+ *    자체에 있는 모순이다. 임의로 통일하지 말 것 — 양쪽 모두 원본 표기를
+ *    그대로 두고, 배포 전 창업자 확인 항목으로 트래킹 중이다.
+ */
 const VOLUME_FACTS = [
   { icon: PlaneTakeoff, mode: "AIR", value: "200", unitKey: "airUnit" },
   { icon: Ship, mode: "SEA", value: "100", unitKey: "seaUnit" },
@@ -178,6 +191,8 @@ interface NavItem {
 
 export function useContent() {
   const m = useMessages() as unknown as Msg
+  // 주소·상호·대표자는 국문/영문 두 벌이 다 공식 표기라 화면 언어에 맞춰 고른다
+  const locale = useLocale()
 
   const hero = {
     badge: m.hero.badge as string,
@@ -413,7 +428,11 @@ export function useContent() {
       {
         icon: Mail,
         title: m.contact.channelEmail.title,
-        description: `${company.contact.email} · ${m.contact.businessHours}`,
+        /*
+          대표 메일과 한국지사 메일을 둘 다 노출한다. 어느 쪽으로 라우팅할지는
+          아직 확정되지 않았고, 문의 폼의 수신 로직은 이 값을 쓰지 않는다.
+        */
+        description: `${m.contact.emailGeneral} ${company.contact.email} · ${m.contact.emailKorea} ${company.contact.emailKr} · ${m.contact.businessHours}`,
       },
     ],
     formTitle: m.contact.formTitle,
@@ -443,6 +462,39 @@ export function useContent() {
 
   const footer = {
     description: m.footer.description,
+    /*
+      푸터 연락처 — 대표 문의(hq)와 한국지사(kr) 메일을 나란히 보여준다.
+      값은 landing-content 의 company 하나에서만 온다.
+    */
+    contactLines: [
+      { kind: "email" as const, label: m.contact.emailGeneral as string, value: company.contact.email },
+      { kind: "email" as const, label: m.contact.emailKorea as string, value: company.contact.emailKr },
+      { kind: "phone" as const, label: undefined, value: company.contact.phone },
+      { kind: "address" as const, label: undefined, value: getCompanyAddress(locale) },
+    ],
+    /*
+      사업자 정보 — 푸터는 랜딩뿐 아니라 /privacy, /terms, /tracking,
+      /consulting 에서도 렌더되므로(PublicPageShell) 여기 한 번 두면 공개
+      페이지 전체가 같은 표기를 갖는다.
+
+      ⚠️ 대표자는 사업자등록증상 법적 대표자(company.representative)다.
+         회사소개서 조직도의 공개 대표(company.ceo)와 다른 사람이니 섞지 말 것.
+    */
+    legalInfo: [
+      { label: m.footer.legalNameLabel as string, value: getCompanyLegalName(locale) },
+      { label: m.footer.representativeLabel as string, value: getCompanyRepresentative(locale) },
+      { label: m.footer.businessNumberLabel as string, value: company.businessNumber },
+      { label: m.footer.corporateNumberLabel as string, value: company.corporateNumber },
+    ],
+    /*
+      등록·인증. 중소기업확인서는 유효기간이 있어 "보유" 사실만 적는다
+      (기간을 적으면 만료 후 사이트에 틀린 정보가 남는다).
+    */
+    certifications: [
+      (m.footer.forwarderLicense as string).replace("{no}", company.registrations.freightForwarderNo),
+      (m.footer.kiffaMember as string).replace("{no}", company.registrations.kiffaMemberNo),
+      m.footer.smeCertified as string,
+    ],
     newsletter: {
       title: m.footer.newsletterTitle,
       description: m.footer.newsletterDescription,

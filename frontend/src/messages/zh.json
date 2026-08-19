@@ -73,7 +73,7 @@
     "clients": {
       "value": "30家以上",
       "label": "客户",
-      "description": "制造 · 电商 · 流通"
+      "description": "LG · 三星等多家 · 制造 / 电商 / 流通"
     },
     "partners": {
       "value": "50家以上",
@@ -113,7 +113,7 @@
       },
       "manufacturing": {
         "title": "全球制造企业运营经验",
-        "description": "具备大企业供应链运营经验的人员，从货主视角设计物流方案。"
+        "description": "具备大企业供应链运营经验的人员，从货主视角设计物流方案。我们为 LG · 三星等多家企业运输货物。"
       },
       "platform": {
         "title": "自主数字化运营平台",
@@ -133,8 +133,9 @@
         "title": "空运",
         "summary": "专注于电子产品与电商货物的空运服务。",
         "highlights": [
-          "运营华南 → 山东、山东 → 仁川(ICN)等主要航线",
-          "衔接仁川 → 欧洲 / LAX / ORD 等长途航线",
+          "战略航空公司伙伴：大韩航空 · 东方航空 · 仁川航空 · 土耳其航空(TK) · 芬兰航空(AY)",
+          "主要航线：华南 → 山东、山东 → 仁川(ICN)、仁川 → 欧洲 / LAX / ORD",
+          "专长货物：电子产品 · 电商货物 · 紧急出货 · 危险品(DG)",
           "月处理200吨"
         ]
       },
@@ -142,35 +143,42 @@
         "title": "海运 · 海空联运",
         "summary": "整合广东-上海 CFS，衔接中国内陆卡车运输与轮渡的海运及 SEA-AIR 联运服务。",
         "highlights": [
+          "一级代理伙伴关系 — 与船公司直接签约锁定舱位",
+          "电商 · FBA 货物处理（入库 Amazon FC）",
           "广东-上海 CFS 整合 + 中国内陆卡车运输 + 轮渡衔接",
           "经仁川中转的美国·欧洲方向 SEA-AIR 联运",
-          "从上海 CFS 入库到机场仓库入库的8步标准流程",
-          "月处理100TEU"
+          "项目货物运输经验",
+          "SEA-AIR 8步流程：上海 CFS 入库(D-Day) → 装车·出货准备(D-Day 18:00) → 上海 CFS 出库(D-Day 19:00) → 抵达威海(D+1 14:30) → 进 CY(D+1 15:00) → 轮渡开航(D+1 19:30) → 抵达仁川·平泽(D+2 11:00) → 机场仓库入库(D+2 15:30)",
+          "威海 ↔ 仁川轮渡每周6班，月处理100TEU"
         ]
       },
       "TRUCK": {
         "title": "陆运",
         "summary": "直接运营覆盖中国全境及东南亚跨境的卡车运输。",
         "highlights": [
-          "覆盖中国全境31个省的 FTL / LTL，月300车",
-          "越南·泰国方向跨境卡车运输，月150车，自主运营"
+          "中国内贸：覆盖全中国31个省·市的 FTL / LTL，月300车",
+          "跨境卡车运输：中国（华东·华南）→ 越南 · 泰国，月150车",
+          "主要线路：深圳 → 海防、广州 → 河内、南宁 → 北宁、河内 → 胡志明市",
+          "跨境卡车运输主要客户：LG（电子·显示器部件）、三星电机 / BYD（电子显示器部件）"
         ]
       },
       "RAIL": {
         "title": "铁路运输",
         "summary": "提供连接中国与欧洲的欧亚铁路及 Sea&Rail 联运服务。",
         "highlights": [
-          "中国 → 欧洲 / 俄罗斯 / 中亚 欧亚铁路",
-          "衔接西安 · 成都 · 重庆等中国内陆据点",
-          "经仁川 · 釜山的 Sea&Rail 联运"
+          "全程实时货物追踪系统",
+          "Route A — 中欧 / 中俄 / 中亚班列",
+          "Route B — 西安 · 成都 · 重庆等中国内陆铁路枢纽衔接",
+          "Route C — 海铁联运：仁川 · 釜山海运 + 欧洲方向铁路"
         ]
       },
       "EXPRESS": {
         "title": "快递",
         "summary": "通过自建 API 系统实时对接配送状态的门到门快递服务。",
         "highlights": [
-          "韩国 → 欧洲 5~7天 门到门",
-          "自有系统 'JSL-EXPRESS Logistics' API 实时对接",
+          "自有系统 'JSL-EXPRESS Logistics' — REST API 对接、实时更新、Web · Mobile 仪表盘",
+          "仁川(ICN) → 布拉格(PRG) 枢纽 → 欧洲：共7天（空运1天 + 清关·欧洲枢纽1.5天 + 末端配送3~4.5天）",
+          "仁川(ICN) → 伦敦(LHR) → 英国：共5天（空运1天 + 清关·欧洲枢纽1.5天 + 末端配送1~2.5天）",
           "Royal Mail · Deutsche Post · DHL · dpd 等当地末端配送伙伴"
         ]
       }
@@ -431,7 +439,9 @@
     "successTitle": "咨询已提交。",
     "successDescription": "负责人确认后会尽快与您联系。",
     "errorTitle": "咨询提交失败。",
-    "businessHours": "工作日 09:00 - 18:00 (韩国时间)"
+    "businessHours": "工作日 09:00 - 18:00 (韩国时间)",
+    "emailGeneral": "综合咨询",
+    "emailKorea": "韩国分公司"
   },
   "footer": {
     "description": "2023年成立的综合物流企业，直接运营首尔、上海、威海、广州、河内5个据点，提供空运·海运·陆运·铁路·快递及物流咨询服务。",
@@ -447,7 +457,14 @@
     "linkNotice": "公告",
     "linkTerms": "使用条款",
     "linkPrivacy": "隐私政策",
-    "rights": "All rights reserved."
+    "rights": "All rights reserved.",
+    "legalNameLabel": "公司名称",
+    "representativeLabel": "法定代表人",
+    "businessNumberLabel": "营业执照号",
+    "corporateNumberLabel": "法人登记号",
+    "forwarderLicense": "国际物流周旋业登记 第{no}号",
+    "kiffaMember": "KIFFA（韩国国际物流周旋业协会）正式会员 第{no}号",
+    "smeCertified": "持有中小企业确认书"
   },
   "plans": {
     "badge": "费用说明",

@@ -11,7 +11,7 @@
  * 회사명·대표자·연락처는 landing-content.ts 의 company 를 참조합니다.
  */
 
-import { company } from "./landing-content"
+import { company, getCompanyAddress } from "./landing-content"
 import type { Locale } from "@/i18n/routing"
 
 /**
@@ -57,13 +57,25 @@ export interface LegalDocument {
   precedenceNotice: string | null
 }
 
-const CONTACT_BULLETS = (labels: {
-  email: string
-  address: string
-  phone: string
-}) => [
+/**
+ * 개인정보 관련 문의 창구.
+ *
+ * 대표 메일(hq) 하나만 쓴다. 사이트에는 한국지사 메일(kr)도 함께 노출하지만,
+ * 개인정보 열람·정정 요청을 어느 창구가 받을지는 아직 정해지지 않았다.
+ * 창구가 정해지면 여기도 함께 바꿀 것.
+ *
+ * 주소는 화면 언어에 맞춰 국문/영문 공식 표기를 고른다.
+ */
+const CONTACT_BULLETS = (
+  locale: Locale,
+  labels: {
+    email: string
+    address: string
+    phone: string
+  }
+) => [
   `${labels.email}: ${company.contact.email}`,
-  `${labels.address}: ${company.contact.address}`,
+  `${labels.address}: ${getCompanyAddress(locale)}`,
   `${labels.phone}: ${company.contact.phone}`,
 ]
 
@@ -87,9 +99,9 @@ const ko = (): { privacy: LegalDocument; terms: LegalDocument } => ({
       {
         heading: "6. 이용자의 권리와 행사 방법",
         paragraphs: ["이용자는 언제든지 자신의 개인정보에 대해 열람·정정·삭제·처리정지를 요청할 수 있으며, 아래 연락처로 요청하실 수 있습니다."],
-        bullets: CONTACT_BULLETS({ email: "이메일", address: "주소", phone: "전화" }),
+        bullets: CONTACT_BULLETS("ko", { email: "이메일", address: "주소", phone: "전화" }),
       },
-      { heading: "7. 개인정보 보호책임자", bullets: [`성명: ${company.ceo} (대표)`, `이메일: ${company.contact.email}`] },
+      { heading: "7. 개인정보 보호책임자", bullets: [`성명: ${company.ceo}`, `이메일: ${company.contact.email}`] },
       { heading: "8. 고지의 의무", paragraphs: ["본 방침은 시행일로부터 적용되며, 법령 및 방침에 따른 변경내용의 추가·삭제 및 정정이 있는 경우에는 개정 최소 7일 전부터 홈페이지를 통해 고지합니다."] },
     ],
     effectiveNote: `시행일자: ${formatDate(EFFECTIVE_DATE, "ko")}`,
@@ -137,9 +149,9 @@ const en = (): { privacy: LegalDocument; terms: LegalDocument } => ({
       {
         heading: "6. Your rights and how to exercise them",
         paragraphs: ["You may at any time request access to, correction of, deletion of, or suspension of processing of your personal data. Requests can be made using the contact details below."],
-        bullets: CONTACT_BULLETS({ email: "Email", address: "Address", phone: "Phone" }),
+        bullets: CONTACT_BULLETS("en", { email: "Email", address: "Address", phone: "Phone" }),
       },
-      { heading: "7. Data protection officer", bullets: [`Name: ${company.ceoEn} (CEO)`, `Email: ${company.contact.email}`] },
+      { heading: "7. Data protection officer", bullets: [`Name: ${company.ceoEn}`, `Email: ${company.contact.email}`] },
       { heading: "8. Notification obligation", paragraphs: ["This policy applies from its effective date. Where there are additions, deletions or corrections arising from changes in law or policy, we will announce them on our website at least 7 days before they take effect."] },
     ],
     effectiveNote: `Effective date: ${formatDate(EFFECTIVE_DATE, "en")}`,
@@ -187,9 +199,9 @@ const zh = (): { privacy: LegalDocument; terms: LegalDocument } => ({
       {
         heading: "6. 用户的权利及行使方式",
         paragraphs: ["用户可随时要求查阅、更正、删除其个人信息或停止处理，可通过以下联系方式提出。"],
-        bullets: CONTACT_BULLETS({ email: "邮箱", address: "地址", phone: "电话" }),
+        bullets: CONTACT_BULLETS("zh", { email: "邮箱", address: "地址", phone: "电话" }),
       },
-      { heading: "7. 个人信息保护负责人", bullets: [`姓名：${company.ceoEn}（代表）`, `邮箱：${company.contact.email}`] },
+      { heading: "7. 个人信息保护负责人", bullets: [`姓名：${company.ceoEn}`, `邮箱：${company.contact.email}`] },
       { heading: "8. 告知义务", paragraphs: ["本政策自施行之日起适用。因法律法规及政策变更而有增加、删除或更正内容时，将于修订生效前至少7日通过网站予以公告。"] },
     ],
     effectiveNote: `施行日期：${formatDate(EFFECTIVE_DATE, "zh")}`,
@@ -237,9 +249,9 @@ const vi = (): { privacy: LegalDocument; terms: LegalDocument } => ({
       {
         heading: "6. Quyền của người dùng và cách thực hiện",
         paragraphs: ["Bạn có thể yêu cầu xem, chỉnh sửa, xóa hoặc tạm dừng xử lý thông tin cá nhân của mình bất cứ lúc nào, qua các đầu mối liên hệ dưới đây."],
-        bullets: CONTACT_BULLETS({ email: "Email", address: "Địa chỉ", phone: "Điện thoại" }),
+        bullets: CONTACT_BULLETS("vi", { email: "Email", address: "Địa chỉ", phone: "Điện thoại" }),
       },
-      { heading: "7. Người phụ trách bảo vệ thông tin cá nhân", bullets: [`Họ tên: ${company.ceoEn} (Giám đốc)`, `Email: ${company.contact.email}`] },
+      { heading: "7. Người phụ trách bảo vệ thông tin cá nhân", bullets: [`Họ tên: ${company.ceoEn}`, `Email: ${company.contact.email}`] },
       { heading: "8. Nghĩa vụ thông báo", paragraphs: ["Chính sách này được áp dụng từ ngày có hiệu lực. Khi có nội dung bổ sung, xóa bỏ hoặc chỉnh sửa do thay đổi pháp luật hoặc chính sách, chúng tôi sẽ thông báo trên website ít nhất 7 ngày trước khi có hiệu lực."] },
     ],
     effectiveNote: `Ngày hiệu lực: ${formatDate(EFFECTIVE_DATE, "vi")}`,

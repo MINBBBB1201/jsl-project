@@ -73,7 +73,7 @@
     "clients": {
       "value": "30+",
       "label": "Clients",
-      "description": "Manufacturing · E-commerce · Distribution"
+      "description": "LG, Samsung and others · Manufacturing / E-commerce / Distribution"
     },
     "partners": {
       "value": "50+",
@@ -113,7 +113,7 @@
       },
       "manufacturing": {
         "title": "Global manufacturing experience",
-        "description": "Our team brings large-enterprise supply chain know-how and designs logistics from the shipper's point of view."
+        "description": "Our team brings large-enterprise supply chain know-how and designs logistics from the shipper's point of view. We move cargo for LG, Samsung and many others."
       },
       "platform": {
         "title": "In-house digital platform",
@@ -133,8 +133,9 @@
         "title": "Air freight",
         "summary": "Air freight specialised in electronics and e-commerce cargo.",
         "highlights": [
-          "Key lanes: South China → Shandong, Shandong → Incheon (ICN)",
-          "Long-haul connections from Incheon to Europe / LAX / ORD",
+          "Strategic airline partners: Korean Air, China Eastern, Air Incheon, Turkish Airlines (TK), Finnair (AY)",
+          "Key lanes: South China → Shandong, Shandong → Incheon (ICN), Incheon → Europe / LAX / ORD",
+          "Specialised cargo: electronics, e-commerce, urgent shipments, dangerous goods (DG)",
           "200 tons handled per month"
         ]
       },
@@ -142,35 +143,42 @@
         "title": "Ocean & sea-air multimodal",
         "summary": "Ocean and SEA-AIR multimodal transport combining Guangdong–Shanghai CFS consolidation with inland trucking and ferry links in China.",
         "highlights": [
+          "Tier-1 agency partnerships — direct contracts with carriers secure space",
+          "E-commerce & FBA cargo handling (Amazon FC delivery)",
           "Guangdong–Shanghai CFS consolidation + inland trucking + ferry connection",
           "SEA-AIR multimodal to the US and Europe via Incheon transhipment",
-          "Standardised 8-step process from Shanghai CFS receipt to airport warehouse",
-          "100 TEU handled per month"
+          "Project cargo transport experience",
+          "8-step SEA-AIR process: Shanghai CFS receipt (D-Day) → loading & dispatch prep (D-Day 18:00) → Shanghai CFS departure (D-Day 19:00) → arrival in Weihai (D+1 14:30) → CY gate-in (D+1 15:00) → ferry departure (D+1 19:30) → arrival at Incheon/Pyeongtaek (D+2 11:00) → airport warehouse receipt (D+2 15:30)",
+          "Weihai ↔ Incheon ferry, 6 sailings per week; 100 TEU handled per month"
         ]
       },
       "TRUCK": {
         "title": "Road freight",
         "summary": "We directly operate trucking across China and cross-border routes into Southeast Asia.",
         "highlights": [
-          "FTL / LTL coverage across all 31 provinces of China, 300 trucks per month",
-          "Cross-border trucking to Vietnam and Thailand, 150 trucks per month, directly operated"
+          "China domestic: FTL / LTL across all 31 provinces and municipalities, 300 trucks per month",
+          "Cross-border trucking: China (East / South) → Vietnam, Thailand, 150 trucks per month",
+          "Key lanes: Shenzhen → Hải Phòng, Guangzhou → Hà Nội, Nanning → Bắc Ninh, Hà Nội → HCMC",
+          "Key cross-border trucking clients: LG (electronics & display components), Samsung Electro-Mechanics / BYD (electronic display components)"
         ]
       },
       "RAIL": {
         "title": "Rail freight",
         "summary": "Eurasian rail connecting China and Europe, plus Sea&Rail multimodal service.",
         "highlights": [
-          "Eurasian rail from China to Europe / Russia / Central Asia",
-          "Connections via Chinese inland hubs such as Xi'an, Chengdu and Chongqing",
-          "Sea&Rail multimodal via Incheon and Busan"
+          "Real-time cargo tracking across the entire route",
+          "Route A — China ↔ Europe / Russia / Central Asia freight trains",
+          "Route B — Chinese inland rail hubs: Xi'an, Chengdu, Chongqing",
+          "Route C — Sea & Rail multimodal: ocean legs via Incheon / Busan plus rail to Europe"
         ]
       },
       "EXPRESS": {
         "title": "Express",
         "summary": "Door-to-door express with real-time status integration through our own API system.",
         "highlights": [
-          "Korea → Europe in 5–7 days, door-to-door",
-          "Real-time API integration with our own 'JSL-EXPRESS Logistics' system",
+          "In-house 'JSL-EXPRESS Logistics' system — REST API integration, real-time updates, web & mobile dashboards",
+          "Incheon (ICN) → Prague (PRG) hub → Europe: 7 days total (1 day air + 1.5 days customs / EU hub + 3–4.5 days last mile)",
+          "Incheon (ICN) → London (LHR) → UK: 5 days total (1 day air + 1.5 days customs / EU hub + 1–2.5 days last mile)",
           "Local last-mile partners including Royal Mail, Deutsche Post, DHL and dpd"
         ]
       }
@@ -431,7 +439,9 @@
     "successTitle": "Your enquiry has been received.",
     "successDescription": "Our team will review it and get back to you shortly.",
     "errorTitle": "Failed to submit your enquiry.",
-    "businessHours": "Weekdays 09:00 - 18:00 (KST)"
+    "businessHours": "Weekdays 09:00 - 18:00 (KST)",
+    "emailGeneral": "General enquiries",
+    "emailKorea": "Korea office"
   },
   "footer": {
     "description": "Founded in 2023, we are an integrated logistics company directly operating five locations across Seoul, Shanghai, Weihai, Guangzhou and Hanoi, offering air, ocean, road, rail and express transport plus logistics consulting.",
@@ -447,7 +457,14 @@
     "linkNotice": "Notices",
     "linkTerms": "Terms of Service",
     "linkPrivacy": "Privacy Policy",
-    "rights": "All rights reserved."
+    "rights": "All rights reserved.",
+    "legalNameLabel": "Registered name",
+    "representativeLabel": "Representative",
+    "businessNumberLabel": "Business reg. no.",
+    "corporateNumberLabel": "Corporate reg. no.",
+    "forwarderLicense": "International freight forwarding licence No. {no}",
+    "kiffaMember": "KIFFA full member No. {no}",
+    "smeCertified": "Certified small & medium enterprise"
   },
   "plans": {
     "badge": "Pricing",

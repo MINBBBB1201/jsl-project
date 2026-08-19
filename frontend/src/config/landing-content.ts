@@ -3,15 +3,20 @@
  *
  * 출처: JSL LOGISTICS 회사소개서 (박재석 대표 제공)
  *
+ * ⚠️ 아래 company 를 제외한 마케팅 문구 블록(hero·stats·about·services·network …)은
+ *    다국어 전환 이후 src/messages/{locale}.json 이 실제 출처다. 컴포넌트는
+ *    use-content.ts 를 거쳐 messages 를 읽으므로 이 파일의 문구는 렌더되지 않는다.
+ *    문구를 고칠 때는 messages 를 고칠 것. (이 블록들의 존치 여부는 확인 대기)
+ *
  * 아직 확정되지 않아 placeholder로 남아 있는 항목:
- *   - company.contact.address : 본사 도로명 주소 미확정
- *   - company.contact.phone   : 대표 전화번호 미확정
  *   - plans                   : 실제 요금 정책 미확정 (기존 임시 문구 유지)
  *   - faq                     : 실제 운영 정책 기준 재작성 필요 (기존 임시 문구 유지)
  *   - services.valueAdded     : 소개서에 없는 항목이라 미검증 (아래 주석 참고)
  *
  * 아직 콘텐츠가 없어 랜딩 페이지에서 제외된 섹션 (landing-page-content.tsx 참고):
- *   - LogoCarousel        : 고객사 실명 공개 여부 컨펌 후 노출
+ *   - LogoCarousel        : 노출하지 않는다. 고객사 실명(LG·삼성)은 텍스트로만
+ *                           표기하고 로고 이미지는 쓰지 않는다 — 파트너사(항공사)
+ *                           로고와 달리 고객사 로고 무단 노출은 법적 리스크가 크다.
  *   - TestimonialsSection : 실제 고객 후기 확보 후 노출
  *   - BlogSection         : 실제 게시글 확보 후 노출
  */
@@ -45,27 +50,82 @@ import {
   type LucideIcon,
 } from "lucide-react"
 
-/** 회사 기본 정보 */
+/**
+ * 회사 기본 정보 — 사이트 전체의 단일 출처
+ *
+ * 출처: 사업자등록증 · 법인등기 · 국제물류주선업 등록증 · KIFFA 회원증 ·
+ *       중소기업확인서 · 2026 회사소개서 (이재영 매니저 전달, 2026-08)
+ *
+ * ── 대표자 이름을 두 벌 두는 이유 ───────────────────────────────────────
+ * `representative` 는 사업자등록증·법인등기에 올라간 법적 대표자이고,
+ * `ceo` 는 회사소개서 조직도에 공개된 대표다. 두 사람이 다르다.
+ * 법적 고지(사업자 정보 표기 등)에는 representative 를, 마케팅 문구에는
+ * ceo 를 쓴다 — 섞어 쓰지 말 것.
+ *
+ * ── 설립연도 ────────────────────────────────────────────────────────────
+ * `founded: 2023` 은 마케팅 기준이다. 사업자등록증상 개업일은 2022-01-18 로
+ * 다르지만, 기존 규칙대로 마케팅 콘텐츠는 2023년 설립을 유지한다.
+ * (법적 문서 필드는 위 등록 정보를 쓴다)
+ */
 export const company = {
   name: "JSL Logistics",
   legalName: "JSL LOGISTICS CO., LTD",
-  legalNameKo: "제이에스엘 로지스틱스",
+  legalNameKo: "주식회사 제이에스엘로지스틱스",
   founded: 2023,
+  /** 공개 마케팅용 대표 (회사소개서 조직도 기준) */
   ceo: "박재석",
   ceoEn: "Park Jae-Seok",
+  /** 법적 대표자 (사업자등록증·법인등기 기준) — 법적 고지에만 쓴다 */
+  representative: "임희빈",
+  representativeEn: "LIM HEEBIN",
+  businessNumber: "655-87-02610",
+  corporateNumber: "164511-0038457",
   tagline: "항공 · 해상 · 육상 · 철도 · 특송 통합 물류 서비스",
   description:
     "서울 본사와 상해·위해·광주·하노이 4개 해외법인을 직접 운영하며, 5개 운송 모드를 아우르는 원스톱 물류 서비스를 제공합니다.",
   contact: {
+    /** 대표·일반 문의 (회사소개서 공식 연락처) */
     email: "hq@jsl-logis.com",
-    // TODO: 대표 전화번호 확정 시 교체
-    // 미확정 값은 어느 언어에서도 그대로 노출되므로 언어 중립 표기를 쓴다
-    phone: "TBD",
-    // TODO: 본사 도로명 주소 확정 시 교체
-    address: "Seoul, Korea (TBD)",
+    /** 한국지사 실무 연락 */
+    emailKr: "kr@jsl-logis.com",
+    phone: "070-4776-0981",
+    address: "서울특별시 강서구 마곡중앙로 59-17, 806·807호 (마곡동, 류마타워2차)",
+    addressEn:
+      "Room 806-807, Ryu-ma Tower II, 59-17 Magok-jungang-ro, Gangseo-gu, Seoul, Republic of Korea",
     businessHours: "평일 09:00 - 18:00",
   },
+  /**
+   * 등록·인증 번호.
+   *
+   * ⚠️ 중소기업확인서의 유효기간(2026-04-01 ~ 2027-03-31)은 일부러 담지 않는다.
+   *    만료되는 순간 사이트에 틀린 정보가 남으므로 "보유" 사실만 표기한다.
+   */
+  registrations: {
+    /** 국제물류주선업 등록 (등록일 2022-03-14) */
+    freightForwarderNo: "5704",
+    /** KIFFA(한국국제물류주선업협회) 정회원 */
+    kiffaMemberNo: "1751",
+  },
 }
+
+/**
+ * 주소는 국문·영문 두 벌이 다 공식 표기다.
+ * 한국어 화면에는 도로명 국문 주소를, 나머지 언어에는 영문 주소를 쓴다.
+ */
+export const getCompanyAddress = (locale: string) =>
+  locale === "ko" ? company.contact.address : company.contact.addressEn
+
+/**
+ * 법인 표기 — 한국어 화면은 국문 상호를 앞에, 나머지는 영문 상호를 앞에 둔다.
+ */
+export const getCompanyLegalName = (locale: string) =>
+  locale === "ko"
+    ? `${company.legalNameKo} (${company.legalName})`
+    : `${company.legalName} (${company.legalNameKo})`
+
+/** 법적 대표자 표기 — 한국어는 국문, 나머지는 영문 로마자 */
+export const getCompanyRepresentative = (locale: string) =>
+  locale === "ko" ? company.representative : company.representativeEn
 
 /** 히어로 섹션 */
 export const hero = {
@@ -187,7 +247,7 @@ export const about = {
       title: "글로벌 제조기업 운영 경험",
       description:
         "대기업 공급망 운영 노하우를 보유한 인력이 화주 관점에서 물류를 설계합니다.",
-      /* TODO: 고객사 실명 공개 여부 컨펌 후 반영 */
+      // 실명 확인됨 (2026 회사소개서 PPT 근거) — 배포 전 최종 컨펌 필요
     },
     {
       icon: LayoutDashboard,

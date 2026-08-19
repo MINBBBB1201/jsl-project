@@ -30,10 +30,12 @@ export function AboutSection() {
         </div>
 
         {/*
-          TODO: 고객사 실명 공개 여부 컨펌 후 반영
-          소개서에는 실명 거래처가 언급돼 있으나 웹사이트 공개 가능 여부가
-          확인되지 않아 "글로벌 제조기업"으로 익명화했습니다.
-          컨펌 후 실명/로고를 이 섹션 또는 LogoCarousel에 추가하세요.
+          실명 확인됨 (2026 회사소개서 PPT 근거) — 배포 전 최종 컨펌 필요
+
+          "글로벌 제조기업" 익명 표기를 걷고 LG·삼성을 텍스트로만 언급한다
+          (messages 의 about.values.manufacturing). 로고 이미지는 쓰지 않는다 —
+          제휴 항공사 로고와 달리 고객사 로고를 동의 없이 노출하는 것은
+          법적 리스크가 훨씬 크다.
         */}
         <div className="grid grid-cols-1 gap-x-8 gap-y-12 sm:grid-cols-2 xl:grid-cols-4 mb-12">
           {about.values.map((value, index) => (

@@ -73,7 +73,7 @@
     "clients": {
       "value": "30+",
       "label": "Khách hàng",
-      "description": "Sản xuất · Thương mại điện tử · Phân phối"
+      "description": "LG, Samsung và nhiều khách hàng khác · Sản xuất / TMĐT / Phân phối"
     },
     "partners": {
       "value": "50+",
@@ -113,7 +113,7 @@
       },
       "manufacturing": {
         "title": "Kinh nghiệm vận hành cho doanh nghiệp sản xuất toàn cầu",
-        "description": "Đội ngũ có kinh nghiệm vận hành chuỗi cung ứng cho tập đoàn lớn, thiết kế logistics từ góc nhìn của chủ hàng."
+        "description": "Đội ngũ có kinh nghiệm vận hành chuỗi cung ứng cho tập đoàn lớn, thiết kế logistics từ góc nhìn của chủ hàng. Chúng tôi vận chuyển hàng cho LG, Samsung và nhiều doanh nghiệp khác."
       },
       "platform": {
         "title": "Nền tảng vận hành số tự phát triển",
@@ -133,8 +133,9 @@
         "title": "Vận tải hàng không",
         "summary": "Dịch vụ hàng không chuyên cho hàng điện tử và thương mại điện tử.",
         "highlights": [
-          "Các tuyến chính: Hoa Nam → Sơn Đông, Sơn Đông → Incheon (ICN)",
-          "Kết nối chặng dài từ Incheon đi châu Âu / LAX / ORD",
+          "Đối tác hàng không chiến lược: Korean Air, China Eastern, Air Incheon, Turkish Airlines (TK), Finnair (AY)",
+          "Tuyến chính: Hoa Nam → Sơn Đông, Sơn Đông → Incheon (ICN), Incheon → châu Âu / LAX / ORD",
+          "Hàng chuyên biệt: hàng điện tử, thương mại điện tử, hàng gấp, hàng nguy hiểm (DG)",
           "Xử lý 200 tấn mỗi tháng"
         ]
       },
@@ -142,35 +143,42 @@
         "title": "Đường biển · Vận tải kết hợp biển-hàng không",
         "summary": "Vận tải đường biển và SEA-AIR kết hợp gom hàng CFS Quảng Đông–Thượng Hải với vận tải đường bộ nội địa Trung Quốc và phà.",
         "highlights": [
+          "Quan hệ đối tác đại lý hạng 1 — ký trực tiếp với hãng tàu để giữ chỗ",
+          "Xử lý hàng thương mại điện tử & FBA (nhập kho Amazon FC)",
           "Gom hàng CFS Quảng Đông–Thượng Hải + vận tải bộ nội địa Trung Quốc + kết nối phà",
           "Vận tải SEA-AIR đi Mỹ và châu Âu qua trung chuyển Incheon",
-          "Quy trình chuẩn 8 bước từ nhập kho CFS Thượng Hải đến nhập kho sân bay",
-          "Xử lý 100 TEU mỗi tháng"
+          "Kinh nghiệm vận chuyển hàng dự án",
+          "Quy trình SEA-AIR 8 bước: nhập kho CFS Thượng Hải (D-Day) → xếp hàng & chuẩn bị xuất (D-Day 18:00) → rời CFS Thượng Hải (D-Day 19:00) → đến Uy Hải (D+1 14:30) → vào CY (D+1 15:00) → phà khởi hành (D+1 19:30) → đến Incheon·Pyeongtaek (D+2 11:00) → nhập kho sân bay (D+2 15:30)",
+          "Phà Uy Hải ↔ Incheon 6 chuyến/tuần, xử lý 100 TEU mỗi tháng"
         ]
       },
       "TRUCK": {
         "title": "Vận tải đường bộ",
         "summary": "Chúng tôi trực tiếp vận hành vận tải đường bộ khắp Trung Quốc và qua biên giới sang Đông Nam Á.",
         "highlights": [
-          "FTL / LTL phủ 31 tỉnh của Trung Quốc, 300 xe mỗi tháng",
-          "Vận tải xuyên biên giới đi Việt Nam và Thái Lan, 150 xe mỗi tháng, tự vận hành"
+          "Nội địa Trung Quốc: FTL / LTL tại 31 tỉnh·thành, 300 xe mỗi tháng",
+          "Vận tải xuyên biên giới: Trung Quốc (Hoa Đông · Hoa Nam) → Việt Nam, Thái Lan, 150 xe mỗi tháng",
+          "Tuyến chính: Thâm Quyến → Hải Phòng, Quảng Châu → Hà Nội, Nam Ninh → Bắc Ninh, Hà Nội → TP.HCM",
+          "Khách hàng chính tuyến xuyên biên giới: LG (linh kiện điện tử · màn hình), Samsung Electro-Mechanics / BYD (linh kiện màn hình điện tử)"
         ]
       },
       "RAIL": {
         "title": "Vận tải đường sắt",
         "summary": "Đường sắt Á–Âu nối Trung Quốc với châu Âu, cùng dịch vụ kết hợp Sea&Rail.",
         "highlights": [
-          "Đường sắt Á–Âu từ Trung Quốc đi châu Âu / Nga / Trung Á",
-          "Kết nối các trung tâm nội địa Trung Quốc như Tây An, Thành Đô, Trùng Khánh",
-          "Vận tải kết hợp Sea&Rail qua Incheon và Busan"
+          "Hệ thống theo dõi hàng hóa thời gian thực trên toàn tuyến",
+          "Route A — Tàu hàng Trung Quốc ↔ châu Âu / Nga / Trung Á",
+          "Route B — Kết nối ga đường sắt nội địa Trung Quốc: Tây An, Thành Đô, Trùng Khánh",
+          "Route C — Sea & Rail: chặng biển qua Incheon / Busan kết hợp đường sắt đi châu Âu"
         ]
       },
       "EXPRESS": {
         "title": "Chuyển phát nhanh",
         "summary": "Chuyển phát door-to-door với trạng thái giao nhận cập nhật thời gian thực qua hệ thống API tự phát triển.",
         "highlights": [
-          "Hàn Quốc → châu Âu 5–7 ngày, door-to-door",
-          "Tích hợp API thời gian thực với hệ thống 'JSL-EXPRESS Logistics' của chúng tôi",
+          "Hệ thống nội bộ 'JSL-EXPRESS Logistics' — tích hợp REST API, cập nhật thời gian thực, bảng điều khiển Web & Mobile",
+          "Incheon (ICN) → trung tâm Praha (PRG) → châu Âu: tổng 7 ngày (1 ngày hàng không + 1,5 ngày thông quan·hub EU + 3–4,5 ngày chặng cuối)",
+          "Incheon (ICN) → London (LHR) → Anh: tổng 5 ngày (1 ngày hàng không + 1,5 ngày thông quan·hub EU + 1–2,5 ngày chặng cuối)",
           "Đối tác chặng cuối tại địa phương gồm Royal Mail, Deutsche Post, DHL và dpd"
         ]
       }
@@ -431,7 +439,9 @@
     "successTitle": "Yêu cầu của bạn đã được tiếp nhận.",
     "successDescription": "Bộ phận phụ trách sẽ kiểm tra và liên hệ lại sớm.",
     "errorTitle": "Gửi yêu cầu không thành công.",
-    "businessHours": "Ngày thường 09:00 - 18:00 (giờ Hàn Quốc)"
+    "businessHours": "Ngày thường 09:00 - 18:00 (giờ Hàn Quốc)",
+    "emailGeneral": "Liên hệ chung",
+    "emailKorea": "Chi nhánh Hàn Quốc"
   },
   "footer": {
     "description": "Doanh nghiệp logistics tổng hợp thành lập năm 2023, trực tiếp vận hành 5 cơ sở tại Seoul, Thượng Hải, Uy Hải, Quảng Châu và Hà Nội, cung cấp vận tải hàng không · đường biển · đường bộ · đường sắt · chuyển phát nhanh cùng dịch vụ tư vấn logistics.",
@@ -447,7 +457,14 @@
     "linkNotice": "Thông báo",
     "linkTerms": "Điều khoản sử dụng",
     "linkPrivacy": "Chính sách bảo mật",
-    "rights": "All rights reserved."
+    "rights": "All rights reserved.",
+    "legalNameLabel": "Tên đăng ký",
+    "representativeLabel": "Người đại diện pháp luật",
+    "businessNumberLabel": "Mã số doanh nghiệp",
+    "corporateNumberLabel": "Mã số pháp nhân",
+    "forwarderLicense": "Giấy phép giao nhận vận tải quốc tế số {no}",
+    "kiffaMember": "Thành viên chính thức KIFFA số {no}",
+    "smeCertified": "Có giấy chứng nhận doanh nghiệp vừa và nhỏ"
   },
   "plans": {
     "badge": "Bảng giá",
