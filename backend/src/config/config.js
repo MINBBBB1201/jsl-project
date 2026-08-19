@@ -65,7 +65,9 @@ module.exports = {
   // 키가 없어도 서버는 뜨고, /api/chat 만 503으로 응답한다.
   groqApiKey: process.env.GROQ_API_KEY,
   groqBaseUrl: process.env.GROQ_BASE_URL || 'https://api.groq.com/openai/v1',
-  groqModel: process.env.GROQ_MODEL || 'llama-3.3-70b-versatile',
+  // llama-3.3-70b-versatile 은 Groq 가 서비스를 내려 404 가 난다 (챗봇이 통째로
+  // 죽는 원인이었다). 계정에서 실제로 호출되는 모델로 바꿨다.
+  groqModel: process.env.GROQ_MODEL || 'openai/gpt-oss-20b',
   // 화물 파손 판정용 비전 모델.
   // Llama 4 Scout/Maverick 은 Groq 가 2026년에 서비스를 종료해 쓸 수 없다.
   // qwen3.6-27b 는 모델 목록에 vision 표기가 없지만 실제로 이미지를 읽는다(검증 완료).

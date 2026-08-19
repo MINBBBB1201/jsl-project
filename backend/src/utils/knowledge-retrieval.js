@@ -62,7 +62,17 @@ const expandQuery = (query) => {
  * @returns {{docs: Array, strategy: 'text-index'|'regex-fallback'|'none'}}
  */
 const retrieveDocs = async (query, category) => {
-  const baseFilter = category ? { category } : {};
+  /*
+    샘플 문서는 검색 대상에서 뺀다.
+
+    지어낸 수치와 가짜 연락처("통관팀 내선 000-0000")를 담고 있어서, 실제 절차
+    문서와 함께 컨텍스트에 들어가면 LLM 이 둘을 구분하지 못하고 한 답변 안에
+    섞어 내놓는다. 문서는 지우지 않고 플래그로만 가린다 (knowledge.model.js).
+
+    $ne: true 로 쓴다 — 플래그가 생기기 전에 들어간 문서에는 필드 자체가 없고,
+    { isSample: false } 로 걸면 그런 문서가 통째로 검색에서 사라진다.
+  */
+  const baseFilter = { isSample: { $ne: true }, ...(category ? { category } : {}) };
   const projection = { score: { $meta: 'textScore' }, title: 1, content: 1, category: 1 };
 
   // 1차: $text 검색 (textScore 내림차순)

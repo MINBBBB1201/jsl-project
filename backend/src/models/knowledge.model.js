@@ -20,6 +20,21 @@ const knowledgeDocSchema = new mongoose.Schema({
     enum: KNOWLEDGE_CATEGORIES,
     index: true
   },
+  /**
+   * 플레이스홀더 샘플 문서 표시.
+   *
+   * true 인 문서는 RAG 검색에서 제외된다(knowledge-retrieval.js). 지어낸
+   * 수치와 가짜 연락처("통관팀 내선 000-0000")가 실제 절차 문서 답변에
+   * 섞여 들어가는 것을 막기 위해서다.
+   *
+   * 지우지 않고 남겨 두는 이유: 어느 카테고리에 실제 문서가 아직 없는지
+   * 파악하는 참고용이다. 실제 문서로 교체할 때 이 플래그를 떼면 된다.
+   */
+  isSample: {
+    type: Boolean,
+    default: false,
+    index: true
+  },
   createdAt: {
     type: Date,
     default: Date.now,
