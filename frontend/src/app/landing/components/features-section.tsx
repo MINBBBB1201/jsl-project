@@ -73,7 +73,17 @@ export function FeaturesSection() {
 
                 <p className="mt-2 text-sm text-muted-foreground">{mode.summary}</p>
 
-                <ul className="mt-auto space-y-2 pt-6">
+                {/*
+                  불릿은 요약문 바로 아래에서 이어진다.
+
+                  예전에는 mt-auto 로 카드 바닥에 붙여 놓았다. 그리드 행은 가장
+                  높은 카드에 맞춰 높이가 정해지므로, 짧은 카드에서는 그 여백이
+                  전부 요약문과 불릿 사이로 몰렸다 — SEA 가 7줄로 늘어난 뒤
+                  옆의 AIR 은 그 틈이 124px 까지 벌어져 두 덩어리가 서로 다른
+                  카드처럼 읽혔다. 남는 높이는 카드 아래쪽에 두는 편이 낫다.
+                  읽는 순서(제목 → 요약 → 불릿)가 끊기지 않는다.
+                */}
+                <ul className="space-y-2 pt-6">
                   {mode.highlights.map((highlight) => (
                     <li key={highlight} className="flex items-start gap-2">
                       <Check
