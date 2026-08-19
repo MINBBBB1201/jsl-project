@@ -48,6 +48,16 @@ export function LandingPageContent() {
           방식). 되돌리려면 import 와 이 자리만 원래대로 돌리면 된다.
         */}
         <RedesignHero />
+        {/*
+          히어로 바로 아래 짧은 비주얼 티저. 5개 서비스 상세는 아래
+          FeaturesSection 이 맡고, 여기서는 사진 3장으로 "무엇을 하는 회사인가"만
+          먼저 보여준다.
+
+          명암: 히어로는 어두운 사진 위에 흰 글자라 시각적으로 다크에 가깝다.
+          그 바로 다음이 밝은 이 섹션이고, 이어지는 OpsStatus 도 밝다 —
+          다크가 연달아 붙는 자리는 생기지 않는다.
+        */}
+        <RedesignWhatWeDo />
         <OpsStatusSection />
         <StatsSection />
         <PartnersBar />
@@ -58,11 +68,10 @@ export function LandingPageContent() {
         */}
         <CertificationsBar />
         {/*
-          What We Do(밝음) → Why JSL(어두움) → About(밝음) → Features(밝음).
-          위쪽 다크 블록(통계+파트너바)과 떨어져 있어 어두운 띠가 연달아 붙지
-          않고, 기존 교차 리듬에 하나가 더 끼는 형태다.
+          Certifications(밝은 띠) → Why JSL(어두움) → About(밝음).
+          위쪽 다크 블록(통계+파트너바)과 밝은 띠 하나를 사이에 두고 떨어져
+          있어, 어두운 섹션이 연달아 붙지 않는다.
         */}
-        <RedesignWhatWeDo />
         <RedesignWhyJsl />
         {/*
           AboutSection 은 원래 자리(FeaturesSection 바로 앞)로 되돌렸다.
