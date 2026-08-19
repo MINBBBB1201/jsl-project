@@ -97,6 +97,24 @@
     "chinaEastern": "China Eastern",
     "note": "Các thương hiệu thuộc quyền sở hữu của công ty tương ứng."
   },
+  "certifications": {
+    "ariaLabel": "Chứng nhận và giấy phép",
+    "kiffa": {
+      "title": "Thành viên KIFFA",
+      "subtitle": "Số {no}"
+    },
+    "forwarder": {
+      "title": "Giao nhận quốc tế",
+      "subtitle": "Giấy phép số {no}"
+    },
+    "corporate": {
+      "title": "Doanh nghiệp pháp nhân"
+    },
+    "sme": {
+      "title": "Chứng nhận DNVVN",
+      "subtitle": "Doanh nghiệp nhỏ"
+    }
+  },
   "about": {
     "badge": "Giới thiệu",
     "title": "Năm phương thức vận tải, một đối tác",
@@ -461,10 +479,7 @@
     "legalNameLabel": "Tên đăng ký",
     "representativeLabel": "Người đại diện pháp luật",
     "businessNumberLabel": "Mã số doanh nghiệp",
-    "corporateNumberLabel": "Mã số pháp nhân",
-    "forwarderLicense": "Giấy phép giao nhận vận tải quốc tế số {no}",
-    "kiffaMember": "Thành viên chính thức KIFFA số {no}",
-    "smeCertified": "Có giấy chứng nhận doanh nghiệp vừa và nhỏ"
+    "corporateNumberLabel": "Mã số pháp nhân"
   },
   "plans": {
     "badge": "Bảng giá",

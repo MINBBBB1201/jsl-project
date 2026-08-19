@@ -2,14 +2,17 @@
 
 import { useLocale, useMessages } from "next-intl"
 import {
+  Award,
   BadgeCheck,
   Boxes,
   Building2,
   ClipboardCheck,
   Container,
   Factory,
+  FileBadge,
   FileCheck2,
   Globe2,
+  Landmark,
   Handshake,
   Mail,
   MapPin,
@@ -17,6 +20,7 @@ import {
   PlaneTakeoff,
   Radar,
   Route,
+  ShieldCheck,
   ShoppingCart,
   Ship,
   TrainFront,
@@ -460,6 +464,48 @@ export function useContent() {
     errorTitle: m.contact.errorTitle,
   }
 
+  /*
+    인증 · 등록 배지.
+
+    번호는 messages 가 아니라 company.registrations 에서 온다 — 언어가 달라도
+    바뀌면 안 되는 값이라 번역 파일에 네 벌로 흩어 두면 어긋난다.
+    messages 에는 표기 틀만 두고 {no} 를 끼워 넣는다 (network.totalLabel 과 같은 방식).
+
+    아이콘은 새 라이브러리를 들이지 않고 기존과 같은 lucide 에서 골랐다.
+    선 굵기와 크기 규칙이 페이지의 다른 아이콘과 자동으로 맞는다.
+  */
+  const certifications = {
+    ariaLabel: m.certifications.ariaLabel as string,
+    items: [
+      {
+        icon: ShieldCheck,
+        title: m.certifications.kiffa.title as string,
+        subtitle: (m.certifications.kiffa.subtitle as string).replace(
+          "{no}",
+          company.registrations.kiffaMemberNo
+        ),
+      },
+      {
+        icon: FileBadge,
+        title: m.certifications.forwarder.title as string,
+        subtitle: (m.certifications.forwarder.subtitle as string).replace(
+          "{no}",
+          company.registrations.freightForwarderNo
+        ),
+      },
+      {
+        icon: Landmark,
+        title: m.certifications.corporate.title as string,
+        subtitle: company.businessNumber,
+      },
+      {
+        icon: Award,
+        title: m.certifications.sme.title as string,
+        subtitle: m.certifications.sme.subtitle as string,
+      },
+    ],
+  }
+
   const footer = {
     description: m.footer.description,
     /*
@@ -485,15 +531,6 @@ export function useContent() {
       { label: m.footer.representativeLabel as string, value: getCompanyRepresentative(locale) },
       { label: m.footer.businessNumberLabel as string, value: company.businessNumber },
       { label: m.footer.corporateNumberLabel as string, value: company.corporateNumber },
-    ],
-    /*
-      등록·인증. 중소기업확인서는 유효기간이 있어 "보유" 사실만 적는다
-      (기간을 적으면 만료 후 사이트에 틀린 정보가 남는다).
-    */
-    certifications: [
-      (m.footer.forwarderLicense as string).replace("{no}", company.registrations.freightForwarderNo),
-      (m.footer.kiffaMember as string).replace("{no}", company.registrations.kiffaMemberNo),
-      m.footer.smeCertified as string,
     ],
     newsletter: {
       title: m.footer.newsletterTitle,
@@ -621,6 +658,7 @@ export function useContent() {
 
   return {
     company,
+    certifications,
     hero,
     stats,
     monthlyVolumes,

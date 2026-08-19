@@ -143,24 +143,25 @@ export function LandingFooter() {
         <Separator className="my-8" />
 
         {/*
-          사업자 정보 · 등록/인증
+          사업자 정보 — 법적 고지 목적의 최소 표기만 남긴다.
 
-          별도 섹션을 만들지 않고 푸터 하단에 텍스트로만 둔다. 이 푸터는
-          PublicPageShell 을 통해 /privacy, /terms, /tracking, /consulting 에서도
-          렌더되므로, 여기 한 번 적어 두면 공개 페이지 전체가 같은 표기를 갖는다.
+          등록·인증(국제물류주선업 등록번호, KIFFA 회원번호, 중소기업 확인)은
+          랜딩의 인증 배지 섹션(certifications-bar.tsx)으로 옮겼다. 같은 내용을
+          두 곳에 두면 번호를 고칠 때 한쪽만 고쳐질 위험이 있고, 푸터에서는
+          여덟 항목이 한 덩어리로 뭉쳐 정작 법적으로 필요한 상호·대표자·
+          등록번호가 묻혔다.
+
+          이 푸터는 PublicPageShell 을 통해 /privacy, /terms, /tracking,
+          /consulting 에서도 렌더되므로 여기 한 번 적어 두면 공개 페이지 전체가
+          같은 표기를 갖는다. 배지 섹션은 랜딩에만 있으니 이 줄을 지우면 안 된다.
         */}
-        <div className="mb-8 space-y-1 text-xs text-muted-foreground max-lg:text-center">
+        <div className="mb-8 text-xs text-muted-foreground max-lg:text-center">
           <p className="flex flex-wrap gap-x-3 gap-y-1 max-lg:justify-center">
             {footer.legalInfo.map((item) => (
               <span key={item.label}>
                 <span className="text-muted-foreground/70">{item.label}</span>{" "}
                 {item.value}
               </span>
-            ))}
-          </p>
-          <p className="flex flex-wrap gap-x-3 gap-y-1 max-lg:justify-center">
-            {footer.certifications.map((item) => (
-              <span key={item}>{item}</span>
             ))}
           </p>
         </div>

@@ -97,6 +97,24 @@
     "chinaEastern": "동방항공",
     "note": "각 사의 상표는 해당 회사에 귀속됩니다."
   },
+  "certifications": {
+    "ariaLabel": "인증 및 등록 현황",
+    "kiffa": {
+      "title": "KIFFA 정회원",
+      "subtitle": "제{no}호"
+    },
+    "forwarder": {
+      "title": "국제물류주선업",
+      "subtitle": "등록 제{no}호"
+    },
+    "corporate": {
+      "title": "법인사업자"
+    },
+    "sme": {
+      "title": "중소기업 확인",
+      "subtitle": "소기업·소상공인"
+    }
+  },
   "about": {
     "badge": "회사 소개",
     "title": "5개 운송 모드를 하나의 파트너로",
@@ -461,10 +479,7 @@
     "legalNameLabel": "상호",
     "representativeLabel": "대표자",
     "businessNumberLabel": "사업자등록번호",
-    "corporateNumberLabel": "법인등록번호",
-    "forwarderLicense": "국제물류주선업 등록 제{no}호",
-    "kiffaMember": "KIFFA(한국국제물류주선업협회) 정회원 제{no}호",
-    "smeCertified": "중소기업 확인서 보유"
+    "corporateNumberLabel": "법인등록번호"
   },
   "plans": {
     "badge": "요금 안내",

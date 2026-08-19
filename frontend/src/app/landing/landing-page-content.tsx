@@ -6,6 +6,7 @@ import { HeroSection } from './components/hero-section'
 import { OpsStatusSection } from './components/ops-status-section'
 import { StatsSection } from './components/stats-section'
 import { PartnersBar } from './components/partners-bar'
+import { CertificationsBar } from './components/certifications-bar'
 import { FeaturesSection } from './components/features-section'
 import { ConsultingSection } from './components/consulting-section'
 import { NetworkSection } from './components/network-section'
@@ -39,6 +40,12 @@ export function LandingPageContent() {
         <OpsStatusSection />
         <StatsSection />
         <PartnersBar />
+        {/*
+          다크 블록(통계 + 파트너)이 끝나는 자리. 규모 → 협력사 → 인증까지가
+          하나의 신뢰 서사라 여기서 밝은 톤으로 이어받는다.
+          자리를 옮길 때는 명암 리듬을 먼저 확인할 것 (partners-bar.tsx 주석 참고).
+        */}
+        <CertificationsBar />
         <AboutSection />
         <FeaturesSection />
         <ConsultingSection />

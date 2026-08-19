@@ -97,6 +97,24 @@
     "chinaEastern": "China Eastern",
     "note": "All trademarks belong to their respective owners."
   },
+  "certifications": {
+    "ariaLabel": "Certifications and registrations",
+    "kiffa": {
+      "title": "KIFFA full member",
+      "subtitle": "No. {no}"
+    },
+    "forwarder": {
+      "title": "Freight forwarding",
+      "subtitle": "Licence No. {no}"
+    },
+    "corporate": {
+      "title": "Registered business"
+    },
+    "sme": {
+      "title": "Certified SME",
+      "subtitle": "Small enterprise"
+    }
+  },
   "about": {
     "badge": "About us",
     "title": "Five transport modes, one partner",
@@ -461,10 +479,7 @@
     "legalNameLabel": "Registered name",
     "representativeLabel": "Representative",
     "businessNumberLabel": "Business reg. no.",
-    "corporateNumberLabel": "Corporate reg. no.",
-    "forwarderLicense": "International freight forwarding licence No. {no}",
-    "kiffaMember": "KIFFA full member No. {no}",
-    "smeCertified": "Certified small & medium enterprise"
+    "corporateNumberLabel": "Corporate reg. no."
   },
   "plans": {
     "badge": "Pricing",

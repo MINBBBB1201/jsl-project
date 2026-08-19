@@ -97,6 +97,24 @@
     "chinaEastern": "东方航空",
     "note": "各公司商标归其所有者所有。"
   },
+  "certifications": {
+    "ariaLabel": "认证与登记",
+    "kiffa": {
+      "title": "KIFFA 正式会员",
+      "subtitle": "第{no}号"
+    },
+    "forwarder": {
+      "title": "国际物流周旋业",
+      "subtitle": "登记第{no}号"
+    },
+    "corporate": {
+      "title": "法人企业"
+    },
+    "sme": {
+      "title": "中小企业确认",
+      "subtitle": "小企业·小工商业者"
+    }
+  },
   "about": {
     "badge": "公司简介",
     "title": "5种运输模式，一个伙伴",
@@ -461,10 +479,7 @@
     "legalNameLabel": "公司名称",
     "representativeLabel": "法定代表人",
     "businessNumberLabel": "营业执照号",
-    "corporateNumberLabel": "法人登记号",
-    "forwarderLicense": "国际物流周旋业登记 第{no}号",
-    "kiffaMember": "KIFFA（韩国国际物流周旋业协会）正式会员 第{no}号",
-    "smeCertified": "持有中小企业确认书"
+    "corporateNumberLabel": "法人登记号"
   },
   "plans": {
     "badge": "费用说明",
