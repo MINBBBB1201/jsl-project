@@ -31,10 +31,13 @@ export function RedesignWhyJsl() {
 
   return (
     /*
-      id="about" 을 유지한다. 네비게이션과 푸터의 "회사 소개" 링크가 이 앵커를
-      가리키고 있어서, 앵커를 지우면 링크가 조용히 죽는다.
+      id 는 why-jsl 이다. 한때 about 을 달아 뒀는데, 그건 AboutSection 이 렌더에서
+      빠져 있던 동안 네비게이션의 "회사 소개" 앵커를 살려 두려던 임시 조치였다.
+      AboutSection 이 돌아왔으므로 앵커는 원래 주인에게 돌려준다 — 두 섹션이
+      같은 id 를 갖고 있으면 HTML 이 깨지고, #about 링크는 문서에서 먼저 나오는
+      이 섹션으로 잘못 점프한다.
     */
-    <section id="about" className="bg-neutral-900 py-20 sm:py-24">
+    <section id="why-jsl" className="bg-neutral-900 py-20 sm:py-24">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
         <div className="grid grid-cols-1 items-center gap-14 lg:grid-cols-2 lg:gap-16">
           {/* ── 왼쪽: 오른쪽에서 들어온다 ─────────────────────────────── */}

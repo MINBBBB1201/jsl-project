@@ -18,6 +18,7 @@ import { ContactSection } from './components/contact-section'
 import { FaqSection } from './components/faq-section'
 import { LandingFooter } from './components/footer'
 import { LandingThemeCustomizer, LandingThemeCustomizerTrigger } from './components/landing-theme-customizer'
+import { AboutSection } from './components/about-section'
 
 export function LandingPageContent() {
   const [themeCustomizerOpen, setThemeCustomizerOpen] = React.useState(false)
@@ -39,8 +40,11 @@ export function LandingPageContent() {
       <main>
         {/*
           ── 랜딩 리디자인 1단계 (구조/애니메이션만, 브랜딩은 2단계) ──────
-          HeroSection · AboutSection 을 아래 Redesign* 세 섹션이 대체한다.
-          기존 컴포넌트 파일은 지우지 않고 남겨 뒀다 (LogoCarousel 등과 같은
+          HeroSection 을 RedesignHero 가 대체하고, RedesignWhatWeDo ·
+          RedesignWhyJsl 이 아래에 새로 붙는다. AboutSection 과 FeaturesSection
+          은 그대로 남는다 — 셋은 역할이 다르다 (티저 / 통계·인증 요약 /
+          회사 상세 소개 / 서비스 상세).
+          hero-section.tsx 는 지우지 않고 남겨 뒀다 (LogoCarousel 등과 같은
           방식). 되돌리려면 import 와 이 자리만 원래대로 돌리면 된다.
         */}
         <RedesignHero />
@@ -54,12 +58,19 @@ export function LandingPageContent() {
         */}
         <CertificationsBar />
         {/*
-          What We Do(밝음) → Why JSL(어두움) → Features(밝음).
-          위쪽 다크 블록(통계+파트너바)과 떨어져 있어 명암이 연달아 붙지 않고,
-          기존 교차 리듬에 어두운 띠 하나가 더 끼는 형태다.
+          What We Do(밝음) → Why JSL(어두움) → About(밝음) → Features(밝음).
+          위쪽 다크 블록(통계+파트너바)과 떨어져 있어 어두운 띠가 연달아 붙지
+          않고, 기존 교차 리듬에 하나가 더 끼는 형태다.
         */}
         <RedesignWhatWeDo />
         <RedesignWhyJsl />
+        {/*
+          AboutSection 은 원래 자리(FeaturesSection 바로 앞)로 되돌렸다.
+          Why JSL 스플릿과 역할이 다르다 — 저쪽은 통계·인증 요약이고 여기는
+          회사 상세 소개다. 새로 만든 두 섹션이 위쪽 빈자리를 차지했을 뿐,
+          About 과 Features 의 이웃 관계는 그대로다.
+        */}
+        <AboutSection />
         <FeaturesSection />
         <ConsultingSection />
         <NetworkSection />
