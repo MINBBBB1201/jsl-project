@@ -59,6 +59,51 @@
     "demoNote": "Calculated live by our delay-detection system. Figures shown are based on demo data.",
     "liveNote": "Calculated live by our delay-detection system across active shipments."
   },
+  "redesign": {
+    "hero": {
+      "eyebrow": "GLOBAL FREIGHT FORWARDING",
+      "headline1": "Connecting Asia and Europe",
+      "headline2": "Your most dependable logistics partner",
+      "subheadline": "Air · Ocean · Road · Rail · Express — integrated transport across five global locations",
+      "primaryCta": "Request a free quote",
+      "secondaryCta": "Explore our services",
+      "stat1Value": "5",
+      "stat1Label": "Global locations",
+      "stat2Value": "20+",
+      "stat2Label": "Specialists",
+      "stat3Value": "200 t/mo",
+      "stat3Label": "Air freight"
+    },
+    "whatWeDo": {
+      "eyebrow": "WHAT WE DO",
+      "title": "Core transport services",
+      "card1Title": "Air Freight",
+      "card1Description": "Urgent shipments and e-commerce cargo, backed by five airline partnerships",
+      "card2Title": "Sea Transport",
+      "card2Description": "From FBA cargo handling to multimodal, on tier-1 agency partnerships",
+      "card3Title": "Road Transport",
+      "card3Description": "All 31 provinces of China plus a cross-border trucking network"
+    },
+    "whyJsl": {
+      "eyebrow": "WHY JSL",
+      "title": "JSL in numbers",
+      "description": "Our registrations and network at a glance.",
+      "card1Title": "KIFFA full member · Freight forwarding licence",
+      "card1Subtitle": "No. {kiffa} · Licence No. {forwarder}",
+      "card2Title": "Five locations, working as one",
+      "card2Subtitle": "Seoul · Shanghai · Weihai · Guangzhou · Hanoi",
+      "card3Title": "20+ specialists",
+      "card3Subtitle": "Dedicated staff at every location",
+      "highlightValue": "KRW 18B",
+      "highlightLabel": "Annual revenue · FY2025",
+      "stat1Value": "31",
+      "stat1Label": "Provinces served in China",
+      "stat2Value": "6 / week",
+      "stat2Label": "Weihai–Incheon ferry sailings",
+      "stat3Value": "5+1",
+      "stat3Label": "Transport modes + consulting"
+    }
+  },
   "stats": {
     "revenue": {
       "value": "KRW 18B",

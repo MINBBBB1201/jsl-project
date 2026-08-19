@@ -506,6 +506,57 @@ export function useContent() {
     ],
   }
 
+  /*
+    랜딩 리디자인 3개 섹션(히어로 · What We Do · Why JSL)의 문구.
+    아이콘과 사진은 각 컴포넌트가 들고 있고 여기서는 글자만 조립한다 —
+    사진은 그 섹션 전용 자산이라 컴포넌트 옆에 두는 편이 찾기 쉽다.
+
+    등록번호는 messages 가 아니라 company.registrations 에서 온다.
+    번역 파일 네 벌에 숫자를 흩어 두면 한쪽만 고쳐져 어긋난다.
+  */
+  const r = m.redesign
+  const redesign = {
+    hero: {
+      eyebrow: r.hero.eyebrow as string,
+      headline1: r.hero.headline1 as string,
+      headline2: r.hero.headline2 as string,
+      subheadline: r.hero.subheadline as string,
+      primaryCta: { label: r.hero.primaryCta as string, href: "#contact" },
+      secondaryCta: { label: r.hero.secondaryCta as string, href: "#what-we-do" },
+      stats: [1, 2, 3].map((i) => ({
+        value: r.hero[`stat${i}Value`] as string,
+        label: r.hero[`stat${i}Label`] as string,
+      })),
+    },
+    whatWeDo: {
+      eyebrow: r.whatWeDo.eyebrow as string,
+      title: r.whatWeDo.title as string,
+      cards: [1, 2, 3].map((i) => ({
+        title: r.whatWeDo[`card${i}Title`] as string,
+        description: r.whatWeDo[`card${i}Description`] as string,
+      })),
+    },
+    whyJsl: {
+      eyebrow: r.whyJsl.eyebrow as string,
+      title: r.whyJsl.title as string,
+      description: r.whyJsl.description as string,
+      cards: [1, 2, 3].map((i) => ({
+        title: r.whyJsl[`card${i}Title`] as string,
+        subtitle: (r.whyJsl[`card${i}Subtitle`] as string)
+          .replace("{kiffa}", company.registrations.kiffaMemberNo)
+          .replace("{forwarder}", company.registrations.freightForwarderNo),
+      })),
+      highlight: {
+        value: r.whyJsl.highlightValue as string,
+        label: r.whyJsl.highlightLabel as string,
+      },
+      stats: [1, 2, 3].map((i) => ({
+        value: r.whyJsl[`stat${i}Value`] as string,
+        label: r.whyJsl[`stat${i}Label`] as string,
+      })),
+    },
+  }
+
   const footer = {
     description: m.footer.description,
     /*
@@ -659,6 +710,7 @@ export function useContent() {
   return {
     company,
     certifications,
+    redesign,
     hero,
     stats,
     monthlyVolumes,

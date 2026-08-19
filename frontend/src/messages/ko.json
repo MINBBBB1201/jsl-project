@@ -59,6 +59,51 @@
     "demoNote": "지연 감지 시스템이 실시간으로 계산한 값입니다. 현재 표시되는 수치는 데모 데이터 기준입니다.",
     "liveNote": "지연 감지 시스템이 운송 중 화물을 실시간으로 계산한 값입니다."
   },
+  "redesign": {
+    "hero": {
+      "eyebrow": "GLOBAL FREIGHT FORWARDING",
+      "headline1": "아시아와 유럽을 잇는",
+      "headline2": "가장 확실한 물류 파트너",
+      "subheadline": "항공・해상・육상・철도・특송 — 5개 글로벌 거점에서 이어지는 통합 운송 솔루션",
+      "primaryCta": "무료 견적 요청",
+      "secondaryCta": "서비스 살펴보기",
+      "stat1Value": "5개",
+      "stat1Label": "글로벌 거점",
+      "stat2Value": "20+",
+      "stat2Label": "전문 인력",
+      "stat3Value": "200톤/월",
+      "stat3Label": "항공화물"
+    },
+    "whatWeDo": {
+      "eyebrow": "WHAT WE DO",
+      "title": "주력 운송 서비스",
+      "card1Title": "Air Freight",
+      "card1Description": "긴급 출하・이커머스 화물 특화, 5개 항공사 파트너십",
+      "card2Title": "Sea Transport",
+      "card2Description": "FBA 화물 핸들링부터 복합운송까지, 1급 대리점 파트너십",
+      "card3Title": "Road Transport",
+      "card3Description": "중국 전역 31개 성・시, 국경 보더 트러킹 네트워크"
+    },
+    "whyJsl": {
+      "eyebrow": "WHY JSL",
+      "title": "숫자로 보는 JSL",
+      "description": "등록 정보와 거점 현황을 한눈에 정리했습니다.",
+      "card1Title": "KIFFA 정회원 · 국제물류주선업 등록",
+      "card1Subtitle": "제{kiffa}호 · 등록 제{forwarder}호",
+      "card2Title": "5개 거점 실시간 연계",
+      "card2Subtitle": "서울・상해・위해・광주・하노이",
+      "card3Title": "20+ 전문 인력",
+      "card3Subtitle": "현지 거점별 전담 인력 배치",
+      "highlightValue": "180억원",
+      "highlightLabel": "연간 매출 · 2025 회계연도",
+      "stat1Value": "31개",
+      "stat1Label": "중국 취급 성・시",
+      "stat2Value": "주 6회",
+      "stat2Label": "위해↔인천 페리 운항",
+      "stat3Value": "5+1",
+      "stat3Label": "운송 모드 + 물류 컨설팅"
+    }
+  },
   "stats": {
     "revenue": {
       "value": "180억원",

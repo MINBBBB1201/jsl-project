@@ -59,6 +59,51 @@
     "demoNote": "由延误检测系统实时计算。当前显示的数值基于演示数据。",
     "liveNote": "由延误检测系统对运输中货物实时计算。"
   },
+  "redesign": {
+    "hero": {
+      "eyebrow": "GLOBAL FREIGHT FORWARDING",
+      "headline1": "连接亚洲与欧洲",
+      "headline2": "最可靠的物流伙伴",
+      "subheadline": "空运・海运・陆运・铁路・快递 — 由5个全球据点串联的一体化运输方案",
+      "primaryCta": "免费询价",
+      "secondaryCta": "查看服务",
+      "stat1Value": "5个",
+      "stat1Label": "全球据点",
+      "stat2Value": "20+",
+      "stat2Label": "专业人员",
+      "stat3Value": "200吨/月",
+      "stat3Label": "航空货运"
+    },
+    "whatWeDo": {
+      "eyebrow": "WHAT WE DO",
+      "title": "主力运输服务",
+      "card1Title": "Air Freight",
+      "card1Description": "专注紧急出货与电商货物，拥有5家航空公司合作关系",
+      "card2Title": "Sea Transport",
+      "card2Description": "从 FBA 货物处理到联运，依托一级代理伙伴关系",
+      "card3Title": "Road Transport",
+      "card3Description": "覆盖中国全境31个省・市，跨境卡车运输网络"
+    },
+    "whyJsl": {
+      "eyebrow": "WHY JSL",
+      "title": "用数字看 JSL",
+      "description": "登记信息与据点现况一览。",
+      "card1Title": "KIFFA 正式会员 · 国际物流周旋业登记",
+      "card1Subtitle": "第{kiffa}号 · 登记第{forwarder}号",
+      "card2Title": "5个据点实时联动",
+      "card2Subtitle": "首尔・上海・威海・广州・河内",
+      "card3Title": "20+ 专业人员",
+      "card3Subtitle": "各据点配置专职人员",
+      "highlightValue": "180亿韩元",
+      "highlightLabel": "年营业额 · 2025财年",
+      "stat1Value": "31个",
+      "stat1Label": "中国覆盖省・市",
+      "stat2Value": "每周6班",
+      "stat2Label": "威海↔仁川轮渡",
+      "stat3Value": "5+1",
+      "stat3Label": "运输模式 + 物流咨询"
+    }
+  },
   "stats": {
     "revenue": {
       "value": "180亿韩元",

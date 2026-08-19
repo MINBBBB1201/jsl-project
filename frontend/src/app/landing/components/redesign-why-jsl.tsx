@@ -3,15 +3,14 @@
 import Image from "next/image"
 import { motion } from "framer-motion"
 
-import { TRANSPORT_PHOTOS } from "./transport-photos"
+import { useContent } from "@/config/use-content"
+import { LANDING_PHOTOS } from "./landing-photos"
 import { REVEAL_OFFSET_X, useRevealMotion } from "@/lib/landing-motion"
 
 /**
- * Why JSL — 통계 스플릿 (랜딩 리디자인 1단계)
+ * Why JSL — 통계 스플릿
  *
- * ⚠️ 1단계는 구조와 애니메이션만. 색은 회색조, 카피는 [PLACEHOLDER: …] 다.
- *
- * ── 구조 ────────────────────────────────────────────────────────────────
+ * ── 구조 (1단계에서 확정, 손대지 않음) ──────────────────────────────────
  * 좌우 2컬럼. 왼쪽은 eyebrow + 제목 + 얇은 테두리 텍스트 카드 3장이고,
  * 오른쪽은 사진 두 장을 어긋나게 겹친 뒤 그 모서리에 통계 카드를 걸쳐 놓는다.
  * 겹침은 큰 사진 위에 작은 사진을 절대 배치해서 만든다 — 그리드로 나누면
@@ -22,48 +21,53 @@ import { REVEAL_OFFSET_X, useRevealMotion } from "@/lib/landing-motion"
  * 있는 글자 카드다. 같은 페이지에서 같은 모양이 두 번 나오면 둘 다 흐려진다.
  *
  * ── 애니메이션 방향 ─────────────────────────────────────────────────────
- * 스펙대로 왼쪽 컬럼은 오른쪽에서(+x), 오른쪽 컬럼은 왼쪽에서(-x) 들어온다.
- * 두 컬럼이 가운데로 모이는 움직임이라, 바깥으로 벌어지는 것보다 한 덩어리로
- * 읽힌다.
+ * 왼쪽 컬럼은 오른쪽에서(+x), 오른쪽 컬럼은 왼쪽에서(-x) 들어온다. 두 컬럼이
+ * 가운데로 모이는 움직임이라, 바깥으로 벌어지는 것보다 한 덩어리로 읽힌다.
+ *
+ * ── 색 ──────────────────────────────────────────────────────────────────
+ * 배경은 --brand-navy-deep (#0c1a2e). Stats·Partners 섹션과 같은 값이라
+ * 페이지의 어두운 띠가 전부 한 톤으로 맞는다. 1단계의 neutral-900 은 걷어냈다.
+ *
+ * ⚠️ 이 띠는 라이트·다크 어느 모드에서도 항상 어둡다. 그래서 안쪽 요소에
+ *    테마에 따라 뒤집히는 토큰(bg-card, text-foreground 등)을 쓰면 안 된다.
+ *    튀어나온 통계 카드가 bg-white 로 고정인 이유가 그것이다 — bg-card 로 두면
+ *    다크모드에서 카드가 배경에 녹아 "튀어나온" 인상이 사라진다.
  */
 export function RedesignWhyJsl() {
+  const { redesign } = useContent()
+  const { whyJsl } = redesign
   const { reveal, parent, up, x } = useRevealMotion()
 
   return (
     /*
-      id 는 why-jsl 이다. 한때 about 을 달아 뒀는데, 그건 AboutSection 이 렌더에서
-      빠져 있던 동안 네비게이션의 "회사 소개" 앵커를 살려 두려던 임시 조치였다.
-      AboutSection 이 돌아왔으므로 앵커는 원래 주인에게 돌려준다 — 두 섹션이
-      같은 id 를 갖고 있으면 HTML 이 깨지고, #about 링크는 문서에서 먼저 나오는
-      이 섹션으로 잘못 점프한다.
+      id 는 why-jsl 이다. #about 은 AboutSection(회사 상세 소개)의 앵커라
+      네비게이션이 그쪽을 가리킨다 — 두 섹션이 같은 id 를 갖게 하지 말 것.
     */
-    <section id="why-jsl" className="bg-neutral-900 py-20 sm:py-24">
+    <section id="why-jsl" className="bg-brand-navy-deep py-20 sm:py-24">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
         <div className="grid grid-cols-1 items-center gap-14 lg:grid-cols-2 lg:gap-16">
           {/* ── 왼쪽: 오른쪽에서 들어온다 ─────────────────────────────── */}
           <motion.div variants={x(REVEAL_OFFSET_X)} {...reveal}>
-            <p className="flex items-center gap-2 text-[11px] font-semibold tracking-[0.18em] text-neutral-400 uppercase">
-              <span aria-hidden="true">◇</span>
-              [PLACEHOLDER: EYEBROW 라벨]
+            <p className="text-brand-slate flex items-center gap-2 text-[11px] font-semibold tracking-[0.18em] uppercase">
+              <span className="text-brand-orange" aria-hidden="true">◇</span>
+              {whyJsl.eyebrow}
             </p>
             <h2 className="mt-4 text-2xl font-bold tracking-tight text-white sm:text-3xl">
-              [PLACEHOLDER: 섹션 제목]
+              {whyJsl.title}
             </h2>
-            <p className="mt-4 max-w-md text-sm text-neutral-400">
-              [PLACEHOLDER: 섹션 설명 한두 줄]
+            <p className="text-brand-slate mt-4 max-w-md text-sm">
+              {whyJsl.description}
             </p>
 
             <ul className="mt-9 space-y-3">
-              {[1, 2, 3].map((n) => (
+              {whyJsl.cards.map((card) => (
                 <li
-                  key={n}
+                  key={card.title}
                   className="rounded-lg border border-white/15 px-5 py-4"
                 >
-                  <p className="text-sm font-semibold text-white">
-                    [PLACEHOLDER: 신뢰 항목 {n}]
-                  </p>
-                  <p className="mt-1 text-xs text-neutral-400">
-                    [PLACEHOLDER: 부제]
+                  <p className="text-sm font-semibold text-white">{card.title}</p>
+                  <p className="text-brand-slate tabular-figures mt-1 text-xs">
+                    {card.subtitle}
                   </p>
                 </li>
               ))}
@@ -84,38 +88,40 @@ export function RedesignWhyJsl() {
             */
             className="relative sm:pb-16 lg:pb-12 lg:pl-10"
           >
-            {/* 뒤에 깔리는 큰 사진 */}
+            {/* 뒤에 깔리는 큰 사진 — 창고 운영 현장 */}
             <div className="relative aspect-[4/3] overflow-hidden rounded-xl">
               <Image
-                src={TRANSPORT_PHOTOS.RAIL}
+                src={LANDING_PHOTOS.warehouseOps}
                 alt=""
                 fill
                 sizes="(min-width: 1024px) 45vw, 100vw"
-                className="object-cover grayscale"
+                className="object-cover"
               />
             </div>
 
             {/*
-              어긋나게 겹치는 작은 사진. 모바일에서는 화면 폭이 좁아 겹치면
-              두 장 다 잘려 보이므로 겹침을 sm 이상에서만 준다.
+              어긋나게 겹치는 작은 사진 — 컨테이너 야드.
+              모바일에서는 화면 폭이 좁아 겹치면 두 장 다 잘려 보이므로
+              겹침을 sm 이상에서만 준다. ring 은 섹션 배경색과 같은 값이라
+              두 사진 사이에 여백이 있는 것처럼 보이게 한다.
             */}
-            <div className="relative mt-4 ml-auto h-40 w-2/3 overflow-hidden rounded-xl ring-4 ring-neutral-900 sm:absolute sm:-bottom-2 sm:-left-6 sm:mt-0 sm:h-44 sm:w-1/2 lg:-left-4">
+            <div className="ring-brand-navy-deep relative mt-4 ml-auto h-40 w-2/3 overflow-hidden rounded-xl ring-4 sm:absolute sm:-bottom-2 sm:-left-6 sm:mt-0 sm:h-44 sm:w-1/2 lg:-left-4">
               <Image
-                src={TRANSPORT_PHOTOS.SEA}
+                src={LANDING_PHOTOS.containerYard}
                 alt=""
                 fill
                 sizes="(min-width: 640px) 25vw, 66vw"
-                className="object-cover grayscale"
+                className="object-cover"
               />
             </div>
 
-            {/* 모서리에 걸치는 통계 카드 */}
+            {/* 모서리에 걸치는 통계 카드 — 고정 흰색 (위 주석 참고) */}
             <div className="mt-4 inline-block rounded-xl bg-white px-6 py-4 shadow-lg sm:absolute sm:-right-2 sm:-bottom-6 sm:mt-0 lg:-right-4">
-              <p className="tabular-figures text-3xl font-bold text-neutral-900">
-                [PLACEHOLDER: 수치]
+              <p className="text-brand-navy-deep tabular-figures text-3xl font-bold">
+                {whyJsl.highlight.value}
               </p>
-              <p className="mt-1 text-xs text-neutral-500">
-                [PLACEHOLDER: 통계 라벨]
+              <p className="text-brand-navy-deep/70 mt-1 text-xs">
+                {whyJsl.highlight.label}
               </p>
             </div>
           </motion.div>
@@ -130,18 +136,16 @@ export function RedesignWhyJsl() {
           {...reveal}
           className="mt-16 grid grid-cols-1 gap-px overflow-hidden rounded-xl bg-white/15 sm:grid-cols-3"
         >
-          {[1, 2, 3].map((n) => (
+          {whyJsl.stats.map((stat) => (
             <motion.li
-              key={n}
+              key={stat.label}
               variants={up}
-              className="bg-neutral-900 px-6 py-6"
+              className="bg-brand-navy-deep px-6 py-6"
             >
               <p className="tabular-figures text-2xl font-semibold text-white">
-                [PLACEHOLDER: 수치]
+                {stat.value}
               </p>
-              <p className="mt-1 text-xs text-neutral-400">
-                [PLACEHOLDER: 라벨 {n}]
-              </p>
+              <p className="text-brand-slate mt-1 text-xs">{stat.label}</p>
             </motion.li>
           ))}
         </motion.ul>

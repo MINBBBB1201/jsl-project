@@ -59,6 +59,51 @@
     "demoNote": "Được hệ thống phát hiện chậm trễ tính theo thời gian thực. Số liệu hiển thị dựa trên dữ liệu demo.",
     "liveNote": "Được hệ thống phát hiện chậm trễ tính theo thời gian thực cho các lô hàng đang vận chuyển."
   },
+  "redesign": {
+    "hero": {
+      "eyebrow": "GLOBAL FREIGHT FORWARDING",
+      "headline1": "Kết nối châu Á và châu Âu",
+      "headline2": "Đối tác logistics đáng tin cậy nhất",
+      "subheadline": "Hàng không · Đường biển · Đường bộ · Đường sắt · Chuyển phát nhanh — giải pháp vận tải tích hợp từ 5 cơ sở toàn cầu",
+      "primaryCta": "Yêu cầu báo giá miễn phí",
+      "secondaryCta": "Xem dịch vụ",
+      "stat1Value": "5",
+      "stat1Label": "Cơ sở toàn cầu",
+      "stat2Value": "20+",
+      "stat2Label": "Nhân sự chuyên trách",
+      "stat3Value": "200 tấn/tháng",
+      "stat3Label": "Hàng không"
+    },
+    "whatWeDo": {
+      "eyebrow": "WHAT WE DO",
+      "title": "Dịch vụ vận tải chủ lực",
+      "card1Title": "Air Freight",
+      "card1Description": "Chuyên hàng gấp và thương mại điện tử, hợp tác với 5 hãng hàng không",
+      "card2Title": "Sea Transport",
+      "card2Description": "Từ xử lý hàng FBA đến vận tải đa phương thức, trên nền đối tác đại lý hạng 1",
+      "card3Title": "Road Transport",
+      "card3Description": "31 tỉnh·thành Trung Quốc và mạng lưới vận tải xuyên biên giới"
+    },
+    "whyJsl": {
+      "eyebrow": "WHY JSL",
+      "title": "JSL qua những con số",
+      "description": "Thông tin đăng ký và mạng lưới cơ sở trong một cái nhìn.",
+      "card1Title": "Thành viên KIFFA · Giấy phép giao nhận quốc tế",
+      "card1Subtitle": "Số {kiffa} · Giấy phép số {forwarder}",
+      "card2Title": "5 cơ sở kết nối thời gian thực",
+      "card2Subtitle": "Seoul · Thượng Hải · Uy Hải · Quảng Châu · Hà Nội",
+      "card3Title": "20+ nhân sự chuyên trách",
+      "card3Subtitle": "Bố trí nhân sự riêng tại từng cơ sở",
+      "highlightValue": "18 tỷ KRW",
+      "highlightLabel": "Doanh thu năm · NTC 2025",
+      "stat1Value": "31",
+      "stat1Label": "Tỉnh·thành phục vụ tại Trung Quốc",
+      "stat2Value": "6 chuyến/tuần",
+      "stat2Label": "Phà Uy Hải–Incheon",
+      "stat3Value": "5+1",
+      "stat3Label": "Phương thức vận tải + tư vấn"
+    }
+  },
   "stats": {
     "revenue": {
       "value": "18 tỷ KRW",
