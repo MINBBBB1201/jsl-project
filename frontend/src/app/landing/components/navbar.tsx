@@ -24,7 +24,7 @@ import {
   CollapsibleContent,
   CollapsibleTrigger,
 } from '@/components/ui/collapsible'
-import { Logo } from '@/components/logo'
+import { Logo, LogoWordmark } from '@/components/logo'
 import { MegaMenu } from '@/components/landing/mega-menu'
 import { ModeToggle } from '@/components/mode-toggle'
 import { useTheme } from '@/hooks/use-theme'
@@ -70,13 +70,10 @@ export function LandingNavbar() {
         {/* Logo */}
         <div className="flex min-w-0 items-center space-x-2">
           <Link href="/landing" className="flex min-w-0 items-center space-x-2 cursor-pointer">
-            <Logo size={32} className="shrink-0" />
-            {/* 데스크톱 네비가 켜지는 폭에서는 워드마크를 숨긴다.
-                로고 마크에 이미 JSL 이 들어있고, 베트남어처럼 라벨이 긴 언어에서
-                이 텍스트가 첫 네비 항목과 겹쳤다. */}
-            <span className="truncate font-bold 2xl:hidden">
-              {company.name}
-            </span>
+            {/* 워드마크 안에 회사명이 이미 들어있어서 옆에 텍스트를 따로 두지 않는다.
+                예전에는 정사각 마크 + 회사명 텍스트 조합이라, 베트남어처럼 라벨이 긴
+                언어에서 텍스트가 첫 네비 항목과 겹쳐 2xl 에서 숨겨야 했다. */}
+            <LogoWordmark className="h-9 shrink-0 sm:h-10" priority />
           </Link>
         </div>
 

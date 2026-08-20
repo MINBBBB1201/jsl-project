@@ -13,7 +13,7 @@ import {
   FormItem,
   FormMessage,
 } from "@/components/ui/form"
-import { Logo } from '@/components/logo'
+import { LogoWordmark } from '@/components/logo'
 import { Mail, Phone, MapPin } from 'lucide-react'
 import { company } from '@/config/landing-content'
 import { useContent } from '@/config/use-content'
@@ -94,8 +94,7 @@ export function LandingFooter() {
           <div className="col-span-4 lg:col-span-2 max-w-2xl">
             <div className="flex items-center space-x-2 mb-4 max-lg:justify-center">
               <a href="/landing" className="flex items-center space-x-2 cursor-pointer">
-                <Logo size={32} />
-                <span className="font-bold text-xl">{company.name}</span>
+                <LogoWordmark className="h-12" />
               </a>
             </div>
             <p className="text-muted-foreground mb-6 max-lg:text-center">
