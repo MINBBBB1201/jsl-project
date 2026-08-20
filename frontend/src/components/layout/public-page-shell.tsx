@@ -3,12 +3,10 @@
 import { Link } from '@/i18n/navigation'
 import { ArrowLeft } from 'lucide-react'
 
-import { Logo } from '@/components/logo'
+import { LogoWordmark } from '@/components/logo'
 import { LandingFooter } from '@/app/landing/components/footer'
 import { useTranslations } from 'next-intl'
 import { LanguageSwitcher } from '@/components/language-switcher'
-
-import { company } from '@/config/landing-content'
 
 /**
  * 공개 페이지(로그인 불필요) 공용 셸.
@@ -24,12 +22,9 @@ export function PublicPageShell({ children }: { children: React.ReactNode }) {
     <div className="min-h-screen bg-background flex flex-col">
       <header className="border-b sticky top-0 z-40 bg-background/80 backdrop-blur-sm">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between gap-4">
-          <Link
-            href="/landing"
-            className="flex items-center space-x-2 cursor-pointer min-w-0"
-          >
-            <Logo size={32} />
-            <span className="font-bold text-xl truncate">{company.name}</span>
+          {/* 워드마크에 회사명이 들어있어 옆에 텍스트를 따로 두지 않는다 */}
+          <Link href="/landing" className="flex shrink-0 items-center cursor-pointer">
+            <LogoWordmark className="h-9 sm:h-10" priority />
           </Link>
 
           <div className="flex shrink-0 items-center gap-1">
