@@ -3,6 +3,7 @@
 import Image from "next/image"
 
 import { useContent } from "@/config/use-content"
+import { HeroRoute } from "./hero-route"
 import { LANDING_PHOTOS } from "./landing-photos"
 
 /**
@@ -35,6 +36,12 @@ import { LANDING_PHOTOS } from "./landing-photos"
  * hero-port-dusk.jpg — 해질녘 항만. 어두워서 스크림 위 흰 글자가 잘 읽히고,
  * 크레인 조명의 주황이 브랜드 오렌지와 같은 계열이라 CTA 와 색이 따로 놀지
  * 않는다. 출처·라이선스는 landing-photos.ts 주석에 있다.
+ *
+ * ── 항로 애니메이션 (3단계) ────────────────────────────────────────────
+ * 오른쪽 여백에 점선 경로 + 움직이는 마커를 얹는다. 카피가 차지하는
+ * max-w-3xl 바깥이고 lg 부터만 그린다 — 자세한 제약은 hero-route.tsx 에.
+ * 위 "여기에는 스크롤 리빌이 없다" 원칙은 그대로다. 이 장식은 화면에 들어와
+ * 있는지와 무관하게 처음부터 그려지고, LCP 대상인 헤드라인을 가리지 않는다.
  */
 export function RedesignHero() {
   const { redesign } = useContent()
@@ -59,6 +66,8 @@ export function RedesignHero() {
         className="from-brand-navy-deep/75 via-brand-navy-deep/70 to-brand-navy-deep/90 absolute inset-0 bg-gradient-to-b"
         aria-hidden="true"
       />
+
+      <HeroRoute />
 
       <div className="relative container mx-auto px-4 py-28 sm:px-6 sm:py-36 lg:px-8">
         <div className="max-w-3xl">

@@ -191,6 +191,7 @@
     "badge": "服务介绍",
     "title": "5种运输模式全线服务",
     "description": "根据交期与成本条件，组合空运、海运、陆运、铁路、快递，设计最优路线。",
+    "modeCta": "咨询该服务",
     "modes": {
       "AIR": {
         "title": "空运",
@@ -268,6 +269,11 @@
       "primaryCta": "咨询申请",
       "secondaryCta": "费用说明"
     }
+  },
+  "ctaBand": {
+    "title": "路线越复杂，越要先问",
+    "description": "只需告知货物种类与交期条件，5个据点的负责人将为您设计运输路线。",
+    "cta": "咨询物流专家"
   },
   "consulting": {
     "badge": "NEW",

@@ -191,6 +191,7 @@
     "badge": "Dịch vụ",
     "title": "Trọn bộ 5 phương thức vận tải",
     "description": "Chúng tôi kết hợp hàng không, đường biển, đường bộ, đường sắt và chuyển phát nhanh để thiết kế tuyến tối ưu theo thời gian giao hàng và chi phí.",
+    "modeCta": "Hỏi về dịch vụ này",
     "modes": {
       "AIR": {
         "title": "Vận tải hàng không",
@@ -268,6 +269,11 @@
       "primaryCta": "Đăng ký tư vấn",
       "secondaryCta": "Bảng giá"
     }
+  },
+  "ctaBand": {
+    "title": "Tuyến càng phức tạp, càng nên hỏi sớm",
+    "description": "Chỉ cần cho biết loại hàng và thời hạn giao — đội ngũ tại 5 trung tâm sẽ thiết kế tuyến cho bạn.",
+    "cta": "Trao đổi với chuyên gia"
   },
   "consulting": {
     "badge": "NEW",

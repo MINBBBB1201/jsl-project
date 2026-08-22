@@ -287,6 +287,14 @@ export function useContent() {
     badge: m.services.badge,
     title: m.services.title,
     description: m.services.description,
+    /*
+      아코디언이 펼쳐졌을 때 나오는 "이 서비스 문의하기" 링크.
+
+      운송모드별 상세 페이지는 없다 (/consulting 은 별개의 컨설팅 상품이다).
+      그래서 랜딩의 문의 폼 앵커로 보낸다 — 모드마다 목적지가 같아 여기
+      한 곳에 둔다.
+    */
+    modeCta: { label: m.services.modeCta as string, href: "#contact" },
     modes: Object.entries(MODE_ICONS).map(([code, icon]) => ({
       icon,
       code,
@@ -305,6 +313,18 @@ export function useContent() {
       primaryCta: { label: m.services.valueAdded.primaryCta, href: "#contact" },
       secondaryCta: { label: m.services.valueAdded.secondaryCta, href: "#pricing" },
     },
+  }
+
+  /**
+   * 다크 CTA 밴드 (3단계)
+   *
+   * 새 폼을 만들지 않는다. 랜딩 하단 문의 폼(#contact)으로 보낸다 —
+   * 목적지를 그렇게 고른 이유는 cta-band.tsx 주석에 적었다.
+   */
+  const ctaBand = {
+    title: m.ctaBand.title as string,
+    description: m.ctaBand.description as string,
+    cta: { label: m.ctaBand.cta as string, href: "#contact" },
   }
 
   const consultingItem = (key: string) => ({
@@ -718,6 +738,7 @@ export function useContent() {
     partners,
     about,
     services,
+    ctaBand,
     consulting,
     network,
     plans,

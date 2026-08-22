@@ -10,6 +10,7 @@ import { StatsSection } from './components/stats-section'
 import { PartnersBar } from './components/partners-bar'
 import { CertificationsBar } from './components/certifications-bar'
 import { FeaturesSection } from './components/features-section'
+import { CtaBand } from './components/cta-band'
 import { ConsultingSection } from './components/consulting-section'
 import { NetworkSection } from './components/network-section'
 import { PricingSection } from './components/pricing-section'
@@ -81,6 +82,14 @@ export function LandingPageContent() {
         */}
         <AboutSection />
         <FeaturesSection />
+        {/*
+          ── 다크 CTA 밴드 (3단계) ────────────────────────────────────────
+          Why JSL(어두움) 다음으로 About → … → Contact 까지 여덟 섹션이 전부
+          밝아서 페이지 후반이 한 덩어리로 늘어졌다. 그 구간 앞머리를 어두운
+          띠로 한 번 끊는다. 앞뒤(Features · Consulting)가 모두 밝아 어두운
+          섹션끼리 맞닿지도 않는다. 자리를 고른 사정은 cta-band.tsx 에 있다.
+        */}
+        <CtaBand />
         <ConsultingSection />
         <NetworkSection />
         <PricingSection />
