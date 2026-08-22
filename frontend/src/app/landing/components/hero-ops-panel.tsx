@@ -57,7 +57,7 @@ function Metric({
           카운트업 중에는 span 의 textContent 를 직접 바꾼다.
           초기값 0 은 애니메이션이 시작되기 전 한 프레임 동안만 보인다.
         */}
-        <span ref={ref} className="tabular-figures text-2xl font-semibold sm:text-3xl">
+        <span ref={ref} className="tabular-figures font-poppins text-2xl font-semibold sm:text-3xl">
           0
         </span>
         <span className="text-xs text-muted-foreground">{unit}</span>

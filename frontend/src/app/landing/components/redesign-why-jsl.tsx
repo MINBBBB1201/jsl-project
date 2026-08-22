@@ -50,7 +50,7 @@ export function RedesignWhyJsl() {
           <motion.div variants={x(REVEAL_OFFSET_X)} {...reveal}>
             <p className="text-brand-slate flex items-center gap-2 text-[11px] font-semibold tracking-[0.18em] uppercase">
               <span className="text-brand-orange" aria-hidden="true">◇</span>
-              {whyJsl.eyebrow}
+              <span className="font-poppins">{whyJsl.eyebrow}</span>
             </p>
             <h2 className="mt-4 text-2xl font-bold tracking-tight text-white sm:text-3xl">
               {whyJsl.title}

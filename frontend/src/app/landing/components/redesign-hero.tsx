@@ -74,7 +74,7 @@ export function RedesignHero() {
           <p className="text-brand-slate flex items-center gap-2 text-[11px] font-semibold tracking-[0.18em] uppercase">
             {/* 마름모만 브랜드 오렌지 — 라벨 전체를 물들이면 눈이 헤드라인보다 여기로 간다 */}
             <span className="text-brand-orange" aria-hidden="true">◇</span>
-            {hero.eyebrow}
+            <span className="font-poppins">{hero.eyebrow}</span>
           </p>
 
           {/*

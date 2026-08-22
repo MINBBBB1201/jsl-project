@@ -13,7 +13,7 @@ export function ConsultingSection() {
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
         {/* Section Header */}
         <div className="mx-auto max-w-2xl text-center mb-16">
-          <Badge className="mb-4">{consulting.badge}</Badge>
+          <Badge className="mb-4 font-poppins">{consulting.badge}</Badge>
           <h2 className="text-3xl font-bold tracking-tight sm:text-4xl mb-4">
             {consulting.title}
           </h2>

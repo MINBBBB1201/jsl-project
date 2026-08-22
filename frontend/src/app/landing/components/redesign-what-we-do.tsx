@@ -62,7 +62,7 @@ export function RedesignWhatWeDo() {
           >
             {/* 마름모만 브랜드 오렌지 — 라벨 전체를 물들이면 제목보다 눈이 먼저 간다 */}
             <span className="text-brand-orange" aria-hidden="true">◇</span>
-            {whatWeDo.eyebrow}
+            <span className="font-poppins">{whatWeDo.eyebrow}</span>
           </motion.p>
           <motion.h2
             variants={up}

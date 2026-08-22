@@ -150,7 +150,14 @@ export function CountUp({ value, className }: CountUpProps) {
     <span ref={ref} className={className} aria-label={value}>
       <span aria-hidden="true">
         {parsed.prefix}
-        <motion.span>{text}</motion.span>
+        {/*
+          숫자 자리만 Poppins 다 (lib/fonts.ts). prefix·suffix 는 로케일 언어가
+          섞이는 자리라 그대로 둔다 — "180|억원" 은 어차피 한글이 Poppins 범위
+          밖이라 상관없지만, 베트남어 "18| tỷ KRW" 는 't' 와 'ỷ' 가 서로 다른
+          폰트로 그려져 한 단어가 갈라진다. 이미 prefix/숫자/suffix 로 쪼개 두었
+          으므로 경계를 여기서 지키면 된다.
+        */}
+        <motion.span className="font-poppins">{text}</motion.span>
         {parsed.suffix}
       </span>
     </span>

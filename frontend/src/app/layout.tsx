@@ -4,7 +4,7 @@ import "./globals.css";
 import { ThemeProvider } from "@/components/theme-provider";
 import { SidebarConfigProvider } from "@/contexts/sidebar-context";
 import { Toaster } from "@/components/ui/sonner";
-import { generalSans } from "@/lib/fonts";
+import { generalSans, poppins } from "@/lib/fonts";
 
 export const metadata: Metadata = {
   title: "JSL Logistics",
@@ -39,7 +39,7 @@ export default function RootLayout({
   return (
     <html
       lang="ko"
-      className={`${generalSans.variable} antialiased`}
+      className={`${generalSans.variable} ${poppins.variable} antialiased`}
       suppressHydrationWarning
     >
       <body>

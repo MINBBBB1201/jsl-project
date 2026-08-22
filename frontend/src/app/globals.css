@@ -35,6 +35,25 @@
     var(--font-general-sans), 'Pretendard', 'Apple SD Gothic Neo',
     'Malgun Gothic', 'Noto Sans KR', system-ui, sans-serif;
   /*
+    영문 마이크로카피 스택 — .font-poppins 유틸리티가 여기서 나온다.
+
+    Poppins 를 맨 앞에 두고 그 뒤는 --font-sans 와 똑같은 순서다. Poppins 는
+    latin 서브셋만 실어서 @font-face 에 라틴 unicode-range 만 붙으므로,
+    한글·한자는 이 유틸리티가 붙어 있어도 Poppins 를 건너뛰고 Pretendard 로
+    그려진다. 그래서 실수로 넓게 붙여도 CJK 가 바뀌지는 않는다.
+
+    ⚠️ 베트남어는 예외다 — 'ế' 같은 글자가 Poppins 범위 밖이라 한 단어 안에서
+       폰트가 갈린다. 숫자와 베트남어가 섞이는 문자열에는 붙이지 말 것
+       (자세한 사정은 lib/fonts.ts 의 poppins 주석).
+
+    ⚠️ var(--font-poppins-latin) 은 next/font 가 <html> className 으로 정의한다
+       (app/layout.tsx 의 poppins.variable). 이름이 --font-poppins 와 다른 이유도
+       lib/fonts.ts 에 적어 뒀다 — 같으면 이 테마 값이 덮인다.
+  */
+  --font-poppins:
+    var(--font-poppins-latin), var(--font-general-sans), 'Pretendard',
+    'Apple SD Gothic Neo', 'Malgun Gothic', 'Noto Sans KR', system-ui, sans-serif;
+  /*
     3xl 브레이크포인트 (1728px) — Tailwind 기본에는 없어서 여기서 만든다.
 
     랜딩 헤더의 풀 네비게이션이 나타나는 지점이다 (navbar.tsx 의 3xl:flex).

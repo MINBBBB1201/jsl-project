@@ -17,7 +17,7 @@ export function ConsultingClient() {
     <div className="container mx-auto max-w-5xl px-4 py-16 sm:px-6 sm:py-24 lg:px-8">
       {/* 머리말 */}
       <header className="mx-auto max-w-3xl text-center">
-        <Badge className="mb-4">{page.eyebrow}</Badge>
+        <Badge className="mb-4 font-poppins">{page.eyebrow}</Badge>
         <h1 className="text-3xl font-bold tracking-tight sm:text-4xl">
           {page.title}
         </h1>

@@ -107,7 +107,7 @@ export function StatsSection() {
                 />
                 <div className="min-w-0">
                   {/* 운송모드 코드는 라벨이라 대문자 + 넓은 자간으로 본문과 구분한다 */}
-                  <p className="text-[11px] font-medium tracking-[0.14em] text-brand-slate">
+                  <p className="font-poppins text-[11px] font-medium tracking-[0.14em] text-brand-slate">
                     {volume.mode}
                   </p>
                   <p className="tabular-figures text-xl font-semibold text-white">
