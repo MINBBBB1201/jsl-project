@@ -44,12 +44,32 @@ export function CtaBand() {
 
   return (
     /*
-      배경은 테마에 무관하게 고정인 --brand-navy-deep. --background 계열을 쓰면
-      다크모드에서 띠가 배경에 녹아 리듬이 사라진다 (stats-section 과 같은 판단).
+      ── 배경 ────────────────────────────────────────────────────────────
+      라이트모드는 고정 네이비 --brand-navy-deep 이다. --background 계열을
+      쓰면 흰 페이지 위에서 띠가 사라져 명암 리듬이 없어진다.
+
+      다크모드에서는 그 네이비가 오히려 문제가 된다. 렌더 실측으로 띠가
+      #0c1a2e, 페이지 배경이 #0a1526 — 둘의 대비가 1.05:1 이라 사실상 같은
+      색이고, 띠가 위아래 white/10 선으로만 겨우 구분됐다.
+
+      그래서 다크에서만 한 단계 밝은 표면 토큰으로 바꾼다. --card 가 아니라
+      --secondary 를 고른 이유가 있다. 바로 아래 ConsultingSection 의 카드가
+      전부 --card(#122236) 라, 띠에 --card 를 쓰면 카드와 대비가 1.00:1 —
+      완전히 같은 색이 되어 띠와 카드가 한 표면으로 붙어 읽힌다. 한 단계 더
+      올린 --secondary(#1b2c42) 라야 배경(1.29:1)에서도 카드(1.14:1)에서도
+      떨어진다.
+
+      StatsSection 은 그대로 --brand-navy-deep 을 쓴다. 저쪽은 정보를 담는
+      띠라 조용해도 되지만 이 띠는 스크롤을 끊고 상담으로 시선을 끄는 자리다.
+      역할이 달라 톤도 달리 간다.
+
+      글자 대비(실측): --secondary 위에서 흰 제목 14.14:1, --brand-slate
+      본문 5.48:1 — 둘 다 WCAG AA(4.5:1)를 넘는다. 라이트모드는 그대로
+      #0c1a2e 라 페이지 배경과 16.55:1 이다.
     */
     <section
       aria-labelledby="cta-band-title"
-      className="bg-brand-navy-deep relative overflow-hidden"
+      className="bg-brand-navy-deep dark:bg-secondary relative overflow-hidden"
     >
       <div
         aria-hidden="true"
