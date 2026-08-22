@@ -34,6 +34,25 @@
   --font-sans:
     var(--font-general-sans), 'Pretendard', 'Apple SD Gothic Neo',
     'Malgun Gothic', 'Noto Sans KR', system-ui, sans-serif;
+  /*
+    3xl 브레이크포인트 (1728px) — Tailwind 기본에는 없어서 여기서 만든다.
+
+    랜딩 헤더의 풀 네비게이션이 나타나는 지점이다 (navbar.tsx 의 3xl:flex).
+    2xl(1536px)에서는 베트남어 네비가 들어가지 않는다 — 실측하면 항목 8개가
+    982px 인데 로고(70px)와 우측 CTA 묶음(498px)을 뺀 자리가 904px 밖에 없어
+    "Trang chủ" 가 로고에, "Liên hệ" 가 언어 전환 버튼에 각각 39px 씩 겹쳤다.
+
+    뷰포트만 넓혀서는 풀리지 않는다. container 의 최대 폭이 마지막
+    브레이크포인트에서 멈추기 때문에, 2xl 이 끝이면 1920px 모니터에서도 바는
+    1536px 그대로고 겹침도 그대로다. 그래서 브레이크포인트 자체를 하나 더
+    둔다 — Tailwind v4 는 --breakpoint-* 마다 container 최대 폭을 같이
+    만들어 주므로, 1728px 이상에서는 바가 1728px 로 넓어져 자리가 생긴다
+    (베트남어 기준 양쪽 여백 57px). 그 아래 폭은 전부 햄버거로 접힌다.
+
+    ⚠️ container 는 랜딩·트래킹·컨설팅·약관 등 공개 페이지 전반이 함께 쓴다.
+       이 값을 바꾸면 헤더뿐 아니라 그 페이지들의 최대 폭이 같이 움직인다.
+  */
+  --breakpoint-3xl: 108rem;
   --radius-sm: calc(var(--radius) - 4px);
   --radius-md: calc(var(--radius) - 2px);
   --radius-lg: var(--radius);

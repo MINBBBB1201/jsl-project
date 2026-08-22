@@ -82,13 +82,20 @@ export function LandingNavbar() {
           <Link href="/landing" className="flex min-w-0 items-center space-x-2 cursor-pointer">
             {/* 워드마크 안에 회사명이 이미 들어있어서 옆에 텍스트를 따로 두지 않는다.
                 예전에는 정사각 마크 + 회사명 텍스트 조합이라, 베트남어처럼 라벨이 긴
-                언어에서 텍스트가 첫 네비 항목과 겹쳐 2xl 에서 숨겨야 했다. */}
+                언어에서 텍스트가 첫 네비 항목과 겹쳐 넓은 폭에서 숨겨야 했다. */}
             <LogoWordmark className="h-11 shrink-0 sm:h-12" priority />
           </Link>
         </div>
 
-        {/* Desktop Navigation */}
-        <NavigationMenu className="hidden min-w-0 flex-1 justify-center 2xl:flex">
+        {/*
+          Desktop Navigation
+
+          3xl(1728px)부터 나온다. 예전에는 2xl(1536px)이었는데 거기서는 베트남어
+          8개 항목(982px)이 로고와 우측 CTA 사이 자리(904px)에 들어가지 않아
+          양쪽으로 39px 씩 겹쳤다. 자세한 계산은 globals.css 의 --breakpoint-3xl
+          주석에 적어 뒀다. 그 아래 폭은 전부 오른쪽 햄버거 시트로 접힌다.
+        */}
+        <NavigationMenu className="hidden min-w-0 flex-1 justify-center 3xl:flex">
           <NavigationMenuList>
             {navigationItems.map((item) => (
               <NavigationMenuItem key={item.name}>
@@ -132,14 +139,12 @@ export function LandingNavbar() {
           높이를 맞춘다. 높이만 건드리고 글자 크기와 좌우 여백은 그대로 둔다.
 
           ⚠️ 여기서 글자를 키우거나 size="lg"(px-6) 로 바꾸지 말 것.
-             2xl 에서 네비 항목이 여덟 개라 가로 여유가 없다. 베트남어는 이미
-             라벨이 길어 네비가 넘치는 상태다 — 실측하면 1536px 에서 필요한 폭이
-             982px, 쓸 수 있는 폭이 904px 이라 "Trang chủ" 가 로고에,
-             "Liên hệ" 가 언어 전환 버튼에 겹친다. 이 겹침은 이 커밋 이전부터
-             있던 문제이고 (2xl 진입 폭이나 라벨 길이를 손대야 풀린다), 헤더를
-             키우면서 더 나빠지지 않도록 네비 글자·여백은 손대지 않았다.
+             네비 항목이 여덟 개라 가로 여유가 빠듯하다. 이 묶음이 넓어지면 그만큼
+             가운데 네비 자리가 줄어든다 — 가장 긴 베트남어 기준으로 3xl(1728px)
+             에서 남는 여백이 양쪽 57px 뿐이라, 여기서 한 버튼에 24px 을 더하면
+             바로 겹침으로 돌아간다.
         */}
-        <div className="hidden shrink-0 items-center space-x-1 2xl:flex">
+        <div className="hidden shrink-0 items-center space-x-1 3xl:flex">
           <LanguageSwitcher />
           <ModeToggle variant="ghost" />
           <Button variant="outline" asChild className="h-10 cursor-pointer">
@@ -158,7 +163,7 @@ export function LandingNavbar() {
 
         {/* Mobile Menu */}
         <Sheet open={isOpen} onOpenChange={setIsOpen}>
-          <SheetTrigger asChild className="2xl:hidden">
+          <SheetTrigger asChild className="3xl:hidden">
             <Button variant="ghost" size="icon" className="cursor-pointer">
               <Menu className="h-5 w-5" />
               <span className="sr-only">Toggle menu</span>
@@ -174,7 +179,7 @@ export function LandingNavbar() {
                   </div>
                   <SheetTitle className="text-lg font-semibold">{company.name}</SheetTitle>
                   <div className="ml-auto flex items-center gap-1">
-                    {/* 데스크톱 네비가 2xl 부터라, 그 아래 폭에서는 여기가 유일한 언어 전환 지점이다 */}
+                    {/* 데스크톱 네비가 3xl 부터라, 그 아래 폭에서는 여기가 유일한 언어 전환 지점이다 */}
                     <LanguageSwitcher align="end" />
                     <Button
                       variant="ghost"
