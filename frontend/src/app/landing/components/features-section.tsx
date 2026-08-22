@@ -139,9 +139,11 @@ export function FeaturesSection() {
                 /*
                   히어로 벤토그리드의 각 칸이 이 앵커(#air, #sea …)로 들어온다.
                   scroll-mt 는 sticky 헤더에 항목 윗줄이 가려지지 않도록 준 여백이다.
+                  헤더가 80px 이 되면서 96px(scroll-mt-24) 로는 여유가 16px 밖에
+                  남지 않아 112px 로 올렸다 — 남는 여백은 그대로 32px 이다.
                 */
                 id={mode.code.toLowerCase()}
-                className="scroll-mt-24 border-b last:border-b-0"
+                className="scroll-mt-28 border-b last:border-b-0"
               >
                 <AccordionTrigger className="cursor-pointer items-center gap-4 py-5 hover:no-underline">
                   <span className="flex items-center gap-4">
@@ -225,7 +227,7 @@ export function FeaturesSection() {
 
             사진은 장식이라 alt 는 비운다. 무엇을 보고 있는지는 아래 라벨이 말한다.
           */}
-          <div className="bg-muted relative aspect-[4/3] overflow-hidden rounded-xl max-lg:order-first lg:sticky lg:top-24">
+          <div className="bg-muted relative aspect-[4/3] overflow-hidden rounded-xl max-lg:order-first lg:sticky lg:top-28">
             {modes.map((mode) => {
               const isActive = mode.code === active
 

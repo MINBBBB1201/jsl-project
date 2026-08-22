@@ -66,14 +66,24 @@ export function LandingNavbar() {
 
   return (
     <header className="sticky top-0 z-50 w-full border-b bg-background/80 backdrop-blur-xl supports-[backdrop-filter]:bg-background/60">
-      <div className="container mx-auto px-4 sm:px-6 lg:px-8 flex h-16 items-center justify-between">
+      {/*
+        헤더 높이 — 로고가 읽히는 크기를 먼저 정하고 거기서 역산했다.
+
+        h-16(64px) 에 h-9/h-10(36/40px) 워드마크였는데, 워드마크는 정사각 마크와
+        달리 "JSL LOGISTICS CO., LTD" 라는 작은 글자가 들어 있어서 40px 에서는
+        회사명이 뭉개져 읽히지 않았다. 로고를 44/48px 로 올리고 위아래 여백
+        (모바일 14px · sm 이상 16px)을 유지하도록 바를 72/80px 로 키웠다.
+
+        스크롤 시 줄어드는 처리는 없다. 원래도 없었고 이번 범위 밖이다.
+      */}
+      <div className="container mx-auto px-4 sm:px-6 lg:px-8 flex h-18 items-center justify-between sm:h-20">
         {/* Logo */}
         <div className="flex min-w-0 items-center space-x-2">
           <Link href="/landing" className="flex min-w-0 items-center space-x-2 cursor-pointer">
             {/* 워드마크 안에 회사명이 이미 들어있어서 옆에 텍스트를 따로 두지 않는다.
                 예전에는 정사각 마크 + 회사명 텍스트 조합이라, 베트남어처럼 라벨이 긴
                 언어에서 텍스트가 첫 네비 항목과 겹쳐 2xl 에서 숨겨야 했다. */}
-            <LogoWordmark className="h-9 shrink-0 sm:h-10" priority />
+            <LogoWordmark className="h-11 shrink-0 sm:h-12" priority />
           </Link>
         </div>
 
@@ -84,7 +94,7 @@ export function LandingNavbar() {
               <NavigationMenuItem key={item.name}>
                 {item.megaMenu ? (
                   <>
-                    <NavigationMenuTrigger className="bg-transparent hover:bg-transparent focus:bg-transparent data-[active]:bg-transparent data-[state=open]:bg-transparent whitespace-nowrap px-2.5 py-2 text-sm font-medium transition-colors hover:text-primary focus:text-primary cursor-pointer">
+                    <NavigationMenuTrigger className="bg-transparent hover:bg-transparent focus:bg-transparent data-[active]:bg-transparent data-[state=open]:bg-transparent h-10 whitespace-nowrap px-2.5 py-2 text-sm font-medium transition-colors hover:text-primary focus:text-primary cursor-pointer">
                       {item.name}
                     </NavigationMenuTrigger>
                     <NavigationMenuContent>
@@ -115,20 +125,33 @@ export function LandingNavbar() {
           </NavigationMenuList>
         </NavigationMenu>
 
-        {/* Desktop CTA */}
+        {/*
+          Desktop CTA
+
+          바가 커진 만큼 버튼도 h-9(36px) 에서 h-10(40px) 으로 올려 네비 링크와
+          높이를 맞춘다. 높이만 건드리고 글자 크기와 좌우 여백은 그대로 둔다.
+
+          ⚠️ 여기서 글자를 키우거나 size="lg"(px-6) 로 바꾸지 말 것.
+             2xl 에서 네비 항목이 여덟 개라 가로 여유가 없다. 베트남어는 이미
+             라벨이 길어 네비가 넘치는 상태다 — 실측하면 1536px 에서 필요한 폭이
+             982px, 쓸 수 있는 폭이 904px 이라 "Trang chủ" 가 로고에,
+             "Liên hệ" 가 언어 전환 버튼에 겹친다. 이 겹침은 이 커밋 이전부터
+             있던 문제이고 (2xl 진입 폭이나 라벨 길이를 손대야 풀린다), 헤더를
+             키우면서 더 나빠지지 않도록 네비 글자·여백은 손대지 않았다.
+        */}
         <div className="hidden shrink-0 items-center space-x-1 2xl:flex">
           <LanguageSwitcher />
           <ModeToggle variant="ghost" />
-          <Button variant="outline" asChild className="cursor-pointer">
+          <Button variant="outline" asChild className="h-10 cursor-pointer">
             <Link href="/dashboard" target="_blank" rel="noopener noreferrer">
               <LayoutDashboard className="h-4 w-4 mr-2" />
               {navigation.dashboard}
             </Link>
           </Button>
-          <Button variant="ghost" asChild className="cursor-pointer">
+          <Button variant="ghost" asChild className="h-10 cursor-pointer">
             <Link href="/sign-in">{navigation.signIn}</Link>
           </Button>
-          <Button variant="brand" asChild className="cursor-pointer">
+          <Button variant="brand" asChild className="h-10 cursor-pointer">
             <Link href="#contact">{navigation.quoteCta}</Link>
           </Button>
         </div>
