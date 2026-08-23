@@ -288,19 +288,23 @@ export function useContent() {
     title: m.services.title,
     description: m.services.description,
     /*
-      아코디언이 펼쳐졌을 때 나오는 "이 서비스 문의하기" 링크.
+      아코디언이 펼쳐졌을 때 나오는 "자세히 보기" 링크.
 
-      운송모드별 상세 페이지는 없다 (/consulting 은 별개의 컨설팅 상품이다).
-      그래서 랜딩의 문의 폼 앵커로 보낸다 — 모드마다 목적지가 같아 여기
-      한 곳에 둔다.
+      예전에는 다섯 모드가 전부 랜딩의 문의 폼(#contact)으로 갔다. 상세가
+      아코디언 안에 다 들어 있어서 더 보낼 곳이 없었기 때문이다. 이제 모드마다
+      /services/{code} 상세 페이지가 있으므로 그쪽으로 보낸다 — 목적지가 모드별로
+      다르므로 라벨만 공유하고 href 는 아래 modes 안에서 만든다.
+
+      ⚠️ 로케일 프리픽스는 붙이지 않는다. 이 값은 i18n 의 Link 로 넘어가고,
+         거기서 현재 로케일에 맞는 경로가 만들어진다 (ko 는 프리픽스 없음).
     */
-    modeCta: { label: m.services.modeCta as string, href: "#contact" },
+    modeCta: { label: m.services.modeCta as string },
     modes: Object.entries(MODE_ICONS).map(([code, icon]) => ({
       icon,
       code,
       title: m.services.modes[code].title,
       summary: m.services.modes[code].summary,
-      highlights: m.services.modes[code].highlights as string[],
+      href: `/services/${code.toLowerCase()}`,
     })),
     valueAdded: {
       title: m.services.valueAdded.title,

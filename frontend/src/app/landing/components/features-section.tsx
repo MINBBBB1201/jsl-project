@@ -3,7 +3,7 @@
 import * as React from "react"
 import Image from "next/image"
 import { motion } from "framer-motion"
-import { ArrowRight, Check } from 'lucide-react'
+import { ArrowRight } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import {
@@ -13,6 +13,7 @@ import {
   AccordionTrigger,
 } from '@/components/ui/accordion'
 import { cn } from '@/lib/utils'
+import { Link } from '@/i18n/navigation'
 import { useContent } from '@/config/use-content'
 import { usePrefersReducedMotion } from '@/hooks/use-prefers-reduced-motion'
 import { REVEAL_EASE } from '@/lib/landing-motion'
@@ -262,30 +263,19 @@ export function FeaturesSection() {
                   </span>
                 </AccordionTrigger>
 
-                {/* 펼친 항목만 요약 + 상세 불릿 + 문의 링크를 보여준다 */}
+                {/*
+                  펼친 항목은 두 문장 요약과 상세 페이지 링크만 보여준다.
+
+                  예전에는 여기에 불릿으로 상세를 전부 늘어놓았다. 다섯 모드의
+                  내용이 서로 달라 어떤 항목은 여덟 줄이었고(SEA), 펼치면 오른쪽
+                  사진보다 목록이 훨씬 길어져 읽는 자리가 흔들렸다. 상세는
+                  /services/{code} 로 옮겼고 여기는 고르는 자리로만 남긴다.
+                */}
                 <AccordionContent className="pb-8 ps-9">
                   <p className="text-sm text-muted-foreground">{mode.summary}</p>
 
-                  <ul className="mt-4 space-y-2">
-                    {mode.highlights.map((highlight) => (
-                      <li key={highlight} className="flex items-start gap-2">
-                        <Check
-                          className="mt-0.5 size-3.5 shrink-0 text-muted-foreground"
-                          aria-hidden="true"
-                        />
-                        <span className="text-sm text-muted-foreground">
-                          {highlight}
-                        </span>
-                      </li>
-                    ))}
-                  </ul>
-
-                  {/*
-                    운송모드별 상세 페이지는 없어서 랜딩 문의 폼으로 보낸다
-                    (목적지는 use-content.ts 의 services.modeCta 한 곳에 있다).
-                  */}
-                  <a
-                    href={modeCta.href}
+                  <Link
+                    href={mode.href}
                     className="group text-primary mt-5 inline-flex items-center gap-1.5 text-sm font-semibold hover:underline"
                   >
                     {/*
@@ -301,7 +291,7 @@ export function FeaturesSection() {
                       className="size-4 transition-transform group-hover:translate-x-0.5"
                       aria-hidden="true"
                     />
-                  </a>
+                  </Link>
                 </AccordionContent>
               </AccordionItem>
             ))}

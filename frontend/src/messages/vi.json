@@ -191,60 +191,27 @@
     "badge": "Dịch vụ",
     "title": "Trọn bộ 5 phương thức vận tải",
     "description": "Chúng tôi kết hợp hàng không, đường biển, đường bộ, đường sắt và chuyển phát nhanh để thiết kế tuyến tối ưu theo thời gian giao hàng và chi phí.",
-    "modeCta": "Hỏi về dịch vụ này",
+    "modeCta": "Xem chi tiết",
     "modes": {
       "AIR": {
         "title": "Vận tải hàng không",
-        "summary": "Dịch vụ hàng không chuyên cho hàng điện tử và thương mại điện tử.",
-        "highlights": [
-          "Đối tác hàng không chiến lược: Korean Air, China Eastern, Air Incheon, Turkish Airlines (TK), Finnair (AY)",
-          "Tuyến chính: Hoa Nam → Sơn Đông, Sơn Đông → Incheon (ICN), Incheon → châu Âu / LAX / ORD",
-          "Hàng chuyên biệt: hàng điện tử, thương mại điện tử, hàng gấp, hàng nguy hiểm (DG)",
-          "Xử lý 200 tấn mỗi tháng"
-        ]
+        "summary": "Dịch vụ hàng không chuyên cho hàng điện tử và thương mại điện tử. Quan hệ đối tác với 5 hãng hàng không như Korean Air và China Eastern nối Hoa Nam·Sơn Đông qua Incheon tới châu Âu và châu Mỹ, xử lý 200 tấn mỗi tháng."
       },
       "SEA": {
         "title": "Đường biển · Vận tải kết hợp biển-hàng không",
-        "summary": "Vận tải đường biển và SEA-AIR kết hợp gom hàng CFS Quảng Đông–Thượng Hải với vận tải đường bộ nội địa Trung Quốc và phà.",
-        "highlights": [
-          "Quan hệ đối tác đại lý hạng 1 — ký trực tiếp với hãng tàu để giữ chỗ",
-          "Xử lý hàng thương mại điện tử & FBA (nhập kho Amazon FC)",
-          "Gom hàng CFS Quảng Đông–Thượng Hải + vận tải bộ nội địa Trung Quốc + kết nối phà",
-          "Vận tải SEA-AIR đi Mỹ và châu Âu qua trung chuyển Incheon",
-          "Kinh nghiệm vận chuyển hàng dự án",
-          "Quy trình SEA-AIR 8 bước: nhập kho CFS Thượng Hải (D-Day) → xếp hàng & chuẩn bị xuất (D-Day 18:00) → rời CFS Thượng Hải (D-Day 19:00) → đến Uy Hải (D+1 14:30) → vào CY (D+1 15:00) → phà khởi hành (D+1 19:30) → đến Incheon·Pyeongtaek (D+2 11:00) → nhập kho sân bay (D+2 15:30)",
-          "Phà Uy Hải ↔ Incheon 6 chuyến/tuần, xử lý 100 TEU mỗi tháng"
-        ]
+        "summary": "Vận tải đường biển và SEA-AIR kết hợp gom hàng CFS Quảng Đông–Thượng Hải với vận tải đường bộ nội địa Trung Quốc và phà. Phà Uy Hải ↔ Incheon 6 chuyến/tuần hoàn tất 8 bước từ khi rời Thượng Hải đến khi nhập kho sân bay trong D+2, xử lý 100 TEU mỗi tháng."
       },
       "TRUCK": {
         "title": "Vận tải đường bộ",
-        "summary": "Chúng tôi trực tiếp vận hành vận tải đường bộ khắp Trung Quốc và qua biên giới sang Đông Nam Á.",
-        "highlights": [
-          "Nội địa Trung Quốc: FTL / LTL tại 31 tỉnh·thành, 300 xe mỗi tháng",
-          "Vận tải xuyên biên giới: Trung Quốc (Hoa Đông · Hoa Nam) → Việt Nam, Thái Lan, 150 xe mỗi tháng",
-          "Tuyến chính: Thâm Quyến → Hải Phòng, Quảng Châu → Hà Nội, Nam Ninh → Bắc Ninh, Hà Nội → TP.HCM",
-          "Khách hàng chính tuyến xuyên biên giới: LG (linh kiện điện tử · màn hình), Samsung Electro-Mechanics / BYD (linh kiện màn hình điện tử)"
-        ]
+        "summary": "Chúng tôi trực tiếp vận hành vận tải đường bộ khắp Trung Quốc và qua biên giới sang Đông Nam Á — 300 xe mỗi tháng cho nội địa tại 31 tỉnh·thành, và 150 xe mỗi tháng qua biên giới sang Việt Nam và Thái Lan."
       },
       "RAIL": {
         "title": "Vận tải đường sắt",
-        "summary": "Đường sắt Á–Âu nối Trung Quốc với châu Âu, cùng dịch vụ kết hợp Sea&Rail.",
-        "highlights": [
-          "Hệ thống theo dõi hàng hóa thời gian thực trên toàn tuyến",
-          "Route A — Tàu hàng Trung Quốc ↔ châu Âu / Nga / Trung Á",
-          "Route B — Kết nối ga đường sắt nội địa Trung Quốc: Tây An, Thành Đô, Trùng Khánh",
-          "Route C — Sea & Rail: chặng biển qua Incheon / Busan kết hợp đường sắt đi châu Âu"
-        ]
+        "summary": "Đường sắt Á–Âu nối Trung Quốc với châu Âu, cùng dịch vụ kết hợp Sea&Rail. Chúng tôi vận hành 3 nhóm tuyến kèm theo dõi hàng hóa thời gian thực trên toàn tuyến."
       },
       "EXPRESS": {
         "title": "Chuyển phát nhanh",
-        "summary": "Chuyển phát door-to-door với trạng thái giao nhận cập nhật thời gian thực qua hệ thống API tự phát triển.",
-        "highlights": [
-          "Hệ thống nội bộ 'JSL-EXPRESS Logistics' — tích hợp REST API, cập nhật thời gian thực, bảng điều khiển Web & Mobile",
-          "Incheon (ICN) → trung tâm Praha (PRG) → châu Âu: tổng 7 ngày (1 ngày hàng không + 1,5 ngày thông quan·hub EU + 3–4,5 ngày chặng cuối)",
-          "Incheon (ICN) → London (LHR) → Anh: tổng 5 ngày (1 ngày hàng không + 1,5 ngày thông quan·hub EU + 1–2,5 ngày chặng cuối)",
-          "Đối tác chặng cuối tại địa phương gồm Royal Mail, Deutsche Post, DHL và dpd"
-        ]
+        "summary": "Chuyển phát door-to-door với trạng thái giao nhận cập nhật thời gian thực qua hệ thống API tự phát triển. Từ Incheon qua trung tâm Praha đến châu Âu 7 ngày, qua London đến Anh 5 ngày."
       }
     },
     "valueAdded": {
@@ -268,6 +235,261 @@
       },
       "primaryCta": "Đăng ký tư vấn",
       "secondaryCta": "Bảng giá"
+    }
+  },
+  "servicePages": {
+    "backLabel": "Tất cả dịch vụ",
+    "stepsHeading": "Chi tiết dịch vụ",
+    "cta": {
+      "title": "Bạn cần dịch vụ này?",
+      "body": "Chỉ cần cho chúng tôi biết thông tin hàng hóa và lịch trình — chúng tôi sẽ đề xuất tuyến tối ưu kèm báo giá.",
+      "primary": "Yêu cầu báo giá",
+      "secondary": "Theo dõi hàng"
+    },
+    "modes": {
+      "AIR": {
+        "eyebrow": "AIR FREIGHT",
+        "stats": [
+          {
+            "value": "200 tấn",
+            "label": "Xử lý mỗi tháng"
+          },
+          {
+            "value": "5",
+            "label": "Đối tác hàng không chiến lược"
+          }
+        ],
+        "steps": [
+          {
+            "title": "Đối tác hàng không chiến lược",
+            "body": "Chúng tôi duy trì quan hệ đối tác với 5 hãng hàng không để luôn giữ được chỗ ngay cả trong mùa cao điểm.",
+            "items": [
+              "Korean Air",
+              "China Eastern",
+              "Air Incheon",
+              "Turkish Airlines (TK)",
+              "Finnair (AY)"
+            ]
+          },
+          {
+            "title": "Tuyến chính",
+            "body": "Hàng được gom từ Hoa Nam về Sơn Đông, trung chuyển tại Incheon rồi bay tiếp sang châu Âu và châu Mỹ.",
+            "items": [
+              "Hoa Nam → Sơn Đông",
+              "Sơn Đông → Incheon (ICN)",
+              "Incheon → châu Âu / LAX / ORD"
+            ]
+          },
+          {
+            "title": "Hàng chuyên biệt",
+            "body": "Chúng tôi chủ yếu xử lý hàng có yêu cầu khắt khe về đóng gói, chứng từ và điều kiện khai thác.",
+            "items": [
+              "Hàng điện tử",
+              "Hàng thương mại điện tử",
+              "Hàng gấp",
+              "Hàng nguy hiểm (DG)"
+            ]
+          }
+        ]
+      },
+      "SEA": {
+        "eyebrow": "OCEAN & SEA-AIR",
+        "stats": [
+          {
+            "value": "100 TEU",
+            "label": "Xử lý mỗi tháng"
+          },
+          {
+            "value": "6 chuyến/tuần",
+            "label": "Phà Uy Hải ↔ Incheon"
+          }
+        ],
+        "capabilitiesTitle": "Năng lực cốt lõi",
+        "capabilities": [
+          "Quan hệ đối tác đại lý hạng 1 — ký trực tiếp với hãng tàu để giữ chỗ",
+          "Xử lý hàng thương mại điện tử & FBA (nhập kho Amazon FC)",
+          "Gom hàng CFS Quảng Đông–Thượng Hải + vận tải bộ nội địa Trung Quốc + kết nối phà",
+          "Vận tải SEA-AIR đi Mỹ và châu Âu qua trung chuyển Incheon",
+          "Kinh nghiệm vận chuyển hàng dự án"
+        ],
+        "stepsHeading": "Quy trình SEA-AIR 8 bước",
+        "stepsLead": "Từ khi rời CFS Thượng Hải đến khi nhập kho sân bay Incheon chỉ trong chưa đầy hai ngày. Thời gian dưới đây theo lịch chuẩn.",
+        "steps": [
+          {
+            "title": "Nhập kho CFS Thượng Hải",
+            "time": "D-Day"
+          },
+          {
+            "title": "Xếp hàng & chuẩn bị xuất",
+            "time": "D-Day 18:00"
+          },
+          {
+            "title": "Rời CFS Thượng Hải",
+            "time": "D-Day 19:00"
+          },
+          {
+            "title": "Đến Uy Hải",
+            "time": "D+1 14:30"
+          },
+          {
+            "title": "Vào CY",
+            "time": "D+1 15:00"
+          },
+          {
+            "title": "Phà khởi hành",
+            "time": "D+1 19:30"
+          },
+          {
+            "title": "Đến Incheon · Pyeongtaek",
+            "time": "D+2 11:00"
+          },
+          {
+            "title": "Nhập kho sân bay",
+            "time": "D+2 15:30"
+          }
+        ]
+      },
+      "TRUCK": {
+        "eyebrow": "ROAD FREIGHT",
+        "stats": [
+          {
+            "value": "31",
+            "label": "Tỉnh·thành phục vụ tại Trung Quốc"
+          },
+          {
+            "value": "300",
+            "label": "Xe nội địa mỗi tháng"
+          },
+          {
+            "value": "150",
+            "label": "Xe xuyên biên giới mỗi tháng"
+          }
+        ],
+        "steps": [
+          {
+            "title": "Nội địa Trung Quốc",
+            "body": "Vận hành FTL / LTL tại toàn bộ 31 tỉnh·thành của Trung Quốc, quy mô 300 xe mỗi tháng.",
+            "items": []
+          },
+          {
+            "title": "Vận tải xuyên biên giới",
+            "body": "Từ Hoa Đông·Hoa Nam vượt biên giới sang Việt Nam và Thái Lan, quy mô 150 xe mỗi tháng.",
+            "items": []
+          },
+          {
+            "title": "Tuyến chính",
+            "body": "",
+            "items": [
+              "Thâm Quyến → Hải Phòng",
+              "Quảng Châu → Hà Nội",
+              "Nam Ninh → Bắc Ninh",
+              "Hà Nội → TP.HCM"
+            ]
+          },
+          {
+            "title": "Khách hàng chính tuyến xuyên biên giới",
+            "body": "LG (linh kiện điện tử · màn hình), Samsung Electro-Mechanics / BYD (linh kiện màn hình điện tử).",
+            "items": [],
+            "note": "Chỉ nêu tên khách hàng — chúng tôi không sử dụng logo của họ."
+          }
+        ]
+      },
+      "RAIL": {
+        "eyebrow": "RAIL FREIGHT",
+        "stats": [
+          {
+            "value": "3",
+            "label": "Nhóm tuyến"
+          }
+        ],
+        "steps": [
+          {
+            "title": "Theo dõi hàng hóa thời gian thực",
+            "body": "Có thể tra cứu vị trí hàng theo thời gian thực trên toàn tuyến, từ lúc khởi hành đến khi giao đến.",
+            "items": []
+          },
+          {
+            "title": "Route A",
+            "body": "Tàu hàng Trung Quốc ↔ châu Âu / Nga / Trung Á.",
+            "items": []
+          },
+          {
+            "title": "Route B",
+            "body": "Kết nối ga đường sắt nội địa Trung Quốc: Tây An, Thành Đô, Trùng Khánh.",
+            "items": []
+          },
+          {
+            "title": "Route C",
+            "body": "Sea & Rail — chặng biển qua Incheon hoặc Busan nối với đường sắt đi châu Âu.",
+            "items": []
+          }
+        ]
+      },
+      "EXPRESS": {
+        "eyebrow": "EXPRESS",
+        "stats": [
+          {
+            "value": "7 ngày",
+            "label": "ICN → PRG → châu Âu"
+          },
+          {
+            "value": "5 ngày",
+            "label": "ICN → LHR → Anh"
+          }
+        ],
+        "steps": [
+          {
+            "title": "JSL-EXPRESS Logistics",
+            "body": "Hệ thống nội bộ của chúng tôi, trao đổi trạng thái giao nhận theo thời gian thực.",
+            "items": [
+              "Tích hợp REST API",
+              "Cập nhật thời gian thực",
+              "Bảng điều khiển Web & Mobile"
+            ]
+          },
+          {
+            "title": "Thời gian vận chuyển",
+            "body": "Số ngày tiêu chuẩn từ Incheon qua hub châu Âu đến địa chỉ cuối. Chi tiết từng chặng ở bảng dưới.",
+            "items": []
+          },
+          {
+            "title": "Đối tác chặng cuối",
+            "body": "Việc giao hàng cuối do các nhà cung cấp địa phương tại từng nước thực hiện.",
+            "items": [
+              "Royal Mail",
+              "Deutsche Post",
+              "DHL",
+              "dpd"
+            ]
+          }
+        ],
+        "leadTimes": {
+          "title": "Chi tiết thời gian vận chuyển",
+          "columns": [
+            "Tuyến",
+            "Hàng không",
+            "Thông quan · hub EU",
+            "Chặng cuối",
+            "Tổng"
+          ],
+          "rows": [
+            [
+              "Incheon (ICN) → Praha (PRG) → châu Âu",
+              "1 ngày",
+              "1,5 ngày",
+              "3–4,5 ngày",
+              "7 ngày"
+            ],
+            [
+              "Incheon (ICN) → London (LHR) → Anh",
+              "1 ngày",
+              "1,5 ngày",
+              "1–2,5 ngày",
+              "5 ngày"
+            ]
+          ]
+        }
+      }
     }
   },
   "ctaBand": {
