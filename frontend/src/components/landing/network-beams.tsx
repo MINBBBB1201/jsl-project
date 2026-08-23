@@ -169,13 +169,22 @@ export function NetworkBeams({
           >
             {point.node.city}
           </text>
+          {/*
+            ⚠️ font-poppins 를 <text> 전체가 아니라 <tspan> 에만 준다.
+               headcountUnit 은 로케일 문구라 vi 에서 "người", zh 에서 "人" 이
+               오는데, Poppins 범위 밖 글자만 폴백으로 떨어져 한 단어 안에서
+               서체가 갈렸다 (실측: "2người" 가 Poppins 15 글리프 + Arial 2 글리프).
+               영문 도시명과 숫자만 Poppins 로 두고 단위는 본문 서체에 맡긴다.
+          */}
           <text
             x={point.labelX}
             y={point.y + 16}
             textAnchor={point.anchor}
-            className="fill-muted-foreground font-poppins text-[12px]"
+            className="fill-muted-foreground text-[12px]"
           >
-            {point.node.cityEn} · {point.node.headcount}
+            <tspan className="font-poppins">
+              {point.node.cityEn} · {point.node.headcount}
+            </tspan>
             {headcountUnit}
           </text>
         </g>
@@ -202,9 +211,11 @@ export function NetworkBeams({
         x={HUB_X}
         y={HUB_Y + 72}
         textAnchor="middle"
-        className="fill-muted-foreground font-poppins text-[12px]"
+        className="fill-muted-foreground text-[12px]"
       >
-        {hub.cityEn} · {hub.headcount}
+        <tspan className="font-poppins">
+          {hub.cityEn} · {hub.headcount}
+        </tspan>
         {headcountUnit}
       </text>
     </svg>

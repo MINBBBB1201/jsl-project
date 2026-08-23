@@ -6,6 +6,7 @@ import { motion } from "framer-motion"
 import { useContent } from "@/config/use-content"
 import { GlowCard } from "@/components/landing/glow-card"
 import { LANDING_PHOTOS } from "./landing-photos"
+import { NumericText } from "./numeric-text"
 import { REVEAL_OFFSET_X, useRevealMotion } from "@/lib/landing-motion"
 
 /**
@@ -127,7 +128,7 @@ export function RedesignWhyJsl() {
             {/* 모서리에 걸치는 통계 카드 — 고정 흰색 (위 주석 참고) */}
             <div className="mt-4 inline-block rounded-xl bg-white px-6 py-4 shadow-lg sm:absolute sm:-right-2 sm:-bottom-6 sm:mt-0 lg:-right-4">
               <p className="text-brand-navy-deep tabular-figures text-3xl font-bold">
-                {whyJsl.highlight.value}
+                <NumericText value={whyJsl.highlight.value} />
               </p>
               <p className="text-brand-navy-deep/70 mt-1 text-xs">
                 {whyJsl.highlight.label}
@@ -151,8 +152,9 @@ export function RedesignWhyJsl() {
               variants={up}
               className="bg-brand-navy-deep px-6 py-6"
             >
+              {/* 숫자만 Poppins — numeric-text.tsx 주석 참고 */}
               <p className="tabular-figures text-2xl font-semibold text-white">
-                {stat.value}
+                <NumericText value={stat.value} />
               </p>
               <p className="text-brand-slate mt-1 text-xs">{stat.label}</p>
             </motion.li>

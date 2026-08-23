@@ -5,6 +5,7 @@ import Image from "next/image"
 import { useContent } from "@/config/use-content"
 import { HeroRoute } from "./hero-route"
 import { LANDING_PHOTOS } from "./landing-photos"
+import { NumericText } from "./numeric-text"
 
 /**
  * 히어로 — 랜딩 리디자인
@@ -113,8 +114,13 @@ export function RedesignHero() {
                 <dt className="text-brand-slate text-[11px] tracking-[0.14em] uppercase">
                   {stat.label}
                 </dt>
+                {/*
+                  숫자만 Poppins 다. "200 tấn/tháng" 처럼 숫자 옆에 베트남어
+                  성조 글자가 붙는 값이 있어 통째로 감싸면 한 단어 안에서
+                  서체가 갈린다 (numeric-text.tsx 주석 참고).
+                */}
                 <dd className="tabular-figures mt-1 text-2xl font-semibold text-white">
-                  {stat.value}
+                  <NumericText value={stat.value} />
                 </dd>
               </div>
             ))}

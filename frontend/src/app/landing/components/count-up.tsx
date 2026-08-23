@@ -4,6 +4,7 @@ import * as React from "react"
 import { animate, motion, useInView, useMotionValue, useTransform } from "framer-motion"
 
 import { usePrefersReducedMotion } from "@/hooks/use-prefers-reduced-motion"
+import { NUMBER_PATTERN } from "./numeric-text"
 
 /**
  * 스크롤 진입 시 0 에서 실제값까지 올라가는 수치
@@ -35,8 +36,11 @@ const COUNT_EASE: [number, number, number, number] = [0.22, 1, 0.36, 1]
 /** 40% 가 보이면 시작하고, 한 번만 재생한다 */
 const COUNT_VIEWPORT = { once: true, amount: 0.4 } as const
 
-/** 첫 숫자 덩어리 — 천단위 쉼표와 소수점을 포함한다 */
-const NUMBER_PATTERN = /\d[\d,]*(?:\.\d+)?/
+/*
+  숫자 판정 기준은 numeric-text.tsx 한 곳에 둔다. 정적 통계 문구(히어로 ·
+  Why JSL)도 같은 정규식으로 숫자를 찾아 Poppins 를 붙이는데, 기준이 갈리면
+  같은 화면에서 굴러가는 숫자와 가만히 있는 숫자에 서체가 붙는 범위가 달라진다.
+*/
 
 interface ParsedValue {
   /** 숫자 앞 글자 (en 의 "KRW ") */
