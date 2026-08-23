@@ -3,6 +3,7 @@
 import { ArrowRight } from 'lucide-react'
 
 import { cn } from '@/lib/utils'
+import { SiteLink } from '@/components/site-link'
 import { useContent, type MegaMenuAudience } from '@/config/use-content'
 
 /**
@@ -39,7 +40,7 @@ export function MegaMenu({ audience }: { audience: MegaMenuAudience }) {
             {/* Section Links */}
             <div className="space-y-3 lg:space-y-4">
               {section.items.map((item) => (
-                <a
+                <SiteLink
                   key={item.title}
                   href={item.href}
                   className="group block space-y-1 lg:space-y-2 hover:bg-accent rounded-md p-2 lg:p-3 -mx-2 lg:-mx-3 transition-colors my-0"
@@ -53,7 +54,7 @@ export function MegaMenu({ audience }: { audience: MegaMenuAudience }) {
                   <p className="text-xs text-muted-foreground leading-relaxed ml-6 lg:ml-7">
                     {item.description}
                   </p>
-                </a>
+                </SiteLink>
               ))}
             </div>
           </div>
@@ -62,13 +63,13 @@ export function MegaMenu({ audience }: { audience: MegaMenuAudience }) {
 
       {/* 세그먼트 전체 보기 */}
       <div className="mt-6 border-t pt-4">
-        <a
+        <SiteLink
           href={menu.cta.href}
           className="inline-flex items-center gap-2 text-sm font-medium text-primary hover:underline"
         >
           {menu.cta.label}
           <ArrowRight className="size-4" aria-hidden />
-        </a>
+        </SiteLink>
       </div>
     </div>
   )

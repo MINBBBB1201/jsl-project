@@ -2,6 +2,8 @@
 
 import { useState } from 'react'
 import Link from 'next/link'
+import { Link as LocaleLink } from '@/i18n/navigation'
+import { SiteLink } from '@/components/site-link'
 import { Menu, LayoutDashboard, ChevronDown, X, Moon, Sun } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import {
@@ -79,12 +81,16 @@ export function LandingNavbar() {
       <div className="container mx-auto px-4 sm:px-6 lg:px-8 flex h-18 items-center justify-between sm:h-20">
         {/* Logo */}
         <div className="flex min-w-0 items-center space-x-2">
-          <Link href="/landing" className="flex min-w-0 items-center space-x-2 cursor-pointer">
+          {/*
+            ⚠️ 여기만 LocaleLink 다. 아래 대시보드·로그인은 그대로 next/link 를
+               쓴다 — 자세한 사정은 파일 아래 CTA 묶음 주석에.
+          */}
+          <LocaleLink href="/landing" className="flex min-w-0 items-center space-x-2 cursor-pointer">
             {/* 워드마크 안에 회사명이 이미 들어있어서 옆에 텍스트를 따로 두지 않는다.
                 예전에는 정사각 마크 + 회사명 텍스트 조합이라, 베트남어처럼 라벨이 긴
                 언어에서 텍스트가 첫 네비 항목과 겹쳐 넓은 폭에서 숨겨야 했다. */}
             <LogoWordmark className="h-11 shrink-0 sm:h-12" priority />
-          </Link>
+          </LocaleLink>
         </div>
 
         {/*
@@ -114,17 +120,23 @@ export function LandingNavbar() {
                   // /tracking 처럼 라우트로 가는 항목이 생기면서 새 탭 열기·
                   // 스크린리더·크롤러가 링크를 인식하지 못하는 문제가 있었다.
                   // 페이지 내 앵커(#)일 때만 기본 동작을 막고 부드럽게 스크롤한다.
-                  <NavigationMenuLink
-                    href={item.href}
-                    className="group inline-flex h-10 w-max items-center justify-center whitespace-nowrap px-2.5 py-2 text-sm font-medium transition-colors hover:text-primary focus:text-primary focus:outline-none cursor-pointer"
-                    onClick={(e: React.MouseEvent) => {
-                      if (item.href.startsWith('#')) {
-                        e.preventDefault()
-                        smoothScrollTo(item.href)
-                      }
-                    }}
-                  >
-                    {item.name}
+                  // asChild 로 SiteLink 를 안에 넣는다. radix 의
+                  // NavigationMenuLink 는 href 를 받으면 순수 <a> 를 그리는데,
+                  // 그러면 /tracking 이 로케일 없이 나가 베트남어로 보던 사람이
+                  // 한국어 추적 페이지로 떨어진다 (실측으로 확인한 자리다).
+                  <NavigationMenuLink asChild>
+                    <SiteLink
+                      href={item.href}
+                      className="group inline-flex h-10 w-max items-center justify-center whitespace-nowrap px-2.5 py-2 text-sm font-medium transition-colors hover:text-primary focus:text-primary focus:outline-none cursor-pointer"
+                      onClick={(e: React.MouseEvent) => {
+                        if (item.href.startsWith('#')) {
+                          e.preventDefault()
+                          smoothScrollTo(item.href)
+                        }
+                      }}
+                    >
+                      {item.name}
+                    </SiteLink>
                   </NavigationMenuLink>
                 )}
               </NavigationMenuItem>
@@ -143,6 +155,15 @@ export function LandingNavbar() {
              가운데 네비 자리가 줄어든다 — 가장 긴 베트남어 기준으로 3xl(1728px)
              에서 남는 여백이 양쪽 57px 뿐이라, 여기서 한 버튼에 24px 을 더하면
              바로 겹침으로 돌아간다.
+        */}
+        {/*
+          ⚠️ 아래 대시보드·로그인은 next/link 그대로 둘 것.
+
+          /dashboard 와 /sign-in 은 사내용이라 번역 대상이 아니고 middleware 의
+          LOCALIZED_SEGMENTS 에도 없다. app/[locale] 아래에 같은 라우트가 없으므로
+          로케일을 붙이는 링크로 바꾸면 /vi/dashboard 처럼 존재하지 않는 주소가
+          만들어져 404 가 난다. 공개 페이지(/landing · /tracking · /consulting ·
+          /services · /privacy · /terms)만 LocaleLink · SiteLink 를 쓴다.
         */}
         <div className="hidden shrink-0 items-center space-x-1 3xl:flex">
           <LanguageSwitcher />
@@ -218,8 +239,16 @@ export function LandingNavbar() {
                             <p className="px-4 pt-3 text-sm text-muted-foreground">
                               {navigation.megaMenus[item.megaMenu].question}
                             </p>
+                            {/*
+                              ⚠️ 판정을 solution.title 이 아니라 href 로 한다.
+                                 두 갈래는 { title } 아니면 { name, href } 인데,
+                                 title 로 가르면 TS 가 "빈 문자열 title" 가능성
+                                 때문에 else 쪽에서도 href 를 string | undefined
+                                 로 본다. href 가 있는 쪽에만 href 가 필수라
+                                 이걸로 가르면 정확히 좁혀진다.
+                            */}
                             {mobileMenuEntries(item.megaMenu).map((solution, index) => (
-                              solution.title ? (
+                              solution.href === undefined ? (
                                 <div
                                   key={`title-${index}`}
                                   className="px-4 mt-5 py-2 text-xs font-semibold text-muted-foreground/50 uppercase tracking-wider"
@@ -227,33 +256,33 @@ export function LandingNavbar() {
                                   {solution.title}
                                 </div>
                               ) : (
-                                <a
+                                <SiteLink
                                   key={solution.name}
                                   href={solution.href}
                                   className="flex items-center px-4 py-2 text-sm rounded-lg transition-colors hover:bg-accent hover:text-accent-foreground cursor-pointer"
                                   onClick={(e) => {
                                     setIsOpen(false)
-                                    if (solution.href?.startsWith('#')) {
+                                    if (solution.href.startsWith('#')) {
                                       e.preventDefault()
                                       setTimeout(() => smoothScrollTo(solution.href), 100)
                                     }
                                   }}
                                 >
                                   {solution.name}
-                                </a>
+                                </SiteLink>
                               )
                             ))}
-                            <a
+                            <SiteLink
                               href={navigation.megaMenus[item.megaMenu].cta.href}
                               onClick={() => setIsOpen(false)}
                               className="mt-3 flex items-center px-4 py-2 text-sm font-medium text-primary rounded-lg transition-colors hover:bg-accent cursor-pointer"
                             >
                               {navigation.megaMenus[item.megaMenu].cta.label}
-                            </a>
+                            </SiteLink>
                           </CollapsibleContent>
                         </Collapsible>
                       ) : (
-                        <a
+                        <SiteLink
                           href={item.href}
                           className="flex items-center px-4 py-3 text-base font-medium rounded-lg transition-colors hover:bg-accent hover:text-accent-foreground cursor-pointer"
                           onClick={(e) => {
@@ -265,7 +294,7 @@ export function LandingNavbar() {
                           }}
                         >
                           {item.name}
-                        </a>
+                        </SiteLink>
                       )}
                     </div>
                   ))}

@@ -1,6 +1,6 @@
 "use client"
 
-import Link from 'next/link'
+import { Link } from '@/i18n/navigation'
 import { ArrowRight } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
@@ -68,9 +68,9 @@ export function ConsultingSection() {
             </Link>
           </Button>
           <Button size="lg" className="cursor-pointer" asChild>
-            <a href={consulting.primaryCta.href} className="flex items-center">
+            <Link href={consulting.primaryCta.href} className="flex items-center">
               {consulting.primaryCta.label}
-            </a>
+            </Link>
           </Button>
         </div>
       </div>
