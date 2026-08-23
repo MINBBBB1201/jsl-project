@@ -1,6 +1,15 @@
 "use client"
 
 import { useState } from 'react'
+/*
+  eslint-disable-next-line no-restricted-imports --
+  공개 페이지 규칙의 의도적 예외다. 이 파일에서 next/link 로 남는 링크는
+  /dashboard 와 /sign-in 넷뿐이고, 둘 다 사내용이라 번역 대상이 아니며
+  middleware 의 LOCALIZED_SEGMENTS 에도 없다. app/[locale] 아래에 같은 라우트가
+  없어서 로케일을 붙이면 /vi/dashboard 처럼 존재하지 않는 주소가 되어 404 가 난다.
+  공개 라우트(/landing · /tracking · /consulting …)와 '#앵커' 는 이 아래
+  LocaleLink · SiteLink 를 쓴다.
+*/
 import Link from 'next/link'
 import { Link as LocaleLink } from '@/i18n/navigation'
 import { SiteLink } from '@/components/site-link'
@@ -178,7 +187,7 @@ export function LandingNavbar() {
             <Link href="/sign-in">{navigation.signIn}</Link>
           </Button>
           <Button variant="brand" asChild className="h-10 cursor-pointer">
-            <Link href="#contact">{navigation.quoteCta}</Link>
+            <SiteLink href="#contact">{navigation.quoteCta}</SiteLink>
           </Button>
         </div>
 
@@ -318,7 +327,7 @@ export function LandingNavbar() {
                       <Link href="/sign-in">{navigation.signIn}</Link>
                     </Button>
                     <Button variant="brand" asChild size="lg" className="cursor-pointer" >
-                      <Link href="#contact" onClick={() => setIsOpen(false)}>견적 문의</Link>
+                      <SiteLink href="#contact" onClick={() => setIsOpen(false)}>견적 문의</SiteLink>
                     </Button>
                   </div>
                 </div>

@@ -1,6 +1,6 @@
 "use client"
 
-import Link from 'next/link'
+import { SiteLink } from '@/components/site-link'
 import { ArrowRight, Ship } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
@@ -61,13 +61,13 @@ export function HeroSection() {
 
           <div className="mt-10 flex flex-col gap-3 sm:flex-row">
             <Button variant="brand" size="lg" className="cursor-pointer text-base" asChild>
-              <Link href={hero.primaryCta.href}>
+              <SiteLink href={hero.primaryCta.href}>
                 {hero.primaryCta.label}
                 <ArrowRight className="ml-2 size-4" aria-hidden="true" />
-              </Link>
+              </SiteLink>
             </Button>
             <Button variant="outline" size="lg" className="cursor-pointer text-base" asChild>
-              <Link href={hero.secondaryCta.href}>{hero.secondaryCta.label}</Link>
+              <SiteLink href={hero.secondaryCta.href}>{hero.secondaryCta.label}</SiteLink>
             </Button>
           </div>
         </div>
