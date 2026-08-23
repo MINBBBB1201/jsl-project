@@ -16,8 +16,11 @@
        그 글자를 가진 첫 폰트로 그린다. 그래서
          1. General Sans 가 먼저 — 라틴·숫자를 가져간다 (한글 글리프가 없다)
          2. Pretendard 가 그다음 — 한글을 가져간다
-         3. 시스템 한글 폰트 — Pretendard 서브셋에 없는 글자(한자 등)를 받는다
-         4. 제네릭(sans-serif)은 반드시 맨 끝
+         3. Be Vietnam Pro — 앞의 둘에 없는 베트남어 성조 글자(U+1EA0–1EF9 등)를
+            받는다. 여기 없으면 시스템 Arial 로 떨어져 "Hàng" 의 à 만 다른 서체로
+            그려진다 (실측으로 확인한 자리다 — lib/fonts.ts 의 beVietnamPro 주석)
+         4. 시스템 한글 폰트 — Pretendard 서브셋에 없는 글자(한자 등)를 받는다
+         5. 제네릭(sans-serif)은 반드시 맨 끝
        제네릭을 중간에 넣으면 브라우저가 거기서 탐색을 끝내 뒤 항목이 전부
        죽는다. 이 프로젝트에서 두 번 그렇게 짜서 두 번 한글이 폴백으로 떨어졌다.
 
@@ -32,8 +35,8 @@
        설치돼 있어도 @font-face 선언이 우선한다)
   */
   --font-sans:
-    var(--font-general-sans), 'Pretendard', 'Apple SD Gothic Neo',
-    'Malgun Gothic', 'Noto Sans KR', system-ui, sans-serif;
+    var(--font-general-sans), 'Pretendard', var(--font-be-vietnam-pro),
+    'Apple SD Gothic Neo', 'Malgun Gothic', 'Noto Sans KR', system-ui, sans-serif;
   /*
     영문 마이크로카피 스택 — .font-poppins 유틸리티가 여기서 나온다.
 
@@ -52,7 +55,8 @@
   */
   --font-poppins:
     var(--font-poppins-latin), var(--font-general-sans), 'Pretendard',
-    'Apple SD Gothic Neo', 'Malgun Gothic', 'Noto Sans KR', system-ui, sans-serif;
+    var(--font-be-vietnam-pro), 'Apple SD Gothic Neo', 'Malgun Gothic',
+    'Noto Sans KR', system-ui, sans-serif;
   /*
     3xl 브레이크포인트 (1728px) — Tailwind 기본에는 없어서 여기서 만든다.
 

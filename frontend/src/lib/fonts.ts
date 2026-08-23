@@ -1,4 +1,4 @@
-import { Poppins } from 'next/font/google'
+import { Be_Vietnam_Pro, Poppins } from 'next/font/google'
 import localFont from 'next/font/local'
 
 /**
@@ -81,6 +81,21 @@ export const generalSans = localFont({
   */
   preload: false,
   /*
+    ⚠️ adjustFontFallback 을 끈다. 켜 두면 next/font 가 'generalSans Fallback'
+       (local Arial + size-adjust) 페이스를 만들어 --font-general-sans 안에
+       끼워 넣는데, 이 페이스에는 unicode-range 가 없어서(U+0–10FFFF) 스택
+       두 번째 자리에서 Arial 이 그릴 수 있는 글자를 전부 삼킨다.
+
+       실제로 그 때문에 베트남어 성조 글자가 Pretendard 와 Be Vietnam Pro 에
+       닿지도 못하고 Arial 로 떨어지고 있었다 (실측: /vi 랜딩 한 장에 Arial
+       988 글리프, Be Vietnam Pro 는 아홉 페이스 전부 unloaded 였다).
+       한글이 멀쩡했던 건 Arial 에 한글이 없어 그냥 통과했기 때문이다.
+
+       제네릭이 아니어도 unicode-range 가 없으면 글리프 탐색은 거기서 끝난다 —
+       아래 fallback 경고와 같은 함정이고, 원인만 다르다.
+  */
+  adjustFontFallback: false,
+  /*
     ⚠️ fallback 을 일부러 비워 뒀다. 채우지 말 것.
 
        전체 폰트 스택은 globals.css 의 --font-sans 한 곳에서만 조립한다.
@@ -154,9 +169,73 @@ export const poppins = Poppins({
     메트릭에 맞춰 size-adjust 한 'Poppins Fallback'(local Arial 기반) 을 만들어
     폰트 교체 순간의 레이아웃 시프트를 없애 준다.
 
-    이건 위 General Sans 의 fallback 경고와 상충하지 않는다. 그 경고는 'sans-serif'
-    같은 *제네릭* 을 넣지 말라는 것이고 (브라우저가 제네릭에서 글리프 탐색을
-    끝내 버려 뒤에 이어 붙인 한글 폰트가 죽는다), 'Poppins Fallback' 은 제네릭이
-    아니라 한글 글리프가 없는 실제 페이스라 탐색이 그대로 뒤로 넘어간다.
+    ⚠️ 예전에 여기에 "제네릭이 아니라 실제 페이스니 탐색이 뒤로 넘어간다" 고
+       적어 뒀는데, 그 설명은 틀렸다. 'Poppins Fallback' 에는 unicode-range 가
+       없어서(U+0–10FFFF) Arial 이 그릴 수 있는 글자는 전부 여기서 멈춘다 —
+       제네릭이 아니어도 탐색은 끝난다. 같은 이유로 General Sans 쪽은
+       adjustFontFallback 을 껐다 (베트남어 성조 글자를 삼키고 있었다).
+
+       Poppins 만 켜 둔 채로 두는 이유는 적용 범위가 다르기 때문이다.
+       General Sans 는 본문 전체의 첫 폰트라 그 폴백이 모든 글자의 탐색을
+       가로막지만, .font-poppins 는 영문 라벨·숫자에만 붙어 있어서 뒤로 넘겨야
+       할 글자 자체가 없다 (실측으로 CJK·베트남어가 한 글자도 들어 있지 않은 것을
+       확인했다). 대신 이 유틸리티를 한글이나 베트남어가 섞이는 자리에 붙이면
+       그 글자들이 Pretendard·Be Vietnam Pro 에 닿지 못하고 Arial 로 그려진다.
+       ⇒ .font-poppins 는 지금처럼 라틴·숫자 전용으로만 쓸 것.
+  */
+})
+
+/**
+ * 베트남어 성조 글자 — Be Vietnam Pro 400 / 600 / 700
+ *
+ * 전체 스택을 바꾸지 않는다. 폰트 폴백 체인에 한 단계를 더할 뿐이고, 브라우저가
+ * 글자 하나하나에 대해 스택을 훑는 성질을 그대로 쓴다 (globals.css 의 --font-sans).
+ *   라틴·숫자   General Sans 가 먼저 가져간다        (그대로)
+ *   한글        Pretendard 가 가져간다               (그대로)
+ *   ế · ầ · ỷ   앞의 둘에 없어서 여기까지 내려온다    (새로 붙는 자리)
+ * 로케일 분기가 없다. /vi 든 /ko 든 같은 스택이고, 베트남어 글자가 나오는
+ * 자리에서만 자동으로 이 폰트가 쓰인다.
+ *
+ * ── 왜 필요했나 ────────────────────────────────────────────────────────
+ * General Sans 에도 Pretendard 서브셋에도 U+1EA0–1EF9 구간이 없어서, /vi 페이지의
+ * 성조 글자가 전부 시스템 Arial 로 떨어지고 있었다 (실측: 랜딩 한 장에 Arial
+ * 988 글리프, 성조가 들어간 조각 263개 중 221개에 섞여 있었다). 한 단어 안에서
+ * "Hàng" 의 H·n·g 는 General Sans, à 는 Arial 로 갈려 그려졌다.
+ *
+ * ── 왜 Be Vietnam Pro 인가 ─────────────────────────────────────────────
+ * 베트남어를 위해 설계된 서체라 성조 부호의 위치와 크기가 정리돼 있고, 기하학적
+ * 산세리프라 General Sans·Pretendard 와 결이 크게 어긋나지 않는다.
+ *
+ * ── 서브셋 ─────────────────────────────────────────────────────────────
+ * vietnamese 하나만 받는다. latin 을 함께 받아도 General Sans 가 먼저라 실제로
+ * 쓰이지는 않지만, 선언이 늘면 나중에 스택 순서를 바꿀 때 어느 폰트가 라틴을
+ * 그리는지 헷갈린다.
+ *
+ * ⚠️ 굵기는 Pretendard 와 똑같이 400 / 600 / 700 세 벌이다. 여기에도 500 이
+ *    없으므로 CSS 가 500 을 요구하면 400 으로 떨어진다 — 위 Pretendard 항목의
+ *    "굵기로 위계를 주려면 600 을 쓸 것" 규칙이 베트남어에도 그대로 적용된다.
+ *    두 폰트의 굵기 구성을 일부러 맞춰 둔 것이니 한쪽만 늘리지 말 것.
+ */
+export const beVietnamPro = Be_Vietnam_Pro({
+  subsets: ['vietnamese'],
+  weight: ['400', '600', '700'],
+  display: 'swap',
+  variable: '--font-be-vietnam-pro',
+  /*
+    General Sans · Poppins 와 같은 이유로 preload 를 끈다. 이 폰트가 그리는 것은
+    문장 안의 성조 글자뿐이라 첫 화면에서 먼저 받아야 할 만큼 급하지 않고,
+    display: swap 이라 늦게 와도 글자는 곧바로 그려진다.
+  */
+  preload: false,
+  /*
+    adjustFontFallback 은 기본값(true)이다. 폰트가 오기 전까지는 메트릭을 맞춘
+    'Be Vietnam Pro Fallback'(local Arial 기반)이 그리므로, 교체되는 순간 줄이
+    밀리지 않는다 — 지금도 Arial 이 그리고 있으니 폰트가 늦어도 나빠지는 것은
+    없고 교체 시점의 시프트만 사라진다.
+
+    위 General Sans 의 fallback 경고와 상충하지 않는다. 그 경고는 'sans-serif'
+    같은 *제네릭* 을 넣지 말라는 것이고 (제네릭을 만나면 글리프 탐색이 거기서
+    끝나 뒤 항목이 죽는다), 이건 제네릭이 아니라 실제 페이스라 탐색이 그대로
+    뒤로 넘어간다.
   */
 })
