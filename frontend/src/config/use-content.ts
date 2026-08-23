@@ -383,6 +383,12 @@ export function useContent() {
     items: OFFICE_FACTS.map((o) => ({
       // 다섯 칸 모두 지도핀이면 아이콘이 아무것도 구분하지 못한다 — 본사만 가른다
       icon: o.role === "hq" ? Building2 : MapPin,
+      /*
+        아래 role 은 화면에 찍는 번역문("본사"/"지사")이라 코드가 조건에 쓸 수
+        없다. 연결선 도식이 중심 노드를 고를 때 쓰라고 원본 플래그를 함께 준다 —
+        로케일이 바뀌면 조용히 깨지는 문자열 비교를 만들지 않기 위해서다.
+      */
+      isHq: o.role === "hq",
       city: m.network.offices[o.key].city,
       cityEn: o.cityEn,
       role: o.role === "hq" ? m.network.roleHq : m.network.roleBranch,

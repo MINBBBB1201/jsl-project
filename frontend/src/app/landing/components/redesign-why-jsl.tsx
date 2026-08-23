@@ -4,6 +4,7 @@ import Image from "next/image"
 import { motion } from "framer-motion"
 
 import { useContent } from "@/config/use-content"
+import { GlowCard } from "@/components/landing/glow-card"
 import { LANDING_PHOTOS } from "./landing-photos"
 import { REVEAL_OFFSET_X, useRevealMotion } from "@/lib/landing-motion"
 
@@ -59,17 +60,25 @@ export function RedesignWhyJsl() {
               {whyJsl.description}
             </p>
 
+            {/*
+              카드에 커서를 올리면 테두리가 커서를 따라 은은하게 빛난다.
+              구현과 동작 줄이기 처리는 components/landing/glow-card.tsx 에 있다.
+
+              ⚠️ 배경이 --brand-navy-deep 이라 글로우가 잘 보인다. 밝은 배경
+                 카드에 그대로 쓰면 오렌지가 탁하게 번지므로 세기를 낮출 것.
+            */}
             <ul className="mt-9 space-y-3">
               {whyJsl.cards.map((card) => (
-                <li
+                <GlowCard
                   key={card.title}
+                  as="li"
                   className="rounded-lg border border-white/15 px-5 py-4"
                 >
                   <p className="text-sm font-semibold text-white">{card.title}</p>
                   <p className="text-brand-slate tabular-figures mt-1 text-xs">
                     {card.subtitle}
                   </p>
-                </li>
+                </GlowCard>
               ))}
             </ul>
           </motion.div>
