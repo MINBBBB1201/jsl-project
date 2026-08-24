@@ -636,6 +636,7 @@ export function useContent() {
       [m.footer.colSupport]: [
         { name: m.nav.faq, href: "/landing#faq" },
         { name: m.nav.tracking, href: "/tracking" },
+        { name: m.nav.hsCode, href: "/hs-code" },
         { name: m.footer.linkQuote, href: "/landing#contact" },
         { name: m.footer.linkNotice, href: "#" },
       ],
