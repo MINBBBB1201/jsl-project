@@ -10,8 +10,20 @@ const intlMiddleware = createMiddleware(routing)
 /**
  * 공개 페이지에만 로케일 라우팅을 적용한다.
  * 대시보드·인증 화면은 내부용이라 번역 대상이 아니므로 그대로 통과시킨다.
+ *
+ * ⚠️ [locale] 아래에 공개 라우트를 새로 만들면 여기에도 세그먼트를 추가해야 한다.
+ *    빠뜨리면 프리픽스가 붙은 /en/... 은 열리는데 기본 로케일(한국어)의
+ *    프리픽스 없는 /... 만 404 가 난다 — 눈에 잘 안 띄는 형태로 깨진다.
  */
-const LOCALIZED_SEGMENTS = ['landing', 'tracking', 'consulting', 'services', 'privacy', 'terms']
+const LOCALIZED_SEGMENTS = [
+  'landing',
+  'tracking',
+  'hs-code',
+  'consulting',
+  'services',
+  'privacy',
+  'terms',
+]
 
 /**
  * 로그인이 필요한 경로 ((dashboard) 라우트 그룹의 첫 세그먼트들).
