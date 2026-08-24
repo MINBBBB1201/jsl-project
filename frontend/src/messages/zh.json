@@ -59,6 +59,51 @@
     "demoNote": "由延误检测系统实时计算。当前显示的数值基于演示数据。",
     "liveNote": "由延误检测系统对运输中货物实时计算。"
   },
+  "redesign": {
+    "hero": {
+      "eyebrow": "GLOBAL FREIGHT FORWARDING",
+      "headline1": "连接亚洲与欧洲",
+      "headline2": "最可靠的物流伙伴",
+      "subheadline": "空运・海运・陆运・铁路・快递 — 由5个全球据点串联的一体化运输方案",
+      "primaryCta": "免费询价",
+      "secondaryCta": "查看服务",
+      "stat1Value": "5个",
+      "stat1Label": "全球据点",
+      "stat2Value": "20+",
+      "stat2Label": "专业人员",
+      "stat3Value": "200吨/月",
+      "stat3Label": "航空货运"
+    },
+    "whatWeDo": {
+      "eyebrow": "WHAT WE DO",
+      "title": "主力运输服务",
+      "card1Title": "Air Freight",
+      "card1Description": "专注紧急出货与电商货物，拥有5家航空公司合作关系",
+      "card2Title": "Sea Transport",
+      "card2Description": "从 FBA 货物处理到联运，依托一级代理伙伴关系",
+      "card3Title": "Road Transport",
+      "card3Description": "覆盖中国全境31个省・市，跨境卡车运输网络"
+    },
+    "whyJsl": {
+      "eyebrow": "WHY JSL",
+      "title": "用数字看 JSL",
+      "description": "登记信息与据点现况一览。",
+      "card1Title": "KIFFA 正式会员 · 国际物流周旋业登记",
+      "card1Subtitle": "第{kiffa}号 · 登记第{forwarder}号",
+      "card2Title": "5个据点实时联动",
+      "card2Subtitle": "首尔・上海・威海・广州・河内",
+      "card3Title": "20+ 专业人员",
+      "card3Subtitle": "各据点配置专职人员",
+      "highlightValue": "180亿韩元",
+      "highlightLabel": "年营业额 · 2025财年",
+      "stat1Value": "31个",
+      "stat1Label": "中国覆盖省・市",
+      "stat2Value": "每周6班",
+      "stat2Label": "威海↔仁川轮渡",
+      "stat3Value": "5+1",
+      "stat3Label": "运输模式 + 物流咨询"
+    }
+  },
   "stats": {
     "revenue": {
       "value": "180亿韩元",
@@ -146,59 +191,27 @@
     "badge": "服务介绍",
     "title": "5种运输模式全线服务",
     "description": "根据交期与成本条件，组合空运、海运、陆运、铁路、快递，设计最优路线。",
+    "modeCta": "查看详情",
     "modes": {
       "AIR": {
         "title": "空运",
-        "summary": "专注于电子产品与电商货物的空运服务。",
-        "highlights": [
-          "战略航空公司伙伴：大韩航空 · 东方航空 · 仁川航空 · 土耳其航空(TK) · 芬兰航空(AY)",
-          "主要航线：华南 → 山东、山东 → 仁川(ICN)、仁川 → 欧洲 / LAX / ORD",
-          "专长货物：电子产品 · 电商货物 · 紧急出货 · 危险品(DG)",
-          "月处理200吨"
-        ]
+        "summary": "专注于电子产品与电商货物的空运服务。通过大韩航空、东方航空等5家航空公司的伙伴关系，从华南·山东经仁川连接欧洲与美洲，月处理200吨。"
       },
       "SEA": {
         "title": "海运 · 海空联运",
-        "summary": "整合广东-上海 CFS，衔接中国内陆卡车运输与轮渡的海运及 SEA-AIR 联运服务。",
-        "highlights": [
-          "一级代理伙伴关系 — 与船公司直接签约锁定舱位",
-          "电商 · FBA 货物处理（入库 Amazon FC）",
-          "广东-上海 CFS 整合 + 中国内陆卡车运输 + 轮渡衔接",
-          "经仁川中转的美国·欧洲方向 SEA-AIR 联运",
-          "项目货物运输经验",
-          "SEA-AIR 8步流程：上海 CFS 入库(D-Day) → 装车·出货准备(D-Day 18:00) → 上海 CFS 出库(D-Day 19:00) → 抵达威海(D+1 14:30) → 进 CY(D+1 15:00) → 轮渡开航(D+1 19:30) → 抵达仁川·平泽(D+2 11:00) → 机场仓库入库(D+2 15:30)",
-          "威海 ↔ 仁川轮渡每周6班，月处理100TEU"
-        ]
+        "summary": "整合广东-上海 CFS，衔接中国内陆卡车运输与轮渡的海运及 SEA-AIR 联运服务。威海 ↔ 仁川轮渡每周6班，从上海出库到机场仓库入库的8个步骤在 D+2 内完成，月处理100TEU。"
       },
       "TRUCK": {
         "title": "陆运",
-        "summary": "直接运营覆盖中国全境及东南亚跨境的卡车运输。",
-        "highlights": [
-          "中国内贸：覆盖全中国31个省·市的 FTL / LTL，月300车",
-          "跨境卡车运输：中国（华东·华南）→ 越南 · 泰国，月150车",
-          "主要线路：深圳 → 海防、广州 → 河内、南宁 → 北宁、河内 → 胡志明市",
-          "跨境卡车运输主要客户：LG（电子·显示器部件）、三星电机 / BYD（电子显示器部件）"
-        ]
+        "summary": "直接运营覆盖中国全境及东南亚跨境的卡车运输。中国31个省·市内贸运输月300车，中国–越南·泰国跨境卡车运输月150车。"
       },
       "RAIL": {
         "title": "铁路运输",
-        "summary": "提供连接中国与欧洲的欧亚铁路及 Sea&Rail 联运服务。",
-        "highlights": [
-          "全程实时货物追踪系统",
-          "Route A — 中欧 / 中俄 / 中亚班列",
-          "Route B — 西安 · 成都 · 重庆等中国内陆铁路枢纽衔接",
-          "Route C — 海铁联运：仁川 · 釜山海运 + 欧洲方向铁路"
-        ]
+        "summary": "提供连接中国与欧洲的欧亚铁路及 Sea&Rail 联运服务。在全程实时货物追踪的基础上运营3大线路群。"
       },
       "EXPRESS": {
         "title": "快递",
-        "summary": "通过自建 API 系统实时对接配送状态的门到门快递服务。",
-        "highlights": [
-          "自有系统 'JSL-EXPRESS Logistics' — REST API 对接、实时更新、Web · Mobile 仪表盘",
-          "仁川(ICN) → 布拉格(PRG) 枢纽 → 欧洲：共7天（空运1天 + 清关·欧洲枢纽1.5天 + 末端配送3~4.5天）",
-          "仁川(ICN) → 伦敦(LHR) → 英国：共5天（空运1天 + 清关·欧洲枢纽1.5天 + 末端配送1~2.5天）",
-          "Royal Mail · Deutsche Post · DHL · dpd 等当地末端配送伙伴"
-        ]
+        "summary": "通过自建 API 系统实时对接配送状态的门到门快递服务。从仁川经布拉格枢纽至欧洲共7天，经伦敦至英国共5天。"
       }
     },
     "valueAdded": {
@@ -223,6 +236,266 @@
       "primaryCta": "咨询申请",
       "secondaryCta": "费用说明"
     }
+  },
+  "servicePages": {
+    "backLabel": "查看全部服务",
+    "stepsHeading": "服务详情",
+    "cta": {
+      "title": "需要该服务吗？",
+      "body": "只需告知货物信息与时间安排，我们会为您整理最优路线与报价。",
+      "primary": "报价咨询",
+      "secondary": "货物追踪"
+    },
+    "modes": {
+      "AIR": {
+        "eyebrow": "AIR FREIGHT",
+        "stats": [
+          {
+            "value": "200吨",
+            "label": "月处理量"
+          },
+          {
+            "value": "5家",
+            "label": "战略航空公司伙伴"
+          }
+        ],
+        "steps": [
+          {
+            "title": "战略航空公司伙伴",
+            "body": "与5家航空公司保持伙伴关系，即使在舱位最紧张的旺季也能锁定空间。",
+            "items": [
+              "大韩航空",
+              "东方航空",
+              "仁川航空",
+              "土耳其航空 (TK)",
+              "芬兰航空 (AY)"
+            ]
+          },
+          {
+            "title": "主要航线",
+            "body": "基本架构是从华南集货至山东，经仁川中转后发往欧洲与美洲。",
+            "items": [
+              "华南 → 山东",
+              "山东 → 仁川 (ICN)",
+              "仁川 → 欧洲 / LAX / ORD"
+            ]
+          },
+          {
+            "title": "专长货物",
+            "body": "主要处理在包装、单证与操作条件上要求较高的货物。",
+            "items": [
+              "电子产品",
+              "电商货物",
+              "紧急出货",
+              "危险品 (DG)"
+            ]
+          }
+        ]
+      },
+      "SEA": {
+        "eyebrow": "OCEAN & SEA-AIR",
+        "stats": [
+          {
+            "value": "100TEU",
+            "label": "月处理量"
+          },
+          {
+            "value": "每周6班",
+            "label": "威海 ↔ 仁川轮渡"
+          }
+        ],
+        "capabilitiesTitle": "核心能力",
+        "capabilities": [
+          "一级代理伙伴关系 — 与船公司直接签约锁定舱位",
+          "电商 · FBA 货物处理（入库 Amazon FC）",
+          "广东-上海 CFS 整合 + 中国内陆卡车运输 + 轮渡衔接",
+          "经仁川中转的美国·欧洲方向 SEA-AIR 联运",
+          "项目货物运输经验"
+        ],
+        "stepsHeading": "SEA-AIR 8步流程",
+        "stepsLead": "从上海 CFS 出库到仁川机场仓库入库，两天内完成。各步骤时间以标准班期为准。",
+        "steps": [
+          {
+            "title": "上海 CFS 入库",
+            "time": "D-Day"
+          },
+          {
+            "title": "装车 · 出货准备",
+            "time": "D-Day 18:00"
+          },
+          {
+            "title": "上海 CFS 出库",
+            "time": "D-Day 19:00"
+          },
+          {
+            "title": "抵达威海",
+            "time": "D+1 14:30"
+          },
+          {
+            "title": "进 CY",
+            "time": "D+1 15:00"
+          },
+          {
+            "title": "轮渡开航",
+            "time": "D+1 19:30"
+          },
+          {
+            "title": "抵达仁川 · 平泽",
+            "time": "D+2 11:00"
+          },
+          {
+            "title": "机场仓库入库",
+            "time": "D+2 15:30"
+          }
+        ]
+      },
+      "TRUCK": {
+        "eyebrow": "ROAD FREIGHT",
+        "stats": [
+          {
+            "value": "31个",
+            "label": "中国覆盖省·市"
+          },
+          {
+            "value": "300车",
+            "label": "中国内贸月运行"
+          },
+          {
+            "value": "150车",
+            "label": "跨境月运行"
+          }
+        ],
+        "steps": [
+          {
+            "title": "中国内贸",
+            "body": "面向全中国31个省·市运营 FTL / LTL，月300车规模。",
+            "items": []
+          },
+          {
+            "title": "跨境卡车运输",
+            "body": "从中国华东·华南跨境进入越南与泰国，月150车规模。",
+            "items": []
+          },
+          {
+            "title": "主要线路",
+            "body": "",
+            "items": [
+              "深圳 → 海防",
+              "广州 → 河内",
+              "南宁 → 北宁",
+              "河内 → 胡志明市"
+            ]
+          },
+          {
+            "title": "跨境卡车运输主要客户",
+            "body": "LG（电子 · 显示器部件）、三星电机 / BYD（电子显示器部件）。",
+            "items": [],
+            "note": "不使用客户标志，仅标注名称。"
+          }
+        ]
+      },
+      "RAIL": {
+        "eyebrow": "RAIL FREIGHT",
+        "stats": [
+          {
+            "value": "3个",
+            "label": "线路群"
+          }
+        ],
+        "steps": [
+          {
+            "title": "实时货物追踪",
+            "body": "从发运到抵达，全程均可实时查询货物位置。",
+            "items": []
+          },
+          {
+            "title": "Route A",
+            "body": "中欧 / 中俄 / 中亚班列。",
+            "items": []
+          },
+          {
+            "title": "Route B",
+            "body": "西安 · 成都 · 重庆等中国内陆铁路枢纽衔接。",
+            "items": []
+          },
+          {
+            "title": "Route C",
+            "body": "海铁联运 — 在仁川 · 釜山海运区段衔接欧洲方向铁路。",
+            "items": []
+          }
+        ]
+      },
+      "EXPRESS": {
+        "eyebrow": "EXPRESS",
+        "stats": [
+          {
+            "value": "7天",
+            "label": "ICN → PRG → 欧洲"
+          },
+          {
+            "value": "5天",
+            "label": "ICN → LHR → 英国"
+          }
+        ],
+        "steps": [
+          {
+            "title": "JSL-EXPRESS Logistics",
+            "body": "实时收发配送状态的自有系统。",
+            "items": [
+              "REST API 对接",
+              "实时更新",
+              "Web · Mobile 仪表盘"
+            ]
+          },
+          {
+            "title": "时效",
+            "body": "从仁川经欧洲枢纽至最终配送地的标准所需天数。各区段明细见下表。",
+            "items": []
+          },
+          {
+            "title": "末端配送伙伴",
+            "body": "最终配送由各国当地服务商承担。",
+            "items": [
+              "Royal Mail",
+              "Deutsche Post",
+              "DHL",
+              "dpd"
+            ]
+          }
+        ],
+        "leadTimes": {
+          "title": "时效明细",
+          "columns": [
+            "区间",
+            "空运",
+            "清关 · 欧洲枢纽",
+            "末端配送",
+            "合计"
+          ],
+          "rows": [
+            [
+              "仁川(ICN) → 布拉格(PRG) → 欧洲",
+              "1天",
+              "1.5天",
+              "3~4.5天",
+              "7天"
+            ],
+            [
+              "仁川(ICN) → 伦敦(LHR) → 英国",
+              "1天",
+              "1.5天",
+              "1~2.5天",
+              "5天"
+            ]
+          ]
+        }
+      }
+    }
+  },
+  "ctaBand": {
+    "title": "路线越复杂，越要先问",
+    "description": "只需告知货物种类与交期条件，5个据点的负责人将为您设计运输路线。",
+    "cta": "咨询物流专家"
   },
   "consulting": {
     "badge": "NEW",

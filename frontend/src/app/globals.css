@@ -16,8 +16,11 @@
        그 글자를 가진 첫 폰트로 그린다. 그래서
          1. General Sans 가 먼저 — 라틴·숫자를 가져간다 (한글 글리프가 없다)
          2. Pretendard 가 그다음 — 한글을 가져간다
-         3. 시스템 한글 폰트 — Pretendard 서브셋에 없는 글자(한자 등)를 받는다
-         4. 제네릭(sans-serif)은 반드시 맨 끝
+         3. Be Vietnam Pro — 앞의 둘에 없는 베트남어 성조 글자(U+1EA0–1EF9 등)를
+            받는다. 여기 없으면 시스템 Arial 로 떨어져 "Hàng" 의 à 만 다른 서체로
+            그려진다 (실측으로 확인한 자리다 — lib/fonts.ts 의 beVietnamPro 주석)
+         4. 시스템 한글 폰트 — Pretendard 서브셋에 없는 글자(한자 등)를 받는다
+         5. 제네릭(sans-serif)은 반드시 맨 끝
        제네릭을 중간에 넣으면 브라우저가 거기서 탐색을 끝내 뒤 항목이 전부
        죽는다. 이 프로젝트에서 두 번 그렇게 짜서 두 번 한글이 폴백으로 떨어졌다.
 
@@ -32,8 +35,47 @@
        설치돼 있어도 @font-face 선언이 우선한다)
   */
   --font-sans:
-    var(--font-general-sans), 'Pretendard', 'Apple SD Gothic Neo',
-    'Malgun Gothic', 'Noto Sans KR', system-ui, sans-serif;
+    var(--font-general-sans), 'Pretendard', var(--font-be-vietnam-pro),
+    'Apple SD Gothic Neo', 'Malgun Gothic', 'Noto Sans KR', system-ui, sans-serif;
+  /*
+    영문 마이크로카피 스택 — .font-poppins 유틸리티가 여기서 나온다.
+
+    Poppins 를 맨 앞에 두고 그 뒤는 --font-sans 와 똑같은 순서다. Poppins 는
+    latin 서브셋만 실어서 @font-face 에 라틴 unicode-range 만 붙으므로,
+    한글·한자는 이 유틸리티가 붙어 있어도 Poppins 를 건너뛰고 Pretendard 로
+    그려진다. 그래서 실수로 넓게 붙여도 CJK 가 바뀌지는 않는다.
+
+    ⚠️ 베트남어는 예외다 — 'ế' 같은 글자가 Poppins 범위 밖이라 한 단어 안에서
+       폰트가 갈린다. 숫자와 베트남어가 섞이는 문자열에는 붙이지 말 것
+       (자세한 사정은 lib/fonts.ts 의 poppins 주석).
+
+    ⚠️ var(--font-poppins-latin) 은 next/font 가 <html> className 으로 정의한다
+       (app/layout.tsx 의 poppins.variable). 이름이 --font-poppins 와 다른 이유도
+       lib/fonts.ts 에 적어 뒀다 — 같으면 이 테마 값이 덮인다.
+  */
+  --font-poppins:
+    var(--font-poppins-latin), var(--font-general-sans), 'Pretendard',
+    var(--font-be-vietnam-pro), 'Apple SD Gothic Neo', 'Malgun Gothic',
+    'Noto Sans KR', system-ui, sans-serif;
+  /*
+    3xl 브레이크포인트 (1728px) — Tailwind 기본에는 없어서 여기서 만든다.
+
+    랜딩 헤더의 풀 네비게이션이 나타나는 지점이다 (navbar.tsx 의 3xl:flex).
+    2xl(1536px)에서는 베트남어 네비가 들어가지 않는다 — 실측하면 항목 8개가
+    982px 인데 로고(70px)와 우측 CTA 묶음(498px)을 뺀 자리가 904px 밖에 없어
+    "Trang chủ" 가 로고에, "Liên hệ" 가 언어 전환 버튼에 각각 39px 씩 겹쳤다.
+
+    뷰포트만 넓혀서는 풀리지 않는다. container 의 최대 폭이 마지막
+    브레이크포인트에서 멈추기 때문에, 2xl 이 끝이면 1920px 모니터에서도 바는
+    1536px 그대로고 겹침도 그대로다. 그래서 브레이크포인트 자체를 하나 더
+    둔다 — Tailwind v4 는 --breakpoint-* 마다 container 최대 폭을 같이
+    만들어 주므로, 1728px 이상에서는 바가 1728px 로 넓어져 자리가 생긴다
+    (베트남어 기준 양쪽 여백 57px). 그 아래 폭은 전부 햄버거로 접힌다.
+
+    ⚠️ container 는 랜딩·트래킹·컨설팅·약관 등 공개 페이지 전반이 함께 쓴다.
+       이 값을 바꾸면 헤더뿐 아니라 그 페이지들의 최대 폭이 같이 움직인다.
+  */
+  --breakpoint-3xl: 108rem;
   --radius-sm: calc(var(--radius) - 4px);
   --radius-md: calc(var(--radius) - 2px);
   --radius-lg: var(--radius);

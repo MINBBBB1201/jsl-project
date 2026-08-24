@@ -59,6 +59,51 @@
     "demoNote": "Calculated live by our delay-detection system. Figures shown are based on demo data.",
     "liveNote": "Calculated live by our delay-detection system across active shipments."
   },
+  "redesign": {
+    "hero": {
+      "eyebrow": "GLOBAL FREIGHT FORWARDING",
+      "headline1": "Connecting Asia and Europe",
+      "headline2": "Your most dependable logistics partner",
+      "subheadline": "Air · Ocean · Road · Rail · Express — integrated transport across five global locations",
+      "primaryCta": "Request a free quote",
+      "secondaryCta": "Explore our services",
+      "stat1Value": "5",
+      "stat1Label": "Global locations",
+      "stat2Value": "20+",
+      "stat2Label": "Specialists",
+      "stat3Value": "200 t/mo",
+      "stat3Label": "Air freight"
+    },
+    "whatWeDo": {
+      "eyebrow": "WHAT WE DO",
+      "title": "Core transport services",
+      "card1Title": "Air Freight",
+      "card1Description": "Urgent shipments and e-commerce cargo, backed by five airline partnerships",
+      "card2Title": "Sea Transport",
+      "card2Description": "From FBA cargo handling to multimodal, on tier-1 agency partnerships",
+      "card3Title": "Road Transport",
+      "card3Description": "All 31 provinces of China plus a cross-border trucking network"
+    },
+    "whyJsl": {
+      "eyebrow": "WHY JSL",
+      "title": "JSL in numbers",
+      "description": "Our registrations and network at a glance.",
+      "card1Title": "KIFFA full member · Freight forwarding licence",
+      "card1Subtitle": "No. {kiffa} · Licence No. {forwarder}",
+      "card2Title": "Five locations, working as one",
+      "card2Subtitle": "Seoul · Shanghai · Weihai · Guangzhou · Hanoi",
+      "card3Title": "20+ specialists",
+      "card3Subtitle": "Dedicated staff at every location",
+      "highlightValue": "KRW 18B",
+      "highlightLabel": "Annual revenue · FY2025",
+      "stat1Value": "31",
+      "stat1Label": "Provinces served in China",
+      "stat2Value": "6 / week",
+      "stat2Label": "Weihai–Incheon ferry sailings",
+      "stat3Value": "5+1",
+      "stat3Label": "Transport modes + consulting"
+    }
+  },
   "stats": {
     "revenue": {
       "value": "KRW 18B",
@@ -146,59 +191,27 @@
     "badge": "Services",
     "title": "A full line-up of five transport modes",
     "description": "We combine air, ocean, road, rail and express to design the optimal route for your lead time and budget.",
+    "modeCta": "View details",
     "modes": {
       "AIR": {
         "title": "Air freight",
-        "summary": "Air freight specialised in electronics and e-commerce cargo.",
-        "highlights": [
-          "Strategic airline partners: Korean Air, China Eastern, Air Incheon, Turkish Airlines (TK), Finnair (AY)",
-          "Key lanes: South China → Shandong, Shandong → Incheon (ICN), Incheon → Europe / LAX / ORD",
-          "Specialised cargo: electronics, e-commerce, urgent shipments, dangerous goods (DG)",
-          "200 tons handled per month"
-        ]
+        "summary": "Air freight specialised in electronics and e-commerce cargo. Partnerships with five airlines including Korean Air and China Eastern connect South China and Shandong through Incheon to Europe and the Americas, handling 200 tons per month."
       },
       "SEA": {
         "title": "Ocean & sea-air multimodal",
-        "summary": "Ocean and SEA-AIR multimodal transport combining Guangdong–Shanghai CFS consolidation with inland trucking and ferry links in China.",
-        "highlights": [
-          "Tier-1 agency partnerships — direct contracts with carriers secure space",
-          "E-commerce & FBA cargo handling (Amazon FC delivery)",
-          "Guangdong–Shanghai CFS consolidation + inland trucking + ferry connection",
-          "SEA-AIR multimodal to the US and Europe via Incheon transhipment",
-          "Project cargo transport experience",
-          "8-step SEA-AIR process: Shanghai CFS receipt (D-Day) → loading & dispatch prep (D-Day 18:00) → Shanghai CFS departure (D-Day 19:00) → arrival in Weihai (D+1 14:30) → CY gate-in (D+1 15:00) → ferry departure (D+1 19:30) → arrival at Incheon/Pyeongtaek (D+2 11:00) → airport warehouse receipt (D+2 15:30)",
-          "Weihai ↔ Incheon ferry, 6 sailings per week; 100 TEU handled per month"
-        ]
+        "summary": "Ocean and SEA-AIR multimodal transport combining Guangdong–Shanghai CFS consolidation with inland trucking and ferry links in China. Six weekly Weihai ↔ Incheon sailings complete all eight steps from Shanghai departure to airport warehouse receipt within D+2, handling 100 TEU per month."
       },
       "TRUCK": {
         "title": "Road freight",
-        "summary": "We directly operate trucking across China and cross-border routes into Southeast Asia.",
-        "highlights": [
-          "China domestic: FTL / LTL across all 31 provinces and municipalities, 300 trucks per month",
-          "Cross-border trucking: China (East / South) → Vietnam, Thailand, 150 trucks per month",
-          "Key lanes: Shenzhen → Hải Phòng, Guangzhou → Hà Nội, Nanning → Bắc Ninh, Hà Nội → HCMC",
-          "Key cross-border trucking clients: LG (electronics & display components), Samsung Electro-Mechanics / BYD (electronic display components)"
-        ]
+        "summary": "We directly operate trucking across China and cross-border routes into Southeast Asia — 300 trucks per month domestically across 31 provinces and municipalities, and 150 trucks per month across the borders into Vietnam and Thailand."
       },
       "RAIL": {
         "title": "Rail freight",
-        "summary": "Eurasian rail connecting China and Europe, plus Sea&Rail multimodal service.",
-        "highlights": [
-          "Real-time cargo tracking across the entire route",
-          "Route A — China ↔ Europe / Russia / Central Asia freight trains",
-          "Route B — Chinese inland rail hubs: Xi'an, Chengdu, Chongqing",
-          "Route C — Sea & Rail multimodal: ocean legs via Incheon / Busan plus rail to Europe"
-        ]
+        "summary": "Eurasian rail connecting China and Europe, plus Sea&Rail multimodal service. We run three route groups with real-time cargo tracking across the entire journey."
       },
       "EXPRESS": {
         "title": "Express",
-        "summary": "Door-to-door express with real-time status integration through our own API system.",
-        "highlights": [
-          "In-house 'JSL-EXPRESS Logistics' system — REST API integration, real-time updates, web & mobile dashboards",
-          "Incheon (ICN) → Prague (PRG) hub → Europe: 7 days total (1 day air + 1.5 days customs / EU hub + 3–4.5 days last mile)",
-          "Incheon (ICN) → London (LHR) → UK: 5 days total (1 day air + 1.5 days customs / EU hub + 1–2.5 days last mile)",
-          "Local last-mile partners including Royal Mail, Deutsche Post, DHL and dpd"
-        ]
+        "summary": "Door-to-door express with real-time status integration through our own API system. Seven days from Incheon to Europe via the Prague hub, five days to the UK via London."
       }
     },
     "valueAdded": {
@@ -223,6 +236,266 @@
       "primaryCta": "Book a consultation",
       "secondaryCta": "Pricing"
     }
+  },
+  "servicePages": {
+    "backLabel": "All services",
+    "stepsHeading": "Service details",
+    "cta": {
+      "title": "Need this service?",
+      "body": "Tell us your cargo details and schedule — we will come back with the optimal route and a quote.",
+      "primary": "Request a quote",
+      "secondary": "Track a shipment"
+    },
+    "modes": {
+      "AIR": {
+        "eyebrow": "AIR FREIGHT",
+        "stats": [
+          {
+            "value": "200 t",
+            "label": "Handled per month"
+          },
+          {
+            "value": "5",
+            "label": "Strategic airline partners"
+          }
+        ],
+        "steps": [
+          {
+            "title": "Strategic airline partners",
+            "body": "We hold partnerships with five airlines so that space is available even in peak season.",
+            "items": [
+              "Korean Air",
+              "China Eastern",
+              "Air Incheon",
+              "Turkish Airlines (TK)",
+              "Finnair (AY)"
+            ]
+          },
+          {
+            "title": "Key lanes",
+            "body": "Cargo is consolidated from South China into Shandong, transhipped at Incheon, and flown on to Europe and the Americas.",
+            "items": [
+              "South China → Shandong",
+              "Shandong → Incheon (ICN)",
+              "Incheon → Europe / LAX / ORD"
+            ]
+          },
+          {
+            "title": "Specialised cargo",
+            "body": "We mainly handle cargo with demanding packing, documentation and handling requirements.",
+            "items": [
+              "Electronics",
+              "E-commerce cargo",
+              "Urgent shipments",
+              "Dangerous goods (DG)"
+            ]
+          }
+        ]
+      },
+      "SEA": {
+        "eyebrow": "OCEAN & SEA-AIR",
+        "stats": [
+          {
+            "value": "100 TEU",
+            "label": "Handled per month"
+          },
+          {
+            "value": "6 / week",
+            "label": "Weihai ↔ Incheon ferry"
+          }
+        ],
+        "capabilitiesTitle": "Core capabilities",
+        "capabilities": [
+          "Tier-1 agency partnerships — direct contracts with carriers secure space",
+          "E-commerce & FBA cargo handling (Amazon FC delivery)",
+          "Guangdong–Shanghai CFS consolidation + inland trucking + ferry connection",
+          "SEA-AIR multimodal to the US and Europe via Incheon transhipment",
+          "Project cargo transport experience"
+        ],
+        "stepsHeading": "The 8-step SEA-AIR process",
+        "stepsLead": "From Shanghai CFS departure to airport warehouse receipt in under two days. The times below follow the standard schedule.",
+        "steps": [
+          {
+            "title": "Shanghai CFS receipt",
+            "time": "D-Day"
+          },
+          {
+            "title": "Loading & dispatch prep",
+            "time": "D-Day 18:00"
+          },
+          {
+            "title": "Shanghai CFS departure",
+            "time": "D-Day 19:00"
+          },
+          {
+            "title": "Arrival in Weihai",
+            "time": "D+1 14:30"
+          },
+          {
+            "title": "CY gate-in",
+            "time": "D+1 15:00"
+          },
+          {
+            "title": "Ferry departure",
+            "time": "D+1 19:30"
+          },
+          {
+            "title": "Arrival at Incheon / Pyeongtaek",
+            "time": "D+2 11:00"
+          },
+          {
+            "title": "Airport warehouse receipt",
+            "time": "D+2 15:30"
+          }
+        ]
+      },
+      "TRUCK": {
+        "eyebrow": "ROAD FREIGHT",
+        "stats": [
+          {
+            "value": "31",
+            "label": "Provinces served in China"
+          },
+          {
+            "value": "300",
+            "label": "Domestic trucks per month"
+          },
+          {
+            "value": "150",
+            "label": "Cross-border trucks per month"
+          }
+        ],
+        "steps": [
+          {
+            "title": "China domestic",
+            "body": "FTL / LTL across all 31 provinces and municipalities, at 300 trucks per month.",
+            "items": []
+          },
+          {
+            "title": "Cross-border trucking",
+            "body": "From East and South China across the border into Vietnam and Thailand, at 150 trucks per month.",
+            "items": []
+          },
+          {
+            "title": "Key lanes",
+            "body": "",
+            "items": [
+              "Shenzhen → Hải Phòng",
+              "Guangzhou → Hà Nội",
+              "Nanning → Bắc Ninh",
+              "Hà Nội → HCMC"
+            ]
+          },
+          {
+            "title": "Key cross-border clients",
+            "body": "LG (electronics & display components), Samsung Electro-Mechanics / BYD (electronic display components).",
+            "items": [],
+            "note": "Client names only — we do not use their logos."
+          }
+        ]
+      },
+      "RAIL": {
+        "eyebrow": "RAIL FREIGHT",
+        "stats": [
+          {
+            "value": "3",
+            "label": "Route groups"
+          }
+        ],
+        "steps": [
+          {
+            "title": "Real-time cargo tracking",
+            "body": "Cargo position can be checked in real time across the entire journey, from departure to arrival.",
+            "items": []
+          },
+          {
+            "title": "Route A",
+            "body": "China ↔ Europe / Russia / Central Asia freight trains.",
+            "items": []
+          },
+          {
+            "title": "Route B",
+            "body": "Connections to Chinese inland rail hubs: Xi'an, Chengdu and Chongqing.",
+            "items": []
+          },
+          {
+            "title": "Route C",
+            "body": "Sea & Rail multimodal — ocean legs via Incheon or Busan joined to rail into Europe.",
+            "items": []
+          }
+        ]
+      },
+      "EXPRESS": {
+        "eyebrow": "EXPRESS",
+        "stats": [
+          {
+            "value": "7 days",
+            "label": "ICN → PRG → Europe"
+          },
+          {
+            "value": "5 days",
+            "label": "ICN → LHR → UK"
+          }
+        ],
+        "steps": [
+          {
+            "title": "JSL-EXPRESS Logistics",
+            "body": "Our own system, exchanging delivery status in real time.",
+            "items": [
+              "REST API integration",
+              "Real-time updates",
+              "Web & mobile dashboards"
+            ]
+          },
+          {
+            "title": "Lead times",
+            "body": "Standard transit days from Incheon through the European hub to the final address. The leg-by-leg breakdown is in the table below.",
+            "items": []
+          },
+          {
+            "title": "Last-mile partners",
+            "body": "Final delivery is carried out by local operators in each country.",
+            "items": [
+              "Royal Mail",
+              "Deutsche Post",
+              "DHL",
+              "dpd"
+            ]
+          }
+        ],
+        "leadTimes": {
+          "title": "Lead times in detail",
+          "columns": [
+            "Lane",
+            "Air",
+            "Customs & EU hub",
+            "Last mile",
+            "Total"
+          ],
+          "rows": [
+            [
+              "Incheon (ICN) → Prague (PRG) → Europe",
+              "1 day",
+              "1.5 days",
+              "3–4.5 days",
+              "7 days"
+            ],
+            [
+              "Incheon (ICN) → London (LHR) → UK",
+              "1 day",
+              "1.5 days",
+              "1–2.5 days",
+              "5 days"
+            ]
+          ]
+        }
+      }
+    }
+  },
+  "ctaBand": {
+    "title": "The trickier the route, the sooner you should ask",
+    "description": "Tell us the cargo and the deadline — our teams across five hubs will design the route.",
+    "cta": "Talk to a specialist"
   },
   "consulting": {
     "badge": "NEW",

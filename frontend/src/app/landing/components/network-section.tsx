@@ -2,9 +2,23 @@
 
 import { Badge } from '@/components/ui/badge'
 import { Card, CardContent } from '@/components/ui/card'
+import { NetworkBeams } from '@/components/landing/network-beams'
 import { useContent } from '@/config/use-content'
+
+/**
+ * 글로벌 네트워크
+ *
+ * 위쪽은 본사 ↔ 지사 연결 도식, 아래쪽은 거점별 상세 카드다.
+ *
+ * ⚠️ 도식이 카드를 대체하지 않는다. 도식은 관계(어디가 중심이고 어디로
+ *    이어지는가)만 말하고, 역할·인원·설명 같은 실제 내용은 카드에 있다.
+ *    도식만 남기면 그 내용이 사라진다.
+ */
 export function NetworkSection() {
   const { network } = useContent()
+
+  const hub = network.items.find((office) => office.isHq)
+  const spokes = network.items.filter((office) => !office.isHq)
   return (
     <section id="network" className="py-24 sm:py-32 bg-muted/30">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
@@ -20,6 +34,24 @@ export function NetworkSection() {
             {network.description}
           </p>
         </div>
+
+        {/*
+          연결선 도식.
+
+          sm 미만에서는 감춘다. 720 폭 viewBox 가 390px 화면에 들어가면 절반
+          이하로 줄어들어 도시 이름이 7px 로 그려진다 — 읽을 수 없는 글자를
+          띄우느니 아래 카드만 보여주는 편이 낫다. 카드에 같은 정보가 다 있다.
+        */}
+        {hub ? (
+          <div className="mx-auto mb-16 max-w-4xl max-sm:hidden">
+            <NetworkBeams
+              hub={hub}
+              spokes={spokes}
+              headcountUnit={network.headcountUnit}
+              label={network.title}
+            />
+          </div>
+        ) : null}
 
         {/* 거점 그리드 */}
         <div className="grid grid-cols-1 gap-x-8 gap-y-12 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5">

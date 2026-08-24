@@ -17,7 +17,7 @@ export function ConsultingClient() {
     <div className="container mx-auto max-w-5xl px-4 py-16 sm:px-6 sm:py-24 lg:px-8">
       {/* 머리말 */}
       <header className="mx-auto max-w-3xl text-center">
-        <Badge className="mb-4">{page.eyebrow}</Badge>
+        <Badge className="mb-4 font-poppins">{page.eyebrow}</Badge>
         <h1 className="text-3xl font-bold tracking-tight sm:text-4xl">
           {page.title}
         </h1>
@@ -32,7 +32,7 @@ export function ConsultingClient() {
         {groups.map((group) => (
           // id 는 메가메뉴의 화주/포워더 진입 링크(/consulting#shipper, #forwarder)가 가리키는 앵커다.
           // scroll-mt 는 sticky 헤더에 제목이 가려지지 않도록 준 여백이다.
-          <section key={group.audience} id={group.id} className="scroll-mt-24">
+          <section key={group.audience} id={group.id} className="scroll-mt-28">
             <div className="border-s-2 border-primary ps-4">
               <h2 className="text-xl font-semibold text-foreground">
                 {group.audience}

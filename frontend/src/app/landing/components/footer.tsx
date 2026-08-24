@@ -13,7 +13,9 @@ import {
   FormItem,
   FormMessage,
 } from "@/components/ui/form"
-import { Logo } from '@/components/logo'
+import { LogoWordmark } from '@/components/logo'
+import { Link } from '@/i18n/navigation'
+import { SiteLink } from '@/components/site-link'
 import { Mail, Phone, MapPin } from 'lucide-react'
 import { company } from '@/config/landing-content'
 import { useContent } from '@/config/use-content'
@@ -93,10 +95,9 @@ export function LandingFooter() {
           {/* Brand Column */}
           <div className="col-span-4 lg:col-span-2 max-w-2xl">
             <div className="flex items-center space-x-2 mb-4 max-lg:justify-center">
-              <a href="/landing" className="flex items-center space-x-2 cursor-pointer">
-                <Logo size={32} />
-                <span className="font-bold text-xl">{company.name}</span>
-              </a>
+              <Link href="/landing" className="flex items-center space-x-2 cursor-pointer">
+                <LogoWordmark className="h-12" />
+              </Link>
             </div>
             <p className="text-muted-foreground mb-6 max-lg:text-center">
               {footer.description}
@@ -127,12 +128,13 @@ export function LandingFooter() {
               <ul className="space-y-3">
                 {links.map((link) => (
                   <li key={link.name}>
-                    <a
+                    {/* 라우트와 "#" 자리표시자가 섞여 오므로 SiteLink 가 가른다 */}
+                    <SiteLink
                       href={link.href}
                       className="text-muted-foreground hover:text-foreground transition-colors"
                     >
                       {link.name}
-                    </a>
+                    </SiteLink>
                   </li>
                 ))}
               </ul>
@@ -175,13 +177,13 @@ export function LandingFooter() {
           </div>
           <div className="flex items-center space-x-4 text-sm text-muted-foreground mt-4 md:mt-0">
             {footer.legalLinks.map((link) => (
-              <a
+              <Link
                 key={link.name}
                 href={link.href}
                 className="hover:text-foreground transition-colors"
               >
                 {link.name}
-              </a>
+              </Link>
             ))}
           </div>
         </div>

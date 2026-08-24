@@ -268,6 +268,13 @@ export const services = {
   description:
     "납기와 비용 조건에 따라 항공·해상·육상·철도·특송을 조합해 최적의 경로를 설계합니다.",
 
+  /**
+   * 아코디언을 펼쳤을 때 나오는 링크.
+   * 운송모드별 상세 페이지는 없어서(/consulting 은 별개의 컨설팅 상품이다)
+   * 랜딩 문의 폼으로 보낸다.
+   */
+  modeCta: { label: "이 서비스 문의하기", href: "#contact" },
+
   modes: [
     {
       icon: PlaneTakeoff,
@@ -364,6 +371,17 @@ export const services = {
     primaryCta: { label: "상담 신청", href: "#contact" },
     secondaryCta: { label: "요금 안내", href: "#pricing" },
   },
+}
+
+/**
+ * 다크 CTA 밴드 — 서비스 라인업과 컨설팅 사이에 끼우는 짧은 띠.
+ * 새 폼을 만들지 않고 랜딩 하단 문의 폼으로 보낸다.
+ */
+export const ctaBand = {
+  title: "노선이 복잡할수록 먼저 물어보세요",
+  description:
+    "화물 종류와 납기 조건만 알려주시면 5개 거점 실무자가 경로를 설계해 드립니다.",
+  cta: { label: "전문가와 상담하기", href: "#contact" },
 }
 
 /** 물류 컨설팅 섹션 — 소개서상 신규(NEW) 서비스 라인 */

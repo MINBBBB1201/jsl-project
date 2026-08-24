@@ -2,12 +2,15 @@
 
 import React from 'react'
 import { LandingNavbar } from './components/navbar'
-import { HeroSection } from './components/hero-section'
+import { RedesignHero } from './components/redesign-hero'
+import { RedesignWhatWeDo } from './components/redesign-what-we-do'
+import { RedesignWhyJsl } from './components/redesign-why-jsl'
 import { OpsStatusSection } from './components/ops-status-section'
 import { StatsSection } from './components/stats-section'
 import { PartnersBar } from './components/partners-bar'
 import { CertificationsBar } from './components/certifications-bar'
 import { FeaturesSection } from './components/features-section'
+import { CtaBand } from './components/cta-band'
 import { ConsultingSection } from './components/consulting-section'
 import { NetworkSection } from './components/network-section'
 import { PricingSection } from './components/pricing-section'
@@ -36,7 +39,26 @@ export function LandingPageContent() {
           - BlogSection         : 실제 게시글 확보 후
       */}
       <main>
-        <HeroSection />
+        {/*
+          ── 랜딩 리디자인 1단계 (구조/애니메이션만, 브랜딩은 2단계) ──────
+          HeroSection 을 RedesignHero 가 대체하고, RedesignWhatWeDo ·
+          RedesignWhyJsl 이 아래에 새로 붙는다. AboutSection 과 FeaturesSection
+          은 그대로 남는다 — 셋은 역할이 다르다 (티저 / 통계·인증 요약 /
+          회사 상세 소개 / 서비스 상세).
+          hero-section.tsx 는 지우지 않고 남겨 뒀다 (LogoCarousel 등과 같은
+          방식). 되돌리려면 import 와 이 자리만 원래대로 돌리면 된다.
+        */}
+        <RedesignHero />
+        {/*
+          히어로 바로 아래 짧은 비주얼 티저. 5개 서비스 상세는 아래
+          FeaturesSection 이 맡고, 여기서는 사진 3장으로 "무엇을 하는 회사인가"만
+          먼저 보여준다.
+
+          명암: 히어로는 어두운 사진 위에 흰 글자라 시각적으로 다크에 가깝다.
+          그 바로 다음이 밝은 이 섹션이고, 이어지는 OpsStatus 도 밝다 —
+          다크가 연달아 붙는 자리는 생기지 않는다.
+        */}
+        <RedesignWhatWeDo />
         <OpsStatusSection />
         <StatsSection />
         <PartnersBar />
@@ -46,8 +68,28 @@ export function LandingPageContent() {
           자리를 옮길 때는 명암 리듬을 먼저 확인할 것 (partners-bar.tsx 주석 참고).
         */}
         <CertificationsBar />
+        {/*
+          Certifications(밝은 띠) → Why JSL(어두움) → About(밝음).
+          위쪽 다크 블록(통계+파트너바)과 밝은 띠 하나를 사이에 두고 떨어져
+          있어, 어두운 섹션이 연달아 붙지 않는다.
+        */}
+        <RedesignWhyJsl />
+        {/*
+          AboutSection 은 원래 자리(FeaturesSection 바로 앞)로 되돌렸다.
+          Why JSL 스플릿과 역할이 다르다 — 저쪽은 통계·인증 요약이고 여기는
+          회사 상세 소개다. 새로 만든 두 섹션이 위쪽 빈자리를 차지했을 뿐,
+          About 과 Features 의 이웃 관계는 그대로다.
+        */}
         <AboutSection />
         <FeaturesSection />
+        {/*
+          ── 다크 CTA 밴드 (3단계) ────────────────────────────────────────
+          Why JSL(어두움) 다음으로 About → … → Contact 까지 여덟 섹션이 전부
+          밝아서 페이지 후반이 한 덩어리로 늘어졌다. 그 구간 앞머리를 어두운
+          띠로 한 번 끊는다. 앞뒤(Features · Consulting)가 모두 밝아 어두운
+          섹션끼리 맞닿지도 않는다. 자리를 고른 사정은 cta-band.tsx 에 있다.
+        */}
+        <CtaBand />
         <ConsultingSection />
         <NetworkSection />
         <PricingSection />

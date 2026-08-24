@@ -287,12 +287,24 @@ export function useContent() {
     badge: m.services.badge,
     title: m.services.title,
     description: m.services.description,
+    /*
+      아코디언이 펼쳐졌을 때 나오는 "자세히 보기" 링크.
+
+      예전에는 다섯 모드가 전부 랜딩의 문의 폼(#contact)으로 갔다. 상세가
+      아코디언 안에 다 들어 있어서 더 보낼 곳이 없었기 때문이다. 이제 모드마다
+      /services/{code} 상세 페이지가 있으므로 그쪽으로 보낸다 — 목적지가 모드별로
+      다르므로 라벨만 공유하고 href 는 아래 modes 안에서 만든다.
+
+      ⚠️ 로케일 프리픽스는 붙이지 않는다. 이 값은 i18n 의 Link 로 넘어가고,
+         거기서 현재 로케일에 맞는 경로가 만들어진다 (ko 는 프리픽스 없음).
+    */
+    modeCta: { label: m.services.modeCta as string },
     modes: Object.entries(MODE_ICONS).map(([code, icon]) => ({
       icon,
       code,
       title: m.services.modes[code].title,
       summary: m.services.modes[code].summary,
-      highlights: m.services.modes[code].highlights as string[],
+      href: `/services/${code.toLowerCase()}`,
     })),
     valueAdded: {
       title: m.services.valueAdded.title,
@@ -305,6 +317,18 @@ export function useContent() {
       primaryCta: { label: m.services.valueAdded.primaryCta, href: "#contact" },
       secondaryCta: { label: m.services.valueAdded.secondaryCta, href: "#pricing" },
     },
+  }
+
+  /**
+   * 다크 CTA 밴드 (3단계)
+   *
+   * 새 폼을 만들지 않는다. 랜딩 하단 문의 폼(#contact)으로 보낸다 —
+   * 목적지를 그렇게 고른 이유는 cta-band.tsx 주석에 적었다.
+   */
+  const ctaBand = {
+    title: m.ctaBand.title as string,
+    description: m.ctaBand.description as string,
+    cta: { label: m.ctaBand.cta as string, href: "#contact" },
   }
 
   const consultingItem = (key: string) => ({
@@ -359,6 +383,12 @@ export function useContent() {
     items: OFFICE_FACTS.map((o) => ({
       // 다섯 칸 모두 지도핀이면 아이콘이 아무것도 구분하지 못한다 — 본사만 가른다
       icon: o.role === "hq" ? Building2 : MapPin,
+      /*
+        아래 role 은 화면에 찍는 번역문("본사"/"지사")이라 코드가 조건에 쓸 수
+        없다. 연결선 도식이 중심 노드를 고를 때 쓰라고 원본 플래그를 함께 준다 —
+        로케일이 바뀌면 조용히 깨지는 문자열 비교를 만들지 않기 위해서다.
+      */
+      isHq: o.role === "hq",
       city: m.network.offices[o.key].city,
       cityEn: o.cityEn,
       role: o.role === "hq" ? m.network.roleHq : m.network.roleBranch,
@@ -504,6 +534,57 @@ export function useContent() {
         subtitle: m.certifications.sme.subtitle as string,
       },
     ],
+  }
+
+  /*
+    랜딩 리디자인 3개 섹션(히어로 · What We Do · Why JSL)의 문구.
+    아이콘과 사진은 각 컴포넌트가 들고 있고 여기서는 글자만 조립한다 —
+    사진은 그 섹션 전용 자산이라 컴포넌트 옆에 두는 편이 찾기 쉽다.
+
+    등록번호는 messages 가 아니라 company.registrations 에서 온다.
+    번역 파일 네 벌에 숫자를 흩어 두면 한쪽만 고쳐져 어긋난다.
+  */
+  const r = m.redesign
+  const redesign = {
+    hero: {
+      eyebrow: r.hero.eyebrow as string,
+      headline1: r.hero.headline1 as string,
+      headline2: r.hero.headline2 as string,
+      subheadline: r.hero.subheadline as string,
+      primaryCta: { label: r.hero.primaryCta as string, href: "#contact" },
+      secondaryCta: { label: r.hero.secondaryCta as string, href: "#what-we-do" },
+      stats: [1, 2, 3].map((i) => ({
+        value: r.hero[`stat${i}Value`] as string,
+        label: r.hero[`stat${i}Label`] as string,
+      })),
+    },
+    whatWeDo: {
+      eyebrow: r.whatWeDo.eyebrow as string,
+      title: r.whatWeDo.title as string,
+      cards: [1, 2, 3].map((i) => ({
+        title: r.whatWeDo[`card${i}Title`] as string,
+        description: r.whatWeDo[`card${i}Description`] as string,
+      })),
+    },
+    whyJsl: {
+      eyebrow: r.whyJsl.eyebrow as string,
+      title: r.whyJsl.title as string,
+      description: r.whyJsl.description as string,
+      cards: [1, 2, 3].map((i) => ({
+        title: r.whyJsl[`card${i}Title`] as string,
+        subtitle: (r.whyJsl[`card${i}Subtitle`] as string)
+          .replace("{kiffa}", company.registrations.kiffaMemberNo)
+          .replace("{forwarder}", company.registrations.freightForwarderNo),
+      })),
+      highlight: {
+        value: r.whyJsl.highlightValue as string,
+        label: r.whyJsl.highlightLabel as string,
+      },
+      stats: [1, 2, 3].map((i) => ({
+        value: r.whyJsl[`stat${i}Value`] as string,
+        label: r.whyJsl[`stat${i}Label`] as string,
+      })),
+    },
   }
 
   const footer = {
@@ -659,6 +740,7 @@ export function useContent() {
   return {
     company,
     certifications,
+    redesign,
     hero,
     stats,
     monthlyVolumes,
@@ -666,6 +748,7 @@ export function useContent() {
     partners,
     about,
     services,
+    ctaBand,
     consulting,
     network,
     plans,

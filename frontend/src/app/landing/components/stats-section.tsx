@@ -1,6 +1,7 @@
 "use client"
 
 import { useContent } from '@/config/use-content'
+import { CountUp } from './count-up'
 
 /**
  * 회사 규모 지표 — 다크 풀블리드 띠
@@ -28,6 +29,11 @@ import { useContent } from '@/config/use-content'
  *
  * 구획선은 흰색 알파로 긋는다. --border 는 라이트 모드에서 밝은 회색이라
  * 이 배경 위에서는 보이지 않는다.
+ *
+ * ── 카운트업 (3단계) ───────────────────────────────────────────────────
+ * 위 4칸 지표와 아래 월간 물동량 모두 스크롤 진입 시 0 에서 실제값까지
+ * 올라간다. 단위 표기(억원 · TEU / 월)는 그대로 두고 숫자 자리만 굴린다 —
+ * 파싱과 동작 줄이기 처리는 count-up.tsx 에 있다.
  */
 export function StatsSection() {
   const { stats, monthlyVolumes, volumesHeading } = useContent()
@@ -63,7 +69,7 @@ export function StatsSection() {
                    (자세한 사정은 lib/fonts.ts)
               */}
               <p className="tabular-figures text-3xl font-semibold text-white sm:text-4xl">
-                {stat.value}
+                <CountUp value={stat.value} />
               </p>
               <p className="mt-2 text-sm font-semibold text-white">{stat.label}</p>
               <p className="mt-1 text-sm text-brand-slate">{stat.description}</p>
@@ -101,11 +107,11 @@ export function StatsSection() {
                 />
                 <div className="min-w-0">
                   {/* 운송모드 코드는 라벨이라 대문자 + 넓은 자간으로 본문과 구분한다 */}
-                  <p className="text-[11px] font-medium tracking-[0.14em] text-brand-slate">
+                  <p className="font-poppins text-[11px] font-medium tracking-[0.14em] text-brand-slate">
                     {volume.mode}
                   </p>
                   <p className="tabular-figures text-xl font-semibold text-white">
-                    {volume.value}
+                    <CountUp value={volume.value} />
                     <span className="ms-1 text-sm font-normal text-brand-slate">
                       {volume.unit}
                     </span>

@@ -2,7 +2,7 @@
 
 import * as React from "react"
 import Image from "next/image"
-import Link from "next/link"
+import { SiteLink } from "@/components/site-link"
 import { ArrowUpRight } from "lucide-react"
 import type { LucideIcon } from "lucide-react"
 
@@ -73,7 +73,7 @@ function ModeTile({
       index={index}
       className={cn("min-h-44", SPAN[mode.code])}
     >
-      <Link
+      <SiteLink
         href={mode.href}
         className="focus-visible:ring-brand-cta absolute inset-0 flex flex-col justify-end p-5 focus-visible:ring-2 focus-visible:ring-inset focus-visible:outline-none sm:p-6"
       >
@@ -147,7 +147,7 @@ function ModeTile({
             <p className="mt-2 max-w-md text-sm text-white/80">{mode.summary}</p>
           )}
         </div>
-      </Link>
+      </SiteLink>
     </BentoGridItem>
   )
 }

@@ -5,7 +5,7 @@ import { Activity } from "lucide-react"
 
 import { cn } from "@/lib/utils"
 import { useCountUp } from "@/hooks/use-count-up"
-import { usePublicSummary } from "./use-public-summary"
+import type { PublicSummary } from "./use-public-summary"
 
 /**
  * 히어로 운영 현황 패널
@@ -57,7 +57,7 @@ function Metric({
           카운트업 중에는 span 의 textContent 를 직접 바꾼다.
           초기값 0 은 애니메이션이 시작되기 전 한 프레임 동안만 보인다.
         */}
-        <span ref={ref} className="tabular-figures text-2xl font-semibold sm:text-3xl">
+        <span ref={ref} className="tabular-figures font-poppins text-2xl font-semibold sm:text-3xl">
           0
         </span>
         <span className="text-xs text-muted-foreground">{unit}</span>
@@ -66,14 +66,23 @@ function Metric({
   )
 }
 
-export function HeroOpsPanel() {
+interface HeroOpsPanelProps {
+  data: PublicSummary | null
+  isLoading: boolean
+}
+
+/**
+ * 데이터를 직접 받아오지 않고 props 로 받는다.
+ *
+ * 예전에는 여기서 usePublicSummary 를 호출하고 isError 면 null 을 돌려줬는데,
+ * 그러면 패널만 사라지고 감싸고 있는 섹션의 상하 패딩(약 97px)은 그대로 남아
+ * 첫 화면 근처에 빈 흰 띠가 생겼다. 조회 실패 여부를 아는 쪽이 섹션 전체를
+ * 접어야 해서 호출을 OpsStatusSection 으로 올렸다.
+ */
+export function HeroOpsPanel({ data, isLoading }: HeroOpsPanelProps) {
   const messages = useMessages() as unknown as Record<string, Record<string, string>>
   const t = messages.heroPanel
   const risk = messages.riskLevels
-  const { data, isLoading, isError } = usePublicSummary()
-
-  // 실패하면 패널 자리를 비운다. 첫 화면에 에러 상자를 띄우는 것보다 낫다.
-  if (isError) return null
 
   return (
     <div className="rounded-lg border bg-card">
