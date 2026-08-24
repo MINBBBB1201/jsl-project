@@ -1,6 +1,6 @@
 "use client"
 
-import { useTranslations } from "next-intl"
+import { useLocale, useTranslations } from "next-intl"
 import { motion, type Variants } from "framer-motion"
 import {
   AlertTriangle,
@@ -15,6 +15,7 @@ import type { LucideIcon } from "lucide-react"
 
 import { cn } from "@/lib/utils"
 import type { RiskLevel } from "@/lib/transport-modes"
+import type { Locale } from "@/i18n/routing"
 import { usePrefersReducedMotion } from "@/hooks/use-prefers-reduced-motion"
 import { DATE_FALLBACK, formatDate } from "./format-date"
 
@@ -111,6 +112,7 @@ export function TrackingStepper({
   estimatedArrivalAt: string | null
 }) {
   const t = useTranslations("tracking")
+  const locale = useLocale() as Locale
   const reduced = usePrefersReducedMotion()
 
   const currentIndex = STATUS_TO_STEP[status] ?? 0
@@ -158,7 +160,8 @@ export function TrackingStepper({
 
           // 날짜가 있는 단계는 첫 번째(집하)와 마지막(배송완료)뿐이다.
           const date = formatDate(
-            index === 0 ? shippedAt : isLast ? estimatedArrivalAt : null
+            index === 0 ? shippedAt : isLast ? estimatedArrivalAt : null,
+            locale
           )
           const hasDate = date !== DATE_FALLBACK
 
@@ -232,15 +235,23 @@ export function TrackingStepper({
                   {isDone ? t("stepDone") : isCurrent ? t("stepCurrent") : t("stepPending")}
                 </p>
                 {hasDate && (
-                  <p className="mt-1 text-xs tabular-nums text-muted-foreground">
-                    {/*
-                      눈으로는 단계 라벨 바로 아래라 날짜만 있어도 읽히지만,
-                      스크린리더로는 무슨 날짜인지 알 수 없어 라벨을 붙여 준다.
-                    */}
-                    <span className="sr-only">
-                      {index === 0 ? t("shippedAt") : t("estimatedArrival")}:{" "}
-                    </span>
-                    {date}
+                  <p className="mt-1 text-xs text-muted-foreground">
+                    {index === 0 ? (
+                      /*
+                        집하는 이미 지난 일이라 날짜만 있어도 오해할 여지가 없다.
+                        단계 라벨 바로 아래라 눈으로는 읽히고, 스크린리더에만
+                        무슨 날짜인지 붙여 준다.
+                      */
+                      <span className="sr-only">{t("shippedAt")}: </span>
+                    ) : (
+                      /*
+                        도착예정일은 확정된 날짜가 아니다. 상태가 "대기"인 채로
+                        날짜만 떠 있으면 이미 잡힌 날처럼 읽혀서 화면에도 라벨을
+                        붙인다. 여기서는 이 라벨이 스크린리더용도 겸한다.
+                      */
+                      <span>{t("estimatedArrival")}{" "}</span>
+                    )}
+                    <span className="tabular-nums">{date}</span>
                   </p>
                 )}
               </div>
