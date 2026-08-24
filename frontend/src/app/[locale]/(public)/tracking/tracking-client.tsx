@@ -5,7 +5,6 @@ import { useTranslations } from "next-intl"
 import {
   AlertCircle,
   ArrowRight,
-  CalendarDays,
   Loader2,
   MapPin,
   PackageSearch,
@@ -22,17 +21,6 @@ import { cn } from "@/lib/utils"
 import { RISK_LEVEL_STYLE, type RiskLevel } from "@/lib/transport-modes"
 import { TrackingStepper } from "./tracking-stepper"
 import { useSampleTrackingNumbers, useTracking } from "./use-tracking"
-
-const formatDate = (value: string | null) => {
-  if (!value) return "—"
-  const date = new Date(value)
-  if (Number.isNaN(date.getTime())) return "—"
-  return date.toLocaleDateString("ko-KR", {
-    year: "numeric",
-    month: "long",
-    day: "numeric",
-  })
-}
 
 function ResultCard({
   shipment,
@@ -78,8 +66,17 @@ function ResultCard({
       </CardHeader>
 
       <CardContent className="space-y-6">
-        {/* 진행 단계 */}
-        <TrackingStepper status={shipment.status} riskLevel={level} />
+        {/*
+          진행 단계. 출고일·도착예정일은 여기 타임라인 노드에서 보여 준다 —
+          예전에는 아래에 2열 날짜 카드가 따로 있었는데 같은 두 날짜를 한 카드
+          안에서 두 번 말하게 돼 걷어냈다.
+        */}
+        <TrackingStepper
+          status={shipment.status}
+          riskLevel={level}
+          shippedAt={shipment.shippedAt}
+          estimatedArrivalAt={shipment.estimatedArrivalAt}
+        />
 
         {/* 구간 */}
         <div className="flex flex-wrap items-center gap-3 rounded-lg border p-4">
@@ -92,26 +89,6 @@ function ResultCard({
             {shipment.transportMode ? tModes(shipment.transportMode) : "—"}
           </Badge>
         </div>
-
-        {/* 일정 */}
-        <dl className="grid gap-4 sm:grid-cols-2">
-          <div className="rounded-lg border p-4">
-            <dt className="flex items-center gap-1.5 text-sm text-muted-foreground">
-              <CalendarDays className="size-3.5" aria-hidden />
-              {t("shippedAt")}
-            </dt>
-            <dd className="mt-1 font-medium">{formatDate(shipment.shippedAt)}</dd>
-          </div>
-          <div className="rounded-lg border p-4">
-            <dt className="flex items-center gap-1.5 text-sm text-muted-foreground">
-              <CalendarDays className="size-3.5" aria-hidden />
-              {t("estimatedArrival")}
-            </dt>
-            <dd className="mt-1 font-medium">
-              {formatDate(shipment.estimatedArrivalAt)}
-            </dd>
-          </div>
-        </dl>
 
         {/* 경과율 */}
         {pct !== null && (
