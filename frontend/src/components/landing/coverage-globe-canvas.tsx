@@ -1,7 +1,7 @@
 "use client"
 
 import { useEffect, useRef } from "react"
-import createGlobe, { type Arc, type Marker } from "cobe"
+import createGlobe, { type Arc, type COBEOptions, type Marker } from "cobe"
 
 import { usePrefersReducedMotion } from "@/hooks/use-prefers-reduced-motion"
 
@@ -63,7 +63,7 @@ const MARKERS: Marker[] = [
  *   서울 → 유럽    항공 / 해상-항공
  *   서울 → 미국    항공 / 해상-항공
  */
-const ARCS: Arc[] = [
+const ROUTES: { from: [number, number]; to: [number, number] }[] = [
   { from: GUANGZHOU, to: WEIHAI },
   { from: WEIHAI, to: SEOUL },
   { from: GUANGZHOU, to: SHANGHAI },
@@ -76,6 +76,78 @@ const ARCS: Arc[] = [
 /** 지구 표면에 붙지 않고 대기권 위를 날아가는 느낌 */
 const ARC_HEIGHT = 0.35
 const ARC_WIDTH = 0.5
+
+/* ── 항로 흐름 애니메이션 ────────────────────────────────────────────────
+ *
+ * 노선마다 경로 전체를 옅게 깔아 두고(배경선), 그 위를 짧고 진한 구간이
+ * 오간다. 점 하나가 움직이는 것이 아니라 선 자체가 이동하는 것처럼 보여야 해서,
+ * 매 프레임 대원거리 위의 두 지점을 구해 짧은 아크를 하나 더 얹는다.
+ *
+ * COBE 는 아크를 "출발·도착 위경도" 로만 받는다. 그래서 경로 중간 지점을
+ * 우리가 계산해야 하는데, 위경도를 그대로 선형보간하면 경로가 지도상의 직선이
+ * 되어 배경선(대원거리)에서 벗어난다. 단위벡터로 바꿔 보간한 뒤 다시 정규화하면
+ * (nlerp) 구면 위를 따라간다.
+ */
+
+type Vec3 = readonly [number, number, number]
+
+const DEG = Math.PI / 180
+
+function toVec3([lat, lng]: [number, number]): Vec3 {
+  const latRad = lat * DEG
+  const lngRad = lng * DEG
+  const cosLat = Math.cos(latRad)
+  return [cosLat * Math.cos(lngRad), Math.sin(latRad), cosLat * Math.sin(lngRad)]
+}
+
+function toLatLng([x, y, z]: Vec3): [number, number] {
+  return [Math.asin(y) / DEG, Math.atan2(z, x) / DEG]
+}
+
+/** 두 단위벡터 사이를 선형보간하고 다시 정규화한다 */
+function nlerp(a: Vec3, b: Vec3, t: number): Vec3 {
+  const x = a[0] + (b[0] - a[0]) * t
+  const y = a[1] + (b[1] - a[1]) * t
+  const z = a[2] + (b[2] - a[2]) * t
+  const length = Math.hypot(x, y, z) || 1
+  return [x / length, y / length, z / length]
+}
+
+/**
+ * 노선 끝점의 단위벡터는 변하지 않는다. 매 프레임 삼각함수를 다시 돌릴 이유가
+ * 없어 모듈이 로드될 때 한 번만 구해 둔다 — 프레임마다 남는 계산은 nlerp 와
+ * 되돌리는 asin/atan2 뿐이다.
+ */
+const ROUTE_VECTORS = ROUTES.map((route) => ({
+  from: toVec3(route.from),
+  to: toVec3(route.to),
+}))
+
+/** 하이라이트 구간의 절반 길이 (경로 전체를 1 로 봤을 때) */
+const TRAIL = 0.1
+
+/**
+ * 노선마다 왕복 주기(초)와 시작 위상을 달리 준다.
+ *
+ * 일곱 개가 같은 박자로 움직이면 화물이 오가는 것이 아니라 장식 하나가
+ * 깜빡이는 것으로 보인다. 주기를 서로 배수가 아닌 값으로 골라 겹치는 순간이
+ * 자주 오지 않게 했다 (network-beams 의 펄스 지연과 같은 이유다).
+ */
+const FLOW = [
+  { period: 5.2, phase: 0 },
+  { period: 6.7, phase: 0.31 },
+  { period: 4.3, phase: 0.62 },
+  { period: 7.9, phase: 0.14 },
+  { period: 5.8, phase: 0.83 },
+  { period: 7.1, phase: 0.47 },
+  { period: 6.1, phase: 0.68 },
+]
+
+/** 0 → 1 → 0 을 반복하는 삼각파. 화물이 오갔다가 돌아오는 왕복이다 */
+function triangleWave(seconds: number, period: number, phase: number) {
+  const cycle = (((seconds / period + phase) % 1) + 1) % 1
+  return cycle < 0.5 ? cycle * 2 : 2 - cycle * 2
+}
 
 /**
  * 시작 각도 — 동아시아가 정면에 오게 맞춘 값이다.
@@ -154,22 +226,97 @@ function cssColorToRgb(
   }
 }
 
-function readTheme() {
+/** 배경 경로선을 만들 때 채도를 죽이는 정도와 어둡게 하는 정도 */
+const TRACK_DESATURATE = 0.55
+const TRACK_DARKEN = 0.72
+
+/**
+ * 배경 경로선용으로 오렌지의 채도와 밝기를 낮춘다.
+ *
+ * 새 색을 하드코딩하지 않고 브랜드 오렌지에서 만들어 쓴다 — 토큰이 바뀌면
+ * 배경선도 같이 따라오고, 하이라이트와 같은 계열이라는 것도 보장된다.
+ */
+function toTrackColor([r, g, b]: [number, number, number]): [number, number, number] {
+  const luma = 0.2126 * r + 0.7152 * g + 0.0722 * b
+  const flatten = (channel: number) =>
+    (channel + (luma - channel) * TRACK_DESATURATE) * TRACK_DARKEN
+  return [flatten(r), flatten(g), flatten(b)]
+}
+
+interface GlobeTheme {
+  /*
+    createGlobe / update 에 그대로 넘기는 것들.
+
+    Partial 이 아니라 Pick 이어야 한다 — Partial 로 두면 펼쳐 넣었을 때
+    COBEOptions 의 필수 항목(mapBrightness 등)이 optional 로 약해져서
+    createGlobe 가 타입을 거부한다.
+  */
+  options: Pick<
+    COBEOptions,
+    "baseColor" | "markerColor" | "glowColor" | "dark" | "mapBrightness"
+  >
+  /** 경로 배경선 — 옅은 오렌지 */
+  trackColor: [number, number, number]
+  /** 이동 하이라이트 — 브랜드 오렌지 원색 */
+  flowColor: [number, number, number]
+}
+
+function readTheme(): GlobeTheme {
   const styles = getComputedStyle(document.documentElement)
   const isDark = document.documentElement.classList.contains("dark")
+  const orange = cssColorToRgb(
+    styles.getPropertyValue("--brand-orange"),
+    FALLBACK_ORANGE
+  )
 
   return {
-    baseColor: cssColorToRgb(styles.getPropertyValue("--brand-navy"), FALLBACK_NAVY),
-    markerColor: cssColorToRgb(
-      styles.getPropertyValue("--brand-orange"),
-      FALLBACK_ORANGE
-    ),
-    arcColor: cssColorToRgb(styles.getPropertyValue("--brand-orange"), FALLBACK_ORANGE),
-    glowColor: cssColorToRgb(styles.getPropertyValue("--brand-slate"), FALLBACK_SLATE),
-    dark: isDark ? 1 : 0,
-    /* 라이트 배경에서는 점 지도가 더 밝아야 네이비가 뭉개지지 않는다 */
-    mapBrightness: isDark ? 4 : 6,
+    options: {
+      baseColor: cssColorToRgb(styles.getPropertyValue("--brand-navy"), FALLBACK_NAVY),
+      markerColor: orange,
+      glowColor: cssColorToRgb(styles.getPropertyValue("--brand-slate"), FALLBACK_SLATE),
+      dark: isDark ? 1 : 0,
+      /* 라이트 배경에서는 점 지도가 더 밝아야 네이비가 뭉개지지 않는다 */
+      mapBrightness: isDark ? 4 : 6,
+    },
+    trackColor: toTrackColor(orange),
+    flowColor: orange,
   }
+}
+
+/**
+ * 그 순간의 아크 목록을 만든다 — 경로 배경선 일곱 개 + 이동 하이라이트 일곱 개.
+ *
+ * seconds 가 null 이면 하이라이트 없이 배경선만 돌려준다 (동작 줄이기).
+ */
+function buildArcs(theme: GlobeTheme, seconds: number | null): Arc[] {
+  const arcs: Arc[] = ROUTES.map((route) => ({
+    from: route.from,
+    to: route.to,
+    color: theme.trackColor,
+  }))
+
+  if (seconds === null) return arcs
+
+  for (let i = 0; i < ROUTE_VECTORS.length; i++) {
+    const { from, to } = ROUTE_VECTORS[i]
+    const { period, phase } = FLOW[i]
+    const progress = triangleWave(seconds, period, phase)
+
+    /*
+      구간이 경로 밖으로 나가지 않게 자른다. 양 끝에서는 짧아지는데, 화물이
+      출발지·도착지에 닿았다가 되돌아 나오는 것처럼 보여서 그대로 둔다.
+    */
+    const head = Math.min(1, progress + TRAIL)
+    const tail = Math.max(0, progress - TRAIL)
+
+    arcs.push({
+      from: toLatLng(nlerp(from, to, tail)),
+      to: toLatLng(nlerp(from, to, head)),
+      color: theme.flowColor,
+    })
+  }
+
+  return arcs
 }
 
 export function CoverageGlobeCanvas({
@@ -196,8 +343,10 @@ export function CoverageGlobeCanvas({
     let phi = INITIAL_PHI
     let frame = 0
     let globe: ReturnType<typeof createGlobe> | null = null
+    let theme = readTheme()
 
     const pixelSize = () => Math.max(canvas.offsetWidth, 1) * 2
+    const startedAt = performance.now()
 
     try {
       globe = createGlobe(canvas, {
@@ -209,10 +358,10 @@ export function CoverageGlobeCanvas({
         diffuse: 1.2,
         mapSamples: 16000,
         markers: MARKERS,
-        arcs: ARCS,
         arcHeight: ARC_HEIGHT,
         arcWidth: ARC_WIDTH,
-        ...readTheme(),
+        arcs: buildArcs(theme, reduced ? null : 0),
+        ...theme.options,
       })
     } catch {
       // WebGL 컨텍스트를 못 얻는 환경 — 도식으로 되돌린다
@@ -227,14 +376,22 @@ export function CoverageGlobeCanvas({
          v2 는 update() 를 부를 때 한 장씩 그리는 방식이라, 프레임을 돌리는 쪽이
          우리가 된다. 예전 예제 코드를 그대로 옮겨 오면 조용히 멈춘 지구본이 된다.
 
-      동작 줄이기에서는 루프를 아예 시작하지 않는다. createGlobe 가 만들면서 한 번
-      그려 두므로 지구본·거점·항로는 그대로 보이고 회전만 멈춘다 — 내용을 감추는
-      것이 아니다.
+      회전과 항로 흐름을 같은 루프에서 함께 갱신한다 — 흐름 때문에 렌더 루프를
+      따로 만들 이유가 없다. 프레임마다 아크 배열(배경 7 + 하이라이트 7)을 새로
+      만들지만, 끝점 단위벡터는 미리 구해 뒀으므로 남는 계산은 nlerp 와 되돌리는
+      asin/atan2 뿐이다.
+
+      동작 줄이기에서는 루프를 아예 시작하지 않는다. createGlobe 가 만들 때 흐름
+      없는 배경선만으로 한 번 그려 두므로, 지구본·거점·항로는 그대로 보이고
+      회전과 흐름만 멈춘다 — 내용을 감추는 것이 아니다.
     */
     if (!reduced) {
-      const tick = () => {
+      const tick = (now: number) => {
         phi += PHI_STEP
-        globe?.update({ phi })
+        globe?.update({
+          phi,
+          arcs: buildArcs(theme, (now - startedAt) / 1000),
+        })
         frame = requestAnimationFrame(tick)
       }
       frame = requestAnimationFrame(tick)
@@ -251,7 +408,16 @@ export function CoverageGlobeCanvas({
       달라지므로 다시 읽어 넘긴다 — 안 하면 토글 후에도 라이트 색이 남는다.
     */
     const themeObserver = new MutationObserver(() => {
-      globe?.update(readTheme())
+      theme = readTheme()
+      /*
+        아크 색도 같이 넘긴다. 회전 루프가 도는 중이면 다음 프레임에 어차피
+        새 색으로 다시 그리지만, 동작 줄이기에서는 루프가 없어서 여기서
+        넘기지 않으면 경로선만 옛 색으로 남는다.
+      */
+      globe?.update({
+        ...theme.options,
+        arcs: buildArcs(theme, reduced ? null : (performance.now() - startedAt) / 1000),
+      })
     })
     themeObserver.observe(document.documentElement, {
       attributes: true,
