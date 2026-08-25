@@ -2,7 +2,7 @@
 
 import { Badge } from '@/components/ui/badge'
 import { Card, CardContent } from '@/components/ui/card'
-import { NetworkBeams } from '@/components/landing/network-beams'
+import { CoverageGlobe } from '@/components/landing/coverage-globe'
 import { useContent } from '@/config/use-content'
 
 /**
@@ -36,15 +36,19 @@ export function NetworkSection() {
         </div>
 
         {/*
-          연결선 도식.
+          커버리지 지구본.
 
-          sm 미만에서는 감춘다. 720 폭 viewBox 가 390px 화면에 들어가면 절반
-          이하로 줄어들어 도시 이름이 7px 로 그려진다 — 읽을 수 없는 글자를
-          띄우느니 아래 카드만 보여주는 편이 낫다. 카드에 같은 정보가 다 있다.
+          sm 미만에서는 감춘다. 작은 화면에서 지구본을 줄이면 거점 다섯 점이
+          서로 붙어 무엇을 가리키는지 알 수 없고, WebGL 을 켜는 비용만 남는다 —
+          읽히지 않는 그림을 띄우느니 아래 카드만 보여주는 편이 낫다.
+          카드에 같은 정보가 다 있다. (연결선 도식 때부터 같은 원칙이다.)
+
+          WebGL 을 못 쓰는 환경에서는 CoverageGlobe 가 기존 NetworkBeams 도식으로
+          알아서 되돌린다.
         */}
         {hub ? (
           <div className="mx-auto mb-16 max-w-4xl max-sm:hidden">
-            <NetworkBeams
+            <CoverageGlobe
               hub={hub}
               spokes={spokes}
               headcountUnit={network.headcountUnit}
