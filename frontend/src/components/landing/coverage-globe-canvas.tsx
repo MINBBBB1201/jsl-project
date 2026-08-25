@@ -15,8 +15,8 @@ import createGlobe, { type Arc, type COBEOptions, type Marker } from "cobe"
  *    구석에 몰려 있어서, 무엇이 움직이든 거점 무리가 통째로 화면을 기어다니는
  *    것처럼 보였다. 지도는 서 있을 때 읽힌다.
  *
- *    그래서 렌더 루프(requestAnimationFrame)가 없다. COBE 는 update() 를 부를
- *    때만 한 장 그리므로, 크기가 바뀌거나 테마가 바뀔 때만 다시 그린다.
+ *    그래서 계속 도는 렌더 루프가 없다. COBE 는 update() 를 부를 때만 한 장
+ *    그리므로, 처음 채워 넣은 뒤에는 크기나 테마가 바뀔 때만 다시 그린다.
  *    움직임이 없으니 prefers-reduced-motion 분기도 둘 이유가 없다.
  *
  * ⚠️ 이 파일은 coverage-globe.tsx 가 next/dynamic 으로만 불러온다. 직접
@@ -99,6 +99,29 @@ const ARC_WIDTH = 0.5
 const VIEW_PHI = 2.5
 /** 북반구를 살짝 위로 기울여 다섯 거점이 적도선에 눌리지 않게 한다 */
 const THETA = 0.3
+
+/**
+ * 마운트 뒤 같은 그림을 다시 그릴 시점들(ms).
+ *
+ * ⚠️ 이걸 지우면 대륙 점무늬가 통째로 사라진다.
+ *
+ *    COBE 는 점 지도를 base64 PNG 로 들고 있다가 new Image() 의 onload 에서
+ *    텍스처에 올린다 (v2.0.1 소스 확인). 그런데 올린 뒤 다시 그리지 않고,
+ *    COBE 안에는 렌더 루프도 없다. 즉 이미지가 디코드되기 전에 그린 그림은
+ *    1×1 자리표시자 텍스처 그대로 — 민짜 구체 — 로 굳는다. 실측하면
+ *    createGlobe 만 하거나 update 를 한 번 더 부른 상태까지는 점이 없고,
+ *    두 번째 update 부터 점무늬가 나타난다.
+ *
+ *    회전하던 시절에는 매 프레임 다시 그렸으니 드러나지 않았다. 루프를
+ *    걷어내자 초기 draw 가 한두 번으로 줄면서 빈 구체가 남았다.
+ *
+ *    데이터 URI 라 보통 몇 ms 면 디코드되지만 메인 스레드가 막히면 늦어진다.
+ *    그래서 고정된 짧은 창 대신 간격을 벌려 가며 몇 번 더 그린다 — 여덟 번이
+ *    8초에 걸쳐 흩어져 있어 비용은 없다시피 하고, 늦게 디코드돼도 그 뒤의
+ *    한 번이 받아 준다. phi 도 내용도 그대로라 같은 그림을 덧그리는 것이고
+ *    눈에는 아무 움직임이 없다.
+ */
+const REDRAW_SCHEDULE = [0, 60, 180, 400, 900, 2000, 4000, 8000]
 
 /**
  * 토큰을 못 읽었을 때 쓸 값. globals.css 의 브랜드 토큰을 sRGB 로 옮긴 것이다.
@@ -237,6 +260,11 @@ export function CoverageGlobeCanvas({
       return
     }
 
+    /* 점 지도 텍스처가 올라온 뒤 한 번은 그리도록 (REDRAW_SCHEDULE 주석 참고) */
+    const redraws = REDRAW_SCHEDULE.map((delay) =>
+      window.setTimeout(() => globe?.update({ phi: VIEW_PHI }), delay)
+    )
+
     const resizeObserver = new ResizeObserver(() => {
       const size = pixelSize()
       globe?.update({ width: size, height: size })
@@ -257,6 +285,7 @@ export function CoverageGlobeCanvas({
     })
 
     return () => {
+      redraws.forEach(clearTimeout)
       resizeObserver.disconnect()
       themeObserver.disconnect()
       globe?.destroy()
