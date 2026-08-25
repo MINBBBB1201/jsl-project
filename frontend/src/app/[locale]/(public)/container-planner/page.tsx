@@ -7,8 +7,8 @@ import { ContainerPlannerClient } from './container-planner-client'
 /**
  * 3D 컨테이너 적재 계산기.
  *
- * ⚠️ 아직 어느 네비게이션에도 링크하지 않는다. 최종 점검이 끝나는 다음 단계까지는
- *    직접 URL 로만 들어온다. 같은 이유로 색인도 막아 둔다.
+ * 푸터 고객지원 열에서 링크된다 (config/use-content.ts). hs-code · tracking 과
+ * 같은 자리다 — 셋 다 로그인 없이 쓰는 자가 조회 도구라 한곳에 모아 둔다.
  */
 export function generateStaticParams() {
   return routing.locales.map((locale) => ({ locale }))
@@ -24,7 +24,12 @@ export async function generateMetadata({
   return {
     title: `${t('title')} - JSL Logistics`,
     description: t('subtitle'),
-    robots: { index: false, follow: false },
+    /*
+      2·3단계에서는 robots 를 noindex 로 막아 뒀다. 어디에도 링크되지 않은
+      미완성 화면이 검색에 먼저 잡히는 것을 막으려던 것인데, 이제 푸터에서
+      링크되므로 걷어낸다. 링크는 걸어 두고 noindex 로 남겨 두면 크롤러에게
+      앞뒤가 안 맞는 신호를 보내게 된다.
+    */
   }
 }
 

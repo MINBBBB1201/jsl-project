@@ -139,7 +139,36 @@ export function ContainerViewer({
 
   const shell = (children: ReactNode) => (
     <div
-      className="w-full overflow-hidden rounded-lg border bg-muted/20"
+      /*
+        [&_canvas]:touch-pan-y! — 모바일에서 손가락으로 돌리기 위한 것.
+
+        ⚠️ 이게 없으면 터치로 아무 반응이 없다. OrbitControls 는 연결할 때
+           대상 엘리먼트에 touch-action:none 을 걸지만(three-stdlib
+           OrbitControls.js:300), 그 대상은 R3F 의 바깥 래퍼 div 다. 정작 손가락이
+           닿는 <canvas> 에는 R3F 가 touch-action:auto 를 인라인으로 박아 두고,
+           touch-action 은 실제로 터치가 떨어진 엘리먼트 값이 우선이라 브라우저가
+           제스처를 스크롤로 가져가 버린다. 실측으로 확인했다 — 터치 드래그를
+           보내면 화면은 그대로고 페이지만 1149px 스크롤됐다.
+
+        ⚠️ none 이 아니라 pan-y 인 이유: 이 뷰어는 모바일에서 화면의 절반을
+           차지하고 그 아래에 결과 패널이 이어진다. none 으로 막으면 뷰어 위에서
+           시작한 세로 스와이프가 통째로 회전으로 먹혀서, 결과를 보러 내려가려던
+           사용자가 페이지에 갇힌다. pan-y 는 세로 스크롤은 브라우저에 남기고
+           가로 드래그만 컨트롤에 준다 — 컨테이너는 길이 방향으로 긴 물체라
+           수직축 회전(가로 드래그)이 실무에서 실제로 보고 싶은 각도이기도 하다.
+           위아래로 기울여 보는 것은 마우스가 있는 데스크탑에서 그대로 된다.
+
+        ⚠️ canvas 만 고쳐서는 안 된다. 브라우저는 터치가 떨어진 엘리먼트에서
+           위로 올라가며 touch-action 을 교집합으로 계산하는데, OrbitControls 가
+           none 을 건 R3F 래퍼가 조상이라 canvas 만 pan-y 로 바꿔도 교집합이
+           none 이 되어 세로 스크롤이 여전히 막힌다. 실측으로 확인했다 — canvas 만
+           고친 상태에서 캔버스 위 세로 스와이프는 0px 스크롤이었다.
+           그래서 R3F 래퍼(직계 자식 div)와 canvas 를 함께 pan-y 로 둔다.
+
+        인라인 스타일을 이기려면 !important 가 필요해서 Tailwind v4 의 접미사
+        important 문법(`touch-pan-y!`)을 쓴다.
+      */
+      className="w-full overflow-hidden rounded-lg border bg-muted/20 [&>div]:touch-pan-y! [&_canvas]:touch-pan-y!"
       style={{ height: VIEWER_HEIGHT }}
     >
       {children}

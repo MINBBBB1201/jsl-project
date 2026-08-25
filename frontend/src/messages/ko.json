@@ -13,6 +13,7 @@
     "network": "글로벌 네트워크",
     "tracking": "화물추적",
     "hsCode": "HS코드 조회",
+    "containerPlanner": "컨테이너 적재 계산기",
     "faq": "FAQ",
     "contact": "문의",
     "dashboard": "대시보드",

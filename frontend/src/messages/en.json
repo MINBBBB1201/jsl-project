@@ -13,6 +13,7 @@
     "network": "Global Network",
     "tracking": "Track Shipment",
     "hsCode": "HS code lookup",
+    "containerPlanner": "Container load calculator",
     "faq": "FAQ",
     "contact": "Contact",
     "dashboard": "Dashboard",
