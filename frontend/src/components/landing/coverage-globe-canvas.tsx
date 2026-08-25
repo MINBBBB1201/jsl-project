@@ -10,7 +10,7 @@ import { usePrefersReducedMotion } from "@/hooks/use-prefers-reduced-motion"
  *
  * COBE(https://github.com/shuding/cobe, MIT, 의존성 없음)를 그대로 쓰고 색과
  * 데이터만 우리 것으로 바꿨다. 점으로 찍힌 세계지도 위에 실제 거점 다섯 곳을
- * 마커로, 실제 운영 노선 일곱 개를 아크로 얹는다.
+ * 마커로, 장거리 노선 두 개를 아크로 얹는다.
  *
  * ⚠️ 이 파일은 coverage-globe.tsx 가 next/dynamic 으로만 불러온다. 직접
  *    import 하면 초기 번들에 WebGL 코드가 실려 들어간다.
@@ -53,22 +53,21 @@ const MARKERS: Marker[] = [
 ]
 
 /**
- * 실제 운영 노선 일곱 개 (landing-content.ts 의 서비스 설명 기준).
+ * 아크로 그리는 노선 두 개 (landing-content.ts 의 서비스 설명 기준).
  *
- *   광주 → 위해    항공 (화남 → 산동)
- *   위해 → 서울    항공/페리 (산동 → 인천)
- *   광주 → 상해    해상-항공 (광동 → 상해 CFS 통합)
- *   상해 → 서울    해상-항공 (상해 CFS → 인천 환적)
- *   광주 → 하노이  육상 국경통과
  *   서울 → 유럽    항공 / 해상-항공
  *   서울 → 미국    항공 / 해상-항공
+ *
+ * ⚠️ 아시아 역내 단거리 노선(광주↔위해, 위해↔서울, 광주↔상해, 상해↔서울,
+ *    광주↔하노이)은 일부러 뺐다. arcHeight 는 노선 길이와 무관하게 같은 높이로
+ *    적용돼서, 실제 거리가 짧은 구간은 마커가 몰려 있는 자리 바로 옆에서
+ *    반원처럼 말려 올라간다 — 항로가 아니라 거미 다리처럼 보였다.
+ *
+ *    거점끼리 어떻게 이어지는지는 아래 카드 그리드가 이미 설명하므로 정보가
+ *    사라지지는 않는다. 마커 다섯 개는 그대로 둔다. 되살리려면 arcHeight 를
+ *    노선 길이에 따라 달리 주는 방법부터 찾을 것.
  */
 const ROUTES: { from: [number, number]; to: [number, number] }[] = [
-  { from: GUANGZHOU, to: WEIHAI },
-  { from: WEIHAI, to: SEOUL },
-  { from: GUANGZHOU, to: SHANGHAI },
-  { from: SHANGHAI, to: SEOUL },
-  { from: GUANGZHOU, to: HANOI },
   { from: SEOUL, to: FRANKFURT },
   { from: SEOUL, to: LOS_ANGELES },
 ]
@@ -129,18 +128,15 @@ const TRAIL = 0.1
 /**
  * 노선마다 왕복 주기(초)와 시작 위상을 달리 준다.
  *
- * 일곱 개가 같은 박자로 움직이면 화물이 오가는 것이 아니라 장식 하나가
- * 깜빡이는 것으로 보인다. 주기를 서로 배수가 아닌 값으로 골라 겹치는 순간이
- * 자주 오지 않게 했다 (network-beams 의 펄스 지연과 같은 이유다).
+ * 둘이 같은 박자로 움직이면 화물이 오가는 것이 아니라 장식 하나가 깜빡이는
+ * 것으로 보인다. 주기를 서로 배수가 아닌 값으로 골라 겹치는 순간이 자주 오지
+ * 않게 했다 (network-beams 의 펄스 지연과 같은 이유다).
+ *
+ * ⚠️ ROUTES 와 길이가 같아야 한다 — 인덱스로 짝지어 쓴다.
  */
 const FLOW = [
-  { period: 5.2, phase: 0 },
-  { period: 6.7, phase: 0.31 },
-  { period: 4.3, phase: 0.62 },
-  { period: 7.9, phase: 0.14 },
-  { period: 5.8, phase: 0.83 },
-  { period: 7.1, phase: 0.47 },
-  { period: 6.1, phase: 0.68 },
+  { period: 7.1, phase: 0 },
+  { period: 5.8, phase: 0.47 },
 ]
 
 /** 0 → 1 → 0 을 반복하는 삼각파. 화물이 오갔다가 돌아오는 왕복이다 */
@@ -284,7 +280,7 @@ function readTheme(): GlobeTheme {
 }
 
 /**
- * 그 순간의 아크 목록을 만든다 — 경로 배경선 일곱 개 + 이동 하이라이트 일곱 개.
+ * 그 순간의 아크 목록을 만든다 — 노선마다 경로 배경선 하나 + 이동 하이라이트 하나.
  *
  * seconds 가 null 이면 하이라이트 없이 배경선만 돌려준다 (동작 줄이기).
  */
@@ -377,7 +373,7 @@ export function CoverageGlobeCanvas({
          우리가 된다. 예전 예제 코드를 그대로 옮겨 오면 조용히 멈춘 지구본이 된다.
 
       회전과 항로 흐름을 같은 루프에서 함께 갱신한다 — 흐름 때문에 렌더 루프를
-      따로 만들 이유가 없다. 프레임마다 아크 배열(배경 7 + 하이라이트 7)을 새로
+      따로 만들 이유가 없다. 프레임마다 아크 배열(배경 2 + 하이라이트 2)을 새로
       만들지만, 끝점 단위벡터는 미리 구해 뒀으므로 남는 계산은 nlerp 와 되돌리는
       asin/atan2 뿐이다.
 
