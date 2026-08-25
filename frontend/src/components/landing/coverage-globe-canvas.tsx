@@ -44,7 +44,8 @@ const LOS_ANGELES: [number, number] = [33.9416, -118.4085]
 const HQ_MARKER_SIZE = 0.1
 const BRANCH_MARKER_SIZE = 0.065
 
-const MARKERS: Marker[] = [
+/** 거점 다섯 곳. 흐름 꼬리와 섞이지 않게 이름을 갈라 둔다 */
+const STATION_MARKERS: Marker[] = [
   { location: SEOUL, size: HQ_MARKER_SIZE },
   { location: SHANGHAI, size: BRANCH_MARKER_SIZE },
   { location: WEIHAI, size: BRANCH_MARKER_SIZE },
@@ -78,14 +79,20 @@ const ARC_WIDTH = 0.5
 
 /* ── 항로 흐름 애니메이션 ────────────────────────────────────────────────
  *
- * 노선마다 경로 전체를 옅게 깔아 두고(배경선), 그 위를 짧고 진한 구간이
- * 오간다. 점 하나가 움직이는 것이 아니라 선 자체가 이동하는 것처럼 보여야 해서,
- * 매 프레임 대원거리 위의 두 지점을 구해 짧은 아크를 하나 더 얹는다.
+ * 노선마다 경로 전체를 옅게 깔아 두고(배경선), 그 위를 작은 점 여러 개가
+ * 꼬리를 끌며 오간다.
  *
- * COBE 는 아크를 "출발·도착 위경도" 로만 받는다. 그래서 경로 중간 지점을
- * 우리가 계산해야 하는데, 위경도를 그대로 선형보간하면 경로가 지도상의 직선이
- * 되어 배경선(대원거리)에서 벗어난다. 단위벡터로 바꿔 보간한 뒤 다시 정규화하면
- * (nlerp) 구면 위를 따라간다.
+ * ⚠️ 흐름을 "짧은 아크" 로 그리면 안 된다. COBE 의 arcHeight 는 전역 옵션이라
+ *    (아크별 높이도, 마커별 고도도 런타임에 없다 — v2.0.1 소스에서 확인)
+ *    구간이 짧든 길든 같은 높이로 부풀린다. 그래서 t-0.1 ~ t+0.1 같은 짧은
+ *    구간을 아크로 넘기면 배경 아크의 완만한 곡선과 무관한 작은 고리가 따로
+ *    솟는다. 실제로 그렇게 보였고("거미 다리"), 그래서 마커로 바꿨다.
+ *    점은 자기 곡률을 만들지 않으므로 이 문제가 원천적으로 생기지 않는다.
+ *
+ * COBE 는 위치를 위경도로만 받는다. 그래서 경로 중간 지점을 우리가 계산해야
+ * 하는데, 위경도를 그대로 선형보간하면 지도상의 직선이 되어 배경 아크(대원거리)
+ * 에서 벗어난다. 단위벡터로 바꿔 보간한 뒤 다시 정규화하면(nlerp) 구면 위를
+ * 따라가고, 기본 markerElevation 에서 배경 아크 선에 얹힌다 (실측 확인).
  */
 
 type Vec3 = readonly [number, number, number]
@@ -122,8 +129,13 @@ const ROUTE_VECTORS = ROUTES.map((route) => ({
   to: toVec3(route.to),
 }))
 
-/** 하이라이트 구간의 절반 길이 (경로 전체를 1 로 봤을 때) */
-const TRAIL = 0.1
+/** 꼬리를 이루는 점의 개수 (맨 앞 점 포함) */
+const TRAIL_POINTS = 6
+/** 점 사이 간격 (경로 전체를 1 로 봤을 때) */
+const TRAIL_GAP = 0.028
+/** 맨 앞 점과 꼬리 끝 점의 크기 */
+const TRAIL_HEAD_SIZE = 0.045
+const TRAIL_TAIL_SIZE = 0.018
 
 /**
  * 노선마다 왕복 주기(초)와 시작 위상을 달리 준다.
@@ -139,27 +151,39 @@ const FLOW = [
   { period: 5.8, phase: 0.47 },
 ]
 
-/** 0 → 1 → 0 을 반복하는 삼각파. 화물이 오갔다가 돌아오는 왕복이다 */
-function triangleWave(seconds: number, period: number, phase: number) {
+/**
+ * 그 순간의 진행률과 진행 방향.
+ *
+ * 삼각파라 0 → 1 → 0 을 반복한다 (화물이 갔다가 돌아온다). 꼬리를 진행 방향
+ * 반대쪽에 달아야 해서 방향도 함께 돌려준다 — 돌아오는 길에 꼬리가 앞서 가면
+ * 무엇이 머리인지 알 수 없다.
+ */
+function flowState(seconds: number, period: number, phase: number) {
   const cycle = (((seconds / period + phase) % 1) + 1) % 1
-  return cycle < 0.5 ? cycle * 2 : 2 - cycle * 2
+  const outbound = cycle < 0.5
+  return {
+    progress: outbound ? cycle * 2 : 2 - cycle * 2,
+    outbound,
+  }
 }
 
 /**
- * 시작 각도 — 동아시아가 정면에 오게 맞춘 값이다.
+ * 보는 각도 — 동아시아가 정면에 오게 맞춘 고정값이다.
  *
  * 실측으로 잡았다. phi=2 에서 거점 다섯이 중앙 왼쪽, phi=3 에서 중앙 오른쪽에
  * 걸리고, 그 사이 2.5 에서 정면에 온다. phi=4 부터는 오른쪽 가장자리로 밀려
  * 나가고 5 를 넘으면 지구 뒤편으로 사라진다.
  *
- * 동작 줄이기에서는 회전하지 않으므로 이 각도가 그대로 최종 화면이 된다 —
- * 값을 바꿀 때는 거점이 정면에 남는지 반드시 확인할 것.
+ * ⚠️ 자동 회전은 뺐다. 계속 돌리면 거점 다섯 개가 뭉쳐 있는 자리가 통째로
+ *    화면을 가로질러 기어다니고, 반대편으로 넘어가면 아예 사라졌다가 다시
+ *    나타난다 — 지도가 아니라 벌레가 기어가는 것처럼 보였다. 보여줄 것이
+ *    아시아 한 지역에 몰려 있으니 그 각도에 세워 두는 편이 맞다.
+ *
+ * 값을 바꿀 때는 거점 다섯 개와 항로 두 개가 정면에 남는지 반드시 확인할 것.
  */
-const INITIAL_PHI = 2.5
+const VIEW_PHI = 2.5
 /** 북반구를 살짝 위로 기울여 다섯 거점이 적도선에 눌리지 않게 한다 */
 const THETA = 0.3
-/** 한 프레임당 회전량(라디안). 한 바퀴에 약 50초 — 눈에 거슬리지 않을 만큼 느리게 */
-const PHI_STEP = 0.002
 
 /**
  * 토큰을 못 읽었을 때 쓸 값. globals.css 의 브랜드 토큰을 sRGB 로 옮긴 것이다.
@@ -284,35 +308,60 @@ function readTheme(): GlobeTheme {
  *
  * seconds 가 null 이면 하이라이트 없이 배경선만 돌려준다 (동작 줄이기).
  */
-function buildArcs(theme: GlobeTheme, seconds: number | null): Arc[] {
-  const arcs: Arc[] = ROUTES.map((route) => ({
+function buildArcs(theme: GlobeTheme): Arc[] {
+  return ROUTES.map((route) => ({
     from: route.from,
     to: route.to,
     color: theme.trackColor,
   }))
+}
 
-  if (seconds === null) return arcs
+/** 두 색 사이를 섞는다 — 꼬리가 뒤로 갈수록 배경선 색에 잦아들게 하는 데 쓴다 */
+function mix(
+  a: [number, number, number],
+  b: [number, number, number],
+  t: number
+): [number, number, number] {
+  return [a[0] + (b[0] - a[0]) * t, a[1] + (b[1] - a[1]) * t, a[2] + (b[2] - a[2]) * t]
+}
+
+/**
+ * 그 순간의 마커 목록을 만든다 — 거점 다섯 개 + 노선마다 움직이는 꼬리.
+ *
+ * seconds 가 null 이면 거점만 돌려준다 (동작 줄이기).
+ */
+function buildMarkers(theme: GlobeTheme, seconds: number | null): Marker[] {
+  const markers: Marker[] = STATION_MARKERS.map((marker) => ({
+    ...marker,
+    color: theme.flowColor,
+  }))
+
+  if (seconds === null) return markers
 
   for (let i = 0; i < ROUTE_VECTORS.length; i++) {
     const { from, to } = ROUTE_VECTORS[i]
     const { period, phase } = FLOW[i]
-    const progress = triangleWave(seconds, period, phase)
+    const { progress, outbound } = flowState(seconds, period, phase)
 
-    /*
-      구간이 경로 밖으로 나가지 않게 자른다. 양 끝에서는 짧아지는데, 화물이
-      출발지·도착지에 닿았다가 되돌아 나오는 것처럼 보여서 그대로 둔다.
-    */
-    const head = Math.min(1, progress + TRAIL)
-    const tail = Math.max(0, progress - TRAIL)
+    // 꼬리는 진행 방향 반대쪽에 달린다
+    const step = outbound ? -TRAIL_GAP : TRAIL_GAP
 
-    arcs.push({
-      from: toLatLng(nlerp(from, to, tail)),
-      to: toLatLng(nlerp(from, to, head)),
-      color: theme.flowColor,
-    })
+    for (let n = 0; n < TRAIL_POINTS; n++) {
+      const at = progress + step * n
+      // 경로 밖으로 나간 점은 그리지 않는다 — 출발지에서 꼬리가 자라 나오는 모양이 된다
+      if (at < 0 || at > 1) continue
+
+      const decay = n / (TRAIL_POINTS - 1)
+      markers.push({
+        location: toLatLng(nlerp(from, to, at)),
+        size: TRAIL_HEAD_SIZE + (TRAIL_TAIL_SIZE - TRAIL_HEAD_SIZE) * decay,
+        // 뒤로 갈수록 배경선 색으로 잦아든다 — 새 색을 만들지 않는다
+        color: mix(theme.flowColor, theme.trackColor, decay),
+      })
+    }
   }
 
-  return arcs
+  return markers
 }
 
 export function CoverageGlobeCanvas({
@@ -336,7 +385,6 @@ export function CoverageGlobeCanvas({
       return
     }
 
-    let phi = INITIAL_PHI
     let frame = 0
     let globe: ReturnType<typeof createGlobe> | null = null
     let theme = readTheme()
@@ -349,14 +397,14 @@ export function CoverageGlobeCanvas({
         devicePixelRatio: Math.min(window.devicePixelRatio, 2),
         width: pixelSize(),
         height: pixelSize(),
-        phi: INITIAL_PHI,
+        phi: VIEW_PHI,
         theta: THETA,
         diffuse: 1.2,
         mapSamples: 16000,
-        markers: MARKERS,
         arcHeight: ARC_HEIGHT,
         arcWidth: ARC_WIDTH,
-        arcs: buildArcs(theme, reduced ? null : 0),
+        arcs: buildArcs(theme),
+        markers: buildMarkers(theme, reduced ? null : 0),
         ...theme.options,
       })
     } catch {
@@ -366,28 +414,23 @@ export function CoverageGlobeCanvas({
     }
 
     /*
-      회전 루프.
+      흐름 루프.
 
       ⚠️ cobe v2 에는 v0.6 의 onRender 콜백이 없다 (타입에도 런타임에도 없다).
          v2 는 update() 를 부를 때 한 장씩 그리는 방식이라, 프레임을 돌리는 쪽이
          우리가 된다. 예전 예제 코드를 그대로 옮겨 오면 조용히 멈춘 지구본이 된다.
 
-      회전과 항로 흐름을 같은 루프에서 함께 갱신한다 — 흐름 때문에 렌더 루프를
-      따로 만들 이유가 없다. 프레임마다 아크 배열(배경 2 + 하이라이트 2)을 새로
-      만들지만, 끝점 단위벡터는 미리 구해 뒀으므로 남는 계산은 nlerp 와 되돌리는
+      각도는 고정이라 갱신하지 않는다. 프레임마다 바뀌는 것은 마커 배열뿐이고,
+      노선 끝점의 단위벡터는 미리 구해 뒀으므로 남는 계산은 nlerp 와 되돌리는
       asin/atan2 뿐이다.
 
-      동작 줄이기에서는 루프를 아예 시작하지 않는다. createGlobe 가 만들 때 흐름
-      없는 배경선만으로 한 번 그려 두므로, 지구본·거점·항로는 그대로 보이고
-      회전과 흐름만 멈춘다 — 내용을 감추는 것이 아니다.
+      동작 줄이기에서는 루프를 아예 시작하지 않는다. createGlobe 가 만들 때
+      꼬리 없이 한 번 그려 두므로 지구본·거점·항로는 그대로 보이고 흐름만
+      멈춘다 — 내용을 감추는 것이 아니다.
     */
     if (!reduced) {
       const tick = (now: number) => {
-        phi += PHI_STEP
-        globe?.update({
-          phi,
-          arcs: buildArcs(theme, (now - startedAt) / 1000),
-        })
+        globe?.update({ markers: buildMarkers(theme, (now - startedAt) / 1000) })
         frame = requestAnimationFrame(tick)
       }
       frame = requestAnimationFrame(tick)
@@ -406,13 +449,17 @@ export function CoverageGlobeCanvas({
     const themeObserver = new MutationObserver(() => {
       theme = readTheme()
       /*
-        아크 색도 같이 넘긴다. 회전 루프가 도는 중이면 다음 프레임에 어차피
-        새 색으로 다시 그리지만, 동작 줄이기에서는 루프가 없어서 여기서
-        넘기지 않으면 경로선만 옛 색으로 남는다.
+        아크·마커 색도 같이 넘긴다. 흐름 루프가 도는 중이면 마커는 다음 프레임에
+        어차피 새 색으로 다시 그려지지만, 아크는 루프가 건드리지 않고 동작
+        줄이기에서는 루프 자체가 없다 — 여기서 넘기지 않으면 옛 색으로 남는다.
       */
       globe?.update({
         ...theme.options,
-        arcs: buildArcs(theme, reduced ? null : (performance.now() - startedAt) / 1000),
+        arcs: buildArcs(theme),
+        markers: buildMarkers(
+          theme,
+          reduced ? null : (performance.now() - startedAt) / 1000
+        ),
       })
     })
     themeObserver.observe(document.documentElement, {
