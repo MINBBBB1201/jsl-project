@@ -129,13 +129,27 @@ const ROUTE_VECTORS = ROUTES.map((route) => ({
   to: toVec3(route.to),
 }))
 
+/*
+  꼬리 모양.
+
+  ⚠️ 점을 이어 선처럼 보이게 하는 것이라, 간격은 반드시 점 지름보다 작아야
+     한다. 처음에는 점 6개를 0.028 간격으로 뒀는데, 꼬리로 갈수록 점은 작아지고
+     간격은 그대로라 뒤쪽이 염주알처럼 뚝뚝 끊어져 보였다. 개수를 늘려 간격을
+     좁히는 것과 크기를 천천히 줄이는 것을 함께 해야 메워진다.
+
+     TRAIL_POINTS 를 줄이거나 TRAIL_SPAN 을 늘리면 그 간격이 다시 벌어진다 —
+     둘 중 하나만 만지지 말 것.
+*/
+
 /** 꼬리를 이루는 점의 개수 (맨 앞 점 포함) */
-const TRAIL_POINTS = 6
-/** 점 사이 간격 (경로 전체를 1 로 봤을 때) */
-const TRAIL_GAP = 0.028
+const TRAIL_POINTS = 24
+/** 꼬리 전체 길이 (경로 전체를 1 로 봤을 때) */
+const TRAIL_SPAN = 0.13
+/** 점 사이 간격 */
+const TRAIL_GAP = TRAIL_SPAN / (TRAIL_POINTS - 1)
 /** 맨 앞 점과 꼬리 끝 점의 크기 */
 const TRAIL_HEAD_SIZE = 0.045
-const TRAIL_TAIL_SIZE = 0.018
+const TRAIL_TAIL_SIZE = 0.012
 
 /**
  * 노선마다 왕복 주기(초)와 시작 위상을 달리 준다.
@@ -352,11 +366,21 @@ function buildMarkers(theme: GlobeTheme, seconds: number | null): Marker[] {
       if (at < 0 || at > 1) continue
 
       const decay = n / (TRAIL_POINTS - 1)
+
+      /*
+        크기는 (1 - decay²) 로 줄인다. 직선으로 줄이면 머리 바로 뒤부터 급히
+        가늘어져서 그 자리에 틈이 먼저 생긴다. 이 곡선은 앞쪽을 오래 굵게
+        붙들고 있다가 끝에서만 빠르게 사라져, 점들이 겹친 채로 남는다.
+      */
+      const thickness = 1 - decay * decay
+      /* 색은 그보다 더 늦게 빠진다 — 줄기가 이어진 뒤 끝에서 스러지는 인상 */
+      const fade = decay * decay
+
       markers.push({
         location: toLatLng(nlerp(from, to, at)),
-        size: TRAIL_HEAD_SIZE + (TRAIL_TAIL_SIZE - TRAIL_HEAD_SIZE) * decay,
+        size: TRAIL_TAIL_SIZE + (TRAIL_HEAD_SIZE - TRAIL_TAIL_SIZE) * thickness,
         // 뒤로 갈수록 배경선 색으로 잦아든다 — 새 색을 만들지 않는다
-        color: mix(theme.flowColor, theme.trackColor, decay),
+        color: mix(theme.flowColor, theme.trackColor, fade),
       })
     }
   }
