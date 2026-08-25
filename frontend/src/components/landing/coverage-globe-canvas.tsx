@@ -3,6 +3,14 @@
 import { useEffect, useRef } from "react"
 import createGlobe, { type Arc, type COBEOptions, type Marker } from "cobe"
 
+import {
+  FALLBACK_NAVY,
+  FALLBACK_ORANGE,
+  FALLBACK_SLATE,
+  cssColorToRgb,
+  supportsWebGL,
+} from "@/lib/brand-colors"
+
 /**
  * 서비스 커버리지 지구본 (COBE 캔버스)
  *
@@ -123,66 +131,12 @@ const THETA = 0.3
  */
 const REDRAW_SCHEDULE = [0, 60, 180, 400, 900, 2000, 4000, 8000]
 
-/**
- * 토큰을 못 읽었을 때 쓸 값. globals.css 의 브랜드 토큰을 sRGB 로 옮긴 것이다.
- *   --brand-navy   oklch(0.28 0.089 254.6)    → #012853
- *   --brand-orange oklch(0.676 0.175 51.3)    → #e87002
- *   --brand-slate  oklch(0.7088 0.0444 254.9) → #8fa3bd
- */
-const FALLBACK_NAVY: [number, number, number] = [0.005, 0.157, 0.326]
-const FALLBACK_ORANGE: [number, number, number] = [0.91, 0.441, 0.008]
-const FALLBACK_SLATE: [number, number, number] = [0.56, 0.639, 0.741]
-
-/**
- * WebGL 을 쓸 수 있는지 미리 본다.
- *
- * ⚠️ createGlobe 는 WebGL 컨텍스트를 못 얻어도 예외를 던지지 않는다 (v2.0.1 에서
- *    확인). 그래서 try/catch 만 두면 아무것도 그려지지 않은 빈 캔버스가 그대로
- *    남고 폴백이 걸리지 않는다. 만들기 전에 직접 확인해야 한다.
- */
-function supportsWebGL() {
-  try {
-    const probe = document.createElement("canvas")
-    return Boolean(probe.getContext("webgl2") ?? probe.getContext("webgl"))
-  } catch {
-    return false
-  }
-}
-
-/**
- * CSS 색 문자열을 COBE 가 쓰는 0~1 RGB 로 바꾼다.
- *
- * 브랜드 토큰이 oklch() 라 getComputedStyle 결과를 숫자로 쪼갤 수 없다. 1×1
- * 캔버스에 그 색으로 한 픽셀을 찍고 되읽으면 브라우저의 색 변환을 그대로
- * 빌려 쓸 수 있다 — 우리가 oklch 변환식을 들고 있을 이유가 없다.
- */
-function cssColorToRgb(
-  value: string,
-  fallback: [number, number, number]
-): [number, number, number] {
-  const color = value.trim()
-  if (!color) return fallback
-
-  try {
-    const canvas = document.createElement("canvas")
-    canvas.width = 1
-    canvas.height = 1
-    const ctx = canvas.getContext("2d", { willReadFrequently: true })
-    if (!ctx) return fallback
-
-    // 파싱에 실패하면 fillStyle 이 그대로 남는다 — 센티넬로 구분한다
-    ctx.fillStyle = "#000000"
-    ctx.fillStyle = color
-    if (ctx.fillStyle === "#000000") return fallback
-
-    ctx.fillRect(0, 0, 1, 1)
-    const [r, g, b] = ctx.getImageData(0, 0, 1, 1).data
-    return [r / 255, g / 255, b / 255]
-  } catch {
-    // 색 하나 때문에 지구본을 통째로 날리지 않는다
-    return fallback
-  }
-}
+/*
+  supportsWebGL 과 cssColorToRgb 는 @/lib/brand-colors 로 옮겼다.
+  컨테이너 적재 뷰어(three.js)에서 oklch 토큰 문제가 똑같이 재현돼
+  두 번째 복사본을 만드는 대신 공용으로 뺐다. 왜 캔버스에 픽셀을 찍어
+  되읽는지, 왜 라이브러리의 예외를 믿으면 안 되는지는 그 파일 주석에 있다.
+*/
 
 /*
   createGlobe 와 update 에 그대로 넘기는 색 묶음.

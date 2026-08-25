@@ -19,6 +19,7 @@ const LOCALIZED_SEGMENTS = [
   'landing',
   'tracking',
   'hs-code',
+  'container-planner',
   'consulting',
   'services',
   'privacy',
