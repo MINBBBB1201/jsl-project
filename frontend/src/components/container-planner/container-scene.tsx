@@ -5,7 +5,7 @@ import { Canvas } from "@react-three/fiber"
 import { Edges, OrbitControls } from "@react-three/drei"
 
 import { useBrandColors } from "@/lib/brand-colors"
-import type { ContainerSpec, LoadPlan, PlacedBox } from "@/lib/container-planner"
+import type { ContainerSpec, PlacedBox } from "@/lib/container-planner"
 
 /**
  * 컨테이너 적재 3D 뷰어 (react-three-fiber)
@@ -204,11 +204,17 @@ function CargoBoxes({ boxes }: { boxes: BoxTransform[] }) {
 
 export function ContainerScene({
   container,
-  plan,
+  placed,
   label,
 }: {
   container: ContainerSpec
-  plan: LoadPlan
+  /**
+   * 그릴 박스들. 빈 배열이면 빈 컨테이너만 그린다 — 계산 전 초기 상태가
+   * 이 경우다. LoadPlan 전체가 아니라 배치 목록만 받는 이유는, 이 컴포넌트가
+   * 적재율·중량 같은 건 쓰지 않아서다. 좁게 받아 두면 계산 전/후 상태를
+   * 같은 컴포넌트로 그릴 수 있다.
+   */
+  placed: readonly PlacedBox[]
   /** 3D 캔버스가 무엇을 보여주는지 — 보조기기용 설명 */
   label: string
 }) {
@@ -228,16 +234,16 @@ export function ContainerScene({
    */
   const colorByBoxId = useMemo(() => {
     const map = new Map<string, string>()
-    for (const box of plan.placed) {
+    for (const box of placed) {
       if (map.has(box.boxId)) continue
       map.set(box.boxId, brand[PALETTE_ORDER[map.size % PALETTE_ORDER.length]])
     }
     return map
-  }, [brand, plan.placed])
+  }, [brand, placed])
 
   const boxes = useMemo(
-    () => toSceneBoxes(container, plan.placed, colorByBoxId),
-    [container, plan.placed, colorByBoxId]
+    () => toSceneBoxes(container, placed, colorByBoxId),
+    [container, placed, colorByBoxId]
   )
 
   /**

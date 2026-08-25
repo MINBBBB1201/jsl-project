@@ -2,10 +2,11 @@
 
 import { Component, useSyncExternalStore, type ReactNode } from "react"
 import dynamic from "next/dynamic"
+import { useTranslations } from "next-intl"
 import { Box, TriangleAlert } from "lucide-react"
 
 import { supportsWebGL } from "@/lib/brand-colors"
-import type { ContainerSpec, LoadPlan } from "@/lib/container-planner"
+import type { ContainerSpec, PlacedBox } from "@/lib/container-planner"
 
 /**
  * 컨테이너 적재 뷰어 — 마운트 게이트
@@ -33,77 +34,33 @@ const ContainerScene = dynamic(
 )
 
 /** 뷰어가 차지할 높이. 화물이 뭉개지지 않게 넉넉히 준다 */
-const VIEWER_HEIGHT = "clamp(24rem, 56vh, 40rem)"
+const VIEWER_HEIGHT = "clamp(22rem, 52vh, 34rem)"
 
 /**
- * WebGL 을 못 쓸 때 대신 보여줄 요약.
+ * WebGL 을 못 쓸 때 대신 보여줄 안내.
  *
- * 랜딩의 NetworkBeams 처럼 그래픽으로 대체하지 않는다. 적재 계획은 숫자만으로도
- * 의미가 있는 정보라, 3D 를 못 그린다고 해서 사용자가 알아야 할 것이 사라지지는
- * 않는다. 3단계에서 붙일 결과 패널의 축소판이라고 보면 된다.
+ * ⚠️ 여기서 적재율·중량을 다시 늘어놓지 않는다. 2단계에서는 이 뷰어가 화면에
+ *    있는 전부였어서 폴백이 숫자를 대신 짊어져야 했지만, 지금은 옆에 결과 패널이
+ *    항상 떠 있다. 같은 숫자를 두 벌 렌더하면 나중에 한쪽만 고치고 다른 쪽이
+ *    남는 식으로 어긋난다. 폴백은 "3D 만 안 된다"는 사실만 말한다.
  */
-function LoadPlanSummary({ plan }: { plan: LoadPlan }) {
-  const cog = plan.centerOfGravity
-  const rows: { label: string; value: string }[] = [
-    { label: "컨테이너", value: plan.container.label },
-    { label: "적재 수량", value: `${plan.placed.length}개` },
-    {
-      label: "적재율(부피)",
-      value: `${plan.volumeUtilizationPercent}%  (${plan.usedVolumeM3} / ${plan.containerVolumeM3} ㎥)`,
-    },
-    {
-      label: "적재 중량",
-      value: `${plan.totalWeightKg.toLocaleString()} / ${plan.maxPayloadKg.toLocaleString()} kg  (${plan.weightUtilizationPercent}%)`,
-    },
-    {
-      label: "무게중심",
-      value:
-        `길이 ${cog.offsetPercent[0]}% · 폭 ${cog.offsetPercent[1]}%` +
-        `  → 기준 ±${cog.tolerancePercent}% ${cog.withinTolerance ? "합격" : "불합격"}`,
-    },
-  ]
+function WebGLUnavailable() {
+  const t = useTranslations("containerPlanner")
 
   return (
-    <div className="rounded-lg border bg-muted/30 p-6">
-      <div className="flex items-start gap-3">
+    <div className="flex h-full items-center justify-center p-6">
+      <div className="flex max-w-md items-start gap-3">
         <TriangleAlert
-          className="mt-0.5 h-5 w-5 shrink-0 text-muted-foreground"
+          className="mt-0.5 size-5 shrink-0 text-muted-foreground"
           aria-hidden
         />
         <div>
-          <p className="font-medium">3D 미리보기를 표시할 수 없습니다</p>
+          <p className="font-medium">{t("webglUnavailableTitle")}</p>
           <p className="mt-1 text-sm text-muted-foreground">
-            이 브라우저에서 WebGL 을 쓸 수 없습니다. 적재 계산 결과는 아래에서
-            그대로 확인할 수 있습니다.
+            {t("webglUnavailableBody")}
           </p>
         </div>
       </div>
-
-      <dl className="mt-6 divide-y border-t text-sm">
-        {rows.map((row) => (
-          <div
-            key={row.label}
-            className="flex flex-col gap-1 py-3 sm:flex-row sm:items-baseline sm:gap-4"
-          >
-            <dt className="shrink-0 text-muted-foreground sm:w-32">{row.label}</dt>
-            <dd className="font-medium tabular-nums">{row.value}</dd>
-          </div>
-        ))}
-      </dl>
-
-      {plan.unplaced.length > 0 ? (
-        <div className="mt-4 border-t pt-4">
-          <p className="text-sm font-medium">미적재</p>
-          <ul className="mt-2 space-y-1 text-sm text-muted-foreground">
-            {plan.unplaced.map((item) => (
-              <li key={`${item.boxId}:${item.reason}`}>
-                {item.box.name} {item.quantity}개
-                <span className="ml-1 font-mono text-xs">({item.reason})</span>
-              </li>
-            ))}
-          </ul>
-        </div>
-      ) : null}
     </div>
   )
 }
@@ -158,13 +115,16 @@ function subscribeToNothing(): () => void {
 
 export function ContainerViewer({
   container,
-  plan,
+  placed,
   label,
 }: {
   container: ContainerSpec
-  plan: LoadPlan
+  /** 계산 전이면 빈 배열 — 빈 컨테이너만 그려진다 */
+  placed: readonly PlacedBox[]
   label: string
 }) {
+  const t = useTranslations("containerPlanner")
+
   /**
    * null = 아직 확인 전(서버/하이드레이션). 확인은 렌더 중에 document 를 만지는
    * 일이라 그냥 하면 하이드레이션이 어긋나고, 이펙트에서 setState 하면 계단식
@@ -177,35 +137,37 @@ export function ContainerViewer({
     getWebglServerSnapshot
   )
 
-  const fallback = <LoadPlanSummary plan={plan} />
+  const shell = (children: ReactNode) => (
+    <div
+      className="w-full overflow-hidden rounded-lg border bg-muted/20"
+      style={{ height: VIEWER_HEIGHT }}
+    >
+      {children}
+    </div>
+  )
 
-  if (webglOk === false) return fallback
+  if (webglOk === false) return shell(<WebGLUnavailable />)
 
   return (
-    <WebGLErrorBoundary fallback={fallback}>
-      <div
-        className="w-full overflow-hidden rounded-lg border bg-muted/20"
-        style={{ height: VIEWER_HEIGHT }}
-      >
-        {webglOk ? (
-          <ContainerScene container={container} plan={plan} label={label} />
+    <WebGLErrorBoundary fallback={shell(<WebGLUnavailable />)}>
+      {shell(
+        webglOk ? (
+          <ContainerScene container={container} placed={placed} label={label} />
         ) : (
           /* 확인이 끝나기 전 한 프레임 — 자리만 잡아 둔다 */
           <div className="flex h-full items-center justify-center text-muted-foreground">
-            <Box className="h-6 w-6 animate-pulse" aria-hidden />
-            <span className="sr-only">3D 미리보기를 준비하고 있습니다</span>
+            <Box className="size-6 animate-pulse" aria-hidden />
+            <span className="sr-only">{t("viewerSection")}</span>
           </div>
-        )}
-      </div>
+        )
+      )}
 
       {/*
         조작 안내는 캔버스가 실제로 그려질 때만 보여야 한다. 폴백 화면에서
         "드래그로 회전"이라고 적혀 있으면 돌리지도 않는 그림을 돌려 보라는 말이 된다.
       */}
       {webglOk ? (
-        <p className="mt-3 text-xs text-muted-foreground">
-          드래그로 회전 · 스크롤로 확대·축소
-        </p>
+        <p className="mt-2 text-xs text-muted-foreground">{t("viewerHint")}</p>
       ) : null}
     </WebGLErrorBoundary>
   )
