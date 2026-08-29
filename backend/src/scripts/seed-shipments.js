@@ -13,7 +13,8 @@
  *
  * 실행: npm run seed:shipments
  *      npm run seed:shipments -- --reset   (기존 합성 데이터 삭제 후 재삽입)
- *      npm run seed:shipments -- --count=60
+ *      npm run seed:shipments -- --count=60        (진행 중 화물 건수)
+ *      npm run seed:shipments -- --delivered=300    (배송 완료 화물 건수)
  */
 
 // ⚠️ mongoose 보다 먼저 — server.js 와 같은 이유 (config/dns.js 주석 참고)
@@ -29,6 +30,11 @@ const {
   RISK_LEVELS,
   MS_PER_DAY
 } = require('../utils/delay-risk');
+const {
+  resolveCompletedAt,
+  isOnTime,
+  COMPLETION_SOURCES,
+} = require('../utils/delivery-completion');
 const logger = require('../utils/logger');
 
 /** 합성 데이터 식별용 표시. --reset 시 이 표시가 있는 문서만 지운다. */
@@ -36,6 +42,21 @@ const DEMO_MARKER = 'DEMO';
 const DEMO_TRACKING_PREFIX = 'DEMO-';
 
 const DEFAULT_COUNT = 36;
+
+/**
+ * 배송 완료(delivered) 화물 건수.
+ *
+ * 진행 중 화물만 넣으면 대시보드의 온타임 배송률·추이 차트가 영원히 빈 값이다
+ * (완료 건이 0 이라 분모가 없고, 차트의 "배송 완료" 계열이 계속 0 이다).
+ * 완료 건은 지난 DELIVERED_WINDOW_DAYS 일에 걸쳐 흩뿌리고, history 에 delivered
+ * 전환 이력을 남긴다 — 실제 API(updateShipmentStatus)가 남기는 것과 같은 모양이라
+ * 집계가 이력을 제대로 읽는지 그대로 검증된다.
+ */
+const DEFAULT_DELIVERED_COUNT = 180;
+const DELIVERED_WINDOW_DAYS = 90;
+
+/** 완료 건 중 약속 기일을 넘긴 비율 (index 기반이라 재실행해도 비율이 유지된다) */
+const LATE_EVERY_NTH = 8;
 
 // [합성] 노선 — 회사 서비스 지역을 참고했지만 실제 운송 실적이 아님
 const ROUTES = {
@@ -160,6 +181,10 @@ const buildShipment = (index, now) => {
     shippedAt,
     estimatedArrivalAt,
     estimatedDelivery: estimatedArrivalAt,
+    // 화물 등록 시각 = 집하 시각. 지정하지 않으면 mongoose timestamps 가 전부
+    // "시드 실행 시각" 으로 채워, 집하는 3주 전인데 등록은 오늘로 잡히는
+    // 앞뒤 안 맞는 데이터가 된다 (추이 차트도 하루짜리 막대 하나가 된다).
+    createdAt: shippedAt,
     history: [
       {
         location: origin,
@@ -184,12 +209,96 @@ const buildShipment = (index, now) => {
   };
 };
 
+/**
+ * [합성] 배송 완료 화물.
+ *
+ * 완료일(completedAt)을 먼저 정하고 거기서 약속 기일과 집하일을 역산한다.
+ * 집하일부터 굴리면 완료일이 표준 소요일에 딱 붙어 전부 "기일 정각 도착" 이
+ * 되어 버려서, 온타임 판정의 경계만 밟는 데이터가 나온다.
+ *
+ * createdAt 을 집하 시각으로 명시해 지난 3개월에 걸쳐 흩뿌린다. 지정하지 않으면
+ * mongoose timestamps 가 전부 "시드 실행 시각" 으로 채워, 추이 차트가 하루짜리
+ * 막대 하나로 나온다. (mongoose 는 명시한 createdAt 을 덮어쓰지 않는다)
+ */
+const buildDeliveredShipment = (index, now) => {
+  const modes = Object.keys(ROUTES);
+  const transportMode = modes[index % modes.length];
+  const route = pick(ROUTES[transportMode]);
+  const standardDays = TRANSIT_TIMES[transportMode].days;
+
+  // 완료일: 오늘부터 DELIVERED_WINDOW_DAYS 일 전 사이에 고르게
+  const daysAgo = (index % DELIVERED_WINDOW_DAYS) + Math.random();
+  const completedAt = new Date(now.getTime() - daysAgo * MS_PER_DAY);
+
+  // 대부분 기일 안에 도착하고 일부는 늦는다 (기일 대비 완료일의 오프셋)
+  const isLate = index % LATE_EVERY_NTH === 0;
+  const offsetDays = isLate
+    ? -(0.5 + Math.random() * 4) // 기일을 넘겨 도착
+    : 0.2 + Math.random() * 2.5; // 기일 전에 도착
+  const estimatedDelivery = new Date(completedAt.getTime() + offsetDays * MS_PER_DAY);
+  const shippedAt = new Date(estimatedDelivery.getTime() - standardDays * MS_PER_DAY);
+
+  const origin = toLocation(route.from, shippedAt);
+  const destination = toLocation(route.to, completedAt);
+  const customer = pick(DEMO_CUSTOMERS);
+
+  return {
+    trackingNumber: `${DEMO_TRACKING_PREFIX}D${String(index + 1).padStart(4, '0')}-${pick(['AIR', 'SEA', 'TRK', 'RAI', 'EXP'])}`,
+    origin,
+    destination,
+    // 완료 건의 현재 위치는 도착지다
+    currentLocation: { ...destination, address: `${route.to[0]} 배송 완료 (${DEMO_MARKER})` },
+    checkpoints: [],
+    status: 'delivered',
+    transportMode,
+    shippedAt,
+    estimatedArrivalAt: calculateEstimatedArrival(shippedAt, transportMode, TRANSIT_TIMES),
+    estimatedDelivery,
+    // 화물 등록 시각 = 집하 시각으로 본다
+    createdAt: shippedAt,
+    // ⚠️ 실제 API 가 남기는 것과 같은 모양의 이력.
+    //    집계는 이 delivered 항목의 timestamp 를 완료 시각으로 읽는다
+    //    (utils/delivery-completion.js 참고).
+    history: [
+      {
+        location: origin,
+        status: 'in_transit',
+        description: `[${DEMO_MARKER}] 집하 완료 — 합성 데이터`,
+        timestamp: shippedAt,
+      },
+      {
+        location: destination,
+        status: 'delivered',
+        description: `[${DEMO_MARKER}] 배송 완료 — 합성 데이터`,
+        timestamp: completedAt,
+      },
+    ],
+    customer: {
+      name: `[${DEMO_MARKER}] ${customer}`,
+      email: `demo-d${index + 1}@example.com`,
+      phone: '000-0000-0000',
+    },
+    items: [
+      {
+        description: `[${DEMO_MARKER}] ${pick(DEMO_ITEMS)}`,
+        quantity: randomInt(1, 200),
+        weight: randomInt(5, 2000),
+        dimensions: { length: randomInt(20, 200), width: randomInt(20, 150), height: randomInt(20, 150) },
+      },
+    ],
+  };
+};
+
 const seed = async () => {
   await connectDB();
 
   const reset = process.argv.includes('--reset');
   const countArg = process.argv.find((a) => a.startsWith('--count='));
   const count = countArg ? parseInt(countArg.split('=')[1], 10) : DEFAULT_COUNT;
+  const deliveredArg = process.argv.find((a) => a.startsWith('--delivered='));
+  const deliveredCount = deliveredArg
+    ? parseInt(deliveredArg.split('=')[1], 10)
+    : DEFAULT_DELIVERED_COUNT;
 
   // 합성 데이터만 골라서 지운다 — 실데이터가 섞여 있어도 안전하도록
   const demoFilter = { trackingNumber: { $regex: `^${DEMO_TRACKING_PREFIX}` } };
@@ -204,17 +313,24 @@ const seed = async () => {
     logger.warn(`합성 화물이 이미 ${existing}건 있습니다. 다시 넣으려면 --reset 옵션을 사용하세요.`);
   } else {
     const now = new Date();
-    const docs = Array.from({ length: count }, (_, i) => buildShipment(i, now));
+    const docs = [
+      ...Array.from({ length: count }, (_, i) => buildShipment(i, now)),
+      ...Array.from({ length: deliveredCount }, (_, i) => buildDeliveredShipment(i, now)),
+    ];
 
     // insertMany 는 pre('save') 훅을 타지 않으므로 create 로 넣는다
     // (estimatedArrivalAt / delayRiskScore 자동 계산을 그대로 태우기 위함)
     await Shipment.create(docs);
-    logger.info(`합성 화물 ${docs.length}건 삽입 완료 (전부 ${DEMO_MARKER} 표시)`);
+    logger.info(
+      `합성 화물 ${docs.length}건 삽입 완료 — 진행 중 ${count} / 완료 ${deliveredCount} (전부 ${DEMO_MARKER} 표시)`
+    );
   }
 
   // 등급 분포 확인
   const now = new Date();
-  const all = await Shipment.find(demoFilter).select('transportMode shippedAt status').lean();
+  const all = await Shipment.find(demoFilter)
+    .select('transportMode shippedAt status createdAt estimatedDelivery history.status history.timestamp updatedAt')
+    .lean();
   const counts = { [RISK_LEVELS.NORMAL]: 0, [RISK_LEVELS.AT_RISK]: 0, [RISK_LEVELS.DELAYED]: 0, 제외: 0 };
   const byMode = {};
 
@@ -227,6 +343,26 @@ const seed = async () => {
 
   logger.info(`등급 분포 — 정상 ${counts[RISK_LEVELS.NORMAL]} / 지연위험 ${counts[RISK_LEVELS.AT_RISK]} / 지연 ${counts[RISK_LEVELS.DELAYED]} / 제외 ${counts.제외}`);
   logger.info(`운송모드 분포 — ${Object.entries(byMode).map(([m, c]) => `${m}:${c}`).join(', ')}`);
+
+  // 대시보드 집계가 읽는 값과 같은 기준으로 완료 건 분포를 확인한다
+  const delivered = all.filter((s) => s.status === 'delivered');
+  let onTimeCount = 0;
+  let lateCount = 0;
+  let fallbackCount = 0;
+  for (const s of delivered) {
+    const { at, source } = resolveCompletedAt(s);
+    if (source === COMPLETION_SOURCES.UPDATED_AT) fallbackCount += 1;
+    const result = isOnTime(at, s.estimatedDelivery);
+    if (result === true) onTimeCount += 1;
+    else if (result === false) lateCount += 1;
+  }
+  const onTimeRate = delivered.length > 0
+    ? Math.round((onTimeCount / (onTimeCount + lateCount)) * 1000) / 10
+    : null;
+
+  logger.info(
+    `완료 건 — ${delivered.length}건 / 정시 ${onTimeCount} · 지연 ${lateCount} (온타임 ${onTimeRate ?? '—'}%) · updatedAt 폴백 ${fallbackCount}건`
+  );
 
   await closeDB();
 };
