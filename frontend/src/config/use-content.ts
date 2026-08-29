@@ -17,6 +17,7 @@ import {
   Mail,
   MapPin,
   Package,
+  PackageOpen,
   PlaneTakeoff,
   Radar,
   Route,
@@ -637,6 +638,7 @@ export function useContent() {
         { name: m.nav.faq, href: "/landing#faq" },
         { name: m.nav.tracking, href: "/tracking" },
         { name: m.nav.hsCode, href: "/hs-code" },
+        { name: m.nav.containerPlanner, href: "/container-planner" },
         { name: m.footer.linkQuote, href: "/landing#contact" },
         { name: m.footer.linkNotice, href: "#" },
       ],
@@ -687,6 +689,13 @@ export function useContent() {
           title: m.nav.contact as string,
           items: [
             { title: m.nav.tracking, description: m.tracking.subtitle, icon: Radar, href: "/tracking" },
+            /*
+              적재 계산기는 푸터(고객지원)에도 있지만 여기에도 둔다. HS코드 조회처럼
+              한 번 찾아보고 마는 참고 정보가 아니라, 화주가 견적을 받기 전에 몇 대가
+              필요한지 직접 따져 보는 도구라 화주 진입 경로에 있어야 한다.
+              바로 아래 "견적 요청"으로 이어지는 순서이기도 하다.
+            */
+            { title: m.nav.containerPlanner, description: m.containerPlanner.subtitle, icon: PackageOpen, href: "/container-planner" },
             { title: m.footer.linkQuote, description: m.contact.channelQuote.title, icon: Container, href: "/landing#contact" },
             { title: m.nav.faq, description: m.faq.description, icon: BadgeCheck, href: "/landing#faq" },
           ],

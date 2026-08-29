@@ -1,0 +1,203 @@
+"use client"
+
+import { Component, useSyncExternalStore, type ReactNode } from "react"
+import dynamic from "next/dynamic"
+import { useTranslations } from "next-intl"
+import { Box, TriangleAlert } from "lucide-react"
+
+import { supportsWebGL } from "@/lib/brand-colors"
+import type { ContainerSpec, PlacedBox } from "@/lib/container-planner"
+
+/**
+ * 컨테이너 적재 뷰어 — 마운트 게이트
+ *
+ * 실제 그림은 container-scene.tsx 가 그린다. 이 파일은 "언제 그릴지"와
+ * "못 그리면 어떻게 할지"만 정한다.
+ *
+ *   1. next/dynamic(ssr:false)  — three.js 가 초기 번들에 실리지 않는다.
+ *      서버에는 WebGL 도 캔버스도 없어서 어차피 그릴 수 없다.
+ *   2. supportsWebGL() 사전 확인 — 아래 주석 참고.
+ *   3. 에러 경계               — 사전 확인을 통과하고도 렌더러 생성이 실패하는
+ *                                경우(드라이버 문제, 컨텍스트 수 초과)를 받는다.
+ *
+ * ⚠️ IntersectionObserver 지연 마운트는 일부러 넣지 않았다.
+ *    지구본은 랜딩 한참 아래에 있는 배경 요소라, 첫 화면을 그리는 동안 보이지도
+ *    않는 캔버스가 GPU 를 잡는 것을 막을 실익이 있었다. 여기는 반대로 이 뷰어가
+ *    페이지의 주 콘텐츠이고 헤더 바로 아래 첫 화면에 들어온다. 관찰자를 달아 봐야
+ *    마운트 직후 즉시 교차 판정이 나서, 얻는 것 없이 콜백 한 틱만큼 첫 그림이
+ *    늦어지고 코드만 늘어난다.
+ */
+
+const ContainerScene = dynamic(
+  () => import("./container-scene").then((mod) => mod.ContainerScene),
+  { ssr: false }
+)
+
+/** 뷰어가 차지할 높이. 화물이 뭉개지지 않게 넉넉히 준다 */
+const VIEWER_HEIGHT = "clamp(22rem, 52vh, 34rem)"
+
+/**
+ * WebGL 을 못 쓸 때 대신 보여줄 안내.
+ *
+ * ⚠️ 여기서 적재율·중량을 다시 늘어놓지 않는다. 2단계에서는 이 뷰어가 화면에
+ *    있는 전부였어서 폴백이 숫자를 대신 짊어져야 했지만, 지금은 옆에 결과 패널이
+ *    항상 떠 있다. 같은 숫자를 두 벌 렌더하면 나중에 한쪽만 고치고 다른 쪽이
+ *    남는 식으로 어긋난다. 폴백은 "3D 만 안 된다"는 사실만 말한다.
+ */
+function WebGLUnavailable() {
+  const t = useTranslations("containerPlanner")
+
+  return (
+    <div className="flex h-full items-center justify-center p-6">
+      <div className="flex max-w-md items-start gap-3">
+        <TriangleAlert
+          className="mt-0.5 size-5 shrink-0 text-muted-foreground"
+          aria-hidden
+        />
+        <div>
+          <p className="font-medium">{t("webglUnavailableTitle")}</p>
+          <p className="mt-1 text-sm text-muted-foreground">
+            {t("webglUnavailableBody")}
+          </p>
+        </div>
+      </div>
+    </div>
+  )
+}
+
+/**
+ * 렌더러 생성 실패를 잡는 경계.
+ *
+ * ⚠️ try/catch 로는 못 잡는다. three 의 WebGLRenderer 는 컨텍스트를 못 얻으면
+ *    예외를 던지지만(r185 WebGLRenderer.js:405), 그 생성은 react-three-fiber 가
+ *    자기 리컨사일러 안에서 하므로 <Canvas> 를 감싼 try/catch 바깥으로 나오지
+ *    않는다. 리액트 렌더 트리에서 올라오는 예외라 에러 경계로만 받을 수 있다.
+ */
+class WebGLErrorBoundary extends Component<
+  { fallback: ReactNode; children: ReactNode },
+  { failed: boolean }
+> {
+  state = { failed: false }
+
+  static getDerivedStateFromError() {
+    return { failed: true }
+  }
+
+  render() {
+    return this.state.failed ? this.props.fallback : this.props.children
+  }
+}
+
+/**
+ * WebGL 지원 여부 — 세션 동안 바뀌지 않는 값이라 한 번만 확인하고 캐시한다.
+ *
+ * 확인 자체가 캔버스를 만들어 컨텍스트를 얻어 보는 일이라 렌더마다 하면 낭비다.
+ */
+let webglSupportCache: boolean | null = null
+
+function getWebglSnapshot(): boolean {
+  webglSupportCache ??= supportsWebGL()
+  return webglSupportCache
+}
+
+/**
+ * 서버에서는 판정할 수 없다. null 을 돌려 "아직 모름"으로 두고, 하이드레이션이
+ * 끝난 뒤 클라이언트 스냅샷이 진짜 값으로 바꿔 준다.
+ */
+function getWebglServerSnapshot(): boolean | null {
+  return null
+}
+
+/** 바뀔 일이 없는 값이라 구독할 것이 없다 */
+function subscribeToNothing(): () => void {
+  return () => {}
+}
+
+export function ContainerViewer({
+  container,
+  placed,
+  label,
+}: {
+  container: ContainerSpec
+  /** 계산 전이면 빈 배열 — 빈 컨테이너만 그려진다 */
+  placed: readonly PlacedBox[]
+  label: string
+}) {
+  const t = useTranslations("containerPlanner")
+
+  /**
+   * null = 아직 확인 전(서버/하이드레이션). 확인은 렌더 중에 document 를 만지는
+   * 일이라 그냥 하면 하이드레이션이 어긋나고, 이펙트에서 setState 하면 계단식
+   * 렌더가 된다. useSyncExternalStore 가 두 문제를 한 번에 해결해 준다 —
+   * 서버 스냅샷으로 첫 렌더를 맞추고, 하이드레이션 뒤 실제 값으로 넘어간다.
+   */
+  const webglOk = useSyncExternalStore(
+    subscribeToNothing,
+    getWebglSnapshot,
+    getWebglServerSnapshot
+  )
+
+  const shell = (children: ReactNode) => (
+    <div
+      /*
+        [&_canvas]:touch-pan-y! — 모바일에서 손가락으로 돌리기 위한 것.
+
+        ⚠️ 이게 없으면 터치로 아무 반응이 없다. OrbitControls 는 연결할 때
+           대상 엘리먼트에 touch-action:none 을 걸지만(three-stdlib
+           OrbitControls.js:300), 그 대상은 R3F 의 바깥 래퍼 div 다. 정작 손가락이
+           닿는 <canvas> 에는 R3F 가 touch-action:auto 를 인라인으로 박아 두고,
+           touch-action 은 실제로 터치가 떨어진 엘리먼트 값이 우선이라 브라우저가
+           제스처를 스크롤로 가져가 버린다. 실측으로 확인했다 — 터치 드래그를
+           보내면 화면은 그대로고 페이지만 1149px 스크롤됐다.
+
+        ⚠️ none 이 아니라 pan-y 인 이유: 이 뷰어는 모바일에서 화면의 절반을
+           차지하고 그 아래에 결과 패널이 이어진다. none 으로 막으면 뷰어 위에서
+           시작한 세로 스와이프가 통째로 회전으로 먹혀서, 결과를 보러 내려가려던
+           사용자가 페이지에 갇힌다. pan-y 는 세로 스크롤은 브라우저에 남기고
+           가로 드래그만 컨트롤에 준다 — 컨테이너는 길이 방향으로 긴 물체라
+           수직축 회전(가로 드래그)이 실무에서 실제로 보고 싶은 각도이기도 하다.
+           위아래로 기울여 보는 것은 마우스가 있는 데스크탑에서 그대로 된다.
+
+        ⚠️ canvas 만 고쳐서는 안 된다. 브라우저는 터치가 떨어진 엘리먼트에서
+           위로 올라가며 touch-action 을 교집합으로 계산하는데, OrbitControls 가
+           none 을 건 R3F 래퍼가 조상이라 canvas 만 pan-y 로 바꿔도 교집합이
+           none 이 되어 세로 스크롤이 여전히 막힌다. 실측으로 확인했다 — canvas 만
+           고친 상태에서 캔버스 위 세로 스와이프는 0px 스크롤이었다.
+           그래서 R3F 래퍼(직계 자식 div)와 canvas 를 함께 pan-y 로 둔다.
+
+        인라인 스타일을 이기려면 !important 가 필요해서 Tailwind v4 의 접미사
+        important 문법(`touch-pan-y!`)을 쓴다.
+      */
+      className="w-full overflow-hidden rounded-lg border bg-muted/20 [&>div]:touch-pan-y! [&_canvas]:touch-pan-y!"
+      style={{ height: VIEWER_HEIGHT }}
+    >
+      {children}
+    </div>
+  )
+
+  if (webglOk === false) return shell(<WebGLUnavailable />)
+
+  return (
+    <WebGLErrorBoundary fallback={shell(<WebGLUnavailable />)}>
+      {shell(
+        webglOk ? (
+          <ContainerScene container={container} placed={placed} label={label} />
+        ) : (
+          /* 확인이 끝나기 전 한 프레임 — 자리만 잡아 둔다 */
+          <div className="flex h-full items-center justify-center text-muted-foreground">
+            <Box className="size-6 animate-pulse" aria-hidden />
+            <span className="sr-only">{t("viewerSection")}</span>
+          </div>
+        )
+      )}
+
+      {/*
+        조작 안내는 캔버스가 실제로 그려질 때만 보여야 한다. 폴백 화면에서
+        "드래그로 회전"이라고 적혀 있으면 돌리지도 않는 그림을 돌려 보라는 말이 된다.
+      */}
+      {webglOk ? (
+        <p className="mt-2 text-xs text-muted-foreground">{t("viewerHint")}</p>
+      ) : null}
+    </WebGLErrorBoundary>
+  )
+}
