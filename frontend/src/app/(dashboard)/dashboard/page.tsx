@@ -1,13 +1,8 @@
 import { AutomationLogCard } from "./components/automation-log-card"
 import { ChartAreaInteractive } from "./components/chart-area-interactive"
-import { DataTable } from "./components/data-table"
 import { DelayRiskTable } from "./components/delay-risk-table"
 import { SectionCards } from "./components/section-cards"
-
-import data from "./data/data.json"
-import pastPerformanceData from "./data/past-performance-data.json"
-import keyPersonnelData from "./data/key-personnel-data.json"
-import focusDocumentsData from "./data/focus-documents-data.json"
+import { ShipmentTable } from "./components/shipment-table"
 
 export default function Page() {
   return (
@@ -25,14 +20,7 @@ export default function Page() {
         <DelayRiskTable />
         <AutomationLogCard />
         <ChartAreaInteractive />
-      </div>
-      <div className="@container/main">
-        <DataTable
-          data={data}
-          pastPerformanceData={pastPerformanceData}
-          keyPersonnelData={keyPersonnelData}
-          focusDocumentsData={focusDocumentsData}
-        />
+        <ShipmentTable />
       </div>
     </>
   )
