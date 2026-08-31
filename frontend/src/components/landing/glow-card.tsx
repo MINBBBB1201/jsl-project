@@ -59,8 +59,18 @@ export function GlowCard({
        HTMLDivElement 와 HTMLLIElement 를 동시에 만족해야 하는 불가능한 타입이
        된다 (HTMLDivElement 에 li 의 value·type 이 없다는 오류). 받는 props 는
        위 인터페이스가 이미 div 기준으로 좁혀 두었으므로 호출부는 안전하다.
+
+    ⚠️ 타입 인자를 반드시 붙일 것. 그냥 React.ElementType 으로 두면
+       "JSX 로 쓸 수 있는 모든 태그"가 되는데, @react-three/fiber 를 설치한
+       뒤로는 그 목록에 three.js 엘리먼트(mesh·boxGeometry…) 수백 개가 전역으로
+       끼어든다 (fiber 가 global JSX.IntrinsicElements 를 확장한다).
+       그러면 TS 가 모든 후보의 props 를 교집합 내다가 never 로 무너져서,
+       three 를 쓰지도 않는 이 파일이 "children 이 never 여야 한다"는 오류를 낸다.
+       받을 props 를 명시해 두면 후보가 그 props 를 받는 HTML 태그로만 걸러진다.
   */
-  const Tag = as as React.ElementType
+  const Tag = as as React.ElementType<
+    React.HTMLAttributes<HTMLElement> & React.RefAttributes<HTMLElement>
+  >
   const ref = React.useRef<HTMLElement>(null)
 
   /*

@@ -39,3 +39,6 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# container-planner 유닛 테스트 빌드 산출물 (npm run test:planner)
+/.test-build
