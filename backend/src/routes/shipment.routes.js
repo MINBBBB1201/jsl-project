@@ -51,6 +51,24 @@ router.get(
 //    트래킹 번호로 해석돼 404 가 난다.
 router.get('/delay-summary', requireAuth, shipmentController.getDelaySummary);
 
+// 대시보드 KPI 카드용 집계 (처리 건수 / 온타임 배송률 / 활성 배송 건수).
+// ⚠️ '/:trackingNumber' 보다 먼저 선언해야 한다.
+router.get('/dashboard-summary', requireAuth, shipmentController.getDashboardSummary);
+
+// 대시보드 트렌드 차트용 일자별 집계 (신규 집하 / 배송 완료).
+// ⚠️ '/:trackingNumber' 보다 먼저 선언해야 한다.
+router.get(
+  '/trend',
+  requireAuth,
+  [
+    query('range').optional({ values: 'falsy' })
+      .isIn(['7d', '30d', '90d'])
+      .withMessage('range 는 7d, 30d, 90d 중 하나여야 합니다.'),
+    validate
+  ],
+  shipmentController.getShipmentTrend
+);
+
 // 랜딩 히어로용 공개 집계 (등급별 건수만 — 화물 단위 정보 없음).
 // ⚠️ '/:trackingNumber' 보다 먼저 선언해야 한다.
 router.get('/public-summary', shipmentController.getPublicSummary);

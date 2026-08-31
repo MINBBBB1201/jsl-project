@@ -1,9 +1,12 @@
 "use client"
 
 import * as React from "react"
+import { RotateCcw } from "lucide-react"
 import { Area, AreaChart, CartesianGrid, XAxis } from "recharts"
 
 import { useIsMobile } from "@/hooks/use-mobile"
+import { Button } from "@/components/ui/button"
+import { Skeleton } from "@/components/ui/skeleton"
 import {
   Card,
   CardAction,
@@ -15,6 +18,8 @@ import {
 import {
   type ChartConfig,
   ChartContainer,
+  ChartLegend,
+  ChartLegendContent,
   ChartTooltip,
   ChartTooltipContent,
 } from "@/components/ui/chart"
@@ -29,120 +34,59 @@ import {
   ToggleGroup,
   ToggleGroupItem,
 } from "@/components/ui/toggle-group"
+import { useShipmentTrend, type TrendRange } from "../use-dashboard-summary"
 
-export const description = "An interactive area chart"
+export const description = "일자별 신규 집하 / 배송 완료 추이"
 
-const chartData = [
-  { date: "2024-04-01", desktop: 222, mobile: 150 },
-  { date: "2024-04-02", desktop: 97, mobile: 180 },
-  { date: "2024-04-03", desktop: 167, mobile: 120 },
-  { date: "2024-04-04", desktop: 242, mobile: 260 },
-  { date: "2024-04-05", desktop: 373, mobile: 290 },
-  { date: "2024-04-06", desktop: 301, mobile: 340 },
-  { date: "2024-04-07", desktop: 245, mobile: 180 },
-  { date: "2024-04-08", desktop: 409, mobile: 320 },
-  { date: "2024-04-09", desktop: 59, mobile: 110 },
-  { date: "2024-04-10", desktop: 261, mobile: 190 },
-  { date: "2024-04-11", desktop: 327, mobile: 350 },
-  { date: "2024-04-12", desktop: 292, mobile: 210 },
-  { date: "2024-04-13", desktop: 342, mobile: 380 },
-  { date: "2024-04-14", desktop: 137, mobile: 220 },
-  { date: "2024-04-15", desktop: 120, mobile: 170 },
-  { date: "2024-04-16", desktop: 138, mobile: 190 },
-  { date: "2024-04-17", desktop: 446, mobile: 360 },
-  { date: "2024-04-18", desktop: 364, mobile: 410 },
-  { date: "2024-04-19", desktop: 243, mobile: 180 },
-  { date: "2024-04-20", desktop: 89, mobile: 150 },
-  { date: "2024-04-21", desktop: 137, mobile: 200 },
-  { date: "2024-04-22", desktop: 224, mobile: 170 },
-  { date: "2024-04-23", desktop: 138, mobile: 230 },
-  { date: "2024-04-24", desktop: 387, mobile: 290 },
-  { date: "2024-04-25", desktop: 215, mobile: 250 },
-  { date: "2024-04-26", desktop: 75, mobile: 130 },
-  { date: "2024-04-27", desktop: 383, mobile: 420 },
-  { date: "2024-04-28", desktop: 122, mobile: 180 },
-  { date: "2024-04-29", desktop: 315, mobile: 240 },
-  { date: "2024-04-30", desktop: 454, mobile: 380 },
-  { date: "2024-05-01", desktop: 165, mobile: 220 },
-  { date: "2024-05-02", desktop: 293, mobile: 310 },
-  { date: "2024-05-03", desktop: 247, mobile: 190 },
-  { date: "2024-05-04", desktop: 385, mobile: 420 },
-  { date: "2024-05-05", desktop: 481, mobile: 390 },
-  { date: "2024-05-06", desktop: 498, mobile: 520 },
-  { date: "2024-05-07", desktop: 388, mobile: 300 },
-  { date: "2024-05-08", desktop: 149, mobile: 210 },
-  { date: "2024-05-09", desktop: 227, mobile: 180 },
-  { date: "2024-05-10", desktop: 293, mobile: 330 },
-  { date: "2024-05-11", desktop: 335, mobile: 270 },
-  { date: "2024-05-12", desktop: 197, mobile: 240 },
-  { date: "2024-05-13", desktop: 197, mobile: 160 },
-  { date: "2024-05-14", desktop: 448, mobile: 490 },
-  { date: "2024-05-15", desktop: 473, mobile: 380 },
-  { date: "2024-05-16", desktop: 338, mobile: 400 },
-  { date: "2024-05-17", desktop: 499, mobile: 420 },
-  { date: "2024-05-18", desktop: 315, mobile: 350 },
-  { date: "2024-05-19", desktop: 235, mobile: 180 },
-  { date: "2024-05-20", desktop: 177, mobile: 230 },
-  { date: "2024-05-21", desktop: 82, mobile: 140 },
-  { date: "2024-05-22", desktop: 81, mobile: 120 },
-  { date: "2024-05-23", desktop: 252, mobile: 290 },
-  { date: "2024-05-24", desktop: 294, mobile: 220 },
-  { date: "2024-05-25", desktop: 201, mobile: 250 },
-  { date: "2024-05-26", desktop: 213, mobile: 170 },
-  { date: "2024-05-27", desktop: 420, mobile: 460 },
-  { date: "2024-05-28", desktop: 233, mobile: 190 },
-  { date: "2024-05-29", desktop: 78, mobile: 130 },
-  { date: "2024-05-30", desktop: 340, mobile: 280 },
-  { date: "2024-05-31", desktop: 178, mobile: 230 },
-  { date: "2024-06-01", desktop: 178, mobile: 200 },
-  { date: "2024-06-02", desktop: 470, mobile: 410 },
-  { date: "2024-06-03", desktop: 103, mobile: 160 },
-  { date: "2024-06-04", desktop: 439, mobile: 380 },
-  { date: "2024-06-05", desktop: 88, mobile: 140 },
-  { date: "2024-06-06", desktop: 294, mobile: 250 },
-  { date: "2024-06-07", desktop: 323, mobile: 370 },
-  { date: "2024-06-08", desktop: 385, mobile: 320 },
-  { date: "2024-06-09", desktop: 438, mobile: 480 },
-  { date: "2024-06-10", desktop: 155, mobile: 200 },
-  { date: "2024-06-11", desktop: 92, mobile: 150 },
-  { date: "2024-06-12", desktop: 492, mobile: 420 },
-  { date: "2024-06-13", desktop: 81, mobile: 130 },
-  { date: "2024-06-14", desktop: 426, mobile: 380 },
-  { date: "2024-06-15", desktop: 307, mobile: 350 },
-  { date: "2024-06-16", desktop: 371, mobile: 310 },
-  { date: "2024-06-17", desktop: 475, mobile: 520 },
-  { date: "2024-06-18", desktop: 107, mobile: 170 },
-  { date: "2024-06-19", desktop: 341, mobile: 290 },
-  { date: "2024-06-20", desktop: 408, mobile: 450 },
-  { date: "2024-06-21", desktop: 169, mobile: 210 },
-  { date: "2024-06-22", desktop: 317, mobile: 270 },
-  { date: "2024-06-23", desktop: 480, mobile: 530 },
-  { date: "2024-06-24", desktop: 132, mobile: 180 },
-  { date: "2024-06-25", desktop: 141, mobile: 190 },
-  { date: "2024-06-26", desktop: 434, mobile: 380 },
-  { date: "2024-06-27", desktop: 448, mobile: 490 },
-  { date: "2024-06-28", desktop: 149, mobile: 200 },
-  { date: "2024-06-29", desktop: 103, mobile: 160 },
-  { date: "2024-06-30", desktop: 446, mobile: 400 },
-]
+/**
+ * 화물 처리 추이 차트.
+ *
+ * GET /api/shipments/trend 이 날짜별 건수를 한국 시간 기준으로 잘라서 내려준다.
+ * 값이 없는 날도 0 으로 채워 오므로 화면에서 빈 날짜를 메울 필요가 없다.
+ * (빠진 날을 그대로 두면 차트가 없는 구간을 직선으로 이어 그린다)
+ */
 
 const chartConfig = {
-  visitors: {
-    label: "Visitors",
+  created: {
+    label: "신규 집하",
+    color: "var(--chart-1)",
   },
-  desktop: {
-    label: "Desktop",
-    color: "var(--primary)",
-  },
-  mobile: {
-    label: "Mobile",
-    color: "var(--primary)",
+  completed: {
+    label: "배송 완료",
+    color: "var(--chart-2)",
   },
 } satisfies ChartConfig
 
+const RANGE_LABELS: Record<TrendRange, string> = {
+  "90d": "최근 3개월",
+  "30d": "최근 30일",
+  "7d": "최근 7일",
+}
+
+const isTrendRange = (value: string): value is TrendRange =>
+  value === "7d" || value === "30d" || value === "90d"
+
+/**
+ * 서버가 주는 날짜는 한국 시간 기준으로 이미 잘린 "YYYY-MM-DD" 문자열이다.
+ * new Date(...) 로 되돌리면 UTC 자정으로 파싱돼, 음수 시간대에서 보는 사람에게는
+ * 하루 앞 날짜가 찍힌다. 문자열을 그대로 쪼개서 쓴다.
+ */
+const splitDayKey = (value: string) => {
+  const [year, month, day] = value.split("-")
+  return { year, month: Number(month), day: Number(day) }
+}
+const formatAxisDay = (value: string) => {
+  const { month, day } = splitDayKey(value)
+  return `${month}/${day}`
+}
+const formatTooltipDay = (value: string) => {
+  const { month, day } = splitDayKey(value)
+  return `${month}월 ${day}일`
+}
+
 export function ChartAreaInteractive() {
   const isMobile = useIsMobile()
-  const [timeRange, setTimeRange] = React.useState("90d")
+  const [timeRange, setTimeRange] = React.useState<TrendRange>("90d")
 
   // 모바일로 전환되면 기본 범위를 7일로 좁힙니다.
   // effect + setState 대신 렌더 중 조정하는 React 공식 패턴을 사용합니다.
@@ -157,141 +101,170 @@ export function ChartAreaInteractive() {
     }
   }
 
-  const filteredData = chartData.filter((item) => {
-    const date = new Date(item.date)
-    const referenceDate = new Date("2024-06-30")
-    let daysToSubtract = 90
-    if (timeRange === "30d") {
-      daysToSubtract = 30
-    } else if (timeRange === "7d") {
-      daysToSubtract = 7
-    }
-    const startDate = new Date(referenceDate)
-    startDate.setDate(startDate.getDate() - daysToSubtract)
-    return date >= startDate
-  })
+  const { data, isLoading, error, reload } = useShipmentTrend(timeRange)
+  const trend = data?.data
+
+  // ToggleGroup 은 선택을 해제할 때 "" 를 넘긴다. 그대로 받으면 범위가 비어
+  // 차트가 사라지므로, 아는 값일 때만 반영한다.
+  const handleRangeChange = (value: string) => {
+    if (isTrendRange(value)) setTimeRange(value)
+  }
 
   return (
     <Card className="@container/card">
       <CardHeader>
-        <CardTitle>Total Visitors</CardTitle>
+        <CardTitle>화물 처리 추이</CardTitle>
         <CardDescription>
-          <span className="hidden @[540px]/card:block">
-            Total for the last 3 months
-          </span>
-          <span className="@[540px]/card:hidden">Last 3 months</span>
+          {trend ? (
+            <>
+              <span className="hidden @[540px]/card:block">
+                {RANGE_LABELS[timeRange]} 신규 집하 {trend.totals.created}건 · 배송 완료{" "}
+                {trend.totals.completed}건
+              </span>
+              <span className="@[540px]/card:hidden">
+                집하 {trend.totals.created} · 완료 {trend.totals.completed}
+              </span>
+            </>
+          ) : (
+            <>
+              <span className="hidden @[540px]/card:block">
+                {RANGE_LABELS[timeRange]} 신규 집하 · 배송 완료 건수
+              </span>
+              <span className="@[540px]/card:hidden">
+                {RANGE_LABELS[timeRange]}
+              </span>
+            </>
+          )}
         </CardDescription>
-        <CardAction>
+        <CardAction className="flex items-center gap-2">
+          {error && (
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={reload}
+              className="cursor-pointer"
+            >
+              <RotateCcw className="size-3.5" />
+              재시도
+            </Button>
+          )}
           <ToggleGroup
             type="single"
             value={timeRange}
-            onValueChange={setTimeRange}
+            onValueChange={handleRangeChange}
             variant="outline"
             className="hidden *:data-[slot=toggle-group-item]:!px-4 @[767px]/card:flex"
           >
-            <ToggleGroupItem value="90d">Last 3 months</ToggleGroupItem>
-            <ToggleGroupItem value="30d">Last 30 days</ToggleGroupItem>
-            <ToggleGroupItem value="7d">Last 7 days</ToggleGroupItem>
+            <ToggleGroupItem value="90d">최근 3개월</ToggleGroupItem>
+            <ToggleGroupItem value="30d">최근 30일</ToggleGroupItem>
+            <ToggleGroupItem value="7d">최근 7일</ToggleGroupItem>
           </ToggleGroup>
-          <Select value={timeRange} onValueChange={setTimeRange}>
+          <Select value={timeRange} onValueChange={handleRangeChange}>
             <SelectTrigger
               className="flex w-40 **:data-[slot=select-value]:block **:data-[slot=select-value]:truncate @[767px]/card:hidden"
               size="sm"
-              aria-label="Select a value"
+              aria-label="기간 선택"
             >
-              <SelectValue placeholder="Last 3 months" />
+              <SelectValue placeholder="최근 3개월" />
             </SelectTrigger>
             <SelectContent className="rounded-xl">
               <SelectItem value="90d" className="rounded-lg">
-                Last 3 months
+                최근 3개월
               </SelectItem>
               <SelectItem value="30d" className="rounded-lg">
-                Last 30 days
+                최근 30일
               </SelectItem>
               <SelectItem value="7d" className="rounded-lg">
-                Last 7 days
+                최근 7일
               </SelectItem>
             </SelectContent>
           </Select>
         </CardAction>
       </CardHeader>
       <CardContent className="px-2 pt-4 sm:px-6 sm:pt-6">
-        <ChartContainer
-          config={chartConfig}
-          className="aspect-auto h-[250px] w-full"
-        >
-          <AreaChart data={filteredData}>
-            <defs>
-              <linearGradient id="fillDesktop" x1="0" y1="0" x2="0" y2="1">
-                <stop
-                  offset="5%"
-                  stopColor="var(--color-desktop)"
-                  stopOpacity={1.0}
-                />
-                <stop
-                  offset="95%"
-                  stopColor="var(--color-desktop)"
-                  stopOpacity={0.1}
-                />
-              </linearGradient>
-              <linearGradient id="fillMobile" x1="0" y1="0" x2="0" y2="1">
-                <stop
-                  offset="5%"
-                  stopColor="var(--color-mobile)"
-                  stopOpacity={0.8}
-                />
-                <stop
-                  offset="95%"
-                  stopColor="var(--color-mobile)"
-                  stopOpacity={0.1}
-                />
-              </linearGradient>
-            </defs>
-            <CartesianGrid vertical={false} />
-            <XAxis
-              dataKey="date"
-              tickLine={false}
-              axisLine={false}
-              tickMargin={8}
-              minTickGap={32}
-              tickFormatter={(value) => {
-                const date = new Date(value)
-                return date.toLocaleDateString("en-US", {
-                  month: "short",
-                  day: "numeric",
-                })
-              }}
-            />
-            <ChartTooltip
-              cursor={false}
-              content={
-                <ChartTooltipContent
-                  labelFormatter={(value) => {
-                    return new Date(value as string | number | Date).toLocaleDateString("en-US", {
-                      month: "short",
-                      day: "numeric",
-                    })
-                  }}
-                  indicator="dot"
-                />
-              }
-            />
-            <Area
-              dataKey="mobile"
-              type="natural"
-              fill="url(#fillMobile)"
-              stroke="var(--color-mobile)"
-              stackId="a"
-            />
-            <Area
-              dataKey="desktop"
-              type="natural"
-              fill="url(#fillDesktop)"
-              stroke="var(--color-desktop)"
-              stackId="a"
-            />
-          </AreaChart>
-        </ChartContainer>
+        {error ? (
+          <div className="text-destructive flex h-[250px] items-center justify-center text-center text-sm">
+            {error}
+          </div>
+        ) : isLoading || !trend ? (
+          <Skeleton className="h-[250px] w-full" />
+        ) : (
+          <ChartContainer
+            config={chartConfig}
+            className="aspect-auto h-[250px] w-full"
+          >
+            {/*
+              두 계열은 서로 다른 사건이라 쌓지 않는다(stackId 없음). 쌓으면
+              "집하 4 + 완료 2 = 6" 처럼 읽히는 높이가 나오는데 그런 수치는 없다.
+            */}
+            <AreaChart data={trend.points}>
+              <defs>
+                <linearGradient id="fillCreated" x1="0" y1="0" x2="0" y2="1">
+                  <stop
+                    offset="5%"
+                    stopColor="var(--color-created)"
+                    stopOpacity={0.8}
+                  />
+                  <stop
+                    offset="95%"
+                    stopColor="var(--color-created)"
+                    stopOpacity={0.1}
+                  />
+                </linearGradient>
+                <linearGradient id="fillCompleted" x1="0" y1="0" x2="0" y2="1">
+                  <stop
+                    offset="5%"
+                    stopColor="var(--color-completed)"
+                    stopOpacity={0.8}
+                  />
+                  <stop
+                    offset="95%"
+                    stopColor="var(--color-completed)"
+                    stopOpacity={0.1}
+                  />
+                </linearGradient>
+              </defs>
+              <CartesianGrid vertical={false} />
+              <XAxis
+                dataKey="date"
+                tickLine={false}
+                axisLine={false}
+                tickMargin={8}
+                minTickGap={32}
+                tickFormatter={formatAxisDay}
+              />
+              <ChartTooltip
+                cursor={false}
+                content={
+                  <ChartTooltipContent
+                    labelFormatter={(value) => formatTooltipDay(String(value))}
+                    indicator="dot"
+                  />
+                }
+              />
+              {/*
+                type 은 monotone 이다. natural(자연 3차 스플라인)은 점 사이에서
+                오버슈트가 나는데, 하루 0~5 건짜리 정수 데이터에서는 그 곡선이
+                0 아래로 파고든다 — 건수는 음수가 될 수 없으므로 없는 값을
+                그리는 셈이다. monotone 은 주어진 점 밖으로 나가지 않는다.
+              */}
+              <Area
+                dataKey="completed"
+                type="monotone"
+                fill="url(#fillCompleted)"
+                stroke="var(--color-completed)"
+              />
+              <Area
+                dataKey="created"
+                type="monotone"
+                fill="url(#fillCreated)"
+                stroke="var(--color-created)"
+              />
+              {/* 계열이 둘이라 범례가 없으면 어느 쪽이 집하인지 알 수 없다 */}
+              <ChartLegend content={<ChartLegendContent />} />
+            </AreaChart>
+          </ChartContainer>
+        )}
       </CardContent>
     </Card>
   )
