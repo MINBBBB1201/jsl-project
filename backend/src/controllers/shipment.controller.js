@@ -255,13 +255,25 @@ exports.createShipment = async (req, res) => {
   }
 };
 
-// Get shipment by tracking number
+/**
+ * GET /api/shipments/:trackingNumber — 내부 상세 조회
+ *
+ * 로그인한 직원만 부를 수 있다 (routes/shipment.routes.js 의 requireAuth).
+ * 목록과 달리 고객 이름·이메일·전화번호와 상태 이력까지 문서를 통째로 내려준다.
+ *
+ * ⚠️ 목록(getAllShipments)의 PII_EXCLUDED_FIELDS 정책과 여기가 다른 것은 의도다.
+ *    목록은 화면에서 쓰지도 않는 연락처를 수십 건씩 한꺼번에 내보낼 이유가 없어
+ *    빼지만, 상세는 담당자가 그 한 건을 처리하려고 여는 화면이라 연락처가 필요하다.
+ *    (개인정보 최소제공 = 목적에 필요한 만큼만, 이지 무조건 감추기가 아니다)
+ *
+ * 고객이 로그인 없이 부르는 공개 조회는 이 함수가 아니라 trackShipment 다.
+ * 그쪽은 별도 화이트리스트 select 를 써서 customer 를 애초에 읽지 않는다.
+ */
 exports.getShipmentByTrackingNumber = async (req, res) => {
   try {
     const { trackingNumber } = req.params;
 
-    // 인증이 없는 상태라 고객 개인정보는 내려주지 않는다 (PII_EXCLUDED_FIELDS 주석 참고)
-    const shipment = await Shipment.findOne({ trackingNumber }).select(PII_EXCLUDED_FIELDS);
+    const shipment = await Shipment.findOne({ trackingNumber });
 
     if (!shipment) {
       return res.status(404).json({
@@ -270,9 +282,13 @@ exports.getShipmentByTrackingNumber = async (req, res) => {
       });
     }
 
+    // 목록과 같이 조회 시점 기준으로 리스크를 다시 계산해 delayRisk 를 붙인다.
+    // 문서에 저장된 delayRiskScore/Level 은 마지막 저장 시점의 스냅샷이라
+    // 시간이 지나면 낡는다 (shipment.model.js 의 경고 참고). 여기만 빠져 있어서
+    // 상세 화면이 목록과 다른 등급을 보여줄 수 있었다.
     res.status(200).json({
       success: true,
-      data: shipment
+      data: withFreshRisk(shipment, new Date())
     });
   } catch (error) {
     logger.error('Error fetching shipment:', error);
