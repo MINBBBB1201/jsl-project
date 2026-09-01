@@ -11,7 +11,6 @@ import {
   RotateCcw,
 } from "lucide-react"
 
-import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Skeleton } from "@/components/ui/skeleton"
 import {
@@ -46,6 +45,12 @@ import {
   type TransportMode,
 } from "@/lib/transport-modes"
 import {
+  RiskLevelBadge,
+  SHIPMENT_STATUS_LABELS,
+  ShipmentStatusBadge,
+} from "./shipment-badges"
+import { ShipmentDetailDrawer } from "./shipment-detail-drawer"
+import {
   SHIPMENT_STATUSES,
   useShipmentList,
   type ShipmentListItem,
@@ -65,41 +70,6 @@ import {
  * 조회 전용이다. 상태 변경은 권한이 필요한 별도 작업이라(PATCH /:trackingNumber/status,
  * admin·operations 만) 목록에서 인라인으로 열지 않는다.
  */
-
-/** 화면에 그대로 나가는 상태 라벨. 백엔드 enum 6종을 모두 덮는다. */
-const STATUS_LABELS: Record<ShipmentStatus, string> = {
-  pending: "접수",
-  in_transit: "운송중",
-  out_for_delivery: "배송출발",
-  delivered: "배송완료",
-  exception: "예외",
-  delayed: "지연",
-}
-
-/**
- * 상태별 배지 스타일.
- *
- * Badge 의 variant 는 4종뿐이라 6개 상태를 구분하지 못한다. 그래서 리스크 등급이
- * 쓰는 방식(lib/transport-modes.ts 의 RISK_LEVEL_STYLE)과 같이 색 클래스를 직접 준다.
- * 라이트/다크 양쪽 값을 함께 적어야 다크에서 글자가 배경에 묻힌다.
- */
-const STATUS_STYLE: Record<ShipmentStatus, string> = {
-  pending: "bg-slate-100 text-slate-700 dark:bg-slate-800 dark:text-slate-300",
-  in_transit: "bg-blue-100 text-blue-800 dark:bg-blue-950 dark:text-blue-300",
-  out_for_delivery:
-    "bg-indigo-100 text-indigo-800 dark:bg-indigo-950 dark:text-indigo-300",
-  delivered:
-    "bg-emerald-100 text-emerald-800 dark:bg-emerald-950 dark:text-emerald-300",
-  exception: "bg-red-100 text-red-800 dark:bg-red-950 dark:text-red-300",
-  delayed: "bg-amber-100 text-amber-900 dark:bg-amber-950 dark:text-amber-300",
-}
-
-/** 등급 배지는 지연 리스크 화물 위젯과 같은 variant 를 쓴다 (delay-risk-table.tsx) */
-const LEVEL_VARIANT: Record<RiskLevel, "destructive" | "secondary" | "outline"> = {
-  지연: "destructive",
-  지연위험: "secondary",
-  정상: "outline",
-}
 
 const SORT_LABELS: Record<SortableField, string> = {
   shippedAt: "집하일",
@@ -177,22 +147,27 @@ function SortHeader({
   )
 }
 
-function Row({ shipment }: { shipment: ShipmentListItem }) {
-  const status = shipment.status as ShipmentStatus
-  const level = shipment.delayRisk?.level ?? null
-
+function Row({
+  shipment,
+  onSelect,
+}: {
+  shipment: ShipmentListItem
+  onSelect: (trackingNumber: string) => void
+}) {
   return (
     <TableRow>
-      <TableCell className="font-mono text-xs whitespace-nowrap">
-        {shipment.trackingNumber}
+      <TableCell className="whitespace-nowrap">
+        {/* 운송장번호를 누르면 상세 Drawer 가 열린다 */}
+        <button
+          type="button"
+          onClick={() => onSelect(shipment.trackingNumber)}
+          className="font-mono text-xs hover:underline focus-visible:ring-ring cursor-pointer rounded focus-visible:ring-2 focus-visible:outline-none"
+        >
+          {shipment.trackingNumber}
+        </button>
       </TableCell>
       <TableCell>
-        <Badge
-          variant="outline"
-          className={cn("border-transparent", STATUS_STYLE[status])}
-        >
-          {STATUS_LABELS[status] ?? status}
-        </Badge>
+        <ShipmentStatusBadge status={shipment.status} />
       </TableCell>
       <TableCell className="whitespace-nowrap">
         {modeLabel(shipment.transportMode)}
@@ -207,16 +182,7 @@ function Row({ shipment }: { shipment: ShipmentListItem }) {
         {formatDate(shipment.estimatedDelivery)}
       </TableCell>
       <TableCell className="text-right">
-        {/*
-          배송 완료 건은 리스크 산정 대상이 아니라 level 이 null 로 온다
-          (delay-risk.js SKIP_REASONS.DELIVERED). 여기서 "정상" 으로 메우면
-          완료된 화물이 운송 중인 것처럼 읽힌다.
-        */}
-        {level ? (
-          <Badge variant={LEVEL_VARIANT[level]}>{level}</Badge>
-        ) : (
-          <span className="text-muted-foreground">—</span>
-        )}
+        <RiskLevelBadge level={shipment.delayRisk?.level ?? null} />
       </TableCell>
     </TableRow>
   )
@@ -224,6 +190,8 @@ function Row({ shipment }: { shipment: ShipmentListItem }) {
 
 export function ShipmentTable() {
   const [params, setParams] = React.useState<ShipmentListParams>(INITIAL_PARAMS)
+  /** 상세 Drawer 로 열어 둔 운송장번호. null 이면 닫힌 상태이고 조회도 하지 않는다. */
+  const [selected, setSelected] = React.useState<string | null>(null)
   const { data, isLoading, error, reload } = useShipmentList(params)
 
   const pagination = data?.pagination
@@ -260,7 +228,8 @@ export function ShipmentTable() {
   const canNext = !!pagination && pagination.page < pagination.pages
 
   return (
-    <Card>
+    <>
+      <Card>
       <CardHeader>
         <CardTitle className="flex items-center gap-2">
           <Package className="text-muted-foreground size-4" />
@@ -304,7 +273,7 @@ export function ShipmentTable() {
               <SelectItem value={ALL}>상태 전체</SelectItem>
               {SHIPMENT_STATUSES.map((status) => (
                 <SelectItem key={status} value={status}>
-                  {STATUS_LABELS[status]}
+                  {SHIPMENT_STATUS_LABELS[status]}
                 </SelectItem>
               ))}
             </SelectContent>
@@ -394,7 +363,11 @@ export function ShipmentTable() {
               </TableHeader>
               <TableBody>
                 {rows.map((shipment) => (
-                  <Row key={shipment._id} shipment={shipment} />
+                  <Row
+                    key={shipment._id}
+                    shipment={shipment}
+                    onSelect={setSelected}
+                  />
                 ))}
               </TableBody>
             </Table>
@@ -455,6 +428,12 @@ export function ShipmentTable() {
           </div>
         </CardFooter>
       )}
-    </Card>
+      </Card>
+
+      <ShipmentDetailDrawer
+        trackingNumber={selected}
+        onClose={() => setSelected(null)}
+      />
+    </>
   )
 }
