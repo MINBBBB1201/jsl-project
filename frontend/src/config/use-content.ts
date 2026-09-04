@@ -639,6 +639,7 @@ export function useContent() {
         { name: m.nav.tracking, href: "/tracking" },
         { name: m.nav.hsCode, href: "/hs-code" },
         { name: m.nav.containerPlanner, href: "/container-planner" },
+        { name: m.nav.documentGenerator, href: "/document-generator" },
         { name: m.footer.linkQuote, href: "/landing#contact" },
         { name: m.footer.linkNotice, href: "#" },
       ],
