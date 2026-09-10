@@ -52,7 +52,9 @@ const sendErrorProd = (err, res) => {
   }
 };
 
-const errorHandler = (err, req, res, next) => {
+// Express 는 인자 4개짜리 함수만 에러 핸들러로 인식한다. next 는 쓰지 않지만
+// 시그니처에서 뺄 수 없어 _ 접두사로 미사용 표시만 한다.
+const errorHandler = (err, req, res, _next) => {
   err.statusCode = err.statusCode || 500;
   err.status = err.status || 'error';
 

@@ -2,8 +2,6 @@ const express = require('express');
 const router = express.Router();
 const { body, param, query, validationResult } = require('express-validator');
 const shipmentController = require('../controllers/shipment.controller');
-const { check } = require('express-validator');
-const logger = require('../utils/logger');
 const { requireAuth, requireRole } = require('../middleware/auth.middleware');
 const { SHIPMENT_WRITE_ROLES } = require('../models/user.model');
 
