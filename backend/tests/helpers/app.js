@@ -11,11 +11,13 @@ const express = require('express');
 const { checkDbConnection } = require('../../src/middleware/db.middleware');
 const { errorHandler } = require('../../src/middleware/error.middleware');
 const shipmentRoutes = require('../../src/routes/shipment.routes');
+const tradeDocumentRoutes = require('../../src/routes/trade-document.routes');
 
 function buildApp() {
   const app = express();
   app.use(express.json({ limit: '10kb' }));
   app.use('/api/shipments', checkDbConnection, shipmentRoutes);
+  app.use('/api/trade-documents', checkDbConnection, tradeDocumentRoutes);
   app.all('*', (req, res, next) => next(new Error(`Can't find ${req.originalUrl}`)));
   app.use(errorHandler);
   return app;
