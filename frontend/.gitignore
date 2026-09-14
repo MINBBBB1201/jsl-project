@@ -40,5 +40,5 @@ yarn-error.log*
 *.tsbuildinfo
 next-env.d.ts
 
-# container-planner 유닛 테스트 빌드 산출물 (npm run test:planner)
+# lib/ 유닛 테스트 빌드 산출물 (npm run test:units)
 /.test-build
