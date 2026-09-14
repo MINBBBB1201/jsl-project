@@ -219,45 +219,66 @@ exports.updateTradeDocument = async (req, res) => {
  * POST /api/trade-documents/:id/issue
  * draft → issued. 번호를 부여하고 동결한다.
  * 개정본이면 직전 issued 버전을 superseded 로 넘긴다.
+ *
+ * ⚠️ 동시성: 같은 문서에 발행 요청이 거의 동시에 두 번 오면(더블클릭, 탭 두 개)
+ *    `findById` → 검사 → `save()` 순서로는 둘 다 draft 를 보고 통과해, 나중에
+ *    저장하는 쪽이 앞선 저장을 조용히 덮어쓸 수 있다(번호 하나가 말없이 버려짐).
+ *    그래서 상태 전이 자체는 `findOneAndUpdate({_id, status:'draft'}, ...)` 로
+ *    한 번에 원자적으로 "선점"한다 — 필터에 걸리는 문서가 없으면(이미 누가
+ *    먼저 발행했으면) `null` 이 돌아오고 409 로 응답한다.
+ *    Counter 는 원래도 원자적이라 번호 자체가 겹치진 않는다. 다만 진 쪽의
+ *    Counter.next() 호출은 그대로 소비되어 시퀀스에 구멍이 남을 수 있다
+ *    (예: 0001 발행 성공, 0002 는 못 쓰고 버려짐, 다음은 0003) — 실무 송장
+ *    번호에서도 결번은 흔하고, 데이터 무결성(번호 중복·조용한 덮어쓰기)보다
+ *    우선순위가 낮은 트레이드오프라 받아들인다.
  */
 exports.issueTradeDocument = async (req, res) => {
   try {
     const { id } = req.params;
     if (badId(id)) return fail(res, 400, '유효하지 않은 id 입니다.');
 
-    const doc = await TradeDocument.findById(id);
+    const doc = await TradeDocument.findById(id).select('type status revisionRootId _id');
     if (!doc) return fail(res, 404, '무역서류를 찾을 수 없습니다.');
     if (doc.status !== 'draft') return fail(res, 409, '이미 발행된 서류입니다.');
 
     const isRevision = doc.revisionRootId.toString() !== doc._id.toString();
 
+    let documentNo;
     if (isRevision) {
       // 번호는 root 것을 물려받는다 (CI-2026-0042 Rev.1 처럼 같은 번호를 쓴다)
       const root = await TradeDocument.findById(doc.revisionRootId).select('documentNo');
-      doc.documentNo = root ? root.documentNo : null;
-
-      // 체인에서 아직 살아있는 issued 버전을 superseded 로
-      await TradeDocument.updateMany(
-        { revisionRootId: doc.revisionRootId, status: 'issued' },
-        { $set: { status: 'superseded', supersededById: doc._id } }
-      );
+      documentNo = root ? root.documentNo : null;
     } else {
       const year = new Date().getFullYear();
       const key = `${TYPE_PREFIX[doc.type]}-${year}`;
       const seq = await Counter.next(key);
-      doc.documentNo = `${key}-${String(seq).padStart(4, '0')}`;
+      documentNo = `${key}-${String(seq).padStart(4, '0')}`;
     }
 
-    doc.status = 'issued';
-    doc.issuedBy = req.user.id;
-    doc.issuedAt = new Date();
-    await doc.save();
+    // 상태 전이를 원자적으로 선점한다. 이미 발행됐다면(동시 요청) 여기서 걸린다.
+    const issued = await TradeDocument.findOneAndUpdate(
+      { _id: id, status: 'draft' },
+      { $set: { documentNo, status: 'issued', issuedBy: req.user.id, issuedAt: new Date() } },
+      { new: true }
+    );
+    if (!issued) {
+      return fail(res, 409, '이미 다른 요청이 이 서류를 발행했습니다. 새로고침 후 확인해 주세요.');
+    }
 
-    logger.info(`무역서류 발행: ${doc.documentNo} (v${doc.version}) by ${req.user.email}`);
+    if (isRevision) {
+      // 체인에서 아직 살아있는 이전 issued 버전을 superseded 로. 방금 이 문서
+      // 자신도 status:'issued' 라 _id 를 제외해야 스스로를 덮어쓰지 않는다.
+      await TradeDocument.updateMany(
+        { revisionRootId: issued.revisionRootId, status: 'issued', _id: { $ne: issued._id } },
+        { $set: { status: 'superseded', supersededById: issued._id } }
+      );
+    }
+
+    logger.info(`무역서류 발행: ${issued.documentNo} (v${issued.version}) by ${req.user.email}`);
     return res.status(200).json({
       success: true,
-      data: doc.toClientJSON(),
-      versions: await chainSummary(doc.revisionRootId),
+      data: issued.toClientJSON(),
+      versions: await chainSummary(issued.revisionRootId),
     });
   } catch (error) {
     logger.error('무역서류 발행 실패:', error);
@@ -268,6 +289,11 @@ exports.issueTradeDocument = async (req, res) => {
 /**
  * POST /api/trade-documents/:id/revise
  * issued → input 을 복사한 새 draft(version+1). 같은 체인에 draft 가 이미 있으면 거부.
+ *
+ * ⚠️ 동시성: 위의 exists() 체크도 TOCTOU 경합에서 완벽히 막지는 못한다(두
+ *    요청이 거의 동시에 exists() 를 통과할 수 있다). 최종 방어선은 모델의
+ *    `{revisionRootId, version}` unique 인덱스다 — 둘 다 같은 version 으로
+ *    create() 하면 하나는 E11000 으로 실패하고, 그 경우 아래서 409 로 바꿔 준다.
  */
 exports.reviseTradeDocument = async (req, res) => {
   try {
@@ -296,6 +322,9 @@ exports.reviseTradeDocument = async (req, res) => {
     logger.info(`무역서류 개정 draft: ${doc.documentNo} v${revision.version} by ${req.user.email}`);
     return res.status(201).json({ success: true, data: revision.toClientJSON() });
   } catch (error) {
+    if (error.code === 11000) {
+      return fail(res, 409, '이미 다른 요청이 개정 draft 를 만들었습니다. 새로고침 후 확인해 주세요.');
+    }
     logger.error('무역서류 개정 실패:', error);
     return fail(res, 500, '개정본을 만들지 못했습니다.');
   }
