@@ -1,6 +1,5 @@
 const Shipment = require('../models/shipment.model');
 const logger = require('../utils/logger');
-const { validationResult } = require('express-validator');
 const mongoose = require('mongoose');
 const TRANSIT_TIMES = require('../config/transit-times');
 const {
@@ -209,18 +208,12 @@ exports.createShipment = async (req, res) => {
           (saveError.message && saveError.message.includes('connection'))) {
         
         logger.warn('MongoDB save error, attempting to reconnect and retry:', saveError);
-        
-        try {
-          // Try to reconnect
-          const { connectDB } = require('../config/database');
-          await connectDB();
-          
-          // Try saving again
-          savedShipment = await shipment.save();
-          logger.info('Shipment saved successfully after retry');
-        } catch (retryError) {
-          throw retryError; // Will be caught by outer catch block
-        }
+
+        // 재연결 후 한 번 더. 여기서 또 던지면 바깥 catch 로 간다.
+        const { connectDB } = require('../config/database');
+        await connectDB();
+        savedShipment = await shipment.save();
+        logger.info('Shipment saved successfully after retry');
       } else {
         throw saveError; // Will be caught by outer catch block
       }
@@ -486,23 +479,17 @@ exports.getAllShipments = async (req, res) => {
           (fetchError.message && fetchError.message.includes('connection'))) {
         
         logger.warn('MongoDB fetch error, attempting to reconnect and retry:', fetchError);
-        
-        try {
-          // Try to reconnect
-          const { connectDB } = require('../config/database');
-          await connectDB();
-          
-          // Try fetching again
-          shipments = await Shipment.find(query)
-            .sort(sortOptions)
-            .skip(skip)
-            .limit(limitValue)
-            .select(`-__v ${PII_EXCLUDED_FIELDS}`);
-            
-          logger.info('Shipments fetched successfully after retry');
-        } catch (retryError) {
-          throw retryError; // Will be caught by outer catch block
-        }
+
+        // 재연결 후 한 번 더. 여기서 또 던지면 바깥 catch 로 간다.
+        const { connectDB } = require('../config/database');
+        await connectDB();
+        shipments = await Shipment.find(query)
+          .sort(sortOptions)
+          .skip(skip)
+          .limit(limitValue)
+          .select(`-__v ${PII_EXCLUDED_FIELDS}`);
+
+        logger.info('Shipments fetched successfully after retry');
       } else {
         throw fetchError; // Will be caught by outer catch block
       }
@@ -567,12 +554,11 @@ exports.getDelaySummary = async (req, res) => {
       [RISK_LEVELS.AT_RISK]: 0,
       [RISK_LEVELS.DELAYED]: 0
     };
-    let skipped = 0;
 
     for (const shipment of shipments) {
       const { level } = calculateDelayRisk(shipment, TRANSIT_TIMES, { now });
       if (level) counts[level] += 1;
-      else skipped += 1;
+      // 점수를 못 낸 건은 아래 meta.unscorable 에서 별도로 집계한다
     }
 
     const total = counts[RISK_LEVELS.NORMAL] + counts[RISK_LEVELS.AT_RISK] + counts[RISK_LEVELS.DELAYED];
