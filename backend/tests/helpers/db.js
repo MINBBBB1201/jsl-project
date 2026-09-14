@@ -16,6 +16,9 @@ let mongod;
 async function connect() {
   mongod = await MongoMemoryServer.create();
   await mongoose.connect(mongod.getUri());
+  // unique/partial 인덱스는 첫 insert 전에 만들어져 있어야 한다
+  // (autoIndex 빌드가 늦으면 중복 검증이 그냥 통과해 버린다).
+  await Promise.all(Object.values(mongoose.models).map((m) => m.createIndexes()));
 }
 
 /** 컬렉션만 비운다 — 인덱스는 유지해서 unique 제약도 계속 검증되게 한다. */

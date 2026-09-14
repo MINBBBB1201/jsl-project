@@ -13,6 +13,7 @@ const { AppError, errorHandler } = require('./middleware/error.middleware');
 const { checkDbConnection } = require('./middleware/db.middleware');
 const authRoutes = require('./routes/auth.routes');
 const shipmentRoutes = require('./routes/shipment.routes');
+const tradeDocumentRoutes = require('./routes/trade-document.routes');
 const contactRoutes = require('./routes/contact.routes');
 const chatRoutes = require('./routes/chat.routes');
 const damageInspectionRoutes = require('./routes/damage-inspection.routes');
@@ -94,6 +95,7 @@ app.use((req, res, next) => {
  */
 app.use('/api/auth', checkDbConnection, authRoutes);
 app.use('/api/shipments', checkDbConnection, shipmentRoutes);
+app.use('/api/trade-documents', checkDbConnection, tradeDocumentRoutes);
 app.use('/api/contact', checkDbConnection, contactRoutes);
 app.use('/api/chat', checkDbConnection, chatRoutes);
 app.use('/api/damage-inspection', checkDbConnection, damageInspectionRoutes);
@@ -124,6 +126,7 @@ app.get('/', (req, res) => {
       health: '/health',
       auth: '/api/auth',
       api: '/api/shipments',
+      tradeDocuments: '/api/trade-documents',
       notifications: '/api/notifications',
       automation: '/api/automation/logs',
       contact: '/api/contact',
