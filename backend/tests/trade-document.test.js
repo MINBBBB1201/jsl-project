@@ -222,6 +222,27 @@ describe('POST /:id/issue — 발행', () => {
       .set(auth(token));
     expect(again.status).toBe(409);
   });
+
+  test('동시에 두 번 발행해도 정확히 한 번만 성공하고 번호가 안 겹친다', async () => {
+    const { token } = await createUser();
+    const created = await newDraft(token);
+
+    const [a, b] = await Promise.all([
+      request(app).post(`/api/trade-documents/${created.body.data.id}/issue`).set(auth(token)),
+      request(app).post(`/api/trade-documents/${created.body.data.id}/issue`).set(auth(token)),
+    ]);
+
+    const statuses = [a.status, b.status].sort();
+    expect(statuses).toEqual([200, 409]);
+
+    const final = await request(app)
+      .get(`/api/trade-documents/${created.body.data.id}`)
+      .set(auth(token));
+    expect(final.body.data.status).toBe('issued');
+    // 진 쪽이 만든 번호가 조용히 최종 상태를 덮어쓰지 않았는지 확인
+    const winner = a.status === 200 ? a : b;
+    expect(final.body.data.documentNo).toBe(winner.body.data.documentNo);
+  });
 });
 
 describe('개정본 체인', () => {
@@ -264,6 +285,23 @@ describe('개정본 체인', () => {
     await request(app).post(`/api/trade-documents/${v1.id}/revise`).set(auth(token));
     const twice = await request(app).post(`/api/trade-documents/${v1.id}/revise`).set(auth(token));
     expect(twice.status).toBe(409);
+  });
+
+  test('동시에 두 번 개정해도 정확히 한 draft 만 만들어진다 ({revisionRootId,version} unique 가 최종 방어선)', async () => {
+    const { token } = await createUser();
+    const v1 = await issueFresh(token);
+
+    const [a, b] = await Promise.all([
+      request(app).post(`/api/trade-documents/${v1.id}/revise`).set(auth(token)),
+      request(app).post(`/api/trade-documents/${v1.id}/revise`).set(auth(token)),
+    ]);
+
+    const statuses = [a.status, b.status].sort();
+    expect(statuses).toEqual([201, 409]);
+
+    const list = await request(app).get('/api/trade-documents?allVersions=1').set(auth(token));
+    const v2s = list.body.data.filter((d) => d.revisionRootId === v1.revisionRootId && d.version === 2);
+    expect(v2s).toHaveLength(1);
   });
 
   test('개정본을 발행하면 root 번호를 물려받고 이전 버전은 superseded 로 넘어간다', async () => {
