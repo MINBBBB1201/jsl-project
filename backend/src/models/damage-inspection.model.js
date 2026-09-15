@@ -1,5 +1,5 @@
-const mongoose = require('mongoose');
-const { DAMAGE_TYPES, SEVERITIES } = require('../utils/damage-inspection');
+const mongoose = require("mongoose");
+const { DAMAGE_TYPES, SEVERITIES } = require("../utils/damage-inspection");
 
 /**
  * 화물 파손 판정 기록
@@ -15,7 +15,7 @@ const damageInspectionSchema = new mongoose.Schema({
    */
   imageBase64: {
     type: String,
-    required: true
+    required: true,
   },
   imageMeta: {
     width: Number,
@@ -23,15 +23,15 @@ const damageInspectionSchema = new mongoose.Schema({
     bytes: Number,
     originalWidth: Number,
     originalHeight: Number,
-    originalBytes: Number
+    originalBytes: Number,
   },
 
   result: {
     isDamaged: { type: Boolean, required: true },
     damageType: { type: String, enum: DAMAGE_TYPES, required: true },
     severity: { type: String, enum: SEVERITIES, required: true },
-    description: { type: String, default: '' },
-    confidence: { type: Number, min: 0, max: 1, default: 0 }
+    description: { type: String, default: "" },
+    confidence: { type: Number, min: 0, max: 1, default: 0 },
   },
 
   /** 판정에 사용된 모델/토큰 등 (재현 및 비용 추적용) */
@@ -42,14 +42,14 @@ const damageInspectionSchema = new mongoose.Schema({
     finishReason: String,
     promptTokens: Number,
     completionTokens: Number,
-    totalTokens: Number
+    totalTokens: Number,
   },
 
   /** 특정 화물과 연결할 수 있게 (선택) */
   shipmentId: {
     type: mongoose.Schema.Types.ObjectId,
-    ref: 'Shipment',
-    index: true
+    ref: "Shipment",
+    index: true,
   },
 
   /**
@@ -59,16 +59,19 @@ const damageInspectionSchema = new mongoose.Schema({
    */
   reviewedByHuman: {
     type: Boolean,
-    default: null
+    default: null,
   },
 
   createdAt: {
     type: Date,
     default: Date.now,
-    index: true
-  }
+    index: true,
+  },
 });
 
-const DamageInspection = mongoose.model('DamageInspection', damageInspectionSchema);
+const DamageInspection = mongoose.model(
+  "DamageInspection",
+  damageInspectionSchema,
+);
 
 module.exports = DamageInspection;

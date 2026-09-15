@@ -1,6 +1,6 @@
-const User = require('../models/user.model');
-const logger = require('../utils/logger');
-const { signToken, jwtExpiresIn } = require('../utils/jwt');
+const User = require("../models/user.model");
+const logger = require("../utils/logger");
+const { signToken, jwtExpiresIn } = require("../utils/jwt");
 
 /**
  * 로그인.
@@ -13,8 +13,9 @@ exports.login = async (req, res) => {
   const { email, password } = req.body;
 
   try {
-    const user = await User.findOne({ email: String(email).toLowerCase().trim() })
-      .select('+password');
+    const user = await User.findOne({
+      email: String(email).toLowerCase().trim(),
+    }).select("+password");
 
     const passwordMatches = user ? await user.verifyPassword(password) : false;
 
@@ -22,13 +23,16 @@ exports.login = async (req, res) => {
       logger.warn(`로그인 실패: ${email}`);
       return res.status(401).json({
         success: false,
-        error: '이메일 또는 비밀번호가 올바르지 않습니다.'
+        error: "이메일 또는 비밀번호가 올바르지 않습니다.",
       });
     }
 
     // 마지막 로그인 시각만 갱신한다. save() 를 쓰면 pre-save 훅이 이미 해시된
     // 비밀번호를 다시 해싱하므로 updateOne 을 쓴다.
-    await User.updateOne({ _id: user._id }, { $set: { lastLoginAt: new Date() } });
+    await User.updateOne(
+      { _id: user._id },
+      { $set: { lastLoginAt: new Date() } },
+    );
 
     const token = signToken(user);
     logger.info(`로그인 성공: ${user.email} (${user.role})`);
@@ -38,14 +42,14 @@ exports.login = async (req, res) => {
       data: {
         token,
         expiresIn: jwtExpiresIn,
-        user: user.toSafeJSON()
-      }
+        user: user.toSafeJSON(),
+      },
     });
   } catch (error) {
-    logger.error('로그인 처리 중 오류:', error);
+    logger.error("로그인 처리 중 오류:", error);
     res.status(500).json({
       success: false,
-      error: '로그인 처리 중 오류가 발생했습니다. 잠시 후 다시 시도해 주세요.'
+      error: "로그인 처리 중 오류가 발생했습니다. 잠시 후 다시 시도해 주세요.",
     });
   }
 };
@@ -71,7 +75,7 @@ exports.register = async (req, res) => {
     if (exists) {
       return res.status(409).json({
         success: false,
-        error: '이미 등록된 이메일입니다.'
+        error: "이미 등록된 이메일입니다.",
       });
     }
 
@@ -79,17 +83,17 @@ exports.register = async (req, res) => {
       email: normalizedEmail,
       password,
       name,
-      role: role || 'sales'
+      role: role || "sales",
     });
 
     logger.info(`계정 발급: ${user.email} (${user.role}) by ${req.user.email}`);
 
     res.status(201).json({ success: true, data: { user: user.toSafeJSON() } });
   } catch (error) {
-    logger.error('계정 발급 중 오류:', error);
+    logger.error("계정 발급 중 오류:", error);
     res.status(500).json({
       success: false,
-      error: '계정 발급 중 오류가 발생했습니다. 잠시 후 다시 시도해 주세요.'
+      error: "계정 발급 중 오류가 발생했습니다. 잠시 후 다시 시도해 주세요.",
     });
   }
 };
@@ -102,5 +106,7 @@ exports.register = async (req, res) => {
  * (즉시 무효화가 필요해지면 여기서 토큰 블랙리스트를 붙이면 된다.)
  */
 exports.logout = async (req, res) => {
-  res.status(200).json({ success: true, data: { message: '로그아웃되었습니다.' } });
+  res
+    .status(200)
+    .json({ success: true, data: { message: "로그아웃되었습니다." } });
 };

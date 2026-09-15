@@ -1,9 +1,9 @@
-const express = require('express');
+const express = require("express");
 const router = express.Router();
-const { query, param, validationResult } = require('express-validator');
+const { query, param, validationResult } = require("express-validator");
 
-const notificationController = require('../controllers/notification.controller');
-const { requireAuth } = require('../middleware/auth.middleware');
+const notificationController = require("../controllers/notification.controller");
+const { requireAuth } = require("../middleware/auth.middleware");
 
 const validate = (req, res, next) => {
   const errors = validationResult(req);
@@ -20,27 +20,28 @@ const validate = (req, res, next) => {
 router.use(requireAuth);
 
 router.get(
-  '/',
+  "/",
   [
-    query('limit').optional({ values: 'falsy' }).isInt({ min: 1, max: 50 })
-      .withMessage('limit 은 1~50 사이여야 합니다.'),
-    query('unreadOnly').optional({ values: 'falsy' }).isBoolean()
-      .withMessage('unreadOnly 는 true/false 여야 합니다.'),
-    validate
+    query("limit")
+      .optional({ values: "falsy" })
+      .isInt({ min: 1, max: 50 })
+      .withMessage("limit 은 1~50 사이여야 합니다."),
+    query("unreadOnly")
+      .optional({ values: "falsy" })
+      .isBoolean()
+      .withMessage("unreadOnly 는 true/false 여야 합니다."),
+    validate,
   ],
-  notificationController.getNotifications
+  notificationController.getNotifications,
 );
 
 // ⚠️ '/:id/read' 보다 먼저 선언해야 한다. 아래에 두면 'read-all' 이 id 로 해석된다.
-router.patch('/read-all', notificationController.markAllAsRead);
+router.patch("/read-all", notificationController.markAllAsRead);
 
 router.patch(
-  '/:id/read',
-  [
-    param('id').isMongoId().withMessage('잘못된 알림 ID 입니다.'),
-    validate
-  ],
-  notificationController.markAsRead
+  "/:id/read",
+  [param("id").isMongoId().withMessage("잘못된 알림 ID 입니다."), validate],
+  notificationController.markAsRead,
 );
 
 module.exports = router;

@@ -1,34 +1,34 @@
-const js = require('@eslint/js');
-const prettierConfig = require('eslint-config-prettier');
-const globals = require('globals');
+const js = require("@eslint/js");
+const prettierConfig = require("eslint-config-prettier");
+const globals = require("globals");
 
 module.exports = [
   {
-    ignores: ['node_modules/**', 'logs/**', 'coverage/**'],
+    ignores: ["node_modules/**", "logs/**", "coverage/**"],
   },
   js.configs.recommended,
   {
     languageOptions: {
       ecmaVersion: 2022,
-      sourceType: 'commonjs',
+      sourceType: "commonjs",
       globals: {
         ...globals.node,
       },
     },
     rules: {
-      'no-unused-vars': [
-        'error',
+      "no-unused-vars": [
+        "error",
         {
-          args: 'after-used',
-          argsIgnorePattern: '^_',
-          varsIgnorePattern: '^_',
-          caughtErrors: 'none',
+          args: "after-used",
+          argsIgnorePattern: "^_",
+          varsIgnorePattern: "^_",
+          caughtErrors: "none",
         },
       ],
     },
   },
   {
-    files: ['**/*.test.js'],
+    files: ["**/*.test.js"],
     languageOptions: {
       globals: {
         ...globals.jest,

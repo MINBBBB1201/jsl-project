@@ -1,10 +1,10 @@
-const express = require('express');
+const express = require("express");
 const router = express.Router();
-const { body, validationResult } = require('express-validator');
+const { body, validationResult } = require("express-validator");
 
-const controller = require('../controllers/trade-document.controller');
-const { requireAuth } = require('../middleware/auth.middleware');
-const { TRADE_DOCUMENT_TYPES } = require('../config/trade-documents');
+const controller = require("../controllers/trade-document.controller");
+const { requireAuth } = require("../middleware/auth.middleware");
+const { TRADE_DOCUMENT_TYPES } = require("../config/trade-documents");
 
 /**
  * 무역서류(상업송장·포장명세서·프로포마)는 전부 내부 업무 기능이다.
@@ -28,49 +28,59 @@ const validate = (req, res, next) => {
  * 여기서는 구조만 본다 — items 가 배열인지, 있으면 각 줄에 description 이 있는지.
  */
 const inputRules = [
-  body('input').isObject().withMessage('input 은 객체여야 합니다.'),
-  body('input.items').optional().isArray().withMessage('input.items 는 배열이어야 합니다.'),
-  body('input.items.*.description').optional().isString().trim().isLength({ max: 500 }),
+  body("input").isObject().withMessage("input 은 객체여야 합니다."),
+  body("input.items")
+    .optional()
+    .isArray()
+    .withMessage("input.items 는 배열이어야 합니다."),
+  body("input.items.*.description")
+    .optional()
+    .isString()
+    .trim()
+    .isLength({ max: 500 }),
 ];
 
 // 목록
-router.get('/', controller.listTradeDocuments);
+router.get("/", controller.listTradeDocuments);
 
 // 단건 + 개정 체인
-router.get('/:id', controller.getTradeDocument);
+router.get("/:id", controller.getTradeDocument);
 
 // draft 생성
 router.post(
-  '/',
+  "/",
   [
-    body('type').isIn(TRADE_DOCUMENT_TYPES)
-      .withMessage(`type 은 ${TRADE_DOCUMENT_TYPES.join(', ')} 중 하나여야 합니다.`),
-    body('shipmentId').optional({ values: 'null' }).isString(),
+    body("type")
+      .isIn(TRADE_DOCUMENT_TYPES)
+      .withMessage(
+        `type 은 ${TRADE_DOCUMENT_TYPES.join(", ")} 중 하나여야 합니다.`,
+      ),
+    body("shipmentId").optional({ values: "null" }).isString(),
     ...inputRules,
     validate,
   ],
-  controller.createTradeDocument
+  controller.createTradeDocument,
 );
 
 // draft 편집
 router.patch(
-  '/:id',
+  "/:id",
   [
-    body('input').optional().isObject(),
-    body('input.items').optional().isArray(),
-    body('shipmentId').optional({ values: 'null' }),
+    body("input").optional().isObject(),
+    body("input.items").optional().isArray(),
+    body("shipmentId").optional({ values: "null" }),
     validate,
   ],
-  controller.updateTradeDocument
+  controller.updateTradeDocument,
 );
 
 // 발행 (draft → issued)
-router.post('/:id/issue', controller.issueTradeDocument);
+router.post("/:id/issue", controller.issueTradeDocument);
 
 // 개정 (issued → 새 draft)
-router.post('/:id/revise', controller.reviseTradeDocument);
+router.post("/:id/revise", controller.reviseTradeDocument);
 
 // draft 삭제
-router.delete('/:id', controller.deleteTradeDocument);
+router.delete("/:id", controller.deleteTradeDocument);
 
 module.exports = router;

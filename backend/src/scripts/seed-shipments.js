@@ -18,28 +18,28 @@
  */
 
 // ⚠️ mongoose 보다 먼저 — server.js 와 같은 이유 (config/dns.js 주석 참고)
-require('../config/dns');
+require("../config/dns");
 
-const mongoose = require('mongoose');
-const { connectDB, closeDB } = require('../config/database');
-const Shipment = require('../models/shipment.model');
-const TRANSIT_TIMES = require('../config/transit-times');
+const mongoose = require("mongoose");
+const { connectDB, closeDB } = require("../config/database");
+const Shipment = require("../models/shipment.model");
+const TRANSIT_TIMES = require("../config/transit-times");
 const {
   calculateDelayRisk,
   calculateEstimatedArrival,
   RISK_LEVELS,
-  MS_PER_DAY
-} = require('../utils/delay-risk');
+  MS_PER_DAY,
+} = require("../utils/delay-risk");
 const {
   resolveCompletedAt,
   isOnTime,
   COMPLETION_SOURCES,
-} = require('../utils/delivery-completion');
-const logger = require('../utils/logger');
+} = require("../utils/delivery-completion");
+const logger = require("../utils/logger");
 
 /** 합성 데이터 식별용 표시. --reset 시 이 표시가 있는 문서만 지운다. */
-const DEMO_MARKER = 'DEMO';
-const DEMO_TRACKING_PREFIX = 'DEMO-';
+const DEMO_MARKER = "DEMO";
+const DEMO_TRACKING_PREFIX = "DEMO-";
 
 const DEFAULT_COUNT = 36;
 
@@ -61,60 +61,81 @@ const LATE_EVERY_NTH = 8;
 // [합성] 노선 — 회사 서비스 지역을 참고했지만 실제 운송 실적이 아님
 const ROUTES = {
   AIR: [
-    { from: ['광저우', 113.2644, 23.1291], to: ['인천', 126.4505, 37.4602] },
-    { from: ['옌타이', 121.3914, 37.5393], to: ['인천', 126.4505, 37.4602] },
-    { from: ['인천', 126.4505, 37.4602], to: ['프랑크푸르트', 8.5622, 50.0379] },
-    { from: ['인천', 126.4505, 37.4602], to: ['로스앤젤레스', -118.4085, 33.9416] },
+    { from: ["광저우", 113.2644, 23.1291], to: ["인천", 126.4505, 37.4602] },
+    { from: ["옌타이", 121.3914, 37.5393], to: ["인천", 126.4505, 37.4602] },
+    {
+      from: ["인천", 126.4505, 37.4602],
+      to: ["프랑크푸르트", 8.5622, 50.0379],
+    },
+    {
+      from: ["인천", 126.4505, 37.4602],
+      to: ["로스앤젤레스", -118.4085, 33.9416],
+    },
   ],
   SEA: [
-    { from: ['상하이', 121.4737, 31.2304], to: ['부산', 129.0756, 35.1796] },
-    { from: ['선전', 114.0579, 22.5431], to: ['로테르담', 4.4777, 51.9244] },
-    { from: ['부산', 129.0756, 35.1796], to: ['롱비치', -118.1937, 33.7701] },
+    { from: ["상하이", 121.4737, 31.2304], to: ["부산", 129.0756, 35.1796] },
+    { from: ["선전", 114.0579, 22.5431], to: ["로테르담", 4.4777, 51.9244] },
+    { from: ["부산", 129.0756, 35.1796], to: ["롱비치", -118.1937, 33.7701] },
   ],
   SEA_AIR: [
-    { from: ['상하이', 121.4737, 31.2304], to: ['시카고', -87.9073, 41.9742] },
-    { from: ['선전', 114.0579, 22.5431], to: ['암스테르담', 4.7683, 52.3105] },
+    { from: ["상하이", 121.4737, 31.2304], to: ["시카고", -87.9073, 41.9742] },
+    { from: ["선전", 114.0579, 22.5431], to: ["암스테르담", 4.7683, 52.3105] },
   ],
   TRUCK_DOMESTIC: [
-    { from: ['상하이', 121.4737, 31.2304], to: ['항저우', 120.1551, 30.2741] },
-    { from: ['광저우', 113.2644, 23.1291], to: ['둥관', 113.7518, 23.0207] },
-    { from: ['인천', 126.7052, 37.4563], to: ['대구', 128.6014, 35.8714] },
+    { from: ["상하이", 121.4737, 31.2304], to: ["항저우", 120.1551, 30.2741] },
+    { from: ["광저우", 113.2644, 23.1291], to: ["둥관", 113.7518, 23.0207] },
+    { from: ["인천", 126.7052, 37.4563], to: ["대구", 128.6014, 35.8714] },
   ],
   TRUCK_CROSSBORDER: [
-    { from: ['난닝', 108.3665, 22.8170], to: ['하노이', 105.8342, 21.0278] },
-    { from: ['하노이', 105.8342, 21.0278], to: ['방콕', 100.5018, 13.7563] },
+    { from: ["난닝", 108.3665, 22.817], to: ["하노이", 105.8342, 21.0278] },
+    { from: ["하노이", 105.8342, 21.0278], to: ["방콕", 100.5018, 13.7563] },
   ],
   RAIL: [
-    { from: ['시안', 108.9398, 34.3416], to: ['함부르크', 9.9937, 53.5511] },
-    { from: ['청두', 104.0668, 30.5728], to: ['바르샤바', 21.0122, 52.2297] },
-    { from: ['충칭', 106.5516, 29.5630], to: ['모스크바', 37.6173, 55.7558] },
+    { from: ["시안", 108.9398, 34.3416], to: ["함부르크", 9.9937, 53.5511] },
+    { from: ["청두", 104.0668, 30.5728], to: ["바르샤바", 21.0122, 52.2297] },
+    { from: ["충칭", 106.5516, 29.563], to: ["모스크바", 37.6173, 55.7558] },
   ],
   EXPRESS: [
-    { from: ['인천', 126.4505, 37.4602], to: ['런던', -0.1276, 51.5072] },
-    { from: ['인천', 126.4505, 37.4602], to: ['베를린', 13.4050, 52.5200] },
-    { from: ['인천', 126.4505, 37.4602], to: ['파리', 2.3522, 48.8566] },
+    { from: ["인천", 126.4505, 37.4602], to: ["런던", -0.1276, 51.5072] },
+    { from: ["인천", 126.4505, 37.4602], to: ["베를린", 13.405, 52.52] },
+    { from: ["인천", 126.4505, 37.4602], to: ["파리", 2.3522, 48.8566] },
   ],
 };
 
 // [합성] 고객사명 — 실존 기업이 아닙니다
 const DEMO_CUSTOMERS = [
-  '가나무역', '다라전자', '마바산업', '사아물산', '자차코퍼레이션',
-  '카타테크', '파하글로벌', '나다상사', '라마인터내셔널', '바사로지스',
+  "가나무역",
+  "다라전자",
+  "마바산업",
+  "사아물산",
+  "자차코퍼레이션",
+  "카타테크",
+  "파하글로벌",
+  "나다상사",
+  "라마인터내셔널",
+  "바사로지스",
 ];
 
 const DEMO_ITEMS = [
-  '전자부품', '의류', '기계부품', '생활용품', '화장품',
-  '자동차부품', '식품(상온)', '플라스틱 원료',
+  "전자부품",
+  "의류",
+  "기계부품",
+  "생활용품",
+  "화장품",
+  "자동차부품",
+  "식품(상온)",
+  "플라스틱 원료",
 ];
 
-const randomInt = (min, max) => Math.floor(Math.random() * (max - min + 1)) + min;
+const randomInt = (min, max) =>
+  Math.floor(Math.random() * (max - min + 1)) + min;
 const pick = (arr) => arr[randomInt(0, arr.length - 1)];
 
 const makeTrackingNumber = (index) =>
-  `${DEMO_TRACKING_PREFIX}${String(index + 1).padStart(4, '0')}-${pick(['AIR', 'SEA', 'TRK', 'RAI', 'EXP'])}`;
+  `${DEMO_TRACKING_PREFIX}${String(index + 1).padStart(4, "0")}-${pick(["AIR", "SEA", "TRK", "RAI", "EXP"])}`;
 
 const toLocation = ([address, lng, lat], timestamp) => ({
-  type: 'Point',
+  type: "Point",
   coordinates: [lng, lat],
   address,
   timestamp,
@@ -146,12 +167,20 @@ const buildShipment = (index, now) => {
   const elapsedDays = Math.max(0.1, (targetRatio + jitter) * standardDays);
   const shippedAt = new Date(now.getTime() - elapsedDays * MS_PER_DAY);
 
-  const estimatedArrivalAt = calculateEstimatedArrival(shippedAt, transportMode, TRANSIT_TIMES);
-  const { level } = calculateDelayRisk({ transportMode, shippedAt, status: 'in_transit' }, TRANSIT_TIMES, { now });
+  const estimatedArrivalAt = calculateEstimatedArrival(
+    shippedAt,
+    transportMode,
+    TRANSIT_TIMES,
+  );
+  const { level } = calculateDelayRisk(
+    { transportMode, shippedAt, status: "in_transit" },
+    TRANSIT_TIMES,
+    { now },
+  );
 
   // 지연 등급이면 status 도 delayed 로 (일부는 in_transit 으로 남겨 현실감 유지)
-  let status = 'in_transit';
-  if (level === RISK_LEVELS.DELAYED && index % 3 !== 0) status = 'delayed';
+  let status = "in_transit";
+  if (level === RISK_LEVELS.DELAYED && index % 3 !== 0) status = "delayed";
 
   const origin = toLocation(route.from, shippedAt);
   const destination = toLocation(route.to, estimatedArrivalAt);
@@ -159,7 +188,7 @@ const buildShipment = (index, now) => {
   // 현재 위치는 출발지와 도착지 사이 어딘가 (경과율 비례, 단순 선형 보간)
   const progress = Math.min(1, elapsedDays / standardDays);
   const currentLocation = {
-    type: 'Point',
+    type: "Point",
     coordinates: [
       route.from[1] + (route.to[1] - route.from[1]) * progress,
       route.from[2] + (route.to[2] - route.from[2]) * progress,
@@ -188,7 +217,7 @@ const buildShipment = (index, now) => {
     history: [
       {
         location: origin,
-        status: 'in_transit',
+        status: "in_transit",
         description: `[${DEMO_MARKER}] 집하 완료 — 합성 데이터`,
         timestamp: shippedAt,
       },
@@ -196,14 +225,18 @@ const buildShipment = (index, now) => {
     customer: {
       name: `[${DEMO_MARKER}] ${customer}`,
       email: `demo-${index + 1}@example.com`,
-      phone: '000-0000-0000',
+      phone: "000-0000-0000",
     },
     items: [
       {
         description: `[${DEMO_MARKER}] ${pick(DEMO_ITEMS)}`,
         quantity: randomInt(1, 200),
         weight: randomInt(5, 2000),
-        dimensions: { length: randomInt(20, 200), width: randomInt(20, 150), height: randomInt(20, 150) },
+        dimensions: {
+          length: randomInt(20, 200),
+          width: randomInt(20, 150),
+          height: randomInt(20, 150),
+        },
       },
     ],
   };
@@ -235,24 +268,35 @@ const buildDeliveredShipment = (index, now) => {
   const offsetDays = isLate
     ? -(0.5 + Math.random() * 4) // 기일을 넘겨 도착
     : 0.2 + Math.random() * 2.5; // 기일 전에 도착
-  const estimatedDelivery = new Date(completedAt.getTime() + offsetDays * MS_PER_DAY);
-  const shippedAt = new Date(estimatedDelivery.getTime() - standardDays * MS_PER_DAY);
+  const estimatedDelivery = new Date(
+    completedAt.getTime() + offsetDays * MS_PER_DAY,
+  );
+  const shippedAt = new Date(
+    estimatedDelivery.getTime() - standardDays * MS_PER_DAY,
+  );
 
   const origin = toLocation(route.from, shippedAt);
   const destination = toLocation(route.to, completedAt);
   const customer = pick(DEMO_CUSTOMERS);
 
   return {
-    trackingNumber: `${DEMO_TRACKING_PREFIX}D${String(index + 1).padStart(4, '0')}-${pick(['AIR', 'SEA', 'TRK', 'RAI', 'EXP'])}`,
+    trackingNumber: `${DEMO_TRACKING_PREFIX}D${String(index + 1).padStart(4, "0")}-${pick(["AIR", "SEA", "TRK", "RAI", "EXP"])}`,
     origin,
     destination,
     // 완료 건의 현재 위치는 도착지다
-    currentLocation: { ...destination, address: `${route.to[0]} 배송 완료 (${DEMO_MARKER})` },
+    currentLocation: {
+      ...destination,
+      address: `${route.to[0]} 배송 완료 (${DEMO_MARKER})`,
+    },
     checkpoints: [],
-    status: 'delivered',
+    status: "delivered",
     transportMode,
     shippedAt,
-    estimatedArrivalAt: calculateEstimatedArrival(shippedAt, transportMode, TRANSIT_TIMES),
+    estimatedArrivalAt: calculateEstimatedArrival(
+      shippedAt,
+      transportMode,
+      TRANSIT_TIMES,
+    ),
     estimatedDelivery,
     // 화물 등록 시각 = 집하 시각으로 본다
     createdAt: shippedAt,
@@ -262,13 +306,13 @@ const buildDeliveredShipment = (index, now) => {
     history: [
       {
         location: origin,
-        status: 'in_transit',
+        status: "in_transit",
         description: `[${DEMO_MARKER}] 집하 완료 — 합성 데이터`,
         timestamp: shippedAt,
       },
       {
         location: destination,
-        status: 'delivered',
+        status: "delivered",
         description: `[${DEMO_MARKER}] 배송 완료 — 합성 데이터`,
         timestamp: completedAt,
       },
@@ -276,14 +320,18 @@ const buildDeliveredShipment = (index, now) => {
     customer: {
       name: `[${DEMO_MARKER}] ${customer}`,
       email: `demo-d${index + 1}@example.com`,
-      phone: '000-0000-0000',
+      phone: "000-0000-0000",
     },
     items: [
       {
         description: `[${DEMO_MARKER}] ${pick(DEMO_ITEMS)}`,
         quantity: randomInt(1, 200),
         weight: randomInt(5, 2000),
-        dimensions: { length: randomInt(20, 200), width: randomInt(20, 150), height: randomInt(20, 150) },
+        dimensions: {
+          length: randomInt(20, 200),
+          width: randomInt(20, 150),
+          height: randomInt(20, 150),
+        },
       },
     ],
   };
@@ -292,12 +340,12 @@ const buildDeliveredShipment = (index, now) => {
 const seed = async () => {
   await connectDB();
 
-  const reset = process.argv.includes('--reset');
-  const countArg = process.argv.find((a) => a.startsWith('--count='));
-  const count = countArg ? parseInt(countArg.split('=')[1], 10) : DEFAULT_COUNT;
-  const deliveredArg = process.argv.find((a) => a.startsWith('--delivered='));
+  const reset = process.argv.includes("--reset");
+  const countArg = process.argv.find((a) => a.startsWith("--count="));
+  const count = countArg ? parseInt(countArg.split("=")[1], 10) : DEFAULT_COUNT;
+  const deliveredArg = process.argv.find((a) => a.startsWith("--delivered="));
   const deliveredCount = deliveredArg
-    ? parseInt(deliveredArg.split('=')[1], 10)
+    ? parseInt(deliveredArg.split("=")[1], 10)
     : DEFAULT_DELIVERED_COUNT;
 
   // 합성 데이터만 골라서 지운다 — 실데이터가 섞여 있어도 안전하도록
@@ -310,28 +358,39 @@ const seed = async () => {
 
   const existing = await Shipment.countDocuments(demoFilter);
   if (existing > 0 && !reset) {
-    logger.warn(`합성 화물이 이미 ${existing}건 있습니다. 다시 넣으려면 --reset 옵션을 사용하세요.`);
+    logger.warn(
+      `합성 화물이 이미 ${existing}건 있습니다. 다시 넣으려면 --reset 옵션을 사용하세요.`,
+    );
   } else {
     const now = new Date();
     const docs = [
       ...Array.from({ length: count }, (_, i) => buildShipment(i, now)),
-      ...Array.from({ length: deliveredCount }, (_, i) => buildDeliveredShipment(i, now)),
+      ...Array.from({ length: deliveredCount }, (_, i) =>
+        buildDeliveredShipment(i, now),
+      ),
     ];
 
     // insertMany 는 pre('save') 훅을 타지 않으므로 create 로 넣는다
     // (estimatedArrivalAt / delayRiskScore 자동 계산을 그대로 태우기 위함)
     await Shipment.create(docs);
     logger.info(
-      `합성 화물 ${docs.length}건 삽입 완료 — 진행 중 ${count} / 완료 ${deliveredCount} (전부 ${DEMO_MARKER} 표시)`
+      `합성 화물 ${docs.length}건 삽입 완료 — 진행 중 ${count} / 완료 ${deliveredCount} (전부 ${DEMO_MARKER} 표시)`,
     );
   }
 
   // 등급 분포 확인
   const now = new Date();
   const all = await Shipment.find(demoFilter)
-    .select('transportMode shippedAt status createdAt estimatedDelivery history.status history.timestamp updatedAt')
+    .select(
+      "transportMode shippedAt status createdAt estimatedDelivery history.status history.timestamp updatedAt",
+    )
     .lean();
-  const counts = { [RISK_LEVELS.NORMAL]: 0, [RISK_LEVELS.AT_RISK]: 0, [RISK_LEVELS.DELAYED]: 0, 제외: 0 };
+  const counts = {
+    [RISK_LEVELS.NORMAL]: 0,
+    [RISK_LEVELS.AT_RISK]: 0,
+    [RISK_LEVELS.DELAYED]: 0,
+    제외: 0,
+  };
   const byMode = {};
 
   for (const s of all) {
@@ -341,11 +400,17 @@ const seed = async () => {
     byMode[s.transportMode] = (byMode[s.transportMode] || 0) + 1;
   }
 
-  logger.info(`등급 분포 — 정상 ${counts[RISK_LEVELS.NORMAL]} / 지연위험 ${counts[RISK_LEVELS.AT_RISK]} / 지연 ${counts[RISK_LEVELS.DELAYED]} / 제외 ${counts.제외}`);
-  logger.info(`운송모드 분포 — ${Object.entries(byMode).map(([m, c]) => `${m}:${c}`).join(', ')}`);
+  logger.info(
+    `등급 분포 — 정상 ${counts[RISK_LEVELS.NORMAL]} / 지연위험 ${counts[RISK_LEVELS.AT_RISK]} / 지연 ${counts[RISK_LEVELS.DELAYED]} / 제외 ${counts.제외}`,
+  );
+  logger.info(
+    `운송모드 분포 — ${Object.entries(byMode)
+      .map(([m, c]) => `${m}:${c}`)
+      .join(", ")}`,
+  );
 
   // 대시보드 집계가 읽는 값과 같은 기준으로 완료 건 분포를 확인한다
-  const delivered = all.filter((s) => s.status === 'delivered');
+  const delivered = all.filter((s) => s.status === "delivered");
   let onTimeCount = 0;
   let lateCount = 0;
   let fallbackCount = 0;
@@ -356,19 +421,20 @@ const seed = async () => {
     if (result === true) onTimeCount += 1;
     else if (result === false) lateCount += 1;
   }
-  const onTimeRate = delivered.length > 0
-    ? Math.round((onTimeCount / (onTimeCount + lateCount)) * 1000) / 10
-    : null;
+  const onTimeRate =
+    delivered.length > 0
+      ? Math.round((onTimeCount / (onTimeCount + lateCount)) * 1000) / 10
+      : null;
 
   logger.info(
-    `완료 건 — ${delivered.length}건 / 정시 ${onTimeCount} · 지연 ${lateCount} (온타임 ${onTimeRate ?? '—'}%) · updatedAt 폴백 ${fallbackCount}건`
+    `완료 건 — ${delivered.length}건 / 정시 ${onTimeCount} · 지연 ${lateCount} (온타임 ${onTimeRate ?? "—"}%) · updatedAt 폴백 ${fallbackCount}건`,
   );
 
   await closeDB();
 };
 
 seed().catch(async (err) => {
-  logger.error('시드 실패:', err);
+  logger.error("시드 실패:", err);
   await mongoose.connection.close().catch(() => {});
   process.exit(1);
 });

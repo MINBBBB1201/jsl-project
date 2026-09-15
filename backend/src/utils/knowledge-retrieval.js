@@ -1,4 +1,4 @@
-const KnowledgeDoc = require('../models/knowledge.model');
+const KnowledgeDoc = require("../models/knowledge.model");
 
 const TOP_K = 3;
 
@@ -18,13 +18,51 @@ const RELATIVE_SCORE_RATIO = 0.25;
  */
 const KOREAN_SUFFIXES = [
   // 어미 (질문/서술형)
-  '해야', '입니까', '인가요', '하나요', '되나요', '합니까', '습니다', '합니다',
-  '됩니다', '알려줘', '해줘', '되면', '하면', '하는', '하고', '려면', '세요',
-  '나요', '까요', '한다',
+  "해야",
+  "입니까",
+  "인가요",
+  "하나요",
+  "되나요",
+  "합니까",
+  "습니다",
+  "합니다",
+  "됩니다",
+  "알려줘",
+  "해줘",
+  "되면",
+  "하면",
+  "하는",
+  "하고",
+  "려면",
+  "세요",
+  "나요",
+  "까요",
+  "한다",
   // 조사
-  '에서', '으로', '까지', '부터', '에게', '한테', '이나', '라도',
-  '은', '는', '이', '가', '을', '를', '의', '에', '로', '와', '과',
-  '도', '만', '된', '한', '들'
+  "에서",
+  "으로",
+  "까지",
+  "부터",
+  "에게",
+  "한테",
+  "이나",
+  "라도",
+  "은",
+  "는",
+  "이",
+  "가",
+  "을",
+  "를",
+  "의",
+  "에",
+  "로",
+  "와",
+  "과",
+  "도",
+  "만",
+  "된",
+  "한",
+  "들",
 ].sort((a, b) => b.length - a.length); // 긴 것부터 제거
 
 const stripSuffix = (token) => {
@@ -36,10 +74,7 @@ const stripSuffix = (token) => {
   return token;
 };
 
-const tokenize = (query) =>
-  query
-    .split(/[\s,.?!·:;()[\]"'~]+/)
-    .filter(Boolean);
+const tokenize = (query) => query.split(/[\s,.?!·:;()[\]"'~]+/).filter(Boolean);
 
 /**
  * 원본 토큰 + 조사/어미를 제거한 변형을 모두 포함한 검색어를 만든다.
@@ -52,7 +87,7 @@ const expandQuery = (query) => {
     const stripped = stripSuffix(token);
     if (stripped.length >= 2) terms.add(stripped);
   }
-  return Array.from(terms).join(' ');
+  return Array.from(terms).join(" ");
 };
 
 /**
@@ -72,15 +107,23 @@ const retrieveDocs = async (query, category) => {
     $ne: true 로 쓴다 — 플래그가 생기기 전에 들어간 문서에는 필드 자체가 없고,
     { isSample: false } 로 걸면 그런 문서가 통째로 검색에서 사라진다.
   */
-  const baseFilter = { isSample: { $ne: true }, ...(category ? { category } : {}) };
-  const projection = { score: { $meta: 'textScore' }, title: 1, content: 1, category: 1 };
+  const baseFilter = {
+    isSample: { $ne: true },
+    ...(category ? { category } : {}),
+  };
+  const projection = {
+    score: { $meta: "textScore" },
+    title: 1,
+    content: 1,
+    category: 1,
+  };
 
   // 1차: $text 검색 (textScore 내림차순)
   const textResults = await KnowledgeDoc.find(
     { ...baseFilter, $text: { $search: expandQuery(query) } },
-    projection
+    projection,
   )
-    .sort({ score: { $meta: 'textScore' } })
+    .sort({ score: { $meta: "textScore" } })
     .limit(TOP_K)
     .lean();
 
@@ -90,42 +133,44 @@ const retrieveDocs = async (query, category) => {
     // "파손" 같은 짧은 질의는 매치 자체가 의도적이므로 하한을 적용하지 않는다.
     const floor = tokenize(query).length >= 3 ? MIN_SCORE : 0;
     const relevant = textResults.filter(
-      d => d.score >= floor && d.score >= topScore * RELATIVE_SCORE_RATIO
+      (d) => d.score >= floor && d.score >= topScore * RELATIVE_SCORE_RATIO,
     );
     if (relevant.length > 0) {
-      return { docs: relevant, strategy: 'text-index' };
+      return { docs: relevant, strategy: "text-index" };
     }
     // 매치는 있었지만 전부 임계값 미만 → 무관한 질문으로 간주
-    return { docs: [], strategy: 'none' };
+    return { docs: [], strategy: "none" };
   }
 
   // 2차 폴백: 2글자 이상 토큰으로 regex OR 검색
   const tokens = tokenize(query)
     .map(stripSuffix)
-    .filter(t => t.length >= 2)
+    .filter((t) => t.length >= 2)
     .slice(0, 8);
 
   if (tokens.length === 0) {
-    return { docs: [], strategy: 'none' };
+    return { docs: [], strategy: "none" };
   }
 
-  const pattern = tokens.map(t => t.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')).join('|');
+  const pattern = tokens
+    .map((t) => t.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"))
+    .join("|");
   const regexResults = await KnowledgeDoc.find(
     {
       ...baseFilter,
       $or: [
-        { title: { $regex: pattern, $options: 'i' } },
-        { content: { $regex: pattern, $options: 'i' } }
-      ]
+        { title: { $regex: pattern, $options: "i" } },
+        { content: { $regex: pattern, $options: "i" } },
+      ],
     },
-    { title: 1, content: 1, category: 1 }
+    { title: 1, content: 1, category: 1 },
   )
     .limit(TOP_K)
     .lean();
 
   return {
     docs: regexResults,
-    strategy: regexResults.length > 0 ? 'regex-fallback' : 'none'
+    strategy: regexResults.length > 0 ? "regex-fallback" : "none",
   };
 };
 

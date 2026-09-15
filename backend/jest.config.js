@@ -11,11 +11,11 @@
  *     내려받고 띄우는 데 기본 5초로는 부족하다.
  */
 module.exports = {
-  testEnvironment: 'node',
-  setupFiles: ['<rootDir>/tests/setup-env.js'],
+  testEnvironment: "node",
+  setupFiles: ["<rootDir>/tests/setup-env.js"],
   // utils 의 순수 함수 테스트와 tests/ 의 통합 테스트를 모두 잡는다 (기본값과 동일).
-  testMatch: ['**/?(*.)+(spec|test).[jt]s?(x)'],
+  testMatch: ["**/?(*.)+(spec|test).[jt]s?(x)"],
   // 헬퍼는 테스트 파일이 아니다.
-  testPathIgnorePatterns: ['/node_modules/', '<rootDir>/tests/helpers/'],
+  testPathIgnorePatterns: ["/node_modules/", "<rootDir>/tests/helpers/"],
   testTimeout: 30000,
 };

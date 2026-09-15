@@ -9,6 +9,7 @@
 A robust Node.js API for tracking cargo shipments with MongoDB integration. Built as part of the MERN Stack Tracking Assignment.
 
 ## 🔗 Repository Links
+
 - Backend: [https://github.com/Anuj-er/cargo-tracker-backend](https://github.com/Anuj-er/cargo-tracker-backend)
 - Frontend: [https://github.com/Anuj-er/cargo-tracker-webapp](https://github.com/Anuj-er/cargo-tracker-webapp)
 
@@ -17,6 +18,7 @@ A robust Node.js API for tracking cargo shipments with MongoDB integration. Buil
 This project implements a complete Cargo Shipment Tracker backend using Node.js, Express, and MongoDB as per the assignment requirements:
 
 ### Backend Implementation
+
 - **API Endpoints**: All required endpoints for shipment tracking and management
 - **Data Modeling**: Comprehensive shipment model with all required fields
 - **Geospatial Support**: Location tracking with MongoDB geospatial features
@@ -25,19 +27,19 @@ This project implements a complete Cargo Shipment Tracker backend using Node.js,
 
 ## 🔌 API Endpoints
 
-| Method | Endpoint                                | Description                                     |
-|--------|-----------------------------------------|-------------------------------------------------|
-| GET    | /api/shipments                          | Retrieve all shipments with details             |
-| GET    | /api/shipments/:id                      | Get specific shipment details                   |
-| POST   | /api/shipments/:id/update-location      | Update the current location of a shipment       |
-| GET    | /api/shipments/:id/eta                  | Get estimated arrival time                      |
-| POST   | /api/shipments                          | Create a new shipment with container ID         |
-| GET    | /api/shipments/:id/history              | Get shipment location history                   |
-| GET    | /api/shipments/delay-summary            | 지연 리스크 등급별 집계                          |
-| GET    | /api/shipments?riskLevel=지연위험        | 지연 리스크 등급으로 필터링                      |
-| POST   | /api/damage-inspection                  | 화물 사진 업로드 → 파손 여부 판정                |
-| GET    | /api/damage-inspection                  | 최근 판정 이력 (페이지네이션)                    |
-| GET    | /health                                 | Health check endpoint                           |
+| Method | Endpoint                           | Description                               |
+| ------ | ---------------------------------- | ----------------------------------------- |
+| GET    | /api/shipments                     | Retrieve all shipments with details       |
+| GET    | /api/shipments/:id                 | Get specific shipment details             |
+| POST   | /api/shipments/:id/update-location | Update the current location of a shipment |
+| GET    | /api/shipments/:id/eta             | Get estimated arrival time                |
+| POST   | /api/shipments                     | Create a new shipment with container ID   |
+| GET    | /api/shipments/:id/history         | Get shipment location history             |
+| GET    | /api/shipments/delay-summary       | 지연 리스크 등급별 집계                   |
+| GET    | /api/shipments?riskLevel=지연위험  | 지연 리스크 등급으로 필터링               |
+| POST   | /api/damage-inspection             | 화물 사진 업로드 → 파손 여부 판정         |
+| GET    | /api/damage-inspection             | 최근 판정 이력 (페이지네이션)             |
+| GET    | /health                            | Health check endpoint                     |
 
 ## 📷 화물 파손 판정 (Damage Inspection)
 
@@ -62,13 +64,13 @@ This project implements a complete Cargo Shipment Tracker backend using Node.js,
 
 공개 이미지 5장으로 검증한 결과 **4/5 정답**이었고, 다음과 같은 실패가 있었습니다.
 
-| 이미지 | 정답 | 판정 | 결과 |
-|--------|------|------|------|
-| 파손 상자 (FRAGILE, 모서리 찌그러짐) | 파손 | 이상없음 (confidence 0.95) | ❌ **미탐** |
-| 파손 상자 (현관 배송) | 파손 | 찌그러짐 / 경미 (0.95) | ✅ |
-| 정상 상자 (이삿짐 트럭) | 정상 | 이상없음 (0.95) | ✅ |
-| 정상 크레이트 (핸드트럭) | 정상 | 해당없음 (1.0) | ✅ |
-| 인물 초상화 (화물 아님) | 해당없음 | 해당없음 (1.0) | ✅ |
+| 이미지                               | 정답     | 판정                       | 결과        |
+| ------------------------------------ | -------- | -------------------------- | ----------- |
+| 파손 상자 (FRAGILE, 모서리 찌그러짐) | 파손     | 이상없음 (confidence 0.95) | ❌ **미탐** |
+| 파손 상자 (현관 배송)                | 파손     | 찌그러짐 / 경미 (0.95)     | ✅          |
+| 정상 상자 (이삿짐 트럭)              | 정상     | 이상없음 (0.95)            | ✅          |
+| 정상 크레이트 (핸드트럭)             | 정상     | 해당없음 (1.0)             | ✅          |
+| 인물 초상화 (화물 아님)              | 해당없음 | 해당없음 (1.0)             | ✅          |
 
 첫 번째 사례가 특히 중요합니다. **눈에 띄게 찌그러진 상자를 "이상 없음"으로,
 그것도 confidence 0.95 로 단정**했습니다. 확신도가 높다고 정확한 것이 아니므로
@@ -98,11 +100,11 @@ UI 와 문서에서 이 점을 명시하고 있습니다.
 
 ### 구현 위치
 
-| 파일 | 역할 |
-|------|------|
-| `src/utils/damage-inspection.js` | 리사이즈, 프롬프트, JSON 파싱, 순차 큐 |
-| `src/models/damage-inspection.model.js` | 판정 기록 (사람 검토 필드 포함) |
-| `src/routes/damage-inspection.routes.js` | multer 업로드 + 파일 검증 |
+| 파일                                     | 역할                                   |
+| ---------------------------------------- | -------------------------------------- |
+| `src/utils/damage-inspection.js`         | 리사이즈, 프롬프트, JSON 파싱, 순차 큐 |
+| `src/models/damage-inspection.model.js`  | 판정 기록 (사람 검토 필드 포함)        |
+| `src/routes/damage-inspection.routes.js` | multer 업로드 + 파일 검증              |
 
 ## ⏱️ 지연 감지 (Delay Risk Detection)
 
@@ -146,12 +148,12 @@ baseline 은 물류 업계에서 ML 도입 전 단계로 흔히 쓰는 접근이
 
 ### 구현 위치
 
-| 파일 | 역할 |
-|------|------|
-| `src/config/transit-times.js` | 운송모드별 표준 소요일 테이블 |
-| `src/utils/delay-risk.js` | 스코어링 순수 함수 (테이블·기준시각 주입) |
-| `src/utils/delay-risk.test.js` | 경계값·방어로직 단위 테스트 (25 케이스) |
-| `src/scripts/seed-shipments.js` | 데모용 합성 화물 생성 |
+| 파일                            | 역할                                      |
+| ------------------------------- | ----------------------------------------- |
+| `src/config/transit-times.js`   | 운송모드별 표준 소요일 테이블             |
+| `src/utils/delay-risk.js`       | 스코어링 순수 함수 (테이블·기준시각 주입) |
+| `src/utils/delay-risk.test.js`  | 경계값·방어로직 단위 테스트 (25 케이스)   |
+| `src/scripts/seed-shipments.js` | 데모용 합성 화물 생성                     |
 
 저장된 `delayRiskScore` / `delayRiskLevel` 은 **시간이 지나면 낡습니다.** 조회 API 는
 응답을 만들 때 다시 계산하고, 등급 필터링도 저장값이 아니라 `shippedAt` 날짜
@@ -311,6 +313,7 @@ cargo-tracker-backend/
 ## 🐳 Docker Commands
 
 ### Building and Running
+
 ```bash
 # Build and start the container (uses docker-compose.yml)
 docker-compose up -d --build
@@ -320,6 +323,7 @@ docker-compose up -d --build
 ```
 
 ### Monitoring and Management
+
 ```bash
 # View running containers
 docker ps
@@ -338,6 +342,7 @@ docker exec -it shipment-tracker-mongo mongosh
 ```
 
 ### Stopping and Cleaning Up
+
 ```bash
 # Stop containers
 docker-compose down
@@ -350,6 +355,7 @@ docker system prune -a --volumes
 ```
 
 ### Rebuilding After Changes
+
 ```bash
 # Rebuild the application after code changes
 docker-compose up -d --build
@@ -358,6 +364,7 @@ docker-compose up -d --build
 ## 🚢 Deployment
 
 ### Render Deployment
+
 1. Connect your GitHub repository to Render
 2. Create a new Web Service
 3. Use `npm start` as the start command
@@ -374,4 +381,4 @@ docker-compose up -d --build
 
 ## 📄 License
 
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details. 
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.

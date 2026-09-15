@@ -1,13 +1,17 @@
-const mongoose = require('mongoose');
-const { mongoUri } = require('./config');
-const logger = require('../utils/logger');
+const mongoose = require("mongoose");
+const { mongoUri } = require("./config");
+const logger = require("../utils/logger");
 
 const connectDB = async () => {
   try {
     // Check if MongoDB URI is properly formatted with authentication credentials
-    if (!mongoUri || !mongoUri.includes('@')) {
-      logger.error('MongoDB URI is missing or does not contain authentication credentials');
-      throw new Error('Invalid MongoDB URI: Missing authentication credentials');
+    if (!mongoUri || !mongoUri.includes("@")) {
+      logger.error(
+        "MongoDB URI is missing or does not contain authentication credentials",
+      );
+      throw new Error(
+        "Invalid MongoDB URI: Missing authentication credentials",
+      );
     }
 
     await mongoose.connect(mongoUri, {
@@ -17,24 +21,33 @@ const connectDB = async () => {
       maxPoolSize: 10,
       minPoolSize: 5,
       retryWrites: true,
-      w: 'majority',
-      authSource: 'admin' // Specify the authentication database
+      w: "majority",
+      authSource: "admin", // Specify the authentication database
     });
-    
+
     // Skip command verification as it might cause issues
-    logger.info('MongoDB Atlas connected successfully');
+    logger.info("MongoDB Atlas connected successfully");
   } catch (error) {
-    logger.error('MongoDB Atlas connection error:', error);
-    
+    logger.error("MongoDB Atlas connection error:", error);
+
     // Provide more specific error messages based on the error type
-    if (error.name === 'MongoServerSelectionError') {
-      logger.error('Could not select a MongoDB server. Check network connectivity and server status.');
-    } else if (error.name === 'MongoNetworkError') {
-      logger.error('Network error connecting to MongoDB. Check your internet connection.');
-    } else if (error.message && error.message.includes('Authentication failed')) {
-      logger.error('MongoDB authentication failed. Check your username and password.');
+    if (error.name === "MongoServerSelectionError") {
+      logger.error(
+        "Could not select a MongoDB server. Check network connectivity and server status.",
+      );
+    } else if (error.name === "MongoNetworkError") {
+      logger.error(
+        "Network error connecting to MongoDB. Check your internet connection.",
+      );
+    } else if (
+      error.message &&
+      error.message.includes("Authentication failed")
+    ) {
+      logger.error(
+        "MongoDB authentication failed. Check your username and password.",
+      );
     }
-    
+
     // Don't exit the process, let the application handle reconnection
     throw error;
   }
@@ -43,9 +56,9 @@ const connectDB = async () => {
 const closeDB = async () => {
   try {
     await mongoose.connection.close();
-    logger.info('MongoDB Atlas connection closed');
+    logger.info("MongoDB Atlas connection closed");
   } catch (error) {
-    logger.error('Error closing MongoDB Atlas connection:', error);
+    logger.error("Error closing MongoDB Atlas connection:", error);
   }
 };
 

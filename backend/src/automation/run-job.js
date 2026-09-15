@@ -12,24 +12,24 @@
  */
 
 // ⚠️ mongoose 보다 먼저 — server.js 와 같은 이유 (config/dns.js 주석 참고)
-require('../config/dns');
+require("../config/dns");
 
-const { connectDB, closeDB } = require('../config/database');
-const { runDailyOpsDigest } = require('./daily-ops-digest');
-const { runStaleShipmentCheck } = require('./stale-shipment-check');
+const { connectDB, closeDB } = require("../config/database");
+const { runDailyOpsDigest } = require("./daily-ops-digest");
+const { runStaleShipmentCheck } = require("./stale-shipment-check");
 
 const JOBS = {
-  'daily-digest': runDailyOpsDigest,
-  'stale-check': runStaleShipmentCheck
+  "daily-digest": runDailyOpsDigest,
+  "stale-check": runStaleShipmentCheck,
 };
 
 const parseArgs = (argv) => {
-  const jobName = argv.find((arg) => !arg.startsWith('--'));
-  const staleDaysArg = argv.find((arg) => arg.startsWith('--stale-days='));
+  const jobName = argv.find((arg) => !arg.startsWith("--"));
+  const staleDaysArg = argv.find((arg) => arg.startsWith("--stale-days="));
 
   return {
     jobName,
-    staleDays: staleDaysArg ? Number(staleDaysArg.split('=')[1]) : undefined
+    staleDays: staleDaysArg ? Number(staleDaysArg.split("=")[1]) : undefined,
   };
 };
 
@@ -39,36 +39,36 @@ const main = async () => {
 
   if (!run) {
     console.error(
-      `실행할 작업을 찾을 수 없습니다: ${jobName ?? '(없음)'}\n` +
-      `사용 가능한 작업: ${Object.keys(JOBS).join(', ')}`
+      `실행할 작업을 찾을 수 없습니다: ${jobName ?? "(없음)"}\n` +
+        `사용 가능한 작업: ${Object.keys(JOBS).join(", ")}`,
     );
     process.exit(1);
   }
 
   await connectDB();
 
-  const options = { trigger: 'manual' };
+  const options = { trigger: "manual" };
   if (Number.isFinite(staleDays)) options.staleDays = staleDays;
 
   const result = await run(options);
 
-  console.log('\n────────────────────────────────────────────────');
+  console.log("\n────────────────────────────────────────────────");
   console.log(` 작업: ${jobName}`);
   console.log(` 상태: ${result.status}`);
   console.log(` 소요: ${result.durationMs}ms`);
   if (result.error) console.log(` 오류: ${result.error}`);
-  console.log(' 요약:');
+  console.log(" 요약:");
   console.log(JSON.stringify(result.summary, null, 2));
-  console.log('────────────────────────────────────────────────\n');
+  console.log("────────────────────────────────────────────────\n");
 
   await closeDB();
 
   // 작업이 실패했으면 종료 코드로 알린다 (CI·외부 스케줄러가 실패를 감지할 수 있게)
-  process.exit(result.status === 'success' ? 0 : 1);
+  process.exit(result.status === "success" ? 0 : 1);
 };
 
 main().catch(async (error) => {
-  console.error('작업 실행 중 오류:', error);
+  console.error("작업 실행 중 오류:", error);
   await closeDB().catch(() => {});
   process.exit(1);
 });

@@ -1,4 +1,4 @@
-const mongoose = require('mongoose');
+const mongoose = require("mongoose");
 
 /**
  * 자동화 작업 실행 기록.
@@ -10,8 +10,8 @@ const mongoose = require('mongoose');
  */
 
 const JOB_STATUS = {
-  SUCCESS: 'success',
-  ERROR: 'error'
+  SUCCESS: "success",
+  ERROR: "error",
 };
 
 const automationLogSchema = new mongoose.Schema(
@@ -19,24 +19,24 @@ const automationLogSchema = new mongoose.Schema(
     jobName: {
       type: String,
       required: true,
-      index: true
+      index: true,
     },
     ranAt: {
       type: Date,
       required: true,
       default: Date.now,
-      index: true
+      index: true,
     },
     /** 작업마다 다른 요약 구조라 자유 형식으로 둔다 (집계 수치 등) */
     summary: {
       type: mongoose.Schema.Types.Mixed,
-      default: {}
+      default: {},
     },
     status: {
       type: String,
       enum: Object.values(JOB_STATUS),
       required: true,
-      default: JOB_STATUS.SUCCESS
+      default: JOB_STATUS.SUCCESS,
     },
     /** 실패했을 때 원인. 성공 시에는 비어 있다. */
     error: String,
@@ -47,14 +47,14 @@ const automationLogSchema = new mongoose.Schema(
      */
     trigger: {
       type: String,
-      enum: ['schedule', 'manual'],
-      default: 'schedule'
-    }
+      enum: ["schedule", "manual"],
+      default: "schedule",
+    },
   },
-  { timestamps: true }
+  { timestamps: true },
 );
 
-const AutomationLog = mongoose.model('AutomationLog', automationLogSchema);
+const AutomationLog = mongoose.model("AutomationLog", automationLogSchema);
 
 module.exports = AutomationLog;
 module.exports.JOB_STATUS = JOB_STATUS;

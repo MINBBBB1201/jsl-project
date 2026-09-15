@@ -1,6 +1,6 @@
-const AutomationLog = require('../models/automation-log.model');
-const { JOB_STATUS } = require('../models/automation-log.model');
-const logger = require('../utils/logger');
+const AutomationLog = require("../models/automation-log.model");
+const { JOB_STATUS } = require("../models/automation-log.model");
+const logger = require("../utils/logger");
 
 /**
  * 자동화 작업 공통 실행기.
@@ -20,7 +20,7 @@ const logger = require('../utils/logger');
  * @returns {Promise<{status: string, summary: object, durationMs: number, error?: string}>}
  */
 const runWithLog = async (jobName, task, options = {}) => {
-  const { trigger = 'schedule' } = options;
+  const { trigger = "schedule" } = options;
   const startedAt = Date.now();
   const ranAt = new Date();
 
@@ -49,7 +49,7 @@ const runWithLog = async (jobName, task, options = {}) => {
       status,
       error: errorMessage,
       durationMs,
-      trigger
+      trigger,
     });
   } catch (logError) {
     // 기록 저장까지 실패하면 남길 곳이 로그 파일뿐이다

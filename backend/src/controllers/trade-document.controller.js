@@ -1,10 +1,10 @@
-const mongoose = require('mongoose');
+const mongoose = require("mongoose");
 
-const TradeDocument = require('../models/trade-document.model');
-const Counter = require('../models/counter.model');
-const Shipment = require('../models/shipment.model');
-const logger = require('../utils/logger');
-const { TYPE_PREFIX } = require('../config/trade-documents');
+const TradeDocument = require("../models/trade-document.model");
+const Counter = require("../models/counter.model");
+const Shipment = require("../models/shipment.model");
+const logger = require("../utils/logger");
+const { TYPE_PREFIX } = require("../config/trade-documents");
 
 /* ── 입력 정규화 ─────────────────────────────────────────────────────
  *
@@ -13,10 +13,10 @@ const { TYPE_PREFIX } = require('../config/trade-documents');
  * 빈 값은 0 이 아니라 null 이다 — 포장명세서 합계에서 "미입력"과 "0"은 다르다.
  */
 
-const str = (v) => (typeof v === 'string' ? v : v == null ? '' : String(v));
+const str = (v) => (typeof v === "string" ? v : v == null ? "" : String(v));
 
 const num = (v) => {
-  if (v === '' || v === null || v === undefined) return null;
+  if (v === "" || v === null || v === undefined) return null;
   const n = Number(v);
   return Number.isFinite(n) ? n : null;
 };
@@ -33,7 +33,7 @@ const normalizeItem = (it = {}) => ({
   description: str(it.description),
   origin: str(it.origin),
   quantity: num(it.quantity) ?? 0,
-  unit: it.unit || 'PCS',
+  unit: it.unit || "PCS",
   unitPrice: num(it.unitPrice),
   packages: num(it.packages),
   netWeightKg: num(it.netWeightKg),
@@ -52,25 +52,26 @@ const normalizeInput = (input = {}) => ({
   countryOfDestination: str(input.countryOfDestination),
   portOfLoading: str(input.portOfLoading),
   portOfDischarge: str(input.portOfDischarge),
-  shipMode: input.shipMode || 'SEA',
-  incoterm: input.incoterm || 'FOB',
+  shipMode: input.shipMode || "SEA",
+  incoterm: input.incoterm || "FOB",
   incotermPlace: str(input.incotermPlace),
-  paymentTerm: input.paymentTerm || 'T/T',
-  currency: input.currency || 'USD',
+  paymentTerm: input.paymentTerm || "T/T",
+  currency: input.currency || "USD",
   marksAndNumbers: str(input.marksAndNumbers),
   items: Array.isArray(input.items) ? input.items.map(normalizeItem) : [],
 });
 
 /* ── 응답 헬퍼 ──────────────────────────────────────────────────────── */
 
-const fail = (res, code, error) => res.status(code).json({ success: false, error });
+const fail = (res, code, error) =>
+  res.status(code).json({ success: false, error });
 
 const badId = (id) => !mongoose.Types.ObjectId.isValid(id);
 
 /** 개정 체인 요약 (상세 응답에 붙인다) */
 const chainSummary = async (revisionRootId) => {
   const docs = await TradeDocument.find({ revisionRootId })
-    .select('version status documentNo issuedAt createdAt')
+    .select("version status documentNo issuedAt createdAt")
     .sort({ version: 1 })
     .lean();
   return docs.map((d) => ({
@@ -94,9 +95,10 @@ exports.createTradeDocument = async (req, res) => {
     const { type, shipmentId } = req.body;
 
     if (shipmentId) {
-      if (badId(shipmentId)) return fail(res, 400, '유효하지 않은 shipmentId 입니다.');
+      if (badId(shipmentId))
+        return fail(res, 400, "유효하지 않은 shipmentId 입니다.");
       const exists = await Shipment.exists({ _id: shipmentId });
-      if (!exists) return fail(res, 404, '연결하려는 화물을 찾을 수 없습니다.');
+      if (!exists) return fail(res, 404, "연결하려는 화물을 찾을 수 없습니다.");
     }
 
     const doc = await TradeDocument.create({
@@ -106,14 +108,22 @@ exports.createTradeDocument = async (req, res) => {
       createdBy: req.user.id,
     });
 
-    logger.info(`무역서류 draft 생성: ${type} (${doc._id}) by ${req.user.email}`);
+    logger.info(
+      `무역서류 draft 생성: ${type} (${doc._id}) by ${req.user.email}`,
+    );
     return res.status(201).json({ success: true, data: doc.toClientJSON() });
   } catch (error) {
-    if (error.name === 'ValidationError') {
-      return fail(res, 400, `입력이 유효하지 않습니다: ${Object.values(error.errors).map((e) => e.message).join(', ')}`);
+    if (error.name === "ValidationError") {
+      return fail(
+        res,
+        400,
+        `입력이 유효하지 않습니다: ${Object.values(error.errors)
+          .map((e) => e.message)
+          .join(", ")}`,
+      );
     }
-    logger.error('무역서류 생성 실패:', error);
-    return fail(res, 500, '무역서류를 만들지 못했습니다.');
+    logger.error("무역서류 생성 실패:", error);
+    return fail(res, 500, "무역서류를 만들지 못했습니다.");
   }
 };
 
@@ -127,13 +137,15 @@ exports.listTradeDocuments = async (req, res) => {
     const query = {};
     if (req.query.type) query.type = req.query.type;
     if (req.query.status) query.status = req.query.status;
-    if (req.query.shipmentId && !badId(req.query.shipmentId)) query.shipmentId = req.query.shipmentId;
-    if (req.query.mine === '1' || req.query.mine === 'true') query.createdBy = req.user.id;
+    if (req.query.shipmentId && !badId(req.query.shipmentId))
+      query.shipmentId = req.query.shipmentId;
+    if (req.query.mine === "1" || req.query.mine === "true")
+      query.createdBy = req.user.id;
 
     const docs = await TradeDocument.find(query).sort({ updatedAt: -1 });
 
     let list = docs;
-    if (req.query.allVersions !== '1' && req.query.allVersions !== 'true') {
+    if (req.query.allVersions !== "1" && req.query.allVersions !== "true") {
       // 체인당 최신 version 만 남긴다
       const headByRoot = new Map();
       for (const d of docs) {
@@ -150,8 +162,8 @@ exports.listTradeDocuments = async (req, res) => {
       data: list.map((d) => d.toClientJSON()),
     });
   } catch (error) {
-    logger.error('무역서류 목록 조회 실패:', error);
-    return fail(res, 500, '무역서류 목록을 불러오지 못했습니다.');
+    logger.error("무역서류 목록 조회 실패:", error);
+    return fail(res, 500, "무역서류 목록을 불러오지 못했습니다.");
   }
 };
 
@@ -162,10 +174,10 @@ exports.listTradeDocuments = async (req, res) => {
 exports.getTradeDocument = async (req, res) => {
   try {
     const { id } = req.params;
-    if (badId(id)) return fail(res, 400, '유효하지 않은 id 입니다.');
+    if (badId(id)) return fail(res, 400, "유효하지 않은 id 입니다.");
 
     const doc = await TradeDocument.findById(id);
-    if (!doc) return fail(res, 404, '무역서류를 찾을 수 없습니다.');
+    if (!doc) return fail(res, 404, "무역서류를 찾을 수 없습니다.");
 
     return res.status(200).json({
       success: true,
@@ -173,8 +185,8 @@ exports.getTradeDocument = async (req, res) => {
       versions: await chainSummary(doc.revisionRootId),
     });
   } catch (error) {
-    logger.error('무역서류 조회 실패:', error);
-    return fail(res, 500, '무역서류를 불러오지 못했습니다.');
+    logger.error("무역서류 조회 실패:", error);
+    return fail(res, 500, "무역서류를 불러오지 못했습니다.");
   }
 };
 
@@ -192,42 +204,60 @@ exports.getTradeDocument = async (req, res) => {
 exports.updateTradeDocument = async (req, res) => {
   try {
     const { id } = req.params;
-    if (badId(id)) return fail(res, 400, '유효하지 않은 id 입니다.');
+    if (badId(id)) return fail(res, 400, "유효하지 않은 id 입니다.");
 
-    const existing = await TradeDocument.findById(id).select('status');
-    if (!existing) return fail(res, 404, '무역서류를 찾을 수 없습니다.');
-    if (!existing.isEditable()) return fail(res, 409, `${existing.status} 상태의 서류는 편집할 수 없습니다. 개정본을 만드세요.`);
+    const existing = await TradeDocument.findById(id).select("status");
+    if (!existing) return fail(res, 404, "무역서류를 찾을 수 없습니다.");
+    if (!existing.isEditable())
+      return fail(
+        res,
+        409,
+        `${existing.status} 상태의 서류는 편집할 수 없습니다. 개정본을 만드세요.`,
+      );
 
     const update = {};
-    if (req.body.input !== undefined) update.input = normalizeInput(req.body.input);
+    if (req.body.input !== undefined)
+      update.input = normalizeInput(req.body.input);
 
     if (req.body.shipmentId !== undefined) {
       const sid = req.body.shipmentId;
-      if (sid === null || sid === '') {
+      if (sid === null || sid === "") {
         update.shipmentId = null;
       } else {
-        if (badId(sid)) return fail(res, 400, '유효하지 않은 shipmentId 입니다.');
-        if (!(await Shipment.exists({ _id: sid }))) return fail(res, 404, '연결하려는 화물을 찾을 수 없습니다.');
+        if (badId(sid))
+          return fail(res, 400, "유효하지 않은 shipmentId 입니다.");
+        if (!(await Shipment.exists({ _id: sid })))
+          return fail(res, 404, "연결하려는 화물을 찾을 수 없습니다.");
         update.shipmentId = sid;
       }
     }
 
     const doc = await TradeDocument.findOneAndUpdate(
-      { _id: id, status: 'draft' },
+      { _id: id, status: "draft" },
       { $set: update },
-      { new: true, runValidators: true, context: 'query' }
+      { new: true, runValidators: true, context: "query" },
     );
     if (!doc) {
-      return fail(res, 409, '그 사이 서류가 발행되어 더 이상 편집할 수 없습니다. 새로고침 후 확인해 주세요.');
+      return fail(
+        res,
+        409,
+        "그 사이 서류가 발행되어 더 이상 편집할 수 없습니다. 새로고침 후 확인해 주세요.",
+      );
     }
 
     return res.status(200).json({ success: true, data: doc.toClientJSON() });
   } catch (error) {
-    if (error.name === 'ValidationError') {
-      return fail(res, 400, `입력이 유효하지 않습니다: ${Object.values(error.errors).map((e) => e.message).join(', ')}`);
+    if (error.name === "ValidationError") {
+      return fail(
+        res,
+        400,
+        `입력이 유효하지 않습니다: ${Object.values(error.errors)
+          .map((e) => e.message)
+          .join(", ")}`,
+      );
     }
-    logger.error('무역서류 수정 실패:', error);
-    return fail(res, 500, '무역서류를 수정하지 못했습니다.');
+    logger.error("무역서류 수정 실패:", error);
+    return fail(res, 500, "무역서류를 수정하지 못했습니다.");
   }
 };
 
@@ -251,54 +281,76 @@ exports.updateTradeDocument = async (req, res) => {
 exports.issueTradeDocument = async (req, res) => {
   try {
     const { id } = req.params;
-    if (badId(id)) return fail(res, 400, '유효하지 않은 id 입니다.');
+    if (badId(id)) return fail(res, 400, "유효하지 않은 id 입니다.");
 
-    const doc = await TradeDocument.findById(id).select('type status revisionRootId _id');
-    if (!doc) return fail(res, 404, '무역서류를 찾을 수 없습니다.');
-    if (doc.status !== 'draft') return fail(res, 409, '이미 발행된 서류입니다.');
+    const doc = await TradeDocument.findById(id).select(
+      "type status revisionRootId _id",
+    );
+    if (!doc) return fail(res, 404, "무역서류를 찾을 수 없습니다.");
+    if (doc.status !== "draft")
+      return fail(res, 409, "이미 발행된 서류입니다.");
 
     const isRevision = doc.revisionRootId.toString() !== doc._id.toString();
 
     let documentNo;
     if (isRevision) {
       // 번호는 root 것을 물려받는다 (CI-2026-0042 Rev.1 처럼 같은 번호를 쓴다)
-      const root = await TradeDocument.findById(doc.revisionRootId).select('documentNo');
+      const root = await TradeDocument.findById(doc.revisionRootId).select(
+        "documentNo",
+      );
       documentNo = root ? root.documentNo : null;
     } else {
       const year = new Date().getFullYear();
       const key = `${TYPE_PREFIX[doc.type]}-${year}`;
       const seq = await Counter.next(key);
-      documentNo = `${key}-${String(seq).padStart(4, '0')}`;
+      documentNo = `${key}-${String(seq).padStart(4, "0")}`;
     }
 
     // 상태 전이를 원자적으로 선점한다. 이미 발행됐다면(동시 요청) 여기서 걸린다.
     const issued = await TradeDocument.findOneAndUpdate(
-      { _id: id, status: 'draft' },
-      { $set: { documentNo, status: 'issued', issuedBy: req.user.id, issuedAt: new Date() } },
-      { new: true }
+      { _id: id, status: "draft" },
+      {
+        $set: {
+          documentNo,
+          status: "issued",
+          issuedBy: req.user.id,
+          issuedAt: new Date(),
+        },
+      },
+      { new: true },
     );
     if (!issued) {
-      return fail(res, 409, '이미 다른 요청이 이 서류를 발행했습니다. 새로고침 후 확인해 주세요.');
+      return fail(
+        res,
+        409,
+        "이미 다른 요청이 이 서류를 발행했습니다. 새로고침 후 확인해 주세요.",
+      );
     }
 
     if (isRevision) {
       // 체인에서 아직 살아있는 이전 issued 버전을 superseded 로. 방금 이 문서
       // 자신도 status:'issued' 라 _id 를 제외해야 스스로를 덮어쓰지 않는다.
       await TradeDocument.updateMany(
-        { revisionRootId: issued.revisionRootId, status: 'issued', _id: { $ne: issued._id } },
-        { $set: { status: 'superseded', supersededById: issued._id } }
+        {
+          revisionRootId: issued.revisionRootId,
+          status: "issued",
+          _id: { $ne: issued._id },
+        },
+        { $set: { status: "superseded", supersededById: issued._id } },
       );
     }
 
-    logger.info(`무역서류 발행: ${issued.documentNo} (v${issued.version}) by ${req.user.email}`);
+    logger.info(
+      `무역서류 발행: ${issued.documentNo} (v${issued.version}) by ${req.user.email}`,
+    );
     return res.status(200).json({
       success: true,
       data: issued.toClientJSON(),
       versions: await chainSummary(issued.revisionRootId),
     });
   } catch (error) {
-    logger.error('무역서류 발행 실패:', error);
-    return fail(res, 500, '무역서류를 발행하지 못했습니다.');
+    logger.error("무역서류 발행 실패:", error);
+    return fail(res, 500, "무역서류를 발행하지 못했습니다.");
   }
 };
 
@@ -314,20 +366,29 @@ exports.issueTradeDocument = async (req, res) => {
 exports.reviseTradeDocument = async (req, res) => {
   try {
     const { id } = req.params;
-    if (badId(id)) return fail(res, 400, '유효하지 않은 id 입니다.');
+    if (badId(id)) return fail(res, 400, "유효하지 않은 id 입니다.");
 
     const doc = await TradeDocument.findById(id);
-    if (!doc) return fail(res, 404, '무역서류를 찾을 수 없습니다.');
-    if (doc.status !== 'issued') return fail(res, 409, '발행된 서류만 개정할 수 있습니다.');
+    if (!doc) return fail(res, 404, "무역서류를 찾을 수 없습니다.");
+    if (doc.status !== "issued")
+      return fail(res, 409, "발행된 서류만 개정할 수 있습니다.");
 
-    const openDraft = await TradeDocument.exists({ revisionRootId: doc.revisionRootId, status: 'draft' });
-    if (openDraft) return fail(res, 409, '이 서류에는 아직 발행되지 않은 개정 draft 가 있습니다.');
+    const openDraft = await TradeDocument.exists({
+      revisionRootId: doc.revisionRootId,
+      status: "draft",
+    });
+    if (openDraft)
+      return fail(
+        res,
+        409,
+        "이 서류에는 아직 발행되지 않은 개정 draft 가 있습니다.",
+      );
 
     const revision = await TradeDocument.create({
       type: doc.type,
       shipmentId: doc.shipmentId,
       // documentNo 는 두지 않는다 — 발행 시 root 번호를 물려받는다
-      status: 'draft',
+      status: "draft",
       revisionRootId: doc.revisionRootId,
       version: doc.version + 1,
       previousVersionId: doc._id,
@@ -335,14 +396,22 @@ exports.reviseTradeDocument = async (req, res) => {
       createdBy: req.user.id,
     });
 
-    logger.info(`무역서류 개정 draft: ${doc.documentNo} v${revision.version} by ${req.user.email}`);
-    return res.status(201).json({ success: true, data: revision.toClientJSON() });
+    logger.info(
+      `무역서류 개정 draft: ${doc.documentNo} v${revision.version} by ${req.user.email}`,
+    );
+    return res
+      .status(201)
+      .json({ success: true, data: revision.toClientJSON() });
   } catch (error) {
     if (error.code === 11000) {
-      return fail(res, 409, '이미 다른 요청이 개정 draft 를 만들었습니다. 새로고침 후 확인해 주세요.');
+      return fail(
+        res,
+        409,
+        "이미 다른 요청이 개정 draft 를 만들었습니다. 새로고침 후 확인해 주세요.",
+      );
     }
-    logger.error('무역서류 개정 실패:', error);
-    return fail(res, 500, '개정본을 만들지 못했습니다.');
+    logger.error("무역서류 개정 실패:", error);
+    return fail(res, 500, "개정본을 만들지 못했습니다.");
   }
 };
 
@@ -359,23 +428,35 @@ exports.reviseTradeDocument = async (req, res) => {
 exports.deleteTradeDocument = async (req, res) => {
   try {
     const { id } = req.params;
-    if (badId(id)) return fail(res, 400, '유효하지 않은 id 입니다.');
+    if (badId(id)) return fail(res, 400, "유효하지 않은 id 입니다.");
 
-    const existing = await TradeDocument.findById(id).select('status createdBy');
-    if (!existing) return fail(res, 404, '무역서류를 찾을 수 없습니다.');
-    if (existing.status !== 'draft') return fail(res, 409, '발행된 서류는 삭제할 수 없습니다.');
-    if (existing.createdBy.toString() !== req.user.id && req.user.role !== 'admin') {
-      return fail(res, 403, '본인이 만든 draft 만 삭제할 수 있습니다.');
+    const existing =
+      await TradeDocument.findById(id).select("status createdBy");
+    if (!existing) return fail(res, 404, "무역서류를 찾을 수 없습니다.");
+    if (existing.status !== "draft")
+      return fail(res, 409, "발행된 서류는 삭제할 수 없습니다.");
+    if (
+      existing.createdBy.toString() !== req.user.id &&
+      req.user.role !== "admin"
+    ) {
+      return fail(res, 403, "본인이 만든 draft 만 삭제할 수 있습니다.");
     }
 
-    const deleted = await TradeDocument.findOneAndDelete({ _id: id, status: 'draft' });
+    const deleted = await TradeDocument.findOneAndDelete({
+      _id: id,
+      status: "draft",
+    });
     if (!deleted) {
-      return fail(res, 409, '그 사이 서류 상태가 바뀌어 삭제할 수 없습니다. 새로고침 후 확인해 주세요.');
+      return fail(
+        res,
+        409,
+        "그 사이 서류 상태가 바뀌어 삭제할 수 없습니다. 새로고침 후 확인해 주세요.",
+      );
     }
 
-    return res.status(200).json({ success: true, message: '삭제되었습니다.' });
+    return res.status(200).json({ success: true, message: "삭제되었습니다." });
   } catch (error) {
-    logger.error('무역서류 삭제 실패:', error);
-    return fail(res, 500, '무역서류를 삭제하지 못했습니다.');
+    logger.error("무역서류 삭제 실패:", error);
+    return fail(res, 500, "무역서류를 삭제하지 못했습니다.");
   }
 };

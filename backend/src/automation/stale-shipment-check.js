@@ -1,7 +1,7 @@
-const Shipment = require('../models/shipment.model');
-const logger = require('../utils/logger');
-const notificationService = require('../services/notification.service');
-const { runWithLog } = require('./run-with-log');
+const Shipment = require("../models/shipment.model");
+const logger = require("../utils/logger");
+const notificationService = require("../services/notification.service");
+const { runWithLog } = require("./run-with-log");
 
 /**
  * 방치된 화물 감지 — 6시간마다
@@ -17,7 +17,7 @@ const { runWithLog } = require('./run-with-log');
  * 방치된 화물을 놓친다.
  */
 
-const JOB_NAME = 'stale-shipment-check';
+const JOB_NAME = "stale-shipment-check";
 const DAY_MS = 24 * 60 * 60 * 1000;
 
 /** 며칠 이상 갱신이 없으면 방치로 볼지 */
@@ -47,8 +47,8 @@ const checkStaleShipments = async (now, staleDays) => {
    * 화물 건수가 커지면 lastStatusUpdateAt 를 문서에 비정규화해 두고
    * 인덱스를 걸어 쿼리로 거르도록 바꾸면 된다.
    */
-  const shipments = await Shipment.find({ status: 'in_transit' })
-    .select('trackingNumber status history shippedAt createdAt')
+  const shipments = await Shipment.find({ status: "in_transit" })
+    .select("trackingNumber status history shippedAt createdAt")
     .lean();
 
   const stale = [];
@@ -60,13 +60,17 @@ const checkStaleShipments = async (now, staleDays) => {
     const daysSinceUpdate = Math.floor((now - lastUpdate) / DAY_MS);
     stale.push({ trackingNumber: shipment.trackingNumber, daysSinceUpdate });
 
-    await notificationService.notifyStaleShipment(shipment, daysSinceUpdate, { now });
+    await notificationService.notifyStaleShipment(shipment, daysSinceUpdate, {
+      now,
+    });
   }
 
   if (stale.length > 0) {
     logger.warn(
       `[방치 화물 감지] ${stale.length}건: ` +
-        stale.map((s) => `${s.trackingNumber}(${s.daysSinceUpdate}일)`).join(', ')
+        stale
+          .map((s) => `${s.trackingNumber}(${s.daysSinceUpdate}일)`)
+          .join(", "),
     );
   }
 
@@ -76,7 +80,7 @@ const checkStaleShipments = async (now, staleDays) => {
     inTransitScanned: shipments.length,
     staleFound: stale.length,
     // 어떤 화물이 걸렸는지 기록에 남긴다 (너무 길어지지 않도록 상위 20건만)
-    staleShipments: stale.slice(0, 20)
+    staleShipments: stale.slice(0, 20),
   };
 };
 
@@ -85,12 +89,14 @@ const checkStaleShipments = async (now, staleDays) => {
  */
 const runStaleShipmentCheck = (options = {}) => {
   const { now = new Date(), staleDays = DEFAULT_STALE_DAYS, trigger } = options;
-  return runWithLog(JOB_NAME, () => checkStaleShipments(now, staleDays), { trigger });
+  return runWithLog(JOB_NAME, () => checkStaleShipments(now, staleDays), {
+    trigger,
+  });
 };
 
 module.exports = {
   runStaleShipmentCheck,
   lastStatusUpdateAt,
   JOB_NAME,
-  DEFAULT_STALE_DAYS
+  DEFAULT_STALE_DAYS,
 };

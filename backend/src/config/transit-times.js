@@ -12,14 +12,14 @@
  */
 
 const TRANSIT_TIMES = {
-  AIR: { days: 4, source: 'estimate', label: '항공' },
-  SEA: { days: 18, source: 'estimate', label: '해상' },
-  SEA_AIR: { days: 10, source: 'estimate', label: '해상-항공 복합' },
-  TRUCK_DOMESTIC: { days: 3, source: 'estimate', label: '육상(국내)' },
-  TRUCK_CROSSBORDER: { days: 5, source: 'estimate', label: '육상(국경통과)' },
-  RAIL: { days: 20, source: 'estimate', label: '철도' },
+  AIR: { days: 4, source: "estimate", label: "항공" },
+  SEA: { days: 18, source: "estimate", label: "해상" },
+  SEA_AIR: { days: 10, source: "estimate", label: "해상-항공 복합" },
+  TRUCK_DOMESTIC: { days: 3, source: "estimate", label: "육상(국내)" },
+  TRUCK_CROSSBORDER: { days: 5, source: "estimate", label: "육상(국경통과)" },
+  RAIL: { days: 20, source: "estimate", label: "철도" },
   // 회사소개서 실측: 한국(ICN) → 유럽 5~7일 door-to-door → 중앙값 6일
-  EXPRESS: { days: 6, source: 'company-profile', label: '특송' },
+  EXPRESS: { days: 6, source: "company-profile", label: "특송" },
 };
 
 const TRANSPORT_MODES = Object.keys(TRANSIT_TIMES);
