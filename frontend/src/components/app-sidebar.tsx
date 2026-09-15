@@ -9,6 +9,7 @@ import {
   AlertTriangle,
   Settings,
   LayoutTemplate,
+  FileText,
 } from "lucide-react"
 import Link from "next/link"
 import { Logo } from "@/components/logo"
@@ -49,6 +50,11 @@ const data = {
           title: "화물 파손 판정",
           url: "/damage-inspection",
           icon: ScanSearch,
+        },
+        {
+          title: "무역서류",
+          url: "/trade-documents",
+          icon: FileText,
         },
       ],
     },
