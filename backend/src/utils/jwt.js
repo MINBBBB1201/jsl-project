@@ -1,5 +1,5 @@
-const jwt = require('jsonwebtoken');
-const { jwtSecret, jwtExpiresIn } = require('../config/config');
+const jwt = require("jsonwebtoken");
+const { jwtSecret, jwtExpiresIn } = require("../config/config");
 
 /**
  * JWT 발급/검증.
@@ -15,15 +15,15 @@ const { jwtSecret, jwtExpiresIn } = require('../config/config');
 /** 토큰 payload 는 최소한만 담는다. 권한은 요청 시점에 DB 에서 다시 확인한다. */
 const signToken = (user) =>
   jwt.sign({ sub: user._id.toString(), role: user.role }, jwtSecret, {
-    expiresIn: jwtExpiresIn
+    expiresIn: jwtExpiresIn,
   });
 
 const verifyToken = (token) => jwt.verify(token, jwtSecret);
 
 /** Authorization 헤더에서 Bearer 토큰을 꺼낸다. 없으면 null. */
 const extractBearerToken = (req) => {
-  const header = req.headers.authorization || '';
-  if (!header.startsWith('Bearer ')) return null;
+  const header = req.headers.authorization || "";
+  if (!header.startsWith("Bearer ")) return null;
   const token = header.slice(7).trim();
   return token || null;
 };

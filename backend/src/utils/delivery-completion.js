@@ -25,16 +25,16 @@
  *    운영자가 수치의 근거를 알 수 있게 한다.
  */
 
-const DELIVERED_STATUS = 'delivered';
+const DELIVERED_STATUS = "delivered";
 
 /** 완료 시각의 출처 — 집계 응답 meta 로 그대로 나간다 */
 const COMPLETION_SOURCES = {
   /** history 의 delivered 전환 timestamp (정확) */
-  HISTORY: 'history',
+  HISTORY: "history",
   /** delivered 이력이 없어 updatedAt 으로 대체 (근사) */
-  UPDATED_AT: 'updatedAt',
+  UPDATED_AT: "updatedAt",
   /** 둘 다 없어 완료 시각을 특정할 수 없음 (집계에서 제외) */
-  NONE: 'none'
+  NONE: "none",
 };
 
 /**
@@ -50,7 +50,8 @@ const resolveCompletedAt = (shipment) => {
 
   let latest = null;
   for (const entry of shipment.history || []) {
-    if (!entry || entry.status !== DELIVERED_STATUS || !entry.timestamp) continue;
+    if (!entry || entry.status !== DELIVERED_STATUS || !entry.timestamp)
+      continue;
     const timestamp = new Date(entry.timestamp);
     if (Number.isNaN(timestamp.getTime())) continue;
     if (!latest || timestamp > latest) latest = timestamp;
@@ -90,7 +91,7 @@ const isOnTime = (completedAt, estimatedDelivery) => {
  * 것보다 배지를 감추는 편이 정직하다.
  */
 const computeChangeRate = (current, previous) => {
-  if (typeof current !== 'number' || typeof previous !== 'number') return null;
+  if (typeof current !== "number" || typeof previous !== "number") return null;
   if (!Number.isFinite(current) || !Number.isFinite(previous)) return null;
   if (previous === 0) return null;
   return Math.round(((current - previous) / previous) * 1000) / 10;
@@ -101,5 +102,5 @@ module.exports = {
   COMPLETION_SOURCES,
   resolveCompletedAt,
   isOnTime,
-  computeChangeRate
+  computeChangeRate,
 };

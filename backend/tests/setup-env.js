@@ -8,13 +8,15 @@
  * 여기서 넣는 MONGO_URI 는 자리만 채우는 더미다 — 실제 연결은 helpers/db.js
  * 가 mongodb-memory-server 로 띄운 인스턴스에 직접 붙는다(config 의 값을 쓰지 않음).
  */
-process.env.NODE_ENV = 'test';
-process.env.MONGO_URI = process.env.MONGO_URI || 'mongodb://127.0.0.1:27017/jsl-test-placeholder';
-process.env.JWT_SECRET = process.env.JWT_SECRET || 'test-only-secret-not-used-in-any-real-environment';
-process.env.JWT_EXPIRES_IN = '1h';
+process.env.NODE_ENV = "test";
+process.env.MONGO_URI =
+  process.env.MONGO_URI || "mongodb://127.0.0.1:27017/jsl-test-placeholder";
+process.env.JWT_SECRET =
+  process.env.JWT_SECRET || "test-only-secret-not-used-in-any-real-environment";
+process.env.JWT_EXPIRES_IN = "1h";
 
 // 스케줄러가 테스트 중에 뜨지 않도록 (server.js 를 require 하지 않으면 상관없지만 방어적으로).
-process.env.ENABLE_AUTOMATION = 'false';
+process.env.ENABLE_AUTOMATION = "false";
 
 /**
  * winston 출력을 끈다.
@@ -24,6 +26,6 @@ process.env.ENABLE_AUTOMATION = 'false';
  * 조용히 만들면 이후 모든 require 가 같은 인스턴스를 받는다.
  * (env 를 위에서 먼저 세팅했으므로 config → logger require 가 안전하다)
  */
-require('../src/utils/logger').transports.forEach((t) => {
+require("../src/utils/logger").transports.forEach((t) => {
   t.silent = true;
 });

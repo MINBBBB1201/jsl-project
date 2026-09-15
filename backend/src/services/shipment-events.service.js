@@ -1,7 +1,7 @@
-const Shipment = require('../models/shipment.model');
-const TRANSIT_TIMES = require('../config/transit-times');
-const { calculateDelayRisk, RISK_LEVELS } = require('../utils/delay-risk');
-const notificationService = require('./notification.service');
+const Shipment = require("../models/shipment.model");
+const TRANSIT_TIMES = require("../config/transit-times");
+const { calculateDelayRisk, RISK_LEVELS } = require("../utils/delay-risk");
+const notificationService = require("./notification.service");
 
 /**
  * 화물 변화에서 알림 트리거를 판단하는 곳.
@@ -29,7 +29,7 @@ const isRisky = (level) =>
 exports.handleShipmentSaved = async (shipment, options = {}) => {
   const { now = new Date() } = options;
 
-  if (shipment.status === 'delivered') {
+  if (shipment.status === "delivered") {
     return notificationService.notifyDelivered(shipment);
   }
 
@@ -49,12 +49,17 @@ exports.scanDelayRisk = async (options = {}) => {
   const { now = new Date() } = options;
 
   const shipments = await Shipment.find({
-    status: { $ne: 'delivered' },
+    status: { $ne: "delivered" },
     shippedAt: { $ne: null },
-    transportMode: { $ne: null }
-  }).select('trackingNumber transportMode shippedAt status');
+    transportMode: { $ne: null },
+  }).select("trackingNumber transportMode shippedAt status");
 
-  const result = { scanned: shipments.length, atRisk: 0, delayed: 0, created: 0 };
+  const result = {
+    scanned: shipments.length,
+    atRisk: 0,
+    delayed: 0,
+    created: 0,
+  };
 
   for (const shipment of shipments) {
     const { level } = calculateDelayRisk(shipment, TRANSIT_TIMES, { now });
@@ -63,7 +68,9 @@ exports.scanDelayRisk = async (options = {}) => {
     else if (level === RISK_LEVELS.DELAYED) result.delayed += 1;
     else continue;
 
-    const created = await notificationService.notifyDelayRisk(shipment, level, { now });
+    const created = await notificationService.notifyDelayRisk(shipment, level, {
+      now,
+    });
     if (created) result.created += 1;
   }
 

@@ -1,9 +1,9 @@
-const express = require('express');
+const express = require("express");
 const router = express.Router();
-const { query, validationResult } = require('express-validator');
+const { query, validationResult } = require("express-validator");
 
-const automationController = require('../controllers/automation.controller');
-const { requireAuth } = require('../middleware/auth.middleware');
+const automationController = require("../controllers/automation.controller");
+const { requireAuth } = require("../middleware/auth.middleware");
 
 const validate = (req, res, next) => {
   const errors = validationResult(req);
@@ -17,13 +17,15 @@ const validate = (req, res, next) => {
 router.use(requireAuth);
 
 router.get(
-  '/logs',
+  "/logs",
   [
-    query('limit').optional({ values: 'falsy' }).isInt({ min: 1, max: 50 })
-      .withMessage('limit 은 1~50 사이여야 합니다.'),
-    validate
+    query("limit")
+      .optional({ values: "falsy" })
+      .isInt({ min: 1, max: 50 })
+      .withMessage("limit 은 1~50 사이여야 합니다."),
+    validate,
   ],
-  automationController.getLogs
+  automationController.getLogs,
 );
 
 module.exports = router;

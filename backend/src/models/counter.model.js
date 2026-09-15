@@ -1,4 +1,4 @@
-const mongoose = require('mongoose');
+const mongoose = require("mongoose");
 
 /**
  * 원자적 시퀀스 카운터.
@@ -23,9 +23,9 @@ counterSchema.statics.next = async function next(key) {
   const doc = await this.findByIdAndUpdate(
     key,
     { $inc: { seq: 1 } },
-    { new: true, upsert: true }
+    { new: true, upsert: true },
   );
   return doc.seq;
 };
 
-module.exports = mongoose.model('Counter', counterSchema);
+module.exports = mongoose.model("Counter", counterSchema);

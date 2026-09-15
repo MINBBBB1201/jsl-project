@@ -1,4 +1,4 @@
-const mongoose = require('mongoose');
+const mongoose = require("mongoose");
 
 /**
  * 인앱 알림.
@@ -12,10 +12,10 @@ const mongoose = require('mongoose');
  */
 
 const NOTIFICATION_TYPES = {
-  CONTACT: 'contact',                 // 신규 문의 접수
-  DELAY_RISK: 'delay-risk',           // 지연위험/지연 감지
-  DELIVERED: 'delivered',             // 배송 완료
-  STALE_SHIPMENT: 'stale-shipment'    // 오래 갱신되지 않은 운송 중 화물
+  CONTACT: "contact", // 신규 문의 접수
+  DELAY_RISK: "delay-risk", // 지연위험/지연 감지
+  DELIVERED: "delivered", // 배송 완료
+  STALE_SHIPMENT: "stale-shipment", // 오래 갱신되지 않은 운송 중 화물
 };
 
 const notificationSchema = new mongoose.Schema(
@@ -24,26 +24,26 @@ const notificationSchema = new mongoose.Schema(
       type: String,
       enum: Object.values(NOTIFICATION_TYPES),
       required: true,
-      index: true
+      index: true,
     },
     message: {
       type: String,
       required: true,
-      trim: true
+      trim: true,
     },
     relatedShipmentId: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: 'Shipment'
+      ref: "Shipment",
     },
     /** 화면에 바로 표시하려고 함께 저장한다 (알림 목록에서 화물을 다시 조회하지 않도록) */
     relatedTrackingNumber: {
       type: String,
-      trim: true
+      trim: true,
     },
     read: {
       type: Boolean,
       default: false,
-      index: true
+      index: true,
     },
     /**
      * 중복 방지 키.
@@ -57,16 +57,16 @@ const notificationSchema = new mongoose.Schema(
      */
     dedupeKey: {
       type: String,
-      index: { unique: true, sparse: true }
-    }
+      index: { unique: true, sparse: true },
+    },
   },
-  { timestamps: true }
+  { timestamps: true },
 );
 
 // 목록은 항상 "최신순 + 안읽음 우선" 으로 조회한다
 notificationSchema.index({ createdAt: -1 });
 
-const Notification = mongoose.model('Notification', notificationSchema);
+const Notification = mongoose.model("Notification", notificationSchema);
 
 module.exports = Notification;
 module.exports.NOTIFICATION_TYPES = NOTIFICATION_TYPES;

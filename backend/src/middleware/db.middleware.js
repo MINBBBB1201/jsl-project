@@ -1,5 +1,5 @@
-const mongoose = require('mongoose');
-const logger = require('../utils/logger');
+const mongoose = require("mongoose");
+const logger = require("../utils/logger");
 
 /**
  * DB 연결 확인.
@@ -10,10 +10,10 @@ const logger = require('../utils/logger');
  */
 exports.checkDbConnection = (req, res, next) => {
   if (mongoose.connection.readyState !== 1) {
-    logger.error('MongoDB 연결이 활성 상태가 아닙니다.');
+    logger.error("MongoDB 연결이 활성 상태가 아닙니다.");
     return res.status(503).json({
       success: false,
-      error: '데이터베이스에 연결할 수 없습니다. 잠시 후 다시 시도해 주세요.'
+      error: "데이터베이스에 연결할 수 없습니다. 잠시 후 다시 시도해 주세요.",
     });
   }
 

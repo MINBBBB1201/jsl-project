@@ -34,13 +34,13 @@
 
 // DNS_SERVERS 를 읽으려면 dotenv 가 먼저 로드돼야 한다.
 // config.js 에서도 호출하지만 dotenv 는 이미 설정된 값을 덮어쓰지 않는다.
-require('dotenv').config();
+require("dotenv").config();
 
-const dns = require('dns');
+const dns = require("dns");
 
 const parseServers = (raw) =>
-  (raw || '')
-    .split(',')
+  (raw || "")
+    .split(",")
     .map((server) => server.trim())
     .filter(Boolean);
 
@@ -49,7 +49,7 @@ const servers = parseServers(process.env.DNS_SERVERS);
 if (servers.length > 0) {
   dns.setServers(servers);
   // logger 는 이 시점에 불러오면 순환 참조 위험이 있어 console 을 쓴다.
-  console.log(`[dns] 리졸버를 ${servers.join(', ')} 로 지정 (DNS_SERVERS)`);
+  console.log(`[dns] 리졸버를 ${servers.join(", ")} 로 지정 (DNS_SERVERS)`);
 }
 
 module.exports = { appliedServers: servers };

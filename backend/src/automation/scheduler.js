@@ -1,7 +1,7 @@
-const cron = require('node-cron');
-const logger = require('../utils/logger');
-const { runDailyOpsDigest } = require('./daily-ops-digest');
-const { runStaleShipmentCheck } = require('./stale-shipment-check');
+const cron = require("node-cron");
+const logger = require("../utils/logger");
+const { runDailyOpsDigest } = require("./daily-ops-digest");
+const { runStaleShipmentCheck } = require("./stale-shipment-check");
 
 /**
  * 자동화 스케줄러.
@@ -21,21 +21,21 @@ const { runStaleShipmentCheck } = require('./stale-shipment-check');
  */
 
 /** 실행 시각 기준 시간대 — 운영팀이 한국에 있으므로 KST */
-const TIMEZONE = 'Asia/Seoul';
+const TIMEZONE = "Asia/Seoul";
 
 const JOBS = [
   {
-    name: 'daily-ops-digest',
+    name: "daily-ops-digest",
     // 매일 09:00 KST
-    expression: '0 9 * * *',
-    run: runDailyOpsDigest
+    expression: "0 9 * * *",
+    run: runDailyOpsDigest,
   },
   {
-    name: 'stale-shipment-check',
+    name: "stale-shipment-check",
     // 6시간마다 (00, 06, 12, 18시 KST)
-    expression: '0 */6 * * *',
-    run: runStaleShipmentCheck
-  }
+    expression: "0 */6 * * *",
+    run: runStaleShipmentCheck,
+  },
 ];
 
 /**
@@ -47,13 +47,15 @@ const running = new Set();
 
 const runOnce = async (job) => {
   if (running.has(job.name)) {
-    logger.warn(`[automation] ${job.name} 이전 실행이 아직 진행 중이라 이번 회차는 건너뜁니다.`);
+    logger.warn(
+      `[automation] ${job.name} 이전 실행이 아직 진행 중이라 이번 회차는 건너뜁니다.`,
+    );
     return;
   }
 
   running.add(job.name);
   try {
-    await job.run({ trigger: 'schedule' });
+    await job.run({ trigger: "schedule" });
   } finally {
     running.delete(job.name);
   }
@@ -67,16 +69,20 @@ let tasks = [];
  * 별도 서비스로 분리 배포했을 때 웹 인스턴스에서 중복 실행되지 않도록).
  */
 const startScheduler = () => {
-  if (process.env.ENABLE_AUTOMATION === 'false') {
-    logger.info('[automation] ENABLE_AUTOMATION=false — 스케줄러를 시작하지 않습니다.');
+  if (process.env.ENABLE_AUTOMATION === "false") {
+    logger.info(
+      "[automation] ENABLE_AUTOMATION=false — 스케줄러를 시작하지 않습니다.",
+    );
     return [];
   }
 
   tasks = JOBS.map((job) => {
     const task = cron.schedule(job.expression, () => runOnce(job), {
-      timezone: TIMEZONE
+      timezone: TIMEZONE,
     });
-    logger.info(`[automation] 등록: ${job.name} (${job.expression} ${TIMEZONE})`);
+    logger.info(
+      `[automation] 등록: ${job.name} (${job.expression} ${TIMEZONE})`,
+    );
     return task;
   });
 

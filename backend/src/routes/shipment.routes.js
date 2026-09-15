@@ -1,9 +1,9 @@
-const express = require('express');
+const express = require("express");
 const router = express.Router();
-const { body, param, query, validationResult } = require('express-validator');
-const shipmentController = require('../controllers/shipment.controller');
-const { requireAuth, requireRole } = require('../middleware/auth.middleware');
-const { SHIPMENT_WRITE_ROLES } = require('../models/user.model');
+const { body, param, query, validationResult } = require("express-validator");
+const shipmentController = require("../controllers/shipment.controller");
+const { requireAuth, requireRole } = require("../middleware/auth.middleware");
+const { SHIPMENT_WRITE_ROLES } = require("../models/user.model");
 
 /**
  * 접근 정책
@@ -14,7 +14,10 @@ const { SHIPMENT_WRITE_ROLES } = require('../models/user.model');
  *  운영권한: 상태/위치/체크포인트 변경 (admin, operations)
  *          → 예전에는 누구나 PATCH 로 화물 상태를 바꿀 수 있었다. 그 구멍을 막는 부분이다.
  */
-const requireShipmentWrite = [requireAuth, requireRole(...SHIPMENT_WRITE_ROLES)];
+const requireShipmentWrite = [
+  requireAuth,
+  requireRole(...SHIPMENT_WRITE_ROLES),
+];
 
 // Validation middleware
 const validate = (req, res, next) => {
@@ -25,227 +28,329 @@ const validate = (req, res, next) => {
   next();
 };
 
-const { RISK_LEVELS } = require('../utils/delay-risk');
-const { TRANSPORT_MODES } = require('../config/transit-times');
+const { RISK_LEVELS } = require("../utils/delay-risk");
+const { TRANSPORT_MODES } = require("../config/transit-times");
 
 // Get all shipments (riskLevel / transportMode 필터 지원)
 router.get(
-  '/',
+  "/",
   requireAuth,
   [
-    query('riskLevel').optional({ values: 'falsy' })
+    query("riskLevel")
+      .optional({ values: "falsy" })
       .isIn(Object.values(RISK_LEVELS))
-      .withMessage(`riskLevel 은 ${Object.values(RISK_LEVELS).join(', ')} 중 하나여야 합니다.`),
-    query('transportMode').optional({ values: 'falsy' })
+      .withMessage(
+        `riskLevel 은 ${Object.values(RISK_LEVELS).join(", ")} 중 하나여야 합니다.`,
+      ),
+    query("transportMode")
+      .optional({ values: "falsy" })
       .isIn(TRANSPORT_MODES)
-      .withMessage(`transportMode 는 ${TRANSPORT_MODES.join(', ')} 중 하나여야 합니다.`),
-    validate
+      .withMessage(
+        `transportMode 는 ${TRANSPORT_MODES.join(", ")} 중 하나여야 합니다.`,
+      ),
+    validate,
   ],
-  shipmentController.getAllShipments
+  shipmentController.getAllShipments,
 );
 
 // 지연 리스크 등급별 집계.
 // ⚠️ '/:trackingNumber' 보다 먼저 선언해야 한다. 아래에 두면 delay-summary 가
 //    트래킹 번호로 해석돼 404 가 난다.
-router.get('/delay-summary', requireAuth, shipmentController.getDelaySummary);
+router.get("/delay-summary", requireAuth, shipmentController.getDelaySummary);
 
 // 대시보드 KPI 카드용 집계 (처리 건수 / 온타임 배송률 / 활성 배송 건수).
 // ⚠️ '/:trackingNumber' 보다 먼저 선언해야 한다.
-router.get('/dashboard-summary', requireAuth, shipmentController.getDashboardSummary);
+router.get(
+  "/dashboard-summary",
+  requireAuth,
+  shipmentController.getDashboardSummary,
+);
 
 // 대시보드 트렌드 차트용 일자별 집계 (신규 집하 / 배송 완료).
 // ⚠️ '/:trackingNumber' 보다 먼저 선언해야 한다.
 router.get(
-  '/trend',
+  "/trend",
   requireAuth,
   [
-    query('range').optional({ values: 'falsy' })
-      .isIn(['7d', '30d', '90d'])
-      .withMessage('range 는 7d, 30d, 90d 중 하나여야 합니다.'),
-    validate
+    query("range")
+      .optional({ values: "falsy" })
+      .isIn(["7d", "30d", "90d"])
+      .withMessage("range 는 7d, 30d, 90d 중 하나여야 합니다."),
+    validate,
   ],
-  shipmentController.getShipmentTrend
+  shipmentController.getShipmentTrend,
 );
 
 // 랜딩 히어로용 공개 집계 (등급별 건수만 — 화물 단위 정보 없음).
 // ⚠️ '/:trackingNumber' 보다 먼저 선언해야 한다.
-router.get('/public-summary', shipmentController.getPublicSummary);
+router.get("/public-summary", shipmentController.getPublicSummary);
 
 // 공개 조회 화면의 예시 번호 안내용 (번호만 반환).
 // ⚠️ '/:trackingNumber' 보다 먼저 선언해야 한다.
 router.get(
-  '/track-samples',
+  "/track-samples",
   [
-    query('limit').optional({ values: 'falsy' }).isInt({ min: 1, max: 10 })
-      .withMessage('limit 은 1~10 사이여야 합니다.'),
-    validate
+    query("limit")
+      .optional({ values: "falsy" })
+      .isInt({ min: 1, max: 10 })
+      .withMessage("limit 은 1~10 사이여야 합니다."),
+    validate,
   ],
-  shipmentController.getTrackingSamples
+  shipmentController.getTrackingSamples,
 );
 
 // 고객용 공개 조회 (개인정보 제외한 필드만 반환).
 // ⚠️ delay-summary 와 마찬가지로 '/:trackingNumber' 보다 먼저 선언해야 한다.
 router.get(
-  '/track/:trackingNumber',
+  "/track/:trackingNumber",
   [
-    param('trackingNumber').isString().trim().notEmpty()
-      .withMessage('운송장번호를 입력해 주세요.')
-      .isLength({ max: 64 }).withMessage('운송장번호가 너무 깁니다.'),
-    validate
+    param("trackingNumber")
+      .isString()
+      .trim()
+      .notEmpty()
+      .withMessage("운송장번호를 입력해 주세요.")
+      .isLength({ max: 64 })
+      .withMessage("운송장번호가 너무 깁니다."),
+    validate,
   ],
-  shipmentController.trackShipment
+  shipmentController.trackShipment,
 );
 
 // Get shipments near a location
 router.get(
-  '/nearby',
+  "/nearby",
   requireAuth,
   [
-    query('longitude').isFloat({ min: -180, max: 180 }).withMessage('Valid longitude is required'),
-    query('latitude').isFloat({ min: -90, max: 90 }).withMessage('Valid latitude is required'),
-    query('maxDistance').optional().isInt({ min: 1, max: 100000 }).withMessage('Max distance must be between 1 and 100,000 meters'),
-    validate
+    query("longitude")
+      .isFloat({ min: -180, max: 180 })
+      .withMessage("Valid longitude is required"),
+    query("latitude")
+      .isFloat({ min: -90, max: 90 })
+      .withMessage("Valid latitude is required"),
+    query("maxDistance")
+      .optional()
+      .isInt({ min: 1, max: 100000 })
+      .withMessage("Max distance must be between 1 and 100,000 meters"),
+    validate,
   ],
-  shipmentController.getNearbyShipments
+  shipmentController.getNearbyShipments,
 );
 
 // Create a new shipment
 router.post(
-  '/',
+  "/",
   requireShipmentWrite,
   [
-    body('origin').isObject().withMessage('Origin is required'),
-    body('origin.coordinates').isArray({ min: 2, max: 2 }).withMessage('Invalid coordinates'),
-    body('origin.address').isString().notEmpty().withMessage('Origin address is required'),
-    body('destination').isObject().withMessage('Destination is required'),
-    body('destination.coordinates').isArray({ min: 2, max: 2 }).withMessage('Invalid coordinates'),
-    body('destination.address').isString().notEmpty().withMessage('Destination address is required'),
-    body('customer.name').isString().notEmpty().withMessage('Customer name is required'),
-    body('customer.email').isEmail().withMessage('Valid customer email is required'),
-    body('estimatedDelivery').isISO8601().withMessage('Valid estimated delivery date is required'),
-    validate
+    body("origin").isObject().withMessage("Origin is required"),
+    body("origin.coordinates")
+      .isArray({ min: 2, max: 2 })
+      .withMessage("Invalid coordinates"),
+    body("origin.address")
+      .isString()
+      .notEmpty()
+      .withMessage("Origin address is required"),
+    body("destination").isObject().withMessage("Destination is required"),
+    body("destination.coordinates")
+      .isArray({ min: 2, max: 2 })
+      .withMessage("Invalid coordinates"),
+    body("destination.address")
+      .isString()
+      .notEmpty()
+      .withMessage("Destination address is required"),
+    body("customer.name")
+      .isString()
+      .notEmpty()
+      .withMessage("Customer name is required"),
+    body("customer.email")
+      .isEmail()
+      .withMessage("Valid customer email is required"),
+    body("estimatedDelivery")
+      .isISO8601()
+      .withMessage("Valid estimated delivery date is required"),
+    validate,
   ],
-  shipmentController.createShipment
+  shipmentController.createShipment,
 );
 
 // Get shipment by tracking number (내부용 상세 — 공개 조회는 /track/:trackingNumber)
 router.get(
-  '/:trackingNumber',
+  "/:trackingNumber",
   requireAuth,
   [
-    param('trackingNumber').isString().notEmpty().withMessage('Valid tracking number is required'),
-    validate
+    param("trackingNumber")
+      .isString()
+      .notEmpty()
+      .withMessage("Valid tracking number is required"),
+    validate,
   ],
-  shipmentController.getShipmentByTrackingNumber
+  shipmentController.getShipmentByTrackingNumber,
 );
 
 // Update shipment location
 router.patch(
-  '/:trackingNumber/location',
+  "/:trackingNumber/location",
   requireShipmentWrite,
   [
-    param('trackingNumber').isString().notEmpty().withMessage('Valid tracking number is required'),
-    body('coordinates').isArray({ min: 2, max: 2 }).withMessage('Invalid coordinates'),
-    body('address').isString().notEmpty().withMessage('Address is required'),
-    body('status').optional().isIn(['pending', 'in_transit', 'out_for_delivery', 'delivered', 'exception']),
-    body('description').optional().isString(),
-    validate
+    param("trackingNumber")
+      .isString()
+      .notEmpty()
+      .withMessage("Valid tracking number is required"),
+    body("coordinates")
+      .isArray({ min: 2, max: 2 })
+      .withMessage("Invalid coordinates"),
+    body("address").isString().notEmpty().withMessage("Address is required"),
+    body("status")
+      .optional()
+      .isIn([
+        "pending",
+        "in_transit",
+        "out_for_delivery",
+        "delivered",
+        "exception",
+      ]),
+    body("description").optional().isString(),
+    validate,
   ],
-  shipmentController.updateShipmentLocation
+  shipmentController.updateShipmentLocation,
 );
 
 // Update shipment status
 router.patch(
-  '/:trackingNumber/status',
+  "/:trackingNumber/status",
   requireShipmentWrite,
-  shipmentController.updateShipmentStatus
+  shipmentController.updateShipmentStatus,
 );
 
 // Get shipment history
 router.get(
-  '/:trackingNumber/history',
+  "/:trackingNumber/history",
   requireAuth,
   [
-    param('trackingNumber').isString().notEmpty().withMessage('Valid tracking number is required'),
-    validate
+    param("trackingNumber")
+      .isString()
+      .notEmpty()
+      .withMessage("Valid tracking number is required"),
+    validate,
   ],
-  shipmentController.getShipmentHistory
+  shipmentController.getShipmentHistory,
 );
 
 // Get shipment ETA
 router.get(
-  '/:trackingNumber/eta',
+  "/:trackingNumber/eta",
   requireAuth,
   [
-    param('trackingNumber').isString().notEmpty().withMessage('Valid tracking number is required'),
-    validate
+    param("trackingNumber")
+      .isString()
+      .notEmpty()
+      .withMessage("Valid tracking number is required"),
+    validate,
   ],
-  shipmentController.getShipmentETA
+  shipmentController.getShipmentETA,
 );
 
 // Get shipment route distance
 router.get(
-  '/:trackingNumber/distance',
+  "/:trackingNumber/distance",
   requireAuth,
   [
-    param('trackingNumber').isString().notEmpty().withMessage('Valid tracking number is required'),
-    validate
+    param("trackingNumber")
+      .isString()
+      .notEmpty()
+      .withMessage("Valid tracking number is required"),
+    validate,
   ],
-  shipmentController.getShipmentRouteDistance
+  shipmentController.getShipmentRouteDistance,
 );
 
 // Update shipment location manually
 router.patch(
-  '/:trackingNumber/location/manual',
+  "/:trackingNumber/location/manual",
   requireShipmentWrite,
   [
-    param('trackingNumber').isString().notEmpty().withMessage('Valid tracking number is required'),
-    body('coordinates').isArray({ min: 2, max: 2 }).withMessage('Invalid coordinates'),
-    body('address').isString().notEmpty().withMessage('Address is required'),
-    body('status').optional().isIn(['pending', 'in_transit', 'out_for_delivery', 'delivered', 'exception']),
-    body('description').optional().isString(),
-    validate
+    param("trackingNumber")
+      .isString()
+      .notEmpty()
+      .withMessage("Valid tracking number is required"),
+    body("coordinates")
+      .isArray({ min: 2, max: 2 })
+      .withMessage("Invalid coordinates"),
+    body("address").isString().notEmpty().withMessage("Address is required"),
+    body("status")
+      .optional()
+      .isIn([
+        "pending",
+        "in_transit",
+        "out_for_delivery",
+        "delivered",
+        "exception",
+      ]),
+    body("description").optional().isString(),
+    validate,
   ],
-  shipmentController.updateShipmentLocationManually
+  shipmentController.updateShipmentLocationManually,
 );
 
 // Add a checkpoint to shipment
 router.post(
-  '/:trackingNumber/checkpoints',
+  "/:trackingNumber/checkpoints",
   requireShipmentWrite,
   [
-    param('trackingNumber').isString().notEmpty().withMessage('Valid tracking number is required'),
-    body('location').isObject().withMessage('Location is required'),
-    body('location.coordinates').isArray({ min: 2, max: 2 }).withMessage('Invalid coordinates'),
-    body('location.address').isString().notEmpty().withMessage('Address is required'),
-    body('name').isString().notEmpty().withMessage('Checkpoint name is required'),
-    validate
+    param("trackingNumber")
+      .isString()
+      .notEmpty()
+      .withMessage("Valid tracking number is required"),
+    body("location").isObject().withMessage("Location is required"),
+    body("location.coordinates")
+      .isArray({ min: 2, max: 2 })
+      .withMessage("Invalid coordinates"),
+    body("location.address")
+      .isString()
+      .notEmpty()
+      .withMessage("Address is required"),
+    body("name")
+      .isString()
+      .notEmpty()
+      .withMessage("Checkpoint name is required"),
+    validate,
   ],
-  shipmentController.addCheckpoint
+  shipmentController.addCheckpoint,
 );
 
 // Update a checkpoint
 router.patch(
-  '/:trackingNumber/checkpoints/:checkpointId',
+  "/:trackingNumber/checkpoints/:checkpointId",
   requireShipmentWrite,
   [
-    param('trackingNumber').isString().notEmpty().withMessage('Valid tracking number is required'),
-    param('checkpointId').isString().notEmpty().withMessage('Valid checkpoint ID is required'),
-    validate
+    param("trackingNumber")
+      .isString()
+      .notEmpty()
+      .withMessage("Valid tracking number is required"),
+    param("checkpointId")
+      .isString()
+      .notEmpty()
+      .withMessage("Valid checkpoint ID is required"),
+    validate,
   ],
-  shipmentController.updateCheckpoint
+  shipmentController.updateCheckpoint,
 );
 
 // Delete a checkpoint
 router.delete(
-  '/:trackingNumber/checkpoints/:checkpointId',
+  "/:trackingNumber/checkpoints/:checkpointId",
   requireShipmentWrite,
   [
-    param('trackingNumber').isString().notEmpty().withMessage('Valid tracking number is required'),
-    param('checkpointId').isString().notEmpty().withMessage('Valid checkpoint ID is required'),
-    validate
+    param("trackingNumber")
+      .isString()
+      .notEmpty()
+      .withMessage("Valid tracking number is required"),
+    param("checkpointId")
+      .isString()
+      .notEmpty()
+      .withMessage("Valid checkpoint ID is required"),
+    validate,
   ],
-  shipmentController.deleteCheckpoint
+  shipmentController.deleteCheckpoint,
 );
 
 module.exports = router;

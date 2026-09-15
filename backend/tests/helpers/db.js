@@ -8,8 +8,8 @@
  * 첫 실행 때 mongod 바이너리를 내려받는다(캐시됨). CI/오프라인에서 막히면
  * MONGOMS_DOWNLOAD_URL 또는 시스템 mongod(MONGOMS_SYSTEM_BINARY) 로 우회.
  */
-const mongoose = require('mongoose');
-const { MongoMemoryServer } = require('mongodb-memory-server');
+const mongoose = require("mongoose");
+const { MongoMemoryServer } = require("mongodb-memory-server");
 
 let mongod;
 
@@ -18,7 +18,9 @@ async function connect() {
   await mongoose.connect(mongod.getUri());
   // unique/partial 인덱스는 첫 insert 전에 만들어져 있어야 한다
   // (autoIndex 빌드가 늦으면 중복 검증이 그냥 통과해 버린다).
-  await Promise.all(Object.values(mongoose.models).map((m) => m.createIndexes()));
+  await Promise.all(
+    Object.values(mongoose.models).map((m) => m.createIndexes()),
+  );
 }
 
 /** 컬렉션만 비운다 — 인덱스는 유지해서 unique 제약도 계속 검증되게 한다. */

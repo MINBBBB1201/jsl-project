@@ -1,5 +1,5 @@
-const mongoose = require('mongoose');
-const bcrypt = require('bcryptjs');
+const mongoose = require("mongoose");
+const bcrypt = require("bcryptjs");
 
 /**
  * 내부 직원 계정.
@@ -17,10 +17,10 @@ const bcrypt = require('bcryptjs');
  *   operations — 운영팀. 화물 상태/위치/체크포인트 변경 가능
  *   sales      — 영업팀. 조회만 가능 (변경 API 접근 불가)
  */
-const ROLES = ['admin', 'operations', 'sales'];
+const ROLES = ["admin", "operations", "sales"];
 
 /** 화물 데이터를 변경할 수 있는 역할 */
-const SHIPMENT_WRITE_ROLES = ['admin', 'operations'];
+const SHIPMENT_WRITE_ROLES = ["admin", "operations"];
 
 const MIN_PASSWORD_LENGTH = 10;
 
@@ -28,11 +28,11 @@ const userSchema = new mongoose.Schema(
   {
     email: {
       type: String,
-      required: [true, '이메일은 필수입니다.'],
+      required: [true, "이메일은 필수입니다."],
       unique: true,
       lowercase: true,
       trim: true,
-      index: true
+      index: true,
     },
     /**
      * bcrypt 해시.
@@ -41,36 +41,36 @@ const userSchema = new mongoose.Schema(
      */
     password: {
       type: String,
-      required: [true, '비밀번호는 필수입니다.'],
-      select: false
+      required: [true, "비밀번호는 필수입니다."],
+      select: false,
     },
     name: {
       type: String,
-      required: [true, '이름은 필수입니다.'],
-      trim: true
+      required: [true, "이름은 필수입니다."],
+      trim: true,
     },
     role: {
       type: String,
       enum: ROLES,
-      default: 'sales',
-      required: true
+      default: "sales",
+      required: true,
     },
     /** 퇴사·정지 계정은 지우지 않고 이 값을 false 로 둔다 (토큰이 살아있어도 거부된다) */
     isActive: {
       type: Boolean,
-      default: true
+      default: true,
     },
-    lastLoginAt: Date
+    lastLoginAt: Date,
   },
-  { timestamps: true }
+  { timestamps: true },
 );
 
 /**
  * 저장 전 해싱.
  * 평문이 DB 에 들어가는 경로를 하나로 막기 위해 컨트롤러가 아니라 모델에서 처리한다.
  */
-userSchema.pre('save', async function hashPassword(next) {
-  if (!this.isModified('password')) return next();
+userSchema.pre("save", async function hashPassword(next) {
+  if (!this.isModified("password")) return next();
   try {
     this.password = await bcrypt.hash(this.password, 12);
     next();
@@ -82,7 +82,9 @@ userSchema.pre('save', async function hashPassword(next) {
 /** 로그인 검증. this.password 가 로드돼 있어야 한다(.select('+password')) */
 userSchema.methods.verifyPassword = function verifyPassword(plainPassword) {
   if (!this.password) {
-    throw new Error('password 필드가 로드되지 않았습니다. select("+password") 가 필요합니다.');
+    throw new Error(
+      'password 필드가 로드되지 않았습니다. select("+password") 가 필요합니다.',
+    );
   }
   return bcrypt.compare(plainPassword, this.password);
 };
@@ -93,11 +95,11 @@ userSchema.methods.toSafeJSON = function toSafeJSON() {
     id: this._id.toString(),
     email: this.email,
     name: this.name,
-    role: this.role
+    role: this.role,
   };
 };
 
-const User = mongoose.model('User', userSchema);
+const User = mongoose.model("User", userSchema);
 
 module.exports = User;
 module.exports.ROLES = ROLES;

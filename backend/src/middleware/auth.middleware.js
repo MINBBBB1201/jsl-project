@@ -1,6 +1,6 @@
-const User = require('../models/user.model');
-const logger = require('../utils/logger');
-const { verifyToken, extractBearerToken } = require('../utils/jwt');
+const User = require("../models/user.model");
+const logger = require("../utils/logger");
+const { verifyToken, extractBearerToken } = require("../utils/jwt");
 
 /**
  * 인증·권한 미들웨어.
@@ -28,7 +28,7 @@ exports.requireAuth = async (req, res, next) => {
   const token = extractBearerToken(req);
 
   if (!token) {
-    return forbidden(res, '로그인이 필요한 요청입니다.', 'AUTH_REQUIRED');
+    return forbidden(res, "로그인이 필요한 요청입니다.", "AUTH_REQUIRED");
   }
 
   let payload;
@@ -36,12 +36,16 @@ exports.requireAuth = async (req, res, next) => {
     payload = verifyToken(token);
   } catch (error) {
     // 만료와 위조를 구분해 안내한다 (만료면 다시 로그인하면 되는 상황이므로)
-    const expired = error.name === 'TokenExpiredError';
-    logger.warn(`토큰 검증 실패 (${error.name}): ${req.method} ${req.originalUrl}`);
+    const expired = error.name === "TokenExpiredError";
+    logger.warn(
+      `토큰 검증 실패 (${error.name}): ${req.method} ${req.originalUrl}`,
+    );
     return forbidden(
       res,
-      expired ? '로그인이 만료되었습니다. 다시 로그인해 주세요.' : '유효하지 않은 인증 정보입니다.',
-      expired ? 'TOKEN_EXPIRED' : 'TOKEN_INVALID'
+      expired
+        ? "로그인이 만료되었습니다. 다시 로그인해 주세요."
+        : "유효하지 않은 인증 정보입니다.",
+      expired ? "TOKEN_EXPIRED" : "TOKEN_INVALID",
     );
   }
 
@@ -49,16 +53,20 @@ exports.requireAuth = async (req, res, next) => {
     const user = await User.findById(payload.sub);
 
     if (!user || !user.isActive) {
-      return forbidden(res, '사용할 수 없는 계정입니다. 관리자에게 문의해 주세요.', 'ACCOUNT_DISABLED');
+      return forbidden(
+        res,
+        "사용할 수 없는 계정입니다. 관리자에게 문의해 주세요.",
+        "ACCOUNT_DISABLED",
+      );
     }
 
     req.user = user.toSafeJSON();
     next();
   } catch (error) {
-    logger.error('인증 처리 중 오류:', error);
+    logger.error("인증 처리 중 오류:", error);
     res.status(500).json({
       success: false,
-      error: '인증 처리 중 오류가 발생했습니다. 잠시 후 다시 시도해 주세요.'
+      error: "인증 처리 중 오류가 발생했습니다. 잠시 후 다시 시도해 주세요.",
     });
   }
 };
@@ -67,19 +75,25 @@ exports.requireAuth = async (req, res, next) => {
  * 역할 제한. requireAuth 다음에 붙여 쓴다.
  *   router.patch('/x', requireAuth, requireRole('admin', 'operations'), handler)
  */
-exports.requireRole = (...allowedRoles) => (req, res, next) => {
-  if (!req.user) {
-    // 라우터 조립 실수를 조용히 넘기지 않는다
-    logger.error('requireRole 이 requireAuth 없이 사용되었습니다.');
-    return forbidden(res, '로그인이 필요한 요청입니다.', 'AUTH_REQUIRED');
-  }
+exports.requireRole =
+  (...allowedRoles) =>
+  (req, res, next) => {
+    if (!req.user) {
+      // 라우터 조립 실수를 조용히 넘기지 않는다
+      logger.error("requireRole 이 requireAuth 없이 사용되었습니다.");
+      return forbidden(res, "로그인이 필요한 요청입니다.", "AUTH_REQUIRED");
+    }
 
-  if (!allowedRoles.includes(req.user.role)) {
-    logger.warn(
-      `권한 부족: ${req.user.email}(${req.user.role}) → ${req.method} ${req.originalUrl}`
-    );
-    return forbidden(res, '이 작업을 수행할 권한이 없습니다.', 'ROLE_FORBIDDEN');
-  }
+    if (!allowedRoles.includes(req.user.role)) {
+      logger.warn(
+        `권한 부족: ${req.user.email}(${req.user.role}) → ${req.method} ${req.originalUrl}`,
+      );
+      return forbidden(
+        res,
+        "이 작업을 수행할 권한이 없습니다.",
+        "ROLE_FORBIDDEN",
+      );
+    }
 
-  next();
-};
+    next();
+  };

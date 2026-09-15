@@ -10,22 +10,33 @@
  */
 
 /** 서류 종류. Phase 1 은 invoice/packing 둘뿐이었지만 Phase 2 는 프로포마까지 다룬다. */
-const TRADE_DOCUMENT_TYPES = ['commercial_invoice', 'packing_list', 'proforma_invoice'];
+const TRADE_DOCUMENT_TYPES = [
+  "commercial_invoice",
+  "packing_list",
+  "proforma_invoice",
+];
 
 /** 서류번호 접두사. documentNo = `${prefix}-${YYYY}-${seq}` (issue 시점에 부여) */
 const TYPE_PREFIX = {
-  commercial_invoice: 'CI',
-  packing_list: 'PL',
-  proforma_invoice: 'PI',
+  commercial_invoice: "CI",
+  packing_list: "PL",
+  proforma_invoice: "PI",
 };
 
-const DOCUMENT_STATUSES = ['draft', 'issued', 'superseded'];
+const DOCUMENT_STATUSES = ["draft", "issued", "superseded"];
 
-const INCOTERMS = ['EXW', 'FCA', 'FOB', 'CFR', 'CIF', 'DAP', 'DDP'];
-const PAYMENT_TERMS = ['T/T', 'L/C', 'D/P', 'D/A', 'Open Account', 'Cash in Advance'];
-const CURRENCIES = ['USD', 'EUR', 'KRW', 'CNY', 'JPY', 'VND'];
-const UNITS = ['PCS', 'SET', 'BOX', 'CTN', 'PLT', 'KG', 'M', 'M2', 'M3'];
-const SHIP_MODES = ['SEA', 'AIR', 'RAIL', 'TRUCK', 'COURIER'];
+const INCOTERMS = ["EXW", "FCA", "FOB", "CFR", "CIF", "DAP", "DDP"];
+const PAYMENT_TERMS = [
+  "T/T",
+  "L/C",
+  "D/P",
+  "D/A",
+  "Open Account",
+  "Cash in Advance",
+];
+const CURRENCIES = ["USD", "EUR", "KRW", "CNY", "JPY", "VND"];
+const UNITS = ["PCS", "SET", "BOX", "CTN", "PLT", "KG", "M", "M2", "M3"];
+const SHIP_MODES = ["SEA", "AIR", "RAIL", "TRUCK", "COURIER"];
 
 module.exports = {
   TRADE_DOCUMENT_TYPES,

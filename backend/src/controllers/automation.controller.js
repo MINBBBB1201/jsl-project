@@ -1,6 +1,6 @@
-const AutomationLog = require('../models/automation-log.model');
-const logger = require('../utils/logger');
-const { JOBS, TIMEZONE } = require('../automation/scheduler');
+const AutomationLog = require("../models/automation-log.model");
+const logger = require("../utils/logger");
+const { JOBS, TIMEZONE } = require("../automation/scheduler");
 
 const MAX_LIMIT = 50;
 
@@ -15,7 +15,7 @@ exports.getLogs = async (req, res) => {
   try {
     const limit = Math.min(
       Math.max(parseInt(req.query.limit, 10) || 10, 1),
-      MAX_LIMIT
+      MAX_LIMIT,
     );
 
     const logs = await AutomationLog.find()
@@ -32,23 +32,23 @@ exports.getLogs = async (req, res) => {
           ranAt: log.ranAt,
           status: log.status,
           durationMs: log.durationMs ?? null,
-          trigger: log.trigger ?? 'schedule',
+          trigger: log.trigger ?? "schedule",
           summary: log.summary ?? {},
-          error: log.error ?? null
+          error: log.error ?? null,
         })),
         // 등록된 스케줄 (코드에 정의된 값 — 실행 이력과 대조해 보라고 함께 준다)
         schedules: JOBS.map((job) => ({
           name: job.name,
           expression: job.expression,
-          timezone: TIMEZONE
-        }))
-      }
+          timezone: TIMEZONE,
+        })),
+      },
     });
   } catch (error) {
-    logger.error('자동화 실행 이력 조회 실패:', error);
+    logger.error("자동화 실행 이력 조회 실패:", error);
     res.status(500).json({
       success: false,
-      error: '자동화 실행 이력을 불러오지 못했습니다.'
+      error: "자동화 실행 이력을 불러오지 못했습니다.",
     });
   }
 };

@@ -1,20 +1,20 @@
-const Shipment = require('../models/shipment.model');
-const logger = require('../utils/logger');
-const mongoose = require('mongoose');
-const TRANSIT_TIMES = require('../config/transit-times');
+const Shipment = require("../models/shipment.model");
+const logger = require("../utils/logger");
+const mongoose = require("mongoose");
+const TRANSIT_TIMES = require("../config/transit-times");
 const {
   calculateDelayRisk,
   buildRiskLevelQuery,
   RISK_LEVELS,
-  MS_PER_DAY
-} = require('../utils/delay-risk');
+  MS_PER_DAY,
+} = require("../utils/delay-risk");
 const {
   DELIVERED_STATUS,
   resolveCompletedAt,
   isOnTime,
-  computeChangeRate
-} = require('../utils/delivery-completion');
-const shipmentEvents = require('../services/shipment-events.service');
+  computeChangeRate,
+} = require("../utils/delivery-completion");
+const shipmentEvents = require("../services/shipment-events.service");
 
 /**
  * 목록 조회 응답에서 제외할 고객 개인정보.
@@ -24,12 +24,15 @@ const shipmentEvents = require('../services/shipment-events.service');
  * 최소제공 원칙에 따라 목록에서는 customer 를 빼고, 필요한 경우 단건 상세
  * (GET /:trackingNumber) 로만 확인한다.
  */
-const PII_EXCLUDED_FIELDS = '-customer';
+const PII_EXCLUDED_FIELDS = "-customer";
 
 /** 이미 조회된 문서에서 고객 개인정보를 떼어낸다 (select 를 못 쓰는 경우용) */
 const stripPii = (shipment) => {
   if (!shipment) return shipment;
-  const plain = typeof shipment.toObject === 'function' ? shipment.toObject() : { ...shipment };
+  const plain =
+    typeof shipment.toObject === "function"
+      ? shipment.toObject()
+      : { ...shipment };
   delete plain.customer;
   return plain;
 };
@@ -39,7 +42,10 @@ const stripPii = (shipment) => {
  * 조회 시점 기준으로 다시 계산해 덮어쓴다.
  */
 const withFreshRisk = (shipment, now) => {
-  const plain = typeof shipment.toObject === 'function' ? shipment.toObject() : { ...shipment };
+  const plain =
+    typeof shipment.toObject === "function"
+      ? shipment.toObject()
+      : { ...shipment };
   const risk = calculateDelayRisk(plain, TRANSIT_TIMES, { now });
 
   return {
@@ -53,18 +59,18 @@ const withFreshRisk = (shipment, now) => {
       standardDays: risk.standardDays,
       // 표준 소요일이 추정치인지 실측인지 함께 내려준다
       standardSource: risk.source,
-      skipped: risk.skipped
-    }
+      skipped: risk.skipped,
+    },
   };
 };
 
 // Helper function to generate a tracking number
 const generateTrackingNumber = () => {
-  const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
-  let result = '';
+  const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+  let result = "";
   for (let i = 0; i < 12; i++) {
     result += chars.charAt(Math.floor(Math.random() * chars.length));
-    if ((i + 1) % 4 === 0 && i < 11) result += '-';
+    if ((i + 1) % 4 === 0 && i < 11) result += "-";
   }
   return result;
 };
@@ -81,120 +87,133 @@ exports.createShipment = async (req, res) => {
   try {
     // Check MongoDB connection first
     if (mongoose.connection.readyState !== 1) {
-      logger.warn('MongoDB not connected during shipment creation, attempting to reconnect...');
+      logger.warn(
+        "MongoDB not connected during shipment creation, attempting to reconnect...",
+      );
       try {
         // Try to reconnect
-        const { connectDB } = require('../config/database');
+        const { connectDB } = require("../config/database");
         await connectDB();
-        logger.info('MongoDB reconnected successfully for shipment creation');
+        logger.info("MongoDB reconnected successfully for shipment creation");
       } catch (connError) {
-        logger.error('Failed to reconnect to MongoDB for shipment creation:', connError);
+        logger.error(
+          "Failed to reconnect to MongoDB for shipment creation:",
+          connError,
+        );
         return res.status(500).json({
           success: false,
-          error: 'Database connection error. Please try again later.'
+          error: "Database connection error. Please try again later.",
         });
       }
     }
 
     const { origin, destination, checkpoints, customer, items } = req.body;
-    
+
     // Validate required fields
     if (!origin || !origin.coordinates || !origin.address) {
       return res.status(400).json({
         success: false,
-        error: 'Origin with coordinates and address is required'
+        error: "Origin with coordinates and address is required",
       });
     }
-    
+
     if (!destination || !destination.coordinates || !destination.address) {
       return res.status(400).json({
         success: false,
-        error: 'Destination with coordinates and address is required'
+        error: "Destination with coordinates and address is required",
       });
     }
-    
+
     if (!customer || !customer.name || !customer.email) {
       return res.status(400).json({
         success: false,
-        error: 'Customer with name and email is required'
+        error: "Customer with name and email is required",
       });
     }
-    
+
     // Process checkpoints if provided
     let validatedCheckpoints = [];
     if (checkpoints && Array.isArray(checkpoints) && checkpoints.length > 0) {
       // Validate each checkpoint
       for (const checkpoint of checkpoints) {
-        if (!checkpoint.location || !checkpoint.location.coordinates || !checkpoint.location.address) {
+        if (
+          !checkpoint.location ||
+          !checkpoint.location.coordinates ||
+          !checkpoint.location.address
+        ) {
           return res.status(400).json({
             success: false,
-            error: 'Each checkpoint must have location with coordinates and address'
+            error:
+              "Each checkpoint must have location with coordinates and address",
           });
         }
-        
+
         if (!checkpoint.name) {
           return res.status(400).json({
             success: false,
-            error: 'Each checkpoint must have a name'
+            error: "Each checkpoint must have a name",
           });
         }
-        
+
         validatedCheckpoints.push({
           location: {
-            type: 'Point',
+            type: "Point",
             coordinates: checkpoint.location.coordinates,
             address: checkpoint.location.address,
-            timestamp: new Date()
+            timestamp: new Date(),
           },
           name: checkpoint.name,
           estimatedArrival: checkpoint.estimatedArrival || null,
           reached: false,
-          notes: checkpoint.notes || ''
+          notes: checkpoint.notes || "",
         });
       }
     }
-    
+
     // Create new shipment
     const shipment = new Shipment({
       trackingNumber: generateTrackingNumber(),
       origin: {
-        type: 'Point',
+        type: "Point",
         coordinates: origin.coordinates,
         address: origin.address,
-        timestamp: new Date()
+        timestamp: new Date(),
       },
       destination: {
-        type: 'Point',
+        type: "Point",
         coordinates: destination.coordinates,
         address: destination.address,
-        timestamp: new Date()
+        timestamp: new Date(),
       },
       checkpoints: validatedCheckpoints,
       currentLocation: {
-        type: 'Point',
+        type: "Point",
         coordinates: origin.coordinates,
         address: origin.address,
-        timestamp: new Date()
+        timestamp: new Date(),
       },
-      status: 'pending',
-      estimatedDelivery: req.body.estimatedDelivery || calculateEstimatedDelivery(),
+      status: "pending",
+      estimatedDelivery:
+        req.body.estimatedDelivery || calculateEstimatedDelivery(),
       customer: {
         name: customer.name,
         email: customer.email,
-        phone: customer.phone || ''
+        phone: customer.phone || "",
       },
       items: items || [],
-      history: [{
-        location: {
-          type: 'Point',
-          coordinates: origin.coordinates,
-          address: origin.address,
-          timestamp: new Date()
+      history: [
+        {
+          location: {
+            type: "Point",
+            coordinates: origin.coordinates,
+            address: origin.address,
+            timestamp: new Date(),
+          },
+          status: "pending",
+          description: "Shipment created",
+          timestamp: new Date(),
         },
-        status: 'pending',
-        description: 'Shipment created',
-        timestamp: new Date()
-      }]
+      ],
     });
 
     // Save with retry mechanism
@@ -203,47 +222,57 @@ exports.createShipment = async (req, res) => {
       savedShipment = await shipment.save();
     } catch (saveError) {
       // If first save fails, try one more time
-      if (saveError.name === 'MongoNetworkError' || 
-          saveError.name === 'MongoTimeoutError' ||
-          (saveError.message && saveError.message.includes('connection'))) {
-        
-        logger.warn('MongoDB save error, attempting to reconnect and retry:', saveError);
+      if (
+        saveError.name === "MongoNetworkError" ||
+        saveError.name === "MongoTimeoutError" ||
+        (saveError.message && saveError.message.includes("connection"))
+      ) {
+        logger.warn(
+          "MongoDB save error, attempting to reconnect and retry:",
+          saveError,
+        );
 
         // 재연결 후 한 번 더. 여기서 또 던지면 바깥 catch 로 간다.
-        const { connectDB } = require('../config/database');
+        const { connectDB } = require("../config/database");
         await connectDB();
         savedShipment = await shipment.save();
-        logger.info('Shipment saved successfully after retry');
+        logger.info("Shipment saved successfully after retry");
       } else {
         throw saveError; // Will be caught by outer catch block
       }
     }
-    
+
     logger.info(`New shipment created: ${savedShipment.trackingNumber}`);
-    
+
     res.status(201).json({
       success: true,
       data: stripPii(savedShipment),
-      message: 'Shipment created successfully'
+      message: "Shipment created successfully",
     });
   } catch (error) {
-    logger.error('Error creating shipment:', error);
-    
+    logger.error("Error creating shipment:", error);
+
     // Provide more specific error messages based on the error type
-    let errorMessage = 'Failed to create shipment';
-    
-    if (error.name === 'ValidationError') {
-      errorMessage = 'Invalid shipment data: ' + Object.values(error.errors).map(e => e.message).join(', ');
-    } else if (error.name === 'MongoServerError' && error.code === 11000) {
-      errorMessage = 'Duplicate tracking number. Please try again.';
-    } else if (error.name === 'MongoNetworkError') {
-      errorMessage = 'Network error connecting to database. Please try again later.';
+    let errorMessage = "Failed to create shipment";
+
+    if (error.name === "ValidationError") {
+      errorMessage =
+        "Invalid shipment data: " +
+        Object.values(error.errors)
+          .map((e) => e.message)
+          .join(", ");
+    } else if (error.name === "MongoServerError" && error.code === 11000) {
+      errorMessage = "Duplicate tracking number. Please try again.";
+    } else if (error.name === "MongoNetworkError") {
+      errorMessage =
+        "Network error connecting to database. Please try again later.";
     }
-    
-    res.status(error.name === 'ValidationError' ? 400 : 500).json({
+
+    res.status(error.name === "ValidationError" ? 400 : 500).json({
       success: false,
       error: errorMessage,
-      details: process.env.NODE_ENV === 'development' ? error.message : undefined
+      details:
+        process.env.NODE_ENV === "development" ? error.message : undefined,
     });
   }
 };
@@ -271,7 +300,7 @@ exports.getShipmentByTrackingNumber = async (req, res) => {
     if (!shipment) {
       return res.status(404).json({
         success: false,
-        error: 'Shipment not found'
+        error: "Shipment not found",
       });
     }
 
@@ -281,14 +310,15 @@ exports.getShipmentByTrackingNumber = async (req, res) => {
     // 상세 화면이 목록과 다른 등급을 보여줄 수 있었다.
     res.status(200).json({
       success: true,
-      data: withFreshRisk(shipment, new Date())
+      data: withFreshRisk(shipment, new Date()),
     });
   } catch (error) {
-    logger.error('Error fetching shipment:', error);
+    logger.error("Error fetching shipment:", error);
     res.status(500).json({
       success: false,
-      error: 'Failed to fetch shipment',
-      details: process.env.NODE_ENV === 'development' ? error.message : undefined
+      error: "Failed to fetch shipment",
+      details:
+        process.env.NODE_ENV === "development" ? error.message : undefined,
     });
   }
 };
@@ -298,27 +328,27 @@ exports.updateShipmentLocation = async (req, res) => {
   try {
     const { trackingNumber } = req.params;
     const { coordinates, address, status, description } = req.body;
-    
+
     const shipment = await Shipment.findOne({ trackingNumber });
-    
+
     if (!shipment) {
       return res.status(404).json({
         success: false,
-        error: 'Shipment not found'
+        error: "Shipment not found",
       });
     }
-    
+
     // Update location and status
     await shipment.updateLocation(
       {
         longitude: coordinates[0],
         latitude: coordinates[1],
-        address: address
+        address: address,
       },
       status,
-      description
+      description,
     );
-    
+
     logger.info(`Shipment ${trackingNumber} location updated`);
 
     // Get updated shipment
@@ -330,14 +360,15 @@ exports.updateShipmentLocation = async (req, res) => {
     res.status(200).json({
       success: true,
       data: stripPii(updatedShipment),
-      message: 'Shipment location updated successfully'
+      message: "Shipment location updated successfully",
     });
   } catch (error) {
-    logger.error('Error updating shipment location:', error);
+    logger.error("Error updating shipment location:", error);
     res.status(500).json({
       success: false,
-      error: 'Failed to update shipment location',
-      details: process.env.NODE_ENV === 'development' ? error.message : undefined
+      error: "Failed to update shipment location",
+      details:
+        process.env.NODE_ENV === "development" ? error.message : undefined,
     });
   }
 };
@@ -346,26 +377,27 @@ exports.updateShipmentLocation = async (req, res) => {
 exports.getShipmentHistory = async (req, res) => {
   try {
     const { trackingNumber } = req.params;
-    
-    const shipment = await Shipment.findOne({ trackingNumber }, 'history');
-    
+
+    const shipment = await Shipment.findOne({ trackingNumber }, "history");
+
     if (!shipment) {
       return res.status(404).json({
         success: false,
-        error: 'Shipment not found'
+        error: "Shipment not found",
       });
     }
-    
+
     res.status(200).json({
       success: true,
-      data: shipment.history
+      data: shipment.history,
     });
   } catch (error) {
-    logger.error('Error fetching shipment history:', error);
+    logger.error("Error fetching shipment history:", error);
     res.status(500).json({
       success: false,
-      error: 'Failed to fetch shipment history',
-      details: process.env.NODE_ENV === 'development' ? error.message : undefined
+      error: "Failed to fetch shipment history",
+      details:
+        process.env.NODE_ENV === "development" ? error.message : undefined,
     });
   }
 };
@@ -374,29 +406,30 @@ exports.getShipmentHistory = async (req, res) => {
 exports.getNearbyShipments = async (req, res) => {
   try {
     const { longitude, latitude, maxDistance = 10000 } = req.query; // Default 10km
-    
+
     const shipments = await Shipment.find({
-      'currentLocation.coordinates': {
+      "currentLocation.coordinates": {
         $near: {
           $geometry: {
-            type: 'Point',
-            coordinates: [parseFloat(longitude), parseFloat(latitude)]
+            type: "Point",
+            coordinates: [parseFloat(longitude), parseFloat(latitude)],
           },
-          $maxDistance: parseInt(maxDistance)
-        }
-      }
+          $maxDistance: parseInt(maxDistance),
+        },
+      },
     });
 
     res.status(200).json({
       success: true,
-      data: shipments
+      data: shipments,
     });
   } catch (error) {
-    logger.error('Error fetching nearby shipments:', error);
+    logger.error("Error fetching nearby shipments:", error);
     res.status(500).json({
       success: false,
-      error: 'Failed to fetch nearby shipments',
-      details: process.env.NODE_ENV === 'development' ? error.message : undefined
+      error: "Failed to fetch nearby shipments",
+      details:
+        process.env.NODE_ENV === "development" ? error.message : undefined,
     });
   }
 };
@@ -406,22 +439,35 @@ exports.getAllShipments = async (req, res) => {
   try {
     // Check MongoDB connection first
     if (mongoose.connection.readyState !== 1) {
-      logger.warn('MongoDB not connected when fetching shipments, attempting to reconnect...');
+      logger.warn(
+        "MongoDB not connected when fetching shipments, attempting to reconnect...",
+      );
       try {
         // Try to reconnect
-        const { connectDB } = require('../config/database');
+        const { connectDB } = require("../config/database");
         await connectDB();
-        logger.info('MongoDB reconnected successfully for fetching shipments');
+        logger.info("MongoDB reconnected successfully for fetching shipments");
       } catch (connError) {
-        logger.error('Failed to reconnect to MongoDB for fetching shipments:', connError);
-        return res.status(500).json({ 
-          success: false, 
-          error: 'Database connection error. Please try again later.' 
+        logger.error(
+          "Failed to reconnect to MongoDB for fetching shipments:",
+          connError,
+        );
+        return res.status(500).json({
+          success: false,
+          error: "Database connection error. Please try again later.",
         });
       }
     }
-    
-    const { status, riskLevel, transportMode, sortBy, sortOrder, limit = 50, page = 1 } = req.query;
+
+    const {
+      status,
+      riskLevel,
+      transportMode,
+      sortBy,
+      sortOrder,
+      limit = 50,
+      page = 1,
+    } = req.query;
     const now = new Date();
     const query = {};
 
@@ -441,7 +487,7 @@ exports.getAllShipments = async (req, res) => {
       if (!riskQuery) {
         return res.status(400).json({
           success: false,
-          error: `riskLevel 은 ${Object.values(RISK_LEVELS).join(', ')} 중 하나여야 합니다.`
+          error: `riskLevel 은 ${Object.values(RISK_LEVELS).join(", ")} 중 하나여야 합니다.`,
         });
       }
       query.$or = riskQuery.$or;
@@ -454,16 +500,16 @@ exports.getAllShipments = async (req, res) => {
     // Apply sorting
     const sortOptions = {};
     if (sortBy) {
-      sortOptions[sortBy] = sortOrder === 'desc' ? -1 : 1;
+      sortOptions[sortBy] = sortOrder === "desc" ? -1 : 1;
     } else {
       // Default sort by createdAt in descending order (newest first)
       sortOptions.createdAt = -1;
     }
-    
+
     // Pagination
     const skip = (parseInt(page) - 1) * parseInt(limit);
     const limitValue = parseInt(limit);
-    
+
     // Fetch shipments with retry mechanism
     let shipments;
     try {
@@ -474,14 +520,18 @@ exports.getAllShipments = async (req, res) => {
         .select(`-__v ${PII_EXCLUDED_FIELDS}`);
     } catch (fetchError) {
       // If first fetch fails, try one more time
-      if (fetchError.name === 'MongoNetworkError' || 
-          fetchError.name === 'MongoTimeoutError' ||
-          (fetchError.message && fetchError.message.includes('connection'))) {
-        
-        logger.warn('MongoDB fetch error, attempting to reconnect and retry:', fetchError);
+      if (
+        fetchError.name === "MongoNetworkError" ||
+        fetchError.name === "MongoTimeoutError" ||
+        (fetchError.message && fetchError.message.includes("connection"))
+      ) {
+        logger.warn(
+          "MongoDB fetch error, attempting to reconnect and retry:",
+          fetchError,
+        );
 
         // 재연결 후 한 번 더. 여기서 또 던지면 바깥 catch 로 간다.
-        const { connectDB } = require('../config/database');
+        const { connectDB } = require("../config/database");
         await connectDB();
         shipments = await Shipment.find(query)
           .sort(sortOptions)
@@ -489,15 +539,15 @@ exports.getAllShipments = async (req, res) => {
           .limit(limitValue)
           .select(`-__v ${PII_EXCLUDED_FIELDS}`);
 
-        logger.info('Shipments fetched successfully after retry');
+        logger.info("Shipments fetched successfully after retry");
       } else {
         throw fetchError; // Will be caught by outer catch block
       }
     }
-    
+
     // Get total count for pagination info
     const totalCount = await Shipment.countDocuments(query);
-    
+
     res.status(200).json({
       success: true,
       data: shipments.map((shipment) => withFreshRisk(shipment, now)),
@@ -505,25 +555,27 @@ exports.getAllShipments = async (req, res) => {
         total: totalCount,
         page: parseInt(page),
         limit: limitValue,
-        pages: Math.ceil(totalCount / limitValue)
-      }
+        pages: Math.ceil(totalCount / limitValue),
+      },
     });
   } catch (error) {
-    logger.error('Error fetching shipments:', error);
-    
+    logger.error("Error fetching shipments:", error);
+
     // Provide more specific error messages based on the error type
-    let errorMessage = 'Failed to fetch shipments';
-    
-    if (error.name === 'MongoNetworkError') {
-      errorMessage = 'Network error connecting to database. Please try again later.';
-    } else if (error.name === 'MongoServerError') {
-      errorMessage = 'Database server error. Please try again later.';
+    let errorMessage = "Failed to fetch shipments";
+
+    if (error.name === "MongoNetworkError") {
+      errorMessage =
+        "Network error connecting to database. Please try again later.";
+    } else if (error.name === "MongoServerError") {
+      errorMessage = "Database server error. Please try again later.";
     }
-    
-    res.status(500).json({ 
-      success: false, 
+
+    res.status(500).json({
+      success: false,
       error: errorMessage,
-      details: process.env.NODE_ENV === 'development' ? error.message : undefined
+      details:
+        process.env.NODE_ENV === "development" ? error.message : undefined,
     });
   }
 };
@@ -540,19 +592,19 @@ exports.getDelaySummary = async (req, res) => {
 
     // 스코어링 대상: 배송 완료가 아니고, 집하일과 운송모드가 있는 건
     const scorableQuery = {
-      status: { $ne: 'delivered' },
+      status: { $ne: "delivered" },
       shippedAt: { $ne: null },
-      transportMode: { $ne: null }
+      transportMode: { $ne: null },
     };
 
     const shipments = await Shipment.find(scorableQuery)
-      .select('transportMode shippedAt status')
+      .select("transportMode shippedAt status")
       .lean();
 
     const counts = {
       [RISK_LEVELS.NORMAL]: 0,
       [RISK_LEVELS.AT_RISK]: 0,
-      [RISK_LEVELS.DELAYED]: 0
+      [RISK_LEVELS.DELAYED]: 0,
     };
 
     for (const shipment of shipments) {
@@ -561,12 +613,15 @@ exports.getDelaySummary = async (req, res) => {
       // 점수를 못 낸 건은 아래 meta.unscorable 에서 별도로 집계한다
     }
 
-    const total = counts[RISK_LEVELS.NORMAL] + counts[RISK_LEVELS.AT_RISK] + counts[RISK_LEVELS.DELAYED];
+    const total =
+      counts[RISK_LEVELS.NORMAL] +
+      counts[RISK_LEVELS.AT_RISK] +
+      counts[RISK_LEVELS.DELAYED];
 
     // 참고용 부가 정보
     const [deliveredCount, allCount] = await Promise.all([
-      Shipment.countDocuments({ status: 'delivered' }),
-      Shipment.countDocuments({})
+      Shipment.countDocuments({ status: "delivered" }),
+      Shipment.countDocuments({}),
     ]);
 
     res.status(200).json({
@@ -583,16 +638,17 @@ exports.getDelaySummary = async (req, res) => {
         // 집하일 또는 운송모드가 없어 점수를 낼 수 없는 건
         unscorable: allCount - deliveredCount - total,
         // v1 은 규칙 기반이며 표준 소요일 상당수가 추정치임을 명시한다
-        method: 'rule-based-v1',
-        note: '표준 소요일 일부는 업계 평균 추정치입니다. 실제 배송 이력 확보 시 교체 예정.'
-      }
+        method: "rule-based-v1",
+        note: "표준 소요일 일부는 업계 평균 추정치입니다. 실제 배송 이력 확보 시 교체 예정.",
+      },
     });
   } catch (error) {
-    logger.error('Error building delay summary:', error);
+    logger.error("Error building delay summary:", error);
     res.status(500).json({
       success: false,
-      error: '지연 리스크 집계에 실패했습니다.',
-      details: process.env.NODE_ENV === 'development' ? error.message : undefined
+      error: "지연 리스크 집계에 실패했습니다.",
+      details:
+        process.env.NODE_ENV === "development" ? error.message : undefined,
     });
   }
 };
@@ -614,13 +670,15 @@ exports.getDelaySummary = async (req, res) => {
 const WINDOW_DAYS = 30;
 
 /** 활성(진행 중)에서 빼는 상태 — 결과가 이미 확정된 건 */
-const INACTIVE_STATUSES = [DELIVERED_STATUS, 'exception'];
+const INACTIVE_STATUSES = [DELIVERED_STATUS, "exception"];
 
 exports.getDashboardSummary = async (req, res) => {
   try {
     const now = new Date();
     const windowStart = new Date(now.getTime() - WINDOW_DAYS * MS_PER_DAY);
-    const previousStart = new Date(now.getTime() - 2 * WINDOW_DAYS * MS_PER_DAY);
+    const previousStart = new Date(
+      now.getTime() - 2 * WINDOW_DAYS * MS_PER_DAY,
+    );
 
     const [
       processedCurrent,
@@ -629,21 +687,25 @@ exports.getDashboardSummary = async (req, res) => {
       // windowStart 이전에 생성됐고 지금도 진행 중인 건 — 그 시점에도 분명히 진행 중이었다
       activeStillOpenFromBefore,
       totalShipments,
-      deliveredDocs
+      deliveredDocs,
     ] = await Promise.all([
       Shipment.countDocuments({ createdAt: { $gte: windowStart, $lte: now } }),
-      Shipment.countDocuments({ createdAt: { $gte: previousStart, $lt: windowStart } }),
+      Shipment.countDocuments({
+        createdAt: { $gte: previousStart, $lt: windowStart },
+      }),
       Shipment.countDocuments({ status: { $nin: INACTIVE_STATUSES } }),
       Shipment.countDocuments({
         createdAt: { $lte: windowStart },
-        status: { $nin: INACTIVE_STATUSES }
+        status: { $nin: INACTIVE_STATUSES },
       }),
       Shipment.countDocuments({}),
       // 완료 시각은 history 를 봐야 알 수 있어 집계 파이프라인 대신 문서를 읽는다.
       // 완료 건만 대상이고 필요한 필드만 골라 온다.
       Shipment.find({ status: DELIVERED_STATUS })
-        .select('status createdAt updatedAt estimatedDelivery history.status history.timestamp')
-        .lean()
+        .select(
+          "status createdAt updatedAt estimatedDelivery history.status history.timestamp",
+        )
+        .lean(),
     ]);
 
     // ── 온타임 배송률 ────────────────────────────────────────────────
@@ -663,7 +725,11 @@ exports.getDashboardSummary = async (req, res) => {
       }
       sourceCounts[source] += 1;
 
-      if (doc.createdAt && new Date(doc.createdAt) <= windowStart && completedAt > windowStart) {
+      if (
+        doc.createdAt &&
+        new Date(doc.createdAt) <= windowStart &&
+        completedAt > windowStart
+      ) {
         openAtWindowStart += 1;
       }
 
@@ -688,11 +754,15 @@ exports.getDashboardSummary = async (req, res) => {
       return Math.round((onTimeCount / judged) * 1000) / 10;
     };
 
-    const onTimeRate = rateOf(window.onTime, window.delivered, window.undetermined);
+    const onTimeRate = rateOf(
+      window.onTime,
+      window.delivered,
+      window.undetermined,
+    );
     const previousOnTimeRate = rateOf(
       previousWindow.onTime,
       previousWindow.delivered,
-      previousWindow.undetermined
+      previousWindow.undetermined,
     );
 
     const activePrevious = activeStillOpenFromBefore + openAtWindowStart;
@@ -705,13 +775,13 @@ exports.getDashboardSummary = async (req, res) => {
         processed: {
           current: processedCurrent,
           previous: processedPrevious,
-          changeRate: computeChangeRate(processedCurrent, processedPrevious)
+          changeRate: computeChangeRate(processedCurrent, processedPrevious),
         },
         // 지금 진행 중인 건수 (delivered / exception 제외 — delayed 는 여전히 운송 중이라 포함)
         active: {
           current: activeCurrent,
           previous: activePrevious,
-          changeRate: computeChangeRate(activeCurrent, activePrevious)
+          changeRate: computeChangeRate(activeCurrent, activePrevious),
         },
         // 약속 기일 내 완료된 비율
         onTime: {
@@ -725,8 +795,8 @@ exports.getDashboardSummary = async (req, res) => {
           changePoint:
             onTimeRate === null || previousOnTimeRate === null
               ? null
-              : Math.round((onTimeRate - previousOnTimeRate) * 10) / 10
-        }
+              : Math.round((onTimeRate - previousOnTimeRate) * 10) / 10,
+        },
       },
       updatedAt: now.toISOString(),
       meta: {
@@ -739,7 +809,7 @@ exports.getDashboardSummary = async (req, res) => {
          */
         completedAtSource: sourceCounts,
         completedAtNote:
-          'deliveredAt 필드가 없어 history 의 delivered 전환 timestamp 를 완료 시각으로 씁니다. 이력이 없으면 updatedAt 으로 대체하며(근사치), 그 건수는 completedAtSource.updatedAt 에 표시됩니다.',
+          "deliveredAt 필드가 없어 history 의 delivered 전환 timestamp 를 완료 시각으로 씁니다. 이력이 없으면 updatedAt 으로 대체하며(근사치), 그 건수는 completedAtSource.updatedAt 에 표시됩니다.",
         /**
          * 활성 건수의 "이전 값" 은 과거 시점 상태를 복원한 값이다.
          * exception 은 예외 처리된 시각을 알 수 없어(이력에 남는다는 보장이 없다)
@@ -747,16 +817,17 @@ exports.getDashboardSummary = async (req, res) => {
          * 활성이 아니었던 것으로 본다.
          */
         activePreviousNote:
-          '활성 건수의 이전 값은 생성 시각과 완료 시각으로 30일 전 시점을 복원한 값입니다. exception 처리 시각은 알 수 없어 제외했습니다.',
-        note: '증감률은 이전 구간에 비교 대상이 있을 때만 계산하며, 없으면 null 로 내려 화면에서 감춥니다.'
-      }
+          "활성 건수의 이전 값은 생성 시각과 완료 시각으로 30일 전 시점을 복원한 값입니다. exception 처리 시각은 알 수 없어 제외했습니다.",
+        note: "증감률은 이전 구간에 비교 대상이 있을 때만 계산하며, 없으면 null 로 내려 화면에서 감춥니다.",
+      },
     });
   } catch (error) {
-    logger.error('Error building dashboard summary:', error);
+    logger.error("Error building dashboard summary:", error);
     res.status(500).json({
       success: false,
-      error: '대시보드 집계에 실패했습니다.',
-      details: process.env.NODE_ENV === 'development' ? error.message : undefined
+      error: "대시보드 집계에 실패했습니다.",
+      details:
+        process.env.NODE_ENV === "development" ? error.message : undefined,
     });
   }
 };
@@ -773,23 +844,25 @@ exports.getDashboardSummary = async (req, res) => {
  * 값이 없는 날도 0 으로 채워 내려준다. 빠진 날을 그대로 두면 차트가 없는
  * 구간을 직선으로 이어 버려 "그날도 물량이 있었다" 처럼 보인다.
  */
-const TREND_TIMEZONE = 'Asia/Seoul';
-const TREND_RANGES = { '7d': 7, '30d': 30, '90d': 90 };
-const DEFAULT_TREND_RANGE = '90d';
+const TREND_TIMEZONE = "Asia/Seoul";
+const TREND_RANGES = { "7d": 7, "30d": 30, "90d": 90 };
+const DEFAULT_TREND_RANGE = "90d";
 
 /** 한국 시간 기준 YYYY-MM-DD. en-CA 로케일이 이 형식을 그대로 준다. */
-const dayKeyFormatter = new Intl.DateTimeFormat('en-CA', {
+const dayKeyFormatter = new Intl.DateTimeFormat("en-CA", {
   timeZone: TREND_TIMEZONE,
-  year: 'numeric',
-  month: '2-digit',
-  day: '2-digit'
+  year: "numeric",
+  month: "2-digit",
+  day: "2-digit",
 });
 const toDayKey = (date) => dayKeyFormatter.format(date);
 
 exports.getShipmentTrend = async (req, res) => {
   try {
     const now = new Date();
-    const range = TREND_RANGES[req.query.range] ? req.query.range : DEFAULT_TREND_RANGE;
+    const range = TREND_RANGES[req.query.range]
+      ? req.query.range
+      : DEFAULT_TREND_RANGE;
     const days = TREND_RANGES[range];
 
     // 오늘을 포함해 days 개의 날짜 칸을 미리 만들어 둔다.
@@ -810,19 +883,19 @@ exports.getShipmentTrend = async (req, res) => {
           $group: {
             _id: {
               $dateToString: {
-                format: '%Y-%m-%d',
-                date: '$createdAt',
-                timezone: TREND_TIMEZONE
-              }
+                format: "%Y-%m-%d",
+                date: "$createdAt",
+                timezone: TREND_TIMEZONE,
+              },
             },
-            count: { $sum: 1 }
-          }
-        }
+            count: { $sum: 1 },
+          },
+        },
       ]),
       // 완료 시각은 history 를 봐야 하므로 dashboard-summary 와 같은 유틸로 판단한다
       Shipment.find({ status: DELIVERED_STATUS })
-        .select('status updatedAt history.status history.timestamp')
-        .lean()
+        .select("status updatedAt history.status history.timestamp")
+        .lean(),
     ]);
 
     for (const row of createdByDay) {
@@ -856,22 +929,23 @@ exports.getShipmentTrend = async (req, res) => {
         points,
         totals: {
           created: points.reduce((sum, p) => sum + p.created, 0),
-          completed: points.reduce((sum, p) => sum + p.completed, 0)
-        }
+          completed: points.reduce((sum, p) => sum + p.completed, 0),
+        },
       },
       updatedAt: now.toISOString(),
       meta: {
         completedAtSource: sourceCounts,
         completedAtNote:
-          'dashboard-summary 와 같은 기준입니다 — history 의 delivered 전환 timestamp, 없으면 updatedAt.'
-      }
+          "dashboard-summary 와 같은 기준입니다 — history 의 delivered 전환 timestamp, 없으면 updatedAt.",
+      },
     });
   } catch (error) {
-    logger.error('Error building shipment trend:', error);
+    logger.error("Error building shipment trend:", error);
     res.status(500).json({
       success: false,
-      error: '화물 추이를 불러오지 못했습니다.',
-      details: process.env.NODE_ENV === 'development' ? error.message : undefined
+      error: "화물 추이를 불러오지 못했습니다.",
+      details:
+        process.env.NODE_ENV === "development" ? error.message : undefined,
     });
   }
 };
@@ -907,17 +981,17 @@ exports.getPublicSummary = async (req, res) => {
     const now = new Date();
 
     const shipments = await Shipment.find({
-      status: { $ne: 'delivered' },
+      status: { $ne: "delivered" },
       shippedAt: { $ne: null },
-      transportMode: { $ne: null }
+      transportMode: { $ne: null },
     })
-      .select('transportMode shippedAt status trackingNumber')
+      .select("transportMode shippedAt status trackingNumber")
       .lean();
 
     const counts = {
       [RISK_LEVELS.NORMAL]: 0,
       [RISK_LEVELS.AT_RISK]: 0,
-      [RISK_LEVELS.DELAYED]: 0
+      [RISK_LEVELS.DELAYED]: 0,
     };
 
     let demoCount = 0;
@@ -925,17 +999,22 @@ exports.getPublicSummary = async (req, res) => {
     for (const shipment of shipments) {
       const { level } = calculateDelayRisk(shipment, TRANSIT_TIMES, { now });
       if (level) counts[level] += 1;
-      if (String(shipment.trackingNumber).startsWith('DEMO-')) demoCount += 1;
+      if (String(shipment.trackingNumber).startsWith("DEMO-")) demoCount += 1;
     }
 
     const inTransit =
-      counts[RISK_LEVELS.NORMAL] + counts[RISK_LEVELS.AT_RISK] + counts[RISK_LEVELS.DELAYED];
+      counts[RISK_LEVELS.NORMAL] +
+      counts[RISK_LEVELS.AT_RISK] +
+      counts[RISK_LEVELS.DELAYED];
 
     const dataSource =
-      shipments.length === 0 ? 'empty'
-        : demoCount === shipments.length ? 'demo'
-          : demoCount > 0 ? 'mixed'
-            : 'live';
+      shipments.length === 0
+        ? "empty"
+        : demoCount === shipments.length
+          ? "demo"
+          : demoCount > 0
+            ? "mixed"
+            : "live";
 
     res.status(200).json({
       success: true,
@@ -945,16 +1024,19 @@ exports.getPublicSummary = async (req, res) => {
         atRisk: counts[RISK_LEVELS.AT_RISK],
         delayed: counts[RISK_LEVELS.DELAYED],
         // 정시 운송 비율 — 화면에서 다시 계산하지 않도록 서버에서 내려준다
-        onTimeRate: inTransit === 0 ? null : Math.round((counts[RISK_LEVELS.NORMAL] / inTransit) * 100),
+        onTimeRate:
+          inTransit === 0
+            ? null
+            : Math.round((counts[RISK_LEVELS.NORMAL] / inTransit) * 100),
         dataSource,
-        updatedAt: now.toISOString()
-      }
+        updatedAt: now.toISOString(),
+      },
     });
   } catch (error) {
-    logger.error('Error building public summary:', error);
+    logger.error("Error building public summary:", error);
     res.status(500).json({
       success: false,
-      error: '운영 현황을 불러오지 못했습니다.'
+      error: "운영 현황을 불러오지 못했습니다.",
     });
   }
 };
@@ -973,20 +1055,20 @@ exports.getTrackingSamples = async (req, res) => {
     const limit = Math.min(Math.max(parseInt(req.query.limit, 10) || 4, 1), 10);
 
     const shipments = await Shipment.find({ trackingNumber: /^DEMO-/ })
-      .select('trackingNumber -_id')
+      .select("trackingNumber -_id")
       .sort({ createdAt: -1 })
       .limit(limit)
       .lean();
 
     res.status(200).json({
       success: true,
-      data: shipments.map((s) => s.trackingNumber)
+      data: shipments.map((s) => s.trackingNumber),
     });
   } catch (error) {
-    logger.error('Error fetching tracking samples:', error);
+    logger.error("Error fetching tracking samples:", error);
     res.status(500).json({
       success: false,
-      error: '예시 번호를 불러오지 못했습니다.'
+      error: "예시 번호를 불러오지 못했습니다.",
     });
   }
 };
@@ -997,13 +1079,15 @@ exports.trackShipment = async (req, res) => {
     const now = new Date();
 
     const shipment = await Shipment.findOne({ trackingNumber })
-      .select('trackingNumber transportMode status shippedAt estimatedArrivalAt estimatedDelivery origin.address destination.address currentLocation.address')
+      .select(
+        "trackingNumber transportMode status shippedAt estimatedArrivalAt estimatedDelivery origin.address destination.address currentLocation.address",
+      )
       .lean();
 
     if (!shipment) {
       return res.status(404).json({
         success: false,
-        error: '운송장번호를 찾을 수 없습니다. 번호를 다시 확인해 주세요.'
+        error: "운송장번호를 찾을 수 없습니다. 번호를 다시 확인해 주세요.",
       });
     }
 
@@ -1019,23 +1103,25 @@ exports.trackShipment = async (req, res) => {
         destination: shipment.destination?.address ?? null,
         currentLocation: shipment.currentLocation?.address ?? null,
         shippedAt: shipment.shippedAt ?? null,
-        estimatedArrivalAt: shipment.estimatedArrivalAt ?? shipment.estimatedDelivery ?? null,
+        estimatedArrivalAt:
+          shipment.estimatedArrivalAt ?? shipment.estimatedDelivery ?? null,
         delayRisk: {
           level: risk.level,
           score: risk.score,
           elapsedDays: risk.elapsedDays,
           standardDays: risk.standardDays,
           standardSource: risk.source,
-          skipped: risk.skipped
-        }
-      }
+          skipped: risk.skipped,
+        },
+      },
     });
   } catch (error) {
-    logger.error('Error tracking shipment:', error);
+    logger.error("Error tracking shipment:", error);
     res.status(500).json({
       success: false,
-      error: '조회 중 오류가 발생했습니다. 잠시 후 다시 시도해 주세요.',
-      details: process.env.NODE_ENV === 'development' ? error.message : undefined
+      error: "조회 중 오류가 발생했습니다. 잠시 후 다시 시도해 주세요.",
+      details:
+        process.env.NODE_ENV === "development" ? error.message : undefined,
     });
   }
 };
@@ -1045,25 +1131,25 @@ exports.getShipmentETA = async (req, res) => {
   try {
     const { trackingNumber } = req.params;
     const shipment = await Shipment.findOne({ trackingNumber });
-    
+
     if (!shipment) {
-      return res.status(404).json({ error: 'Shipment not found' });
+      return res.status(404).json({ error: "Shipment not found" });
     }
-    
+
     // Calculate remaining distance and time
     const currentLocation = shipment.currentLocation.coordinates;
     const destination = shipment.destination.coordinates;
-    
+
     // Calculate distance using Haversine formula
     const distance = calculateDistance(currentLocation, destination);
-    
+
     // Assume average speed of 50 km/h for ground transport
     const averageSpeed = 50; // km/h
     const estimatedTimeHours = distance / averageSpeed;
-    
+
     const eta = new Date();
     eta.setHours(eta.getHours() + estimatedTimeHours);
-    
+
     res.json({
       trackingNumber: shipment.trackingNumber,
       currentLocation: shipment.currentLocation,
@@ -1071,11 +1157,11 @@ exports.getShipmentETA = async (req, res) => {
       distance: distance.toFixed(2), // km
       estimatedTimeHours: estimatedTimeHours.toFixed(2),
       eta: eta,
-      status: shipment.status
+      status: shipment.status,
     });
   } catch (error) {
-    logger.error('Error calculating ETA:', error);
-    res.status(500).json({ error: 'Failed to calculate ETA' });
+    logger.error("Error calculating ETA:", error);
+    res.status(500).json({ error: "Failed to calculate ETA" });
   }
 };
 
@@ -1087,14 +1173,15 @@ function calculateDistance(point1, point2) {
   const lat1 = toRad(point1[1]);
   const lat2 = toRad(point2[1]);
 
-  const a = Math.sin(dLat/2) * Math.sin(dLat/2) +
-            Math.sin(dLon/2) * Math.sin(dLon/2) * Math.cos(lat1) * Math.cos(lat2);
-  const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+  const a =
+    Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+    Math.sin(dLon / 2) * Math.sin(dLon / 2) * Math.cos(lat1) * Math.cos(lat2);
+  const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
   return R * c;
 }
 
 function toRad(degrees) {
-  return degrees * Math.PI / 180;
+  return (degrees * Math.PI) / 180;
 }
 
 // Update shipment status
@@ -1102,34 +1189,34 @@ exports.updateShipmentStatus = async (req, res) => {
   try {
     const { trackingNumber } = req.params;
     const { status, description } = req.body;
-    
+
     if (!status) {
       return res.status(400).json({
         success: false,
-        error: 'Status is required'
+        error: "Status is required",
       });
     }
-    
+
     const shipment = await Shipment.findOne({ trackingNumber });
-    
+
     if (!shipment) {
       return res.status(404).json({
         success: false,
-        error: 'Shipment not found'
+        error: "Shipment not found",
       });
     }
-    
+
     // Update status
     shipment.status = status;
-    
+
     // Add to history
     shipment.history.push({
       location: shipment.currentLocation,
       status,
       description: description || `Status updated to ${status}`,
-      timestamp: new Date()
+      timestamp: new Date(),
     });
-    
+
     await shipment.save();
 
     logger.info(`Shipment ${trackingNumber} status updated to ${status}`);
@@ -1140,14 +1227,15 @@ exports.updateShipmentStatus = async (req, res) => {
     res.status(200).json({
       success: true,
       data: shipment,
-      message: 'Shipment status updated successfully'
+      message: "Shipment status updated successfully",
     });
   } catch (error) {
-    logger.error('Error updating shipment status:', error);
+    logger.error("Error updating shipment status:", error);
     res.status(500).json({
       success: false,
-      error: 'Failed to update shipment status',
-      details: process.env.NODE_ENV === 'development' ? error.message : undefined
+      error: "Failed to update shipment status",
+      details:
+        process.env.NODE_ENV === "development" ? error.message : undefined,
     });
   }
 };
@@ -1157,75 +1245,88 @@ exports.getShipmentRouteDistance = async (req, res) => {
   try {
     const { trackingNumber } = req.params;
     const shipment = await Shipment.findOne({ trackingNumber });
-    
+
     if (!shipment) {
-      return res.status(404).json({ 
+      return res.status(404).json({
         success: false,
-        error: 'Shipment not found' 
+        error: "Shipment not found",
       });
     }
-    
+
     // Calculate distance from origin to current location
     let distanceTraveled = calculateDistance(
       shipment.origin.coordinates,
-      shipment.currentLocation.coordinates
+      shipment.currentLocation.coordinates,
     );
-    
+
     // Calculate distance from current location to destination
     const remainingDistance = calculateDistance(
       shipment.currentLocation.coordinates,
-      shipment.destination.coordinates
+      shipment.destination.coordinates,
     );
-    
+
     // Calculate total route distance (origin to destination)
     let totalDistance = calculateDistance(
       shipment.origin.coordinates,
-      shipment.destination.coordinates
+      shipment.destination.coordinates,
     );
-    
+
     // Include checkpoints in distance calculation if they exist
     let checkpointDistances = [];
     if (shipment.checkpoints && shipment.checkpoints.length > 0) {
       // Add origin as the first point
       let routePoints = [shipment.origin.coordinates];
-      
+
       // Add all checkpoints in order
-      shipment.checkpoints.forEach(checkpoint => {
+      shipment.checkpoints.forEach((checkpoint) => {
         routePoints.push(checkpoint.location.coordinates);
       });
-      
+
       // Add destination as the last point
       routePoints.push(shipment.destination.coordinates);
-      
+
       // Calculate total distance with checkpoints
       totalDistance = 0;
       for (let i = 0; i < routePoints.length - 1; i++) {
-        const segmentDistance = calculateDistance(routePoints[i], routePoints[i + 1]);
+        const segmentDistance = calculateDistance(
+          routePoints[i],
+          routePoints[i + 1],
+        );
         totalDistance += segmentDistance;
-        
+
         // If this is a checkpoint segment, add to checkpoint distances
         if (i > 0 && i < routePoints.length - 2) {
           checkpointDistances.push({
             checkpointName: shipment.checkpoints[i - 1].name,
-            distance: segmentDistance.toFixed(2)
+            distance: segmentDistance.toFixed(2),
           });
         }
       }
-      
+
       // Recalculate distance traveled considering checkpoints
       let traveled = 0;
       let currentFound = false;
-      
+
       for (let i = 0; i < routePoints.length - 1; i++) {
-        const segmentDistance = calculateDistance(routePoints[i], routePoints[i + 1]);
-        
+        const segmentDistance = calculateDistance(
+          routePoints[i],
+          routePoints[i + 1],
+        );
+
         // If we haven't found the current location yet, add this segment's distance
         if (!currentFound) {
           // Check if current location is between these two points
-          const distanceToStart = calculateDistance(routePoints[i], shipment.currentLocation.coordinates);
-          const distanceToEnd = calculateDistance(shipment.currentLocation.coordinates, routePoints[i + 1]);
-          
-          if (distanceToStart + distanceToEnd <= segmentDistance * 1.1) { // 10% margin for error
+          const distanceToStart = calculateDistance(
+            routePoints[i],
+            shipment.currentLocation.coordinates,
+          );
+          const distanceToEnd = calculateDistance(
+            shipment.currentLocation.coordinates,
+            routePoints[i + 1],
+          );
+
+          if (distanceToStart + distanceToEnd <= segmentDistance * 1.1) {
+            // 10% margin for error
             traveled += distanceToStart;
             currentFound = true;
           } else {
@@ -1233,13 +1334,13 @@ exports.getShipmentRouteDistance = async (req, res) => {
           }
         }
       }
-      
+
       // Update distanceTraveled if we found the current location along the route
       if (currentFound) {
         distanceTraveled = traveled;
       }
     }
-    
+
     res.status(200).json({
       success: true,
       data: {
@@ -1247,22 +1348,26 @@ exports.getShipmentRouteDistance = async (req, res) => {
         distanceTraveled: distanceTraveled.toFixed(2), // km
         remainingDistance: remainingDistance.toFixed(2), // km
         totalDistance: totalDistance.toFixed(2), // km
-        progress: Math.min(Math.round((distanceTraveled / totalDistance) * 100), 99), // percentage
-        checkpoints: shipment.checkpoints.map(cp => ({
+        progress: Math.min(
+          Math.round((distanceTraveled / totalDistance) * 100),
+          99,
+        ), // percentage
+        checkpoints: shipment.checkpoints.map((cp) => ({
           name: cp.name,
           address: cp.location.address,
           reached: cp.reached,
-          estimatedArrival: cp.estimatedArrival
+          estimatedArrival: cp.estimatedArrival,
         })),
-        checkpointDistances: checkpointDistances
-      }
+        checkpointDistances: checkpointDistances,
+      },
     });
   } catch (error) {
-    logger.error('Error calculating route distance:', error);
+    logger.error("Error calculating route distance:", error);
     res.status(500).json({
       success: false,
-      error: 'Failed to calculate route distance',
-      details: process.env.NODE_ENV === 'development' ? error.message : undefined
+      error: "Failed to calculate route distance",
+      details:
+        process.env.NODE_ENV === "development" ? error.message : undefined,
     });
   }
 };
@@ -1272,55 +1377,59 @@ exports.updateShipmentLocationManually = async (req, res) => {
   try {
     const { trackingNumber } = req.params;
     const { coordinates, address, status, description } = req.body;
-    
+
     // Validate coordinates
-    if (!coordinates || !Array.isArray(coordinates) || coordinates.length !== 2) {
+    if (
+      !coordinates ||
+      !Array.isArray(coordinates) ||
+      coordinates.length !== 2
+    ) {
       return res.status(400).json({
         success: false,
-        error: 'Valid coordinates [longitude, latitude] are required'
+        error: "Valid coordinates [longitude, latitude] are required",
       });
     }
-    
+
     // Validate address
     if (!address) {
       return res.status(400).json({
         success: false,
-        error: 'Address is required'
+        error: "Address is required",
       });
     }
-    
+
     const shipment = await Shipment.findOne({ trackingNumber });
-    
+
     if (!shipment) {
       return res.status(404).json({
         success: false,
-        error: 'Shipment not found'
+        error: "Shipment not found",
       });
     }
-    
+
     // Update current location
     shipment.currentLocation = {
-      type: 'Point',
+      type: "Point",
       coordinates: coordinates,
       address: address,
-      timestamp: new Date()
+      timestamp: new Date(),
     };
-    
+
     // Update status if provided
     if (status) {
       shipment.status = status;
     }
-    
+
     // Add to history
     shipment.history.push({
       location: shipment.currentLocation,
       status: status || shipment.status,
-      description: description || 'Location updated manually',
-      timestamp: new Date()
+      description: description || "Location updated manually",
+      timestamp: new Date(),
     });
-    
+
     await shipment.save();
-    
+
     logger.info(`Shipment ${trackingNumber} location updated manually`);
 
     await shipmentEvents.handleShipmentSaved(shipment);
@@ -1328,14 +1437,15 @@ exports.updateShipmentLocationManually = async (req, res) => {
     res.status(200).json({
       success: true,
       data: shipment,
-      message: 'Shipment location updated successfully'
+      message: "Shipment location updated successfully",
     });
   } catch (error) {
-    logger.error('Error updating shipment location manually:', error);
+    logger.error("Error updating shipment location manually:", error);
     res.status(500).json({
       success: false,
-      error: 'Failed to update shipment location',
-      details: process.env.NODE_ENV === 'development' ? error.message : undefined
+      error: "Failed to update shipment location",
+      details:
+        process.env.NODE_ENV === "development" ? error.message : undefined,
     });
   }
 };
@@ -1345,63 +1455,64 @@ exports.addCheckpoint = async (req, res) => {
   try {
     const { trackingNumber } = req.params;
     const { location, name, estimatedArrival, notes } = req.body;
-    
+
     // Validate required fields
     if (!location || !location.coordinates || !location.address) {
       return res.status(400).json({
         success: false,
-        error: 'Location with coordinates and address is required'
+        error: "Location with coordinates and address is required",
       });
     }
-    
+
     if (!name) {
       return res.status(400).json({
         success: false,
-        error: 'Checkpoint name is required'
+        error: "Checkpoint name is required",
       });
     }
-    
+
     const shipment = await Shipment.findOne({ trackingNumber });
-    
+
     if (!shipment) {
       return res.status(404).json({
         success: false,
-        error: 'Shipment not found'
+        error: "Shipment not found",
       });
     }
-    
+
     // Create new checkpoint
     const newCheckpoint = {
       location: {
-        type: 'Point',
+        type: "Point",
         coordinates: location.coordinates,
         address: location.address,
-        timestamp: new Date()
+        timestamp: new Date(),
       },
       name,
       estimatedArrival: estimatedArrival || null,
       reached: false,
-      notes: notes || ''
+      notes: notes || "",
     };
-    
+
     // Add to checkpoints array
     shipment.checkpoints.push(newCheckpoint);
-    
+
     await shipment.save();
-    
+
     logger.info(`Checkpoint added to shipment ${trackingNumber}`);
-    
+
     res.status(200).json({
       success: true,
       data: shipment,
-      message: 'Checkpoint added successfully'
+      message: "Checkpoint added successfully",
     });
   } catch (error) {
-    logger.error('Error adding checkpoint:', error);
+    logger.error("Error adding checkpoint:", error);
     res.status(500).json({
       success: false,
-      error: 'Failed to add checkpoint',
-      details: process.env.NODE_ENV === 'development' ? error.message : undefined
+      error: "Failed to add checkpoint",
+      details:
+        process.env.NODE_ENV === "development" ? error.message : undefined,
     });
   }
 };
@@ -1411,69 +1522,73 @@ exports.updateCheckpoint = async (req, res) => {
   try {
     const { trackingNumber, checkpointId } = req.params;
     const { name, estimatedArrival, reached, notes, location } = req.body;
-    
+
     const shipment = await Shipment.findOne({ trackingNumber });
-    
+
     if (!shipment) {
       return res.status(404).json({
         success: false,
-        error: 'Shipment not found'
+        error: "Shipment not found",
       });
     }
-    
+
     // Find the checkpoint
     const checkpoint = shipment.checkpoints.id(checkpointId);
-    
+
     if (!checkpoint) {
       return res.status(404).json({
         success: false,
-        error: 'Checkpoint not found'
+        error: "Checkpoint not found",
       });
     }
-    
+
     // Update fields if provided
     if (name) checkpoint.name = name;
-    if (estimatedArrival !== undefined) checkpoint.estimatedArrival = estimatedArrival;
+    if (estimatedArrival !== undefined)
+      checkpoint.estimatedArrival = estimatedArrival;
     if (reached !== undefined) checkpoint.reached = reached;
     if (notes !== undefined) checkpoint.notes = notes;
-    
+
     // Update location if provided
     if (location && location.coordinates && location.address) {
       checkpoint.location = {
-        type: 'Point',
+        type: "Point",
         coordinates: location.coordinates,
         address: location.address,
-        timestamp: new Date()
+        timestamp: new Date(),
       };
     }
-    
+
     // If checkpoint is marked as reached, add to history
     if (reached && !checkpoint.reached) {
       shipment.history.push({
         location: shipment.currentLocation,
         status: shipment.status,
         description: `Checkpoint reached: ${checkpoint.name}`,
-        timestamp: new Date()
+        timestamp: new Date(),
       });
-      
+
       checkpoint.reached = true;
     }
-    
+
     await shipment.save();
-    
-    logger.info(`Checkpoint ${checkpointId} updated for shipment ${trackingNumber}`);
-    
+
+    logger.info(
+      `Checkpoint ${checkpointId} updated for shipment ${trackingNumber}`,
+    );
+
     res.status(200).json({
       success: true,
       data: shipment,
-      message: 'Checkpoint updated successfully'
+      message: "Checkpoint updated successfully",
     });
   } catch (error) {
-    logger.error('Error updating checkpoint:', error);
+    logger.error("Error updating checkpoint:", error);
     res.status(500).json({
       success: false,
-      error: 'Failed to update checkpoint',
-      details: process.env.NODE_ENV === 'development' ? error.message : undefined
+      error: "Failed to update checkpoint",
+      details:
+        process.env.NODE_ENV === "development" ? error.message : undefined,
     });
   }
 };
@@ -1482,43 +1597,46 @@ exports.updateCheckpoint = async (req, res) => {
 exports.deleteCheckpoint = async (req, res) => {
   try {
     const { trackingNumber, checkpointId } = req.params;
-    
+
     const shipment = await Shipment.findOne({ trackingNumber });
-    
+
     if (!shipment) {
       return res.status(404).json({
         success: false,
-        error: 'Shipment not found'
+        error: "Shipment not found",
       });
     }
-    
+
     // Find and remove the checkpoint
     const checkpoint = shipment.checkpoints.id(checkpointId);
-    
+
     if (!checkpoint) {
       return res.status(404).json({
         success: false,
-        error: 'Checkpoint not found'
+        error: "Checkpoint not found",
       });
     }
-    
+
     checkpoint.remove();
-    
+
     await shipment.save();
-    
-    logger.info(`Checkpoint ${checkpointId} deleted from shipment ${trackingNumber}`);
-    
+
+    logger.info(
+      `Checkpoint ${checkpointId} deleted from shipment ${trackingNumber}`,
+    );
+
     res.status(200).json({
       success: true,
       data: shipment,
-      message: 'Checkpoint deleted successfully'
+      message: "Checkpoint deleted successfully",
     });
   } catch (error) {
-    logger.error('Error deleting checkpoint:', error);
+    logger.error("Error deleting checkpoint:", error);
     res.status(500).json({
       success: false,
-      error: 'Failed to delete checkpoint',
-      details: process.env.NODE_ENV === 'development' ? error.message : undefined
+      error: "Failed to delete checkpoint",
+      details:
+        process.env.NODE_ENV === "development" ? error.message : undefined,
     });
   }
 };

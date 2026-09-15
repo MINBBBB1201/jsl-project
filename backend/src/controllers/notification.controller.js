@@ -1,6 +1,6 @@
-const mongoose = require('mongoose');
-const Notification = require('../models/notification.model');
-const logger = require('../utils/logger');
+const mongoose = require("mongoose");
+const Notification = require("../models/notification.model");
+const logger = require("../utils/logger");
 
 const MAX_LIMIT = 50;
 
@@ -14,15 +14,15 @@ exports.getNotifications = async (req, res) => {
   try {
     const limit = Math.min(
       Math.max(parseInt(req.query.limit, 10) || 20, 1),
-      MAX_LIMIT
+      MAX_LIMIT,
     );
-    const unreadOnly = req.query.unreadOnly === 'true';
+    const unreadOnly = req.query.unreadOnly === "true";
 
     const query = unreadOnly ? { read: false } : {};
 
     const [items, unreadCount] = await Promise.all([
       Notification.find(query).sort({ createdAt: -1 }).limit(limit).lean(),
-      Notification.countDocuments({ read: false })
+      Notification.countDocuments({ read: false }),
     ]);
 
     res.status(200).json({
@@ -34,16 +34,16 @@ exports.getNotifications = async (req, res) => {
           message: n.message,
           trackingNumber: n.relatedTrackingNumber ?? null,
           read: n.read,
-          createdAt: n.createdAt
+          createdAt: n.createdAt,
         })),
-        unreadCount
-      }
+        unreadCount,
+      },
     });
   } catch (error) {
-    logger.error('알림 목록 조회 실패:', error);
+    logger.error("알림 목록 조회 실패:", error);
     res.status(500).json({
       success: false,
-      error: '알림을 불러오지 못했습니다.'
+      error: "알림을 불러오지 못했습니다.",
     });
   }
 };
@@ -54,25 +54,31 @@ exports.markAsRead = async (req, res) => {
     const { id } = req.params;
 
     if (!mongoose.Types.ObjectId.isValid(id)) {
-      return res.status(400).json({ success: false, error: '잘못된 알림 ID 입니다.' });
+      return res
+        .status(400)
+        .json({ success: false, error: "잘못된 알림 ID 입니다." });
     }
 
     const notification = await Notification.findByIdAndUpdate(
       id,
       { $set: { read: true } },
-      { new: true }
+      { new: true },
     );
 
     if (!notification) {
-      return res.status(404).json({ success: false, error: '알림을 찾을 수 없습니다.' });
+      return res
+        .status(404)
+        .json({ success: false, error: "알림을 찾을 수 없습니다." });
     }
 
     const unreadCount = await Notification.countDocuments({ read: false });
 
     res.status(200).json({ success: true, data: { id, unreadCount } });
   } catch (error) {
-    logger.error('알림 읽음 처리 실패:', error);
-    res.status(500).json({ success: false, error: '읽음 처리에 실패했습니다.' });
+    logger.error("알림 읽음 처리 실패:", error);
+    res
+      .status(500)
+      .json({ success: false, error: "읽음 처리에 실패했습니다." });
   }
 };
 
@@ -81,15 +87,17 @@ exports.markAllAsRead = async (req, res) => {
   try {
     const result = await Notification.updateMany(
       { read: false },
-      { $set: { read: true } }
+      { $set: { read: true } },
     );
 
     res.status(200).json({
       success: true,
-      data: { updated: result.modifiedCount, unreadCount: 0 }
+      data: { updated: result.modifiedCount, unreadCount: 0 },
     });
   } catch (error) {
-    logger.error('알림 전체 읽음 처리 실패:', error);
-    res.status(500).json({ success: false, error: '읽음 처리에 실패했습니다.' });
+    logger.error("알림 전체 읽음 처리 실패:", error);
+    res
+      .status(500)
+      .json({ success: false, error: "읽음 처리에 실패했습니다." });
   }
 };

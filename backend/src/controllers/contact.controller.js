@@ -1,6 +1,6 @@
-const Contact = require('../models/contact.model');
-const logger = require('../utils/logger');
-const notificationService = require('../services/notification.service');
+const Contact = require("../models/contact.model");
+const logger = require("../utils/logger");
+const notificationService = require("../services/notification.service");
 
 // Create a new contact inquiry
 exports.createContact = async (req, res) => {
@@ -12,7 +12,7 @@ exports.createContact = async (req, res) => {
       contactName,
       email,
       subject,
-      message
+      message,
     });
 
     logger.info(`New contact inquiry received from ${contact.email}`);
@@ -25,24 +25,29 @@ exports.createContact = async (req, res) => {
       success: true,
       data: {
         id: contact._id,
-        createdAt: contact.createdAt
+        createdAt: contact.createdAt,
       },
-      message: 'Contact inquiry submitted successfully'
+      message: "Contact inquiry submitted successfully",
     });
   } catch (error) {
-    logger.error('Error creating contact inquiry:', error);
+    logger.error("Error creating contact inquiry:", error);
 
-    if (error.name === 'ValidationError') {
+    if (error.name === "ValidationError") {
       return res.status(400).json({
         success: false,
-        error: 'Invalid contact data: ' + Object.values(error.errors).map(e => e.message).join(', ')
+        error:
+          "Invalid contact data: " +
+          Object.values(error.errors)
+            .map((e) => e.message)
+            .join(", "),
       });
     }
 
     res.status(500).json({
       success: false,
-      error: 'Failed to submit contact inquiry',
-      details: process.env.NODE_ENV === 'development' ? error.message : undefined
+      error: "Failed to submit contact inquiry",
+      details:
+        process.env.NODE_ENV === "development" ? error.message : undefined,
     });
   }
 };

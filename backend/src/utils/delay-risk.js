@@ -28,17 +28,17 @@ const DEFAULT_THRESHOLDS = {
 };
 
 const RISK_LEVELS = {
-  NORMAL: '정상',
-  AT_RISK: '지연위험',
-  DELAYED: '지연',
+  NORMAL: "정상",
+  AT_RISK: "지연위험",
+  DELAYED: "지연",
 };
 
 /** 점수를 낼 수 없는 사유 */
 const SKIP_REASONS = {
-  DELIVERED: 'delivered',           // 이미 배송 완료 — 리스크 대상 아님
-  NO_SHIPPED_AT: 'no-shipped-at',   // 집하 일시 없음
-  UNKNOWN_MODE: 'unknown-mode',     // 표준 소요일 테이블에 없는 운송모드
-  INVALID_STANDARD: 'invalid-standard-days',
+  DELIVERED: "delivered", // 이미 배송 완료 — 리스크 대상 아님
+  NO_SHIPPED_AT: "no-shipped-at", // 집하 일시 없음
+  UNKNOWN_MODE: "unknown-mode", // 표준 소요일 테이블에 없는 운송모드
+  INVALID_STANDARD: "invalid-standard-days",
 };
 
 /**
@@ -84,7 +84,7 @@ const calculateDelayRisk = (shipment, transitTimes, options = {}) => {
   if (!shipment) return empty(SKIP_REASONS.NO_SHIPPED_AT);
 
   // 배송 완료 건은 지연 리스크 대상이 아니다 (이미 결과가 나온 건)
-  if (shipment.status === 'delivered') return empty(SKIP_REASONS.DELIVERED);
+  if (shipment.status === "delivered") return empty(SKIP_REASONS.DELIVERED);
 
   const shippedAt = shipment.shippedAt ? new Date(shipment.shippedAt) : null;
   if (!shippedAt || Number.isNaN(shippedAt.getTime())) {
@@ -96,7 +96,10 @@ const calculateDelayRisk = (shipment, transitTimes, options = {}) => {
   if (!(standard.days > 0)) return empty(SKIP_REASONS.INVALID_STANDARD);
 
   // 미래 날짜로 잘못 들어온 경우 음수 경과일이 나오므로 0 으로 막는다
-  const elapsedDays = Math.max(0, (now.getTime() - shippedAt.getTime()) / MS_PER_DAY);
+  const elapsedDays = Math.max(
+    0,
+    (now.getTime() - shippedAt.getTime()) / MS_PER_DAY,
+  );
   const score = elapsedDays / standard.days;
 
   return {
@@ -166,7 +169,7 @@ const buildRiskLevelQuery = (level, transitTimes, options = {}) => {
 
   return {
     // 배송 완료 건은 리스크 집계에서 제외한다
-    status: { $ne: 'delivered' },
+    status: { $ne: "delivered" },
     $or: branches,
   };
 };

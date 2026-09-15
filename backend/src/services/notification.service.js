@@ -1,6 +1,6 @@
-const Notification = require('../models/notification.model');
-const { NOTIFICATION_TYPES } = require('../models/notification.model');
-const logger = require('../utils/logger');
+const Notification = require("../models/notification.model");
+const { NOTIFICATION_TYPES } = require("../models/notification.model");
+const logger = require("../utils/logger");
 
 /**
  * 알림 생성 지점을 한 곳으로 모은 서비스.
@@ -39,7 +39,7 @@ const create = async ({ type, message, shipment, dedupeKey }) => {
       message,
       relatedShipmentId: shipment?._id,
       relatedTrackingNumber: shipment?.trackingNumber,
-      dedupeKey
+      dedupeKey,
     });
   } catch (error) {
     // 11000 = duplicate key. 같은 사건을 이미 알린 것이므로 정상 흐름이다.
@@ -54,7 +54,7 @@ const create = async ({ type, message, shipment, dedupeKey }) => {
 exports.notifyNewContact = (contact) =>
   create({
     type: NOTIFICATION_TYPES.CONTACT,
-    message: `신규 문의: ${contact.companyName || contact.contactName || '이름 미기재'}`
+    message: `신규 문의: ${contact.companyName || contact.contactName || "이름 미기재"}`,
   });
 
 /**
@@ -68,7 +68,7 @@ exports.notifyDelayRisk = (shipment, riskLevel, options = {}) => {
     type: NOTIFICATION_TYPES.DELAY_RISK,
     message: `지연 위험 화물: ${shipment.trackingNumber} (${riskLevel})`,
     shipment,
-    dedupeKey: `delay-risk:${shipment.trackingNumber}:${kstDateKey(now)}`
+    dedupeKey: `delay-risk:${shipment.trackingNumber}:${kstDateKey(now)}`,
   });
 };
 
@@ -81,7 +81,7 @@ exports.notifyDelivered = (shipment) =>
     type: NOTIFICATION_TYPES.DELIVERED,
     message: `배송완료: ${shipment.trackingNumber}`,
     shipment,
-    dedupeKey: `delivered:${shipment.trackingNumber}`
+    dedupeKey: `delivered:${shipment.trackingNumber}`,
   });
 
 /**
@@ -97,7 +97,7 @@ exports.notifyStaleShipment = (shipment, daysSinceUpdate, options = {}) => {
       `방치된 화물: ${shipment.trackingNumber} — ` +
       `${daysSinceUpdate}일째 상태 업데이트 없음`,
     shipment,
-    dedupeKey: `stale-shipment:${shipment.trackingNumber}:${kstDateKey(now)}`
+    dedupeKey: `stale-shipment:${shipment.trackingNumber}:${kstDateKey(now)}`,
   });
 };
 

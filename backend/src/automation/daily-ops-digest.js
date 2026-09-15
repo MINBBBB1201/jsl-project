@@ -1,8 +1,8 @@
-const Contact = require('../models/contact.model');
-const Notification = require('../models/notification.model');
-const logger = require('../utils/logger');
-const shipmentEvents = require('../services/shipment-events.service');
-const { runWithLog } = require('./run-with-log');
+const Contact = require("../models/contact.model");
+const Notification = require("../models/notification.model");
+const logger = require("../utils/logger");
+const shipmentEvents = require("../services/shipment-events.service");
+const { runWithLog } = require("./run-with-log");
 
 /**
  * 일일 운영 다이제스트 — 매일 오전 9시(KST)
@@ -24,7 +24,7 @@ const { runWithLog } = require('./run-with-log');
  *       전송 호출만 추가하면 된다. 집계 로직은 건드릴 필요가 없다.
  */
 
-const JOB_NAME = 'daily-ops-digest';
+const JOB_NAME = "daily-ops-digest";
 const DAY_MS = 24 * 60 * 60 * 1000;
 
 const buildDigest = async (now) => {
@@ -36,7 +36,7 @@ const buildDigest = async (now) => {
   // 2·3. 신규 문의 / 미처리 알림
   const [newContacts, unreadNotifications] = await Promise.all([
     Contact.countDocuments({ createdAt: { $gte: since } }),
-    Notification.countDocuments({ read: false })
+    Notification.countDocuments({ read: false }),
   ]);
 
   const summary = {
@@ -45,21 +45,21 @@ const buildDigest = async (now) => {
       scanned: risk.scanned,
       atRisk: risk.atRisk,
       delayed: risk.delayed,
-      notificationsCreated: risk.created
+      notificationsCreated: risk.created,
     },
     newContacts24h: newContacts,
-    unreadNotifications
+    unreadNotifications,
   };
 
   // 콘솔에도 사람이 읽기 좋은 형태로 남긴다 (Render 로그에서 바로 확인 가능)
   logger.info(
     [
-      '[일일 운영 다이제스트]',
+      "[일일 운영 다이제스트]",
       `배송중 ${risk.scanned}건 (지연 ${risk.delayed} / 지연위험 ${risk.atRisk})`,
       `신규 문의 24h: ${newContacts}건`,
       `미처리 알림: ${unreadNotifications}건`,
-      `새 알림 생성: ${risk.created}건`
-    ].join(' | ')
+      `새 알림 생성: ${risk.created}건`,
+    ].join(" | "),
   );
 
   return summary;

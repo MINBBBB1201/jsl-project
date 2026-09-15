@@ -6,19 +6,21 @@
  * server.js 와 같은 방식(같은 prefix, checkDbConnection, errorHandler)으로
  * 얹어 HTTP 경계를 재현한다.
  */
-const express = require('express');
+const express = require("express");
 
-const { checkDbConnection } = require('../../src/middleware/db.middleware');
-const { errorHandler } = require('../../src/middleware/error.middleware');
-const shipmentRoutes = require('../../src/routes/shipment.routes');
-const tradeDocumentRoutes = require('../../src/routes/trade-document.routes');
+const { checkDbConnection } = require("../../src/middleware/db.middleware");
+const { errorHandler } = require("../../src/middleware/error.middleware");
+const shipmentRoutes = require("../../src/routes/shipment.routes");
+const tradeDocumentRoutes = require("../../src/routes/trade-document.routes");
 
 function buildApp() {
   const app = express();
-  app.use(express.json({ limit: '10kb' }));
-  app.use('/api/shipments', checkDbConnection, shipmentRoutes);
-  app.use('/api/trade-documents', checkDbConnection, tradeDocumentRoutes);
-  app.all('*', (req, res, next) => next(new Error(`Can't find ${req.originalUrl}`)));
+  app.use(express.json({ limit: "10kb" }));
+  app.use("/api/shipments", checkDbConnection, shipmentRoutes);
+  app.use("/api/trade-documents", checkDbConnection, tradeDocumentRoutes);
+  app.all("*", (req, res, next) =>
+    next(new Error(`Can't find ${req.originalUrl}`)),
+  );
   app.use(errorHandler);
   return app;
 }
