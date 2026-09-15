@@ -19,7 +19,10 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table"
+import { cn } from "@/lib/utils"
 import { UNITS, type TradeLineItem, type Unit } from "@/lib/trade-documents"
+
+type ItemFieldErrors = Partial<Record<"description" | "quantity" | "unitPrice", string>>
 
 /**
  * 무역서류 품목 편집 — 표 형태.
@@ -35,12 +38,15 @@ import { UNITS, type TradeLineItem, type Unit } from "@/lib/trade-documents"
 export function ItemRows({
   items,
   readOnly,
+  errors,
   onChangeItem,
   onRemoveItem,
   onAddItem,
 }: {
   items: TradeLineItem[]
   readOnly: boolean
+  /** 품목 id → 필드별 에러 메시지. showErrors 가 꺼져 있으면 호출 쪽에서 undefined 를 준다 */
+  errors?: Record<string, ItemFieldErrors>
   onChangeItem: (id: string, patch: Partial<TradeLineItem>) => void
   onRemoveItem: (id: string) => void
   onAddItem: () => void
@@ -67,13 +73,17 @@ export function ItemRows({
             </TableRow>
           </TableHeader>
           <TableBody>
-            {items.map((item) => (
+            {items.map((item) => {
+              const itemErrors = errors?.[item.id]
+              return (
               <TableRow key={item.id}>
                 <TableCell>
                   <Input
-                    className="min-w-40"
+                    className={cn("min-w-40", itemErrors?.description && "border-destructive")}
                     value={item.description}
                     disabled={readOnly}
+                    aria-invalid={itemErrors?.description ? true : undefined}
+                    title={itemErrors?.description}
                     onChange={(e) => onChangeItem(item.id, { description: e.target.value })}
                   />
                 </TableCell>
@@ -95,10 +105,12 @@ export function ItemRows({
                 </TableCell>
                 <TableCell>
                   <Input
-                    className="w-20"
+                    className={cn("w-20", itemErrors?.quantity && "border-destructive")}
                     inputMode="decimal"
                     value={item.quantity}
                     disabled={readOnly}
+                    aria-invalid={itemErrors?.quantity ? true : undefined}
+                    title={itemErrors?.quantity}
                     onChange={(e) => onChangeItem(item.id, { quantity: e.target.value })}
                   />
                 </TableCell>
@@ -122,10 +134,12 @@ export function ItemRows({
                 </TableCell>
                 <TableCell>
                   <Input
-                    className="w-24"
+                    className={cn("w-24", itemErrors?.unitPrice && "border-destructive")}
                     inputMode="decimal"
                     value={item.unitPrice}
                     disabled={readOnly}
+                    aria-invalid={itemErrors?.unitPrice ? true : undefined}
+                    title={itemErrors?.unitPrice}
                     onChange={(e) => onChangeItem(item.id, { unitPrice: e.target.value })}
                   />
                 </TableCell>
@@ -198,7 +212,8 @@ export function ItemRows({
                   </TableCell>
                 )}
               </TableRow>
-            ))}
+              )
+            })}
           </TableBody>
         </Table>
       </div>
