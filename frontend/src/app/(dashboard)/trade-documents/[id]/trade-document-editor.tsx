@@ -58,12 +58,14 @@ function PartyEditor({
   idPrefix,
   party,
   readOnly,
+  errors,
   onChange,
 }: {
   title: string
   idPrefix: string
   party: TradeParty
   readOnly: boolean
+  errors?: { companyName?: string; address?: string }
   onChange: (patch: Partial<TradeParty>) => void
 }) {
   return (
@@ -75,6 +77,7 @@ function PartyEditor({
           label="회사명"
           value={party.companyName}
           onChange={(v) => onChange({ companyName: v })}
+          error={errors?.companyName}
           disabled={readOnly}
         />
         <TextField
@@ -90,6 +93,7 @@ function PartyEditor({
           label="주소"
           value={party.address}
           onChange={(v) => onChange({ address: v })}
+          error={errors?.address}
           className="sm:col-span-2"
           disabled={readOnly}
         />
@@ -152,6 +156,42 @@ export function TradeDocumentEditor({ id }: { id: string }) {
   }, [input])
   const blocked = errors ? hasBlockingErrors(errors) : true
   const totals = useMemo(() => (input ? computeTotals(input) : null), [input])
+
+  /** 검증 메시지 키("errors.required") → 화면에 보여줄 한글 문구. 대시보드는
+   *  [locale] 밖이라 next-intl 을 못 쓰므로 Phase 1(document-generator-client.tsx)
+   *  과 같은 문구를 여기서는 직접 하드코딩한다. */
+  const message = useCallback(
+    (key: string | undefined) => {
+      if (!showErrors || !key) return undefined
+      switch (key) {
+        case "errors.required":
+          return "필수 항목입니다."
+        case "errors.positive":
+          return "0 보다 큰 값을 입력해 주세요."
+        case "errors.nonNegative":
+          return "0 이상의 값을 입력해 주세요."
+        case "errors.itemsEmpty":
+          return "품목을 한 개 이상 추가해 주세요."
+        default:
+          return undefined
+      }
+    },
+    [showErrors]
+  )
+
+  const itemErrorMessages = useMemo(() => {
+    if (!errors || !showErrors) return undefined
+    return Object.fromEntries(
+      Object.entries(errors.items).map(([itemId, fields]) => [
+        itemId,
+        Object.fromEntries(
+          Object.entries(fields).map(([field, key]) => [field, message(key)])
+        ),
+      ])
+    )
+    // message 는 showErrors 에만 의존한다
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [errors, showErrors])
 
   const readOnly = doc?.status !== "draft"
 
@@ -254,7 +294,7 @@ export function TradeDocumentEditor({ id }: { id: string }) {
       const url = URL.createObjectURL(blob)
       const anchor = document.createElement("a")
       anchor.href = url
-      anchor.download = `${FILE_PREFIX[doc.type]}_${safeFileName(doc.documentNo ?? id)}.pdf`
+      anchor.download = `${FILE_PREFIX[doc.type]}_${safeFileName(doc.documentNo ?? `DRAFT-${id.slice(-6)}`)}.pdf`
       document.body.appendChild(anchor)
       anchor.click()
       anchor.remove()
@@ -324,6 +364,10 @@ export function TradeDocumentEditor({ id }: { id: string }) {
                 {isDeleting ? <Loader2 className="size-4 animate-spin" /> : <Trash2 className="size-4" />}
                 삭제
               </Button>
+              <Button variant="outline" onClick={handleDownload} disabled={isDownloading} className="cursor-pointer">
+                {isDownloading ? <Loader2 className="size-4 animate-spin" /> : <Download className="size-4" />}
+                PDF 미리보기
+              </Button>
               <Button variant="outline" onClick={handleSave} disabled={isSaving} className="cursor-pointer">
                 {isSaving ? <Loader2 className="size-4 animate-spin" /> : <Save className="size-4" />}
                 저장
@@ -378,6 +422,7 @@ export function TradeDocumentEditor({ id }: { id: string }) {
               type="date"
               value={input.invoiceDate}
               onChange={(v) => patch({ invoiceDate: v })}
+              error={message(errors?.invoiceDate)}
               disabled={readOnly}
             />
             <TextField
@@ -398,6 +443,10 @@ export function TradeDocumentEditor({ id }: { id: string }) {
               idPrefix="shipper"
               party={input.shipper}
               readOnly={readOnly}
+              errors={{
+                companyName: message(errors?.shipperCompanyName),
+                address: message(errors?.shipperAddress),
+              }}
               onChange={(next) => patchParty("shipper", next)}
             />
             <PartyEditor
@@ -405,6 +454,10 @@ export function TradeDocumentEditor({ id }: { id: string }) {
               idPrefix="consignee"
               party={input.consignee}
               readOnly={readOnly}
+              errors={{
+                companyName: message(errors?.consigneeCompanyName),
+                address: message(errors?.consigneeAddress),
+              }}
               onChange={(next) => patchParty("consignee", next)}
             />
           </CardContent>
@@ -416,8 +469,8 @@ export function TradeDocumentEditor({ id }: { id: string }) {
           </CardHeader>
           <CardContent className="space-y-3">
             <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
-              <TextField id="origin-country" label="원산지국" value={input.countryOfOrigin} onChange={(v) => patch({ countryOfOrigin: v })} disabled={readOnly} />
-              <TextField id="dest-country" label="도착국" value={input.countryOfDestination} onChange={(v) => patch({ countryOfDestination: v })} disabled={readOnly} />
+              <TextField id="origin-country" label="원산지국" value={input.countryOfOrigin} onChange={(v) => patch({ countryOfOrigin: v })} error={message(errors?.countryOfOrigin)} disabled={readOnly} />
+              <TextField id="dest-country" label="도착국" value={input.countryOfDestination} onChange={(v) => patch({ countryOfDestination: v })} error={message(errors?.countryOfDestination)} disabled={readOnly} />
               <TextField id="port-loading" label="선적항" value={input.portOfLoading} onChange={(v) => patch({ portOfLoading: v })} optional="선택" disabled={readOnly} />
               <TextField id="port-discharge" label="양하항" value={input.portOfDischarge} onChange={(v) => patch({ portOfDischarge: v })} optional="선택" disabled={readOnly} />
             </div>
@@ -436,8 +489,18 @@ export function TradeDocumentEditor({ id }: { id: string }) {
           <CardHeader>
             <CardTitle className="text-base">품목</CardTitle>
           </CardHeader>
-          <CardContent>
-            <ItemRows items={input.items} readOnly={readOnly} onChangeItem={changeItem} onRemoveItem={removeItem} onAddItem={addItem} />
+          <CardContent className="space-y-2">
+            {message(errors?.itemsEmpty) && (
+              <p className="text-destructive text-xs">{message(errors?.itemsEmpty)}</p>
+            )}
+            <ItemRows
+              items={input.items}
+              readOnly={readOnly}
+              errors={itemErrorMessages}
+              onChangeItem={changeItem}
+              onRemoveItem={removeItem}
+              onAddItem={addItem}
+            />
           </CardContent>
         </Card>
 
