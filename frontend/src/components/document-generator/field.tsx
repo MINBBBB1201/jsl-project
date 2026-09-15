@@ -67,6 +67,7 @@ export function TextField({
   type = "text",
   inputMode,
   className,
+  disabled,
 }: {
   id: string
   label: string
@@ -79,6 +80,8 @@ export function TextField({
   type?: "text" | "date"
   inputMode?: "decimal" | "numeric"
   className?: string
+  /** 대시보드 연동(Phase 2)에서 draft 가 아닌 서류를 읽기전용으로 보여줄 때 쓴다 */
+  disabled?: boolean
 }) {
   return (
     <FieldShell
@@ -97,6 +100,7 @@ export function TextField({
         placeholder={placeholder}
         onChange={(event) => onChange(event.target.value)}
         aria-invalid={error ? true : undefined}
+        disabled={disabled}
         className={cn(error && "border-destructive")}
       />
     </FieldShell>
@@ -110,6 +114,7 @@ export function SelectField<T extends string>({
   options,
   onChange,
   className,
+  disabled,
 }: {
   id: string
   label: string
@@ -117,10 +122,11 @@ export function SelectField<T extends string>({
   options: readonly T[]
   onChange: (value: T) => void
   className?: string
+  disabled?: boolean
 }) {
   return (
     <FieldShell id={id} label={label} className={className}>
-      <Select value={value} onValueChange={(next) => onChange(next as T)}>
+      <Select value={value} onValueChange={(next) => onChange(next as T)} disabled={disabled}>
         {/* Radix Select 는 label 의 htmlFor 로 연결되지 않아 aria-label 을 직접 준다 */}
         <SelectTrigger id={id} className="w-full" aria-label={label}>
           <SelectValue />

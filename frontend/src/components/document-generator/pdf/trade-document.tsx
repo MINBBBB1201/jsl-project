@@ -34,17 +34,29 @@ import { PDF_COLORS, registerPdfFonts, styles } from "./pdf-theme"
  */
 
 /**
+ * Phase 2(대시보드 연동)는 프로포마 인보이스도 다룬다. Phase 1 공개 생성기는
+ * 상업송장/포장명세서 둘뿐이라(TradeDocumentType) 그 타입을 넓히지 않고,
+ * 이 PDF 컴포넌트에서만 "proforma" 를 더한 넓은 타입을 쓴다 — 프로포마도
+ * 상업송장과 골격(조건 스트립·품목표·합계)이 같고 제목·인증문구만 다르다.
+ */
+export type PdfDocumentKind = TradeDocumentType | "proforma"
+
+/**
  * 인증문구.
  *
  * 포장명세서에 "this invoice is true and correct" 를 그대로 쓰면 서류 이름과
  * 본문이 어긋난다 — 통관 서류에서는 그 자체로 흠이 잡히는 부분이라 문서
- * 종류별로 문장을 나눈다.
+ * 종류별로 문장을 나눈다. 프로포마는 아직 실제 선적 전 견적 성격이라 "결제
+ * 청구가 아니다"를 명시한다 — 상업송장 문구를 그대로 쓰면 은행이 실제
+ * 송장으로 오인할 수 있다.
  */
-const CERTIFICATION: Record<TradeDocumentType, string> = {
+const CERTIFICATION: Record<PdfDocumentKind, string> = {
   invoice:
     "I/We hereby certify that this invoice is true and correct and the contents of this shipment are as stated above.",
   packing:
     "I/We hereby certify that the particulars stated in this packing list are true and correct and the contents of this shipment are as stated above.",
+  proforma:
+    "This proforma invoice is issued for quotation/customs pre-clearance purposes only and does not constitute a demand for payment. Prices and particulars are subject to change.",
 }
 
 /** 값이 비면 서류에 빈칸 대신 표시할 문자 */
@@ -247,13 +259,13 @@ function TotalsBox({
   type,
   input,
 }: {
-  type: TradeDocumentType
+  type: PdfDocumentKind
   input: TradeDocumentInput
 }) {
   const t = computeTotals(input)
   const cbm = input.items.reduce((sum, item) => sum + lineVolumeCbm(item), 0)
 
-  if (type === "invoice") {
+  if (type !== "packing") {
     return (
       <View style={styles.totalsBox}>
         <TotalsRow
@@ -313,17 +325,21 @@ export function TradeDocument({
   input,
   generatedAt,
 }: {
-  type: TradeDocumentType
+  type: PdfDocumentKind
   input: TradeDocumentInput
   /** 생성 일시. 호출부에서 넘겨 렌더마다 값이 흔들리지 않게 한다. */
   generatedAt: Date
 }) {
   registerPdfFonts()
 
-  const isInvoice = type === "invoice"
-  const title = isInvoice ? "COMMERCIAL INVOICE" : "PACKING LIST"
+  // 포장명세서만 다르다 — 상업송장·프로포마는 같은 골격(조건 스트립의 금액
+  // 항목, 품목표, 합계박스)을 쓴다.
+  const isCommercial = type !== "packing"
+  const title =
+    type === "packing" ? "PACKING LIST" : type === "proforma" ? "PROFORMA INVOICE" : "COMMERCIAL INVOICE"
+  const docPrefix = type === "packing" ? "PL" : type === "proforma" ? "PI" : "CI"
   const stamp = generatedAt.toISOString().replace("T", " ").slice(0, 19)
-  const docId = `${isInvoice ? "CI" : "PL"}-${dash(input.invoiceNo)}`
+  const docId = `${docPrefix}-${dash(input.invoiceNo)}`
 
   return (
     <Document
@@ -386,7 +402,7 @@ export function TradeDocument({
           <ConditionCell label="PORT OF LOADING" value={dash(input.portOfLoading)} />
           <ConditionCell label="PORT OF DISCHARGE" value={dash(input.portOfDischarge)} />
           <ConditionCell label="MODE OF TRANSPORT" value={input.shipMode} />
-          {isInvoice ? (
+          {isCommercial ? (
             <>
               <ConditionCell
                 label="INCOTERMS 2020"
@@ -401,7 +417,7 @@ export function TradeDocument({
         </View>
 
         {/* 포장 겉면 표기 — 포장명세서에만 */}
-        {!isInvoice && input.marksAndNumbers.trim() !== "" && (
+        {!isCommercial && input.marksAndNumbers.trim() !== "" && (
           <View style={styles.marks}>
             <Text style={styles.conditionLabel}>MARKS &amp; NUMBERS</Text>
             <Text style={{ fontSize: 8, marginTop: 2 }}>
@@ -411,7 +427,7 @@ export function TradeDocument({
         )}
 
         {/* 품목 / 포장 표 */}
-        {isInvoice ? (
+        {isCommercial ? (
           <InvoiceTable items={input.items} currency={input.currency} />
         ) : (
           <PackingTable items={input.items} />

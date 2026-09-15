@@ -32,6 +32,13 @@ export interface ShipmentHistoryEntry {
   location?: { address?: string }
 }
 
+export interface ShipmentItem {
+  description?: string
+  quantity?: number
+  weight?: number
+  dimensions?: { length?: number; width?: number; height?: number }
+}
+
 export interface ShipmentDetail {
   _id: string
   trackingNumber: string
@@ -48,6 +55,9 @@ export interface ShipmentDetail {
   /** 인증된 내부 상세 조회에서만 내려온다 */
   customer?: ShipmentCustomer
   history?: ShipmentHistoryEntry[]
+  /** 화물에 실린 품목. 지금까지는 화면에서 안 써서 타입에 없었다 —
+   *  무역서류 자동채움(trade-documents/from-shipment.ts)이 첫 소비처다. */
+  items?: ShipmentItem[]
   delayRisk: DelayRisk
 }
 
