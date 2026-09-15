@@ -181,30 +181,46 @@ exports.getTradeDocument = async (req, res) => {
 /**
  * PATCH /api/trade-documents/:id
  * draft 만. body: { input?, shipmentId? }
+ *
+ * ⚠️ 동시성: `findById` → 검사 → `save()` 순서로 하면, PATCH 가 draft 를 읽은
+ *    직후 다른 요청이 issue 를 먼저 끝내 문서를 동결해도 이 PATCH 의 `save()`
+ *    는 그걸 모르고 그대로 덮어써 버린다 — 발행되어 얼어야 할 서류 내용이
+ *    조용히 바뀌는 심각한 버그가 된다. 그래서 실제 쓰기는
+ *    `findOneAndUpdate({_id, status:'draft'}, ...)` 로 원자적으로 한다.
+ *    필터에 안 걸리면(그 사이 발행/삭제됐으면) `null` 이 돌아오고 409.
  */
 exports.updateTradeDocument = async (req, res) => {
   try {
     const { id } = req.params;
     if (badId(id)) return fail(res, 400, '유효하지 않은 id 입니다.');
 
-    const doc = await TradeDocument.findById(id);
-    if (!doc) return fail(res, 404, '무역서류를 찾을 수 없습니다.');
-    if (!doc.isEditable()) return fail(res, 409, `${doc.status} 상태의 서류는 편집할 수 없습니다. 개정본을 만드세요.`);
+    const existing = await TradeDocument.findById(id).select('status');
+    if (!existing) return fail(res, 404, '무역서류를 찾을 수 없습니다.');
+    if (!existing.isEditable()) return fail(res, 409, `${existing.status} 상태의 서류는 편집할 수 없습니다. 개정본을 만드세요.`);
 
-    if (req.body.input !== undefined) doc.input = normalizeInput(req.body.input);
+    const update = {};
+    if (req.body.input !== undefined) update.input = normalizeInput(req.body.input);
 
     if (req.body.shipmentId !== undefined) {
       const sid = req.body.shipmentId;
       if (sid === null || sid === '') {
-        doc.shipmentId = null;
+        update.shipmentId = null;
       } else {
         if (badId(sid)) return fail(res, 400, '유효하지 않은 shipmentId 입니다.');
         if (!(await Shipment.exists({ _id: sid }))) return fail(res, 404, '연결하려는 화물을 찾을 수 없습니다.');
-        doc.shipmentId = sid;
+        update.shipmentId = sid;
       }
     }
 
-    await doc.save();
+    const doc = await TradeDocument.findOneAndUpdate(
+      { _id: id, status: 'draft' },
+      { $set: update },
+      { new: true, runValidators: true, context: 'query' }
+    );
+    if (!doc) {
+      return fail(res, 409, '그 사이 서류가 발행되어 더 이상 편집할 수 없습니다. 새로고침 후 확인해 주세요.');
+    }
+
     return res.status(200).json({ success: true, data: doc.toClientJSON() });
   } catch (error) {
     if (error.name === 'ValidationError') {
@@ -333,20 +349,30 @@ exports.reviseTradeDocument = async (req, res) => {
 /**
  * DELETE /api/trade-documents/:id
  * draft 만. 작성자 또는 admin.
+ *
+ * ⚠️ 동시성: 권한 확인용 조회와 실제 삭제 사이에 다른 요청이 먼저 issue 를
+ *    끝내면, 상태 재확인 없이 그냥 `deleteOne()` 했을 때 방금 번호를 받은
+ *    발행 서류가 지워질 수 있다. 그래서 실제 삭제는 `findOneAndDelete({_id,
+ *    status:'draft'})` 로 원자적으로 한다 — 그 사이 상태가 바뀌었으면(또는
+ *    동시에 들어온 다른 삭제 요청이 먼저 지웠으면) `null` 이 돌아오고 409.
  */
 exports.deleteTradeDocument = async (req, res) => {
   try {
     const { id } = req.params;
     if (badId(id)) return fail(res, 400, '유효하지 않은 id 입니다.');
 
-    const doc = await TradeDocument.findById(id);
-    if (!doc) return fail(res, 404, '무역서류를 찾을 수 없습니다.');
-    if (doc.status !== 'draft') return fail(res, 409, '발행된 서류는 삭제할 수 없습니다.');
-    if (doc.createdBy.toString() !== req.user.id && req.user.role !== 'admin') {
+    const existing = await TradeDocument.findById(id).select('status createdBy');
+    if (!existing) return fail(res, 404, '무역서류를 찾을 수 없습니다.');
+    if (existing.status !== 'draft') return fail(res, 409, '발행된 서류는 삭제할 수 없습니다.');
+    if (existing.createdBy.toString() !== req.user.id && req.user.role !== 'admin') {
       return fail(res, 403, '본인이 만든 draft 만 삭제할 수 있습니다.');
     }
 
-    await doc.deleteOne();
+    const deleted = await TradeDocument.findOneAndDelete({ _id: id, status: 'draft' });
+    if (!deleted) {
+      return fail(res, 409, '그 사이 서류 상태가 바뀌어 삭제할 수 없습니다. 새로고침 후 확인해 주세요.');
+    }
+
     return res.status(200).json({ success: true, message: '삭제되었습니다.' });
   } catch (error) {
     logger.error('무역서류 삭제 실패:', error);
