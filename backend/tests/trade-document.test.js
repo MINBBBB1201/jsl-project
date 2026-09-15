@@ -173,6 +173,32 @@ describe('PATCH — draft 편집', () => {
       .send({ input: sampleInput({ currency: 'EUR' }) });
     expect(res.status).toBe(409);
   });
+
+  test('발행과 거의 동시에 PATCH 가 들어와도 발행된 서류 내용이 조용히 바뀌지 않는다', async () => {
+    const { token } = await createUser();
+    const created = await newDraft(token);
+
+    const [patchRes, issueRes] = await Promise.all([
+      request(app)
+        .patch(`/api/trade-documents/${created.body.data.id}`)
+        .set(auth(token))
+        .send({ input: sampleInput({ currency: 'EUR' }) }),
+      request(app).post(`/api/trade-documents/${created.body.data.id}/issue`).set(auth(token)),
+    ]);
+
+    expect(issueRes.status).toBe(200); // 발행 자체는 막힐 이유가 없다
+    expect([200, 409]).toContain(patchRes.status);
+
+    const final = await request(app).get(`/api/trade-documents/${created.body.data.id}`).set(auth(token));
+    expect(final.body.data.status).toBe('issued');
+    if (patchRes.status === 200) {
+      // PATCH 가 발행보다 먼저 반영됐다면 그 내용 그대로 발행됐어야 한다
+      expect(final.body.data.input.currency).toBe('EUR');
+    } else {
+      // 거부됐다면 원래 draft 내용 그대로 발행됐어야 한다(조용히 섞이지 않음)
+      expect(final.body.data.input.currency).toBe('USD');
+    }
+  });
 });
 
 describe('POST /:id/issue — 발행', () => {
@@ -372,5 +398,28 @@ describe('DELETE', () => {
       .delete(`/api/trade-documents/${created.body.data.id}`)
       .set(auth(admin.token));
     expect(ok.status).toBe(200);
+  });
+
+  test('발행과 거의 동시에 삭제가 들어와도 발행된 문서가 지워지지 않는다', async () => {
+    const { token } = await createUser();
+    const created = await newDraft(token);
+
+    const [deleteRes, issueRes] = await Promise.all([
+      request(app).delete(`/api/trade-documents/${created.body.data.id}`).set(auth(token)),
+      request(app).post(`/api/trade-documents/${created.body.data.id}/issue`).set(auth(token)),
+    ]);
+
+    if (issueRes.status === 200) {
+      // 발행이 이겼다면 삭제는 막혔어야 하고, 문서는 issued 로 남아 있어야 한다
+      expect(deleteRes.status).not.toBe(200);
+      const final = await request(app).get(`/api/trade-documents/${created.body.data.id}`).set(auth(token));
+      expect(final.status).toBe(200);
+      expect(final.body.data.status).toBe('issued');
+    } else {
+      // 삭제가 이겼다면 문서는 사라졌어야 한다
+      expect(deleteRes.status).toBe(200);
+      const final = await request(app).get(`/api/trade-documents/${created.body.data.id}`).set(auth(token));
+      expect(final.status).toBe(404);
+    }
   });
 });
