@@ -4,6 +4,7 @@ const {
   inspectDamage,
   enqueue,
   getPendingCount,
+  saveInspectionImage,
 } = require("../utils/damage-inspection");
 const { groqApiKey } = require("../config/config");
 const logger = require("../utils/logger");
@@ -46,7 +47,7 @@ exports.createInspection = async (req, res) => {
     );
 
     const doc = await DamageInspection.create({
-      imageBase64: image.buffer.toString("base64"),
+      ...(await saveInspectionImage(image)),
       imageMeta: {
         width: image.width,
         height: image.height,

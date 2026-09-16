@@ -141,6 +141,32 @@ const prepareImage = async (buffer) => {
 };
 
 /**
+ * 판정 이미지를 어디에 저장할지 결정한다.
+ *
+ * 지금은 리사이즈된 이미지를 base64 문자열로 그대로 MongoDB 문서에 넣는
+ * 방식뿐이다(damage-inspection.model.js 의 imageBase64). 나중에 object
+ * storage(S3/R2 등)로 옮기고 싶어지면 호출부(controller)를 고치지 않고
+ * 이 함수만 바꾸도록 저장 로직을 미리 뽑아 둔다 — 실제 object storage
+ * 연동은 아직 하지 않는다.
+ *
+ * (인터페이스를 가르는 아이디어만 다른 사내 프로젝트 DAEMUN 의
+ * StorageDriver 를 참고했다 — apps/api/src/lib/storage/types.ts. 거기는
+ * key/url 을 주고받는 driver 를 통째로 스왑하는 구조인데, 지금 이 스키마는
+ * base64 인라인 저장뿐이라 그 구조를 그대로 옮기지 않고 함수 하나로만
+ * 갈아 끼울 자리를 심어 둔다.)
+ *
+ * TODO: object storage 로 옮기게 되면 여기서 환경변수(예: STORAGE_DRIVER)로
+ * local/object 를 분기하고, damage-inspection.model.js 에 imageUrl/imageKey
+ * 필드를 추가해야 한다 — 지금은 후속 작업으로만 남겨 둔다.
+ *
+ * @param {{buffer: Buffer}} image prepareImage() 결과
+ * @returns {Promise<{imageBase64: string}>} DamageInspection.create() 에 그대로 펼쳐 넣을 필드
+ */
+const saveInspectionImage = async (image) => ({
+  imageBase64: image.buffer.toString("base64"),
+});
+
+/**
  * thinking 블록을 걷어내고 JSON 을 뽑는다.
  * 모델이 코드블록으로 감싸거나 앞뒤에 말을 붙이는 경우까지 감안한다.
  */
@@ -308,6 +334,7 @@ module.exports = {
   inspectDamage,
   enqueue,
   getPendingCount,
+  saveInspectionImage,
   prepareImage,
   extractJson,
   normalizeResult,
