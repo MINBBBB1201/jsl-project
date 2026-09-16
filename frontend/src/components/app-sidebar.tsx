@@ -10,6 +10,7 @@ import {
   Settings,
   LayoutTemplate,
   FileText,
+  Megaphone,
 } from "lucide-react"
 import Link from "next/link"
 import { Logo } from "@/components/logo"
@@ -55,6 +56,11 @@ const data = {
           title: "무역서류",
           url: "/trade-documents",
           icon: FileText,
+        },
+        {
+          title: "공지사항",
+          url: "/notices",
+          icon: Megaphone,
         },
       ],
     },
