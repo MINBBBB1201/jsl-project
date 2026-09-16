@@ -633,6 +633,17 @@
     "stepDelayNote": "Lô hàng đang chậm hơn dự kiến. Vui lòng liên hệ người phụ trách.",
     "exceptionNote": "Đã xảy ra sự cố trong quá trình vận chuyển. Vui lòng liên hệ người phụ trách."
   },
+  "notices": {
+    "title": "Thông báo",
+    "subtitle": "Cập nhật tin tức và thông báo mới nhất từ JSL Logistics.",
+    "empty": "Chưa có thông báo nào được đăng.",
+    "categories": {
+      "general": "Chung",
+      "update": "Cập nhật",
+      "maintenance": "Bảo trì",
+      "event": "Sự kiện"
+    }
+  },
   "hsCode": {
     "title": "Tra cứu mã HS",
     "subtitle": "Tìm mã Hệ thống hài hòa (HS) theo tên hàng hoặc mã số. Chỉ mang tính tham khảo.",

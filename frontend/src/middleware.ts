@@ -25,6 +25,7 @@ const LOCALIZED_SEGMENTS = [
   'services',
   'privacy',
   'terms',
+  'notices',
 ]
 
 /**

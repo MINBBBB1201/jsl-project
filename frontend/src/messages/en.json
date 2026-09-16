@@ -633,6 +633,17 @@
     "stepDelayNote": "This shipment is running behind schedule. Please contact your representative.",
     "exceptionNote": "An exception occurred during transit. Please contact your representative."
   },
+  "notices": {
+    "title": "Notices",
+    "subtitle": "Stay up to date with the latest news and announcements from JSL Logistics.",
+    "empty": "No notices have been posted yet.",
+    "categories": {
+      "general": "General",
+      "update": "Update",
+      "maintenance": "Maintenance",
+      "event": "Event"
+    }
+  },
   "hsCode": {
     "title": "HS code lookup",
     "subtitle": "Search the Harmonized System classification by product name or code. Reference information only.",

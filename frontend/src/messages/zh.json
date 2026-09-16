@@ -633,6 +633,17 @@
     "stepDelayNote": "该货物晚于预定计划，请联系负责人。",
     "exceptionNote": "运输过程中发生异常，请联系负责人。"
   },
+  "notices": {
+    "title": "公告",
+    "subtitle": "了解 JSL Logistics 的最新消息和公告事项。",
+    "empty": "暂无公告。",
+    "categories": {
+      "general": "一般",
+      "update": "更新",
+      "maintenance": "维护",
+      "event": "活动"
+    }
+  },
   "hsCode": {
     "title": "HS编码查询",
     "subtitle": "可通过品名或编码查询国际协调制度(HS)编码。仅供参考。",

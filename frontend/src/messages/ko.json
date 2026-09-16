@@ -633,6 +633,17 @@
     "stepDelayNote": "예상 일정보다 지연되고 있습니다. 담당자에게 문의해 주세요.",
     "exceptionNote": "운송 중 예외 상황이 발생했습니다. 담당자에게 문의해 주세요."
   },
+  "notices": {
+    "title": "공지사항",
+    "subtitle": "JSL Logistics의 새로운 소식과 안내사항을 확인하세요.",
+    "empty": "등록된 공지사항이 없습니다.",
+    "categories": {
+      "general": "일반",
+      "update": "업데이트",
+      "maintenance": "점검",
+      "event": "이벤트"
+    }
+  },
   "hsCode": {
     "title": "HS코드 조회",
     "subtitle": "품목명이나 코드로 국제 통일 상품분류(HS) 코드를 찾아보실 수 있습니다. 참고용 정보입니다.",
