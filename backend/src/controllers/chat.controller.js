@@ -18,12 +18,47 @@ const MAX_CONTEXT_CHARS = 4000; // 문서당 컨텍스트 상한
 const MAX_ANSWER_TOKENS = 3000;
 
 // Groq는 OpenAI 호환 엔드포인트라 openai SDK에 baseURL만 바꿔서 쓴다.
+//
+// maxRetries: 0 — SDK 기본값(2)에 맡기면 429(쿼터 초과)를 SDK가 조용히
+// 반복 호출해서 에러 대신 응답이 한참 늦게 오는 형태로 나타난다
+// (damage-inspection.js 의 openai SDK 재시도 문제와 같은 종류).
+// 재시도 여부는 아래 createChatCompletion 에서 우리가 직접 통제한다 —
+// 429는 재시도하지 않고 바로 반환, 5xx만 1회 재시도.
 let client = null;
 const getClient = () => {
   if (!client) {
-    client = new OpenAI({ apiKey: groqApiKey, baseURL: groqBaseUrl });
+    client = new OpenAI({
+      apiKey: groqApiKey,
+      baseURL: groqBaseUrl,
+      maxRetries: 0,
+    });
   }
   return client;
+};
+
+/**
+ * 5xx(일시적 서버 오류)만 1회 재시도한다. 429는 재시도하지 않는다 —
+ * "쿼터 초과, 잠시 물러나라"는 뜻이라 바로 다시 부르면 쿼터만 더 먹는다.
+ * (같은 정책을 쓰는 다른 사내 프로젝트 DAEMUN 의 lib/chat.ts 참고)
+ */
+const RETRYABLE_STATUSES = new Set([500, 502, 503, 504]);
+
+const createChatCompletion = async (messages) => {
+  const call = () =>
+    getClient().chat.completions.create({
+      model: groqModel,
+      messages,
+      temperature: 0.2,
+      max_tokens: MAX_ANSWER_TOKENS,
+    });
+
+  try {
+    return await call();
+  } catch (error) {
+    if (!RETRYABLE_STATUSES.has(error.status)) throw error;
+    logger.warn(`Chat: 일시적 오류(${error.status}), 1회 재시도`);
+    return call();
+  }
 };
 
 const buildSystemPrompt = (docs) => {
@@ -86,12 +121,7 @@ exports.chat = async (req, res) => {
       { role: "user", content: message },
     ];
 
-    const completion = await getClient().chat.completions.create({
-      model: groqModel,
-      messages,
-      temperature: 0.2,
-      max_tokens: MAX_ANSWER_TOKENS,
-    });
+    const completion = await createChatCompletion(messages);
 
     const choice = completion.choices?.[0];
     const answer = choice?.message?.content?.trim() || "";
@@ -132,6 +162,20 @@ exports.chat = async (req, res) => {
       },
     });
   } catch (error) {
+    // ── Groq 레이트리밋 ──────────────────────────────────────────────
+    // 429는 createChatCompletion 에서 이미 재시도하지 않고 그대로 올라온다.
+    // damage-inspection.controller.js 와 같은 형태로 바로 안내한다.
+    if (error.status === 429) {
+      logger.warn("챗봇 레이트리밋(429)");
+      return res.status(429).json({
+        success: false,
+        error:
+          "요청이 몰려 잠시 처리할 수 없습니다. 1분 후 다시 시도해 주세요.",
+        code: "RATE_LIMITED",
+        retryAfterSeconds: 60,
+      });
+    }
+
     logger.error("Chat error:", error);
 
     // OpenAI SDK 오류는 status를 그대로 전달해 원인 파악을 쉽게 한다
