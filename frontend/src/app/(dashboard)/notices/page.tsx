@@ -23,7 +23,9 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table"
+import { InlineText } from "@/components/inline-edit"
 import { CategoryBadge, PublishedBadge } from "./components/badges"
+import { EditBodyDialog } from "./components/edit-body-dialog"
 import { NewNoticeDialog } from "./components/new-notice-dialog"
 import { useNotices } from "./use-notices"
 import type { Notice } from "./types"
@@ -39,11 +41,15 @@ function Row({
   notice,
   onTogglePublished,
   onTogglePinned,
+  onRenameTitle,
+  onSaveBody,
   onDelete,
 }: {
   notice: Notice
   onTogglePublished: (id: string, next: boolean) => void
   onTogglePinned: (id: string, next: boolean) => void
+  onRenameTitle: (id: string, next: string) => Promise<unknown>
+  onSaveBody: (id: string, body: string) => Promise<unknown>
   onDelete: (id: string) => void
 }) {
   return (
@@ -65,7 +71,14 @@ function Row({
           )}
         </Button>
       </TableCell>
-      <TableCell className="max-w-72 truncate font-medium">{notice.title}</TableCell>
+      <TableCell className="max-w-72">
+        <InlineText
+          value={notice.title}
+          ariaLabel={`${notice.title} 제목 편집`}
+          onCommit={(next) => onRenameTitle(notice.id, next)}
+          className="font-medium"
+        />
+      </TableCell>
       <TableCell>
         <CategoryBadge category={notice.category} />
       </TableCell>
@@ -83,16 +96,19 @@ function Row({
         {formatDate(notice.createdAt)}
       </TableCell>
       <TableCell>
-        <Button
-          type="button"
-          variant="ghost"
-          size="icon"
-          className="text-muted-foreground hover:text-destructive size-7 cursor-pointer"
-          onClick={() => onDelete(notice.id)}
-          aria-label="삭제"
-        >
-          <Trash2 className="size-4" />
-        </Button>
+        <div className="flex items-center gap-1">
+          <EditBodyDialog notice={notice} onSave={onSaveBody} />
+          <Button
+            type="button"
+            variant="ghost"
+            size="icon"
+            className="text-muted-foreground hover:text-destructive size-7 cursor-pointer"
+            onClick={() => onDelete(notice.id)}
+            aria-label="삭제"
+          >
+            <Trash2 className="size-4" />
+          </Button>
+        </div>
       </TableCell>
     </TableRow>
   )
@@ -185,6 +201,8 @@ export default function NoticesPage() {
                       notice={notice}
                       onTogglePublished={handleTogglePublished}
                       onTogglePinned={handleTogglePinned}
+                      onRenameTitle={(id, next) => update(id, { title: next })}
+                      onSaveBody={(id, body) => update(id, { body })}
                       onDelete={handleDelete}
                     />
                   ))}
