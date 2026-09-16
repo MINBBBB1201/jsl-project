@@ -1,5 +1,6 @@
 const express = require("express");
 const multer = require("multer");
+const rateLimit = require("express-rate-limit");
 const router = express.Router();
 const damageInspectionController = require("../controllers/damage-inspection.controller");
 const { SEVERITIES } = require("../utils/damage-inspection");
@@ -9,8 +10,29 @@ const { requireAuth } = require("../middleware/auth.middleware");
  * 파손 판정은 전부 내부 업무 기능이다.
  * 판정 기록에는 화물 사진과 판정 사유가 담기므로 저장·조회 모두 로그인이 필요하다.
  * (업로드 자체가 비전 모델 호출이라 공개돼 있으면 비용도 그대로 노출된다.)
+ *
+ * ⚠️ 예전에는 이 requireAuth 를 router.use() 로 모든 라우트에 한 번에 걸었다.
+ *    지금은 판정 요청(POST) 에만 레이트리밋을 먼저 걸어야 해서(비용 방어가
+ *    목적이라 인증보다 먼저 끊는다) 라우트별로 나눠 붙인다. 목록/상세 조회는
+ *    AI 호출이 없어 레이트리밋 대상이 아니다.
  */
-router.use(requireAuth);
+
+/**
+ * 판정 요청(비전 LLM 호출) 비용 방어.
+ * README 의 "레이트리밋 TPM 8,000: 사진 1장에 약 2,600~4,100 토큰(대부분
+ * prompt 2,182)... 분당 2~3장이 한계입니다" 가 근거다 — 그 이상 보내봐야
+ * 결국 Groq 쪽 429 로 막히므로, 여기서 IP 당 분당 3회로 미리 끊는다.
+ */
+const damageInspectionLimiter = rateLimit({
+  windowMs: 60 * 1000,
+  limit: 3,
+  standardHeaders: "draft-7",
+  legacyHeaders: false,
+  message: {
+    success: false,
+    error: "요청이 너무 잦습니다. 1분 후 다시 시도해 주세요.",
+  },
+});
 
 const MAX_UPLOAD_BYTES = 5 * 1024 * 1024; // 5MB
 const ALLOWED_MIME = ["image/jpeg", "image/png"];
@@ -98,9 +120,11 @@ const handleUploadError = (err, req, res, next) => {
   next(err);
 };
 
-// 판정 요청
+// 판정 요청 — 레이트리밋을 인증보다 먼저 걸어 무의미한 요청도 비용 전에 거른다
 router.post(
   "/",
+  damageInspectionLimiter,
+  requireAuth,
   upload.single("image"),
   handleUploadError,
   verifyImageSignature,
@@ -108,10 +132,10 @@ router.post(
 );
 
 // 최근 판정 목록
-router.get("/", damageInspectionController.getInspections);
+router.get("/", requireAuth, damageInspectionController.getInspections);
 
 // 상세 (썸네일 포함)
-router.get("/:id", damageInspectionController.getInspectionById);
+router.get("/:id", requireAuth, damageInspectionController.getInspectionById);
 
 module.exports = router;
 module.exports.MAX_UPLOAD_BYTES = MAX_UPLOAD_BYTES;
