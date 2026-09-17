@@ -3,6 +3,7 @@
 import { useState } from "react"
 import Link from "next/link"
 import { ExternalLink, Megaphone, Pin, PinOff, RotateCcw, Trash2 } from "lucide-react"
+import { toast } from "sonner"
 
 import { Button } from "@/components/ui/button"
 import {
@@ -121,14 +122,20 @@ export default function NoticesPage() {
   const notices = data?.notices ?? []
 
   const handleTogglePublished = (id: string, next: boolean) => {
-    update(id, { isPublished: next }).catch(() => {})
+    update(id, { isPublished: next }).catch((error) => {
+      toast.error(error instanceof Error ? error.message : "발행 상태를 변경하지 못했습니다.")
+    })
   }
   const handleTogglePinned = (id: string, next: boolean) => {
-    update(id, { isPinned: next }).catch(() => {})
+    update(id, { isPinned: next }).catch((error) => {
+      toast.error(error instanceof Error ? error.message : "고정 상태를 변경하지 못했습니다.")
+    })
   }
   const handleDelete = (id: string) => {
     if (!window.confirm("이 공지사항을 삭제합니다. 되돌릴 수 없습니다.")) return
-    remove(id).catch(() => {})
+    remove(id).catch((error) => {
+      toast.error(error instanceof Error ? error.message : "공지사항을 삭제하지 못했습니다.")
+    })
   }
 
   return (
