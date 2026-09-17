@@ -59,7 +59,7 @@ const data = {
         },
         {
           title: "공지사항",
-          url: "/notices",
+          url: "/announcements",
           icon: Megaphone,
         },
       ],
