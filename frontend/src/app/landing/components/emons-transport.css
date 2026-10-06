@@ -1,0 +1,50 @@
+@font-face{font-family:JslClash;src:url('/fonts/landing-reference/ClashGrotesk-Regular.woff2') format('woff2');font-weight:400;font-style:normal;font-display:swap}
+@font-face{font-family:JslClash;src:url('/fonts/landing-reference/ClashGrotesk-Medium.woff2') format('woff2');font-weight:500;font-style:normal;font-display:swap}
+@font-face{font-family:JslClash;src:url('/fonts/landing-reference/ClashGrotesk-Semibold.woff2') format('woff2');font-weight:600;font-style:normal;font-display:swap}
+.emons-transport{position:relative;z-index:1;background:#f3f0ec;color:#030000;font-family:JslClash,sans-serif;--emons-red:#fa4e42;--emons-peach:#ffb79d;scroll-margin-top:0!important}
+.emons-stage{position:relative;height:100svh;min-height:600px;overflow:hidden;isolation:isolate}
+.emons-film{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;background:#f3f0ec}
+.emons-panel{position:absolute;inset:0;pointer-events:none}
+.emons-panel:not(:first-of-type){visibility:hidden}
+.emons-copy{position:absolute;left:1.45%;bottom:10.1%;width:28.3%;max-width:490px;padding:14px;border-radius:7px;background:rgba(249,247,246,.92);pointer-events:auto}
+.journey .emons-copy h2{font-size:clamp(30px,2.9vw,52px);font-weight:400;line-height:1;letter-spacing:normal;margin:0 0 18px;text-wrap:pretty}
+.emons-description{font-size:14px;line-height:1.6;margin:0 0 28px}
+.emons-actions{display:flex;flex-wrap:wrap;gap:7px}
+.emons-actions a{display:inline-flex;align-items:center;gap:8px;min-height:32px;border-radius:30px;background:var(--emons-red);border:2px solid #ffb2a5;color:#fff;font-size:12px;padding:4px 10px;line-height:1.2;text-decoration:none}
+.emons-actions a:hover{background:#df3d31}
+.emons-hotspot{position:absolute;pointer-events:auto}
+.emons-plus{display:flex;align-items:center;justify-content:center;width:42px;height:42px;border:0;border-radius:50%;background:rgba(255,255,255,.95);color:#030000;cursor:pointer}
+.emons-plus[aria-expanded=true]{border-radius:7px;background:#fa4e42;color:#ffdcbd}
+.emons-plus[aria-expanded=true] svg{transform:rotate(45deg)}
+.emons-detail{position:absolute;left:44px;top:0;width:326px;max-height:53vh;overflow:auto;padding:20px;border-radius:7px;background:rgba(255,255,255,.96);box-shadow:4px 12px 16px -4px #00000014,2px 4px 6px -2px #00000008}
+.emons-detail h3{font-size:24px;font-weight:400;line-height:1.2;margin-bottom:18px}
+.emons-detail p{font-size:14px;line-height:1.5;margin-bottom:22px}
+.emons-detail a{display:flex;justify-content:space-between;align-items:center;border-top:1px solid #ddd;padding-top:14px;font-size:14px;color:#030000}
+.emons-modes{position:absolute;left:1.45%;right:7%;bottom:2.3%;display:flex;gap:21px;pointer-events:auto}
+.emons-modes button{display:flex;align-items:stretch;gap:2px;border:0;padding:18px 0 0;background:transparent;color:#df3d31;cursor:pointer;font-size:14px;line-height:1}
+.emons-number,.emons-icon{display:flex;align-items:center;justify-content:center;height:32px;padding:5px 7px;background:var(--emons-peach);border-radius:3.5px}
+.emons-icon{width:32px;padding:5px}
+.emons-mode-label{display:flex;align-items:center;max-width:0;overflow:hidden;white-space:nowrap;background:var(--emons-peach);border-radius:0 3.5px 3.5px 0;transition:max-width .5s,padding .5s}
+.emons-modes .is-active .emons-mode-label{max-width:240px;padding:0 8px}
+.emons-modes .is-active .emons-icon{background:var(--emons-red);color:#ffdcbd;border-radius:3.5px 0 0 3.5px}
+.emons-media-status{position:absolute;right:20px;top:20px;font-size:12px}
+.journey-services #features-value-added{padding:110px 4%}
+.journey-services #features-value-added>.container{padding:0}
+@media(max-width:767px){
+ .emons-stage{min-height:600px}
+ .emons-copy{left:16px;right:16px;bottom:16px;width:auto;max-width:none;padding:0;border-radius:0;background:transparent}
+ .journey .emons-copy h2{font-size:30px;line-height:1.2;letter-spacing:normal;max-width:330px;margin:0 0 16px}
+ .emons-description,.emons-modes{display:none}
+ .emons-actions a{font-size:14px;min-height:36px;padding:5px 12px}
+ .emons-hotspot{left:16px!important;top:auto!important;bottom:200px}
+ .emons-plus{width:36px;height:36px}
+ .emons-detail{left:0;top:auto;bottom:44px;width:calc(100vw - 32px);max-height:48vh}
+}
+@media(max-width:600px){.journey-services #features-value-added{padding:75px 6%}}
+@media(prefers-reduced-motion:reduce){
+ .emons-stage{height:auto;min-height:0;padding:24px 16px}
+ .emons-film{display:none}
+ .emons-panel,.emons-panel:not(:first-of-type){position:relative;visibility:visible!important;transform:none!important;opacity:1!important;margin-bottom:32px}
+ .emons-copy{position:relative;inset:auto;width:100%;max-width:none;padding:20px;background:#fff}
+ .emons-hotspot,.emons-modes{display:none}
+}

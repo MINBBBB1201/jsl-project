@@ -1,0 +1,28 @@
+.journey-yard-motion{position:relative;height:100svh;min-height:700px;overflow:hidden;background:#fff;color:#111;isolation:isolate}
+.yard-motion-stage{position:absolute;inset:0;overflow:hidden}.yard-motion-stage img{object-fit:contain}
+.yard-motion-hud{position:absolute;z-index:20;left:4%;top:7%;display:flex;gap:7px;align-items:flex-start;font-size:10px;color:#777}.yard-motion-hud strong{font-size:clamp(44px,5vw,72px);line-height:1;font-weight:700;color:#111;letter-spacing:-.07em;font-variant-numeric:tabular-nums}
+.yard-motion-stack{position:absolute;z-index:2;left:68%;bottom:7.5%;width:14%;height:37%}.yard-motion-stack>div{position:absolute;bottom:0;width:52%;height:54%}.yard-motion-stack>div+div{left:48%}
+.yard-motion-loader{position:absolute;z-index:5;left:24%;bottom:7.5%;width:45%;height:62.5%}.yard-motion-loader img{object-position:center bottom}
+.yard-motion-cargo{position:absolute;z-index:6;left:57.4%;top:43.5%;width:135px;height:157px;transform-origin:50% 100%}
+.yard-motion-cargo-door,.yard-motion-cargo-side{position:absolute;inset:0;transform-origin:50% 50%}.yard-motion-cargo-door img{object-fit:fill}.yard-motion-cargo-side{opacity:0}.yard-motion-cargo-side img{object-fit:fill}
+.yard-motion-truck{position:absolute;z-index:4;left:22%;bottom:7.5%;width:1000px;height:230px;opacity:0}.yard-motion-truck img{object-position:center bottom}
+.yard-motion-copy{position:absolute;z-index:3;left:0;right:0;bottom:0;height:34%;padding:5% 4%;background:#111;color:#fff;opacity:0}.yard-motion-copy h2{margin:12px 0;font-size:clamp(28px,3.2vw,50px);line-height:1.08}.yard-motion-copy>p:last-child{max-width:520px;color:#bbb;font-size:13px;line-height:1.65}
+/* START: the spreader rests on the door-facing JSL container. */
+.journey-yard-motion[data-frame=start] .yard-motion-cargo{left:57.4%;top:43.5%}
+/* LIFT: the same contact point is retained while the long side turns toward the camera. */
+.journey-yard-motion[data-frame=lift] .yard-motion-loader{left:17%;bottom:10%}
+.journey-yard-motion[data-frame=lift] .yard-motion-cargo{left:27%;top:39%;width:650px;height:150px}
+.journey-yard-motion[data-frame=lift] .yard-motion-cargo-door{opacity:0}.journey-yard-motion[data-frame=lift] .yard-motion-cargo-side{opacity:1}
+/* LOAD: cargo and full truck share the original 2664 x 614 image coordinate system. */
+.journey-yard-motion[data-frame=load] .yard-motion-stack{opacity:0}
+.journey-yard-motion[data-frame=load] .yard-motion-loader{left:-7%;bottom:7.5%;width:330px;height:286px}
+.journey-yard-motion[data-frame=load] .yard-motion-cargo{left:34%;top:auto;bottom:7.5%;width:780px;height:175px}
+.journey-yard-motion[data-frame=load] .yard-motion-cargo-door{opacity:0}.journey-yard-motion[data-frame=load] .yard-motion-cargo-side{opacity:1}
+.journey-yard-motion[data-frame=load] .yard-motion-truck{left:34%;width:760px;height:175px;opacity:1}
+/* DRIVE: cargo and truck move by the same delta; no relative drift is possible. */
+.journey-yard-motion[data-frame=drive] .yard-motion-stack,.journey-yard-motion[data-frame=drive] .yard-motion-loader{opacity:0}
+.journey-yard-motion[data-frame=drive] .yard-motion-cargo{left:52%;top:auto;bottom:7.5%;width:780px;height:175px}
+.journey-yard-motion[data-frame=drive] .yard-motion-cargo-door{opacity:0}.journey-yard-motion[data-frame=drive] .yard-motion-cargo-side{opacity:1}
+.journey-yard-motion[data-frame=drive] .yard-motion-truck{left:52%;width:760px;height:175px;opacity:1}.journey-yard-motion[data-frame=drive] .yard-motion-copy{opacity:1}
+@media(max-width:700px){.journey-yard-motion{min-height:620px}.yard-motion-loader{left:3%;width:72%;height:52%}.yard-motion-stack{left:71%;width:24%;height:30%}.yard-motion-cargo{transform:scale(.72)}.yard-motion-truck{width:900px;height:207px}.yard-motion-copy{height:38%;padding:8% 5%}}
+

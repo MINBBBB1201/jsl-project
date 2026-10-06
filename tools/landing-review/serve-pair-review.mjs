@@ -1,0 +1,6 @@
+import http from 'node:http';
+import {readFile} from 'node:fs/promises';
+import path from 'node:path';
+const root=path.join(import.meta.dirname,'artifacts/playwright');
+const types={'.html':'text/html; charset=utf-8','.png':'image/png','.jpg':'image/jpeg','.json':'application/json','.webm':'video/webm'};
+http.createServer(async(req,res)=>{const name=new URL(req.url,'http://localhost').pathname.slice(1)||'pair-review.html';if(!/^[a-zA-Z0-9_.-]+$/.test(name)||!types[path.extname(name)]){res.writeHead(404).end();return;}try{const body=await readFile(path.join(root,name));const range=/^bytes=(\d+)-(\d*)$/.exec(req.headers.range||'');if(range){const start=Number(range[1]),end=range[2]?Math.min(Number(range[2]),body.length-1):body.length-1;if(start> end){res.writeHead(416,{'Content-Range':`bytes */${body.length}`}).end();return;}res.writeHead(206,{'Content-Type':types[path.extname(name)],'Accept-Ranges':'bytes','Content-Range':`bytes ${start}-${end}/${body.length}`,'Content-Length':end-start+1}).end(body.subarray(start,end+1));}else res.writeHead(200,{'Content-Type':types[path.extname(name)],'Accept-Ranges':'bytes','Cache-Control':'no-store'}).end(body);}catch{res.writeHead(404).end();}}).listen(4312,'127.0.0.1',()=>console.log('Pair gallery: http://localhost:4312/'));

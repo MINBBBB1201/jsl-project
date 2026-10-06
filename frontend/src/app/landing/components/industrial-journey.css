@@ -1,0 +1,78 @@
+.industrial-journey{position:relative;background:#082039;color:#fff;isolation:isolate;z-index:2;scroll-margin-top:0!important;font-family:var(--font-general-sans),"Pretendard",var(--font-be-vietnam-pro),sans-serif}
+.industrial-stage{position:relative;height:100svh;min-height:650px;overflow:hidden;isolation:isolate}
+.industrial-background{position:absolute;inset:-1%;background-size:cover;background-position:center;will-change:transform;pointer-events:none}
+.industrial-port{background-image:url('/images/landing/industrial/port.webp')}
+.industrial-warehouse{background-image:url('/images/landing/industrial/warehouse.webp');clip-path:inset(0 100% 0 0)}
+.industrial-shade{position:absolute;inset:0;background:linear-gradient(90deg,rgba(2,17,34,.44),transparent 62%),linear-gradient(0deg,rgba(3,15,30,.76),transparent 48%);pointer-events:none}
+.industrial-vehicle{position:absolute;left:78%;bottom:18%;width:42%;transform:translateX(-50%);will-change:left,bottom,width;pointer-events:none;filter:drop-shadow(0 16px 12px #0004)}
+.industrial-vehicle img{display:block;width:100%;height:auto;max-width:none}
+.industrial-transport-ui,.industrial-journey-ui{position:absolute;inset:0;pointer-events:none}
+.industrial-transport-copy{position:absolute;left:4%;bottom:13%;width:37%;max-width:560px;pointer-events:auto}
+.industrial-journey .industrial-eyebrow{margin:0 0 16px;font-size:11px;font-weight:600;line-height:1.4;letter-spacing:.12em;color:#fff}
+.journey .industrial-journey h2,.industrial-journey h2{font-family:inherit;font-size:clamp(36px,3.75vw,58px);font-weight:500;letter-spacing:-.04em;line-height:1.04;text-transform:none;margin:0;text-wrap:balance;color:#fff}
+.industrial-journey .industrial-service-description{margin:20px 0 22px;font-size:15.5px;line-height:1.58;color:#f4f6f8;text-wrap:pretty}
+.industrial-transport-copy h2,.industrial-service-description,.industrial-step-copy{animation:industrial-copy-enter .3s ease-out both}
+@keyframes industrial-copy-enter{from{opacity:.65;transform:translateY(5px)}to{opacity:1;transform:translateY(0)}}
+.industrial-journey a.industrial-action{display:inline-flex;align-items:center;gap:18px;min-height:44px;color:#fff;text-decoration:none;font-size:11px;font-weight:600;letter-spacing:.08em}
+.industrial-action>span:last-child{display:grid;place-items:center;flex:none;width:38px;height:38px;background:#ec761e;color:#fff;font-size:23px;line-height:1}
+.industrial-action:hover>span:last-child{background:#ff9239}
+.industrial-modes{position:absolute;left:4%;right:9%;bottom:3.5%;display:flex;align-items:center;gap:clamp(24px,5vw,80px);border-top:1px solid #ffffff40;pointer-events:auto}
+.industrial-journey .industrial-modes button{position:relative;display:flex;align-items:center;gap:10px;min-height:52px;background:none;border:0;border-top:2px solid transparent;padding:8px 0;color:#e7e9ed;font-size:12px;font-weight:600;letter-spacing:.075em;cursor:pointer}
+.industrial-journey .industrial-modes button[aria-pressed=true]{color:#ff963c;border-top-color:#ff963c}
+.industrial-mode-number{font-size:10px;font-weight:400;opacity:.65}
+.industrial-journey-ui{visibility:hidden;opacity:0}
+.industrial-journey-heading{position:absolute;top:14%;left:4%;width:50%}
+.journey .industrial-journey .industrial-journey-heading h2,.industrial-journey .industrial-journey-heading h2{font-size:clamp(52px,5vw,76px);line-height:1.02;letter-spacing:-.045em;font-weight:500}
+.industrial-journey .industrial-step-copy{position:absolute;right:9%;bottom:8%;width:29%;max-width:450px;margin:0;font-size:15px;font-weight:400;line-height:1.65;color:#f5f7fa;text-wrap:pretty;pointer-events:auto}
+.industrial-step-nav{position:absolute;left:4%;bottom:5%;width:34%;max-width:500px;pointer-events:auto}
+.industrial-step-label{display:flex;align-items:center;gap:20px;font-size:10px;letter-spacing:.11em}
+.industrial-step-label>span{color:#ff963c}
+.industrial-step-label strong{font-weight:500;color:#fff}
+.industrial-step-line{height:1px;background:#ffffff40;margin-top:14px;overflow:hidden}
+.industrial-step-line span{display:block;height:100%;background:#ff963c;transform:scaleX(.142857);transform-origin:left center}
+.industrial-step-nav nav{display:flex;justify-content:space-between;margin-top:8px}
+.industrial-step-nav button{min-width:44px;min-height:44px;background:none;border:0;color:#ccc;font:inherit;font-size:10px;cursor:pointer}
+.industrial-step-nav button[aria-pressed=true]{color:#ff963c}
+.industrial-skip{position:absolute;top:24px;right:9%;background:none;border:0;min-height:44px;padding:10px 0;color:#fff;font-size:11px;letter-spacing:.025em;cursor:pointer}
+.industrial-skip span{margin-left:15px;color:#ff963c}
+.industrial-journey :is(a,button):focus-visible{outline:2px solid #ffad6b;outline-offset:5px}
+.industrial-static-content{display:none}
+.industrial-cargo-anchor{position:absolute;top:360svh;left:0;width:1px;height:1px;pointer-events:none}
+/* These two preserved rules were previously supplied by Emons' stylesheet. */
+.journey-services #features-value-added{padding:110px 4%}
+.journey-services #features-value-added>.container{padding:0}
+@media(max-width:767px){
+ .industrial-stage{height:100svh;min-height:700px}
+ .industrial-background{background-position:56% center}
+ .industrial-warehouse{background-position:61% center}
+ .industrial-shade{background:linear-gradient(0deg,#031527cc,transparent 55%),linear-gradient(180deg,#04172fcc,transparent 53%)}
+ .industrial-vehicle{left:56%;width:96%;bottom:27%}
+ .industrial-transport-copy{left:6%;right:9%;top:12%;bottom:auto;width:auto;max-width:440px}
+ .journey .industrial-journey h2,.industrial-journey h2{font-size:36px;letter-spacing:-.035em;line-height:1.08;max-width:330px}
+ .industrial-journey .industrial-eyebrow{font-size:9px;letter-spacing:.09em;margin-bottom:12px}
+ .industrial-journey .industrial-service-description{font-size:12.5px;line-height:1.6;margin:16px 0 10px}
+ .industrial-journey a.industrial-action{font-size:10px;gap:12px}
+ .industrial-action>span:last-child{width:32px;height:32px;font-size:20px}
+ .industrial-modes{left:6%;right:6%;bottom:5%;gap:0;justify-content:space-between}
+ .industrial-journey .industrial-modes button{flex-direction:column;gap:5px;justify-content:center;min-width:44px;min-height:56px;font-size:9px;letter-spacing:.03em;padding:7px 0}
+ .industrial-mode-number{font-size:9px}
+ .industrial-journey-heading{top:12%;left:6%;width:85%}
+ .journey .industrial-journey .industrial-journey-heading h2,.industrial-journey .industrial-journey-heading h2{font-size:46px;line-height:1.06;max-width:none}
+ .industrial-journey .industrial-step-copy{left:6%;right:9%;bottom:13.5%;width:auto;max-width:none;font-size:13px;line-height:1.65}
+ .industrial-step-nav{left:6%;right:6%;bottom:2%;width:auto;max-width:none}
+ .industrial-step-label{font-size:9px;gap:18px}
+ .industrial-skip{top:10px;right:9%;font-size:10px}
+}
+@media(max-width:600px){.journey-services #features-value-added{padding:75px 6%}}
+@media(prefers-reduced-motion:reduce){
+ .industrial-transport-copy h2,.industrial-service-description,.industrial-step-copy{animation:none}
+ .industrial-stage{height:auto;min-height:0;padding:80px 6%;background:#082039}
+ .industrial-background,.industrial-shade,.industrial-vehicle,.industrial-transport-ui,.industrial-journey-ui,.industrial-skip{display:none}
+ .industrial-static-content{display:block;max-width:960px;margin:auto}
+ .industrial-static-content>h2{margin:30px 0!important;font-size:clamp(32px,5vw,58px)!important}
+ .industrial-static-content>div{padding:24px 0;border-bottom:1px solid #ffffff30}
+ .industrial-static-content h3{font-size:22px;font-weight:500;line-height:1.25;margin:0 0 12px}
+ .industrial-static-content p{font-size:15px;line-height:1.7;max-width:720px;margin-bottom:14px}
+ .industrial-static-content a{display:inline-flex;align-items:center;min-height:44px;color:#ffad6b}
+ .industrial-cargo-anchor{top:50%}
+}

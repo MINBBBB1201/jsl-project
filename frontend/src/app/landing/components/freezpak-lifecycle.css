@@ -1,0 +1,22 @@
+@font-face{font-family:JslMonaCondensed;src:url('/fonts/landing-reference/MonaSansCondensed-ExtraBold.woff2') format('woff2');font-weight:800;font-style:normal;font-display:swap}
+@font-face{font-family:JslMona;src:url('/fonts/landing-reference/MonaSans-Variable.woff2') format('woff2');font-weight:200 900;font-style:normal;font-display:swap}
+.freezpak-lifecycle{position:relative;z-index:2;height:2300svh;margin-top:-100svh;background:#01172d;color:#f2fcf1;font-family:JslMona,sans-serif;font-size:17px;line-height:24px;scroll-margin-top:0!important}
+.freezpak-stage{position:sticky;top:0;width:100%;height:100svh;overflow:hidden;isolation:isolate;background:#01172d}
+.freezpak-media{position:absolute;inset:0;display:flex;align-items:center;width:100%;pointer-events:none}
+.freezpak-animation{width:100%;line-height:24px}
+.freezpak-animation svg{display:inline;vertical-align:baseline;width:100%;height:auto!important;aspect-ratio:3800/1800}
+.freezpak-texts{position:absolute;inset:0;padding:144px 0 64px;pointer-events:none}
+.freezpak-container{position:relative;display:flex;flex-direction:column;justify-content:space-between;width:100%;height:100%;padding:0 64px}
+.journey .freezpak-title{font-family:JslMonaCondensed,sans-serif;font-size:180px;font-weight:800;line-height:178px;letter-spacing:normal;text-transform:uppercase;transform-origin:0 0;margin:0}
+.freezpak-content{position:relative;width:100%;max-width:680px;margin-top:60px;margin-left:auto;height:0;font-size:28px;font-weight:500;line-height:36px}
+.freezpak-description{position:absolute;inset:auto auto 0 0;width:100%;margin:0;opacity:0;transform:translateY(100%)}
+.freezpak-skip{position:absolute;left:64px;bottom:0;display:flex;flex-direction:column;align-items:center;gap:16px;opacity:0;pointer-events:auto}
+.freezpak-skip button{border:0;border-radius:32px;background:#01203f;color:#e9fbff;font:700 17px/24px JslMona,sans-serif;padding:16px;cursor:pointer;text-transform:uppercase;min-height:56px}
+.freezpak-skip button:hover{background:#03345f}
+.freezpak-skip button:focus-visible{outline:2px solid #f2fcf1;outline-offset:4px}
+.freezpak-bar{height:4px;width:170px;border-radius:50px;background:#f7f7f833;overflow:hidden}
+.freezpak-bar span{display:block;height:100%;width:0;background:#f2fcf1;border-radius:50px}
+.freezpak-fallback{position:absolute;left:64px;top:55%;max-width:600px}
+@media(max-width:991px){.freezpak-container{padding-inline:32px}.journey .freezpak-title{font-size:120px;line-height:118px}.freezpak-content{margin-left:0;margin-bottom:80px}.freezpak-skip{left:32px}}
+@media(max-width:767px){.freezpak-animation svg{aspect-ratio:1080/1920}.freezpak-texts{padding:72px 0}.freezpak-container{padding-inline:16px}.journey .freezpak-title{font-size:54px;line-height:65px;transform:translateY(20vh)}.freezpak-content{font-size:17px;line-height:24px}.freezpak-skip{left:16px}.freezpak-fallback{left:16px;right:16px}}
+@media(prefers-reduced-motion:reduce){.freezpak-lifecycle{height:auto;margin-top:0}.freezpak-stage{position:relative;height:auto;overflow:visible}.freezpak-media,.freezpak-skip{display:none}.freezpak-texts{position:relative;padding:72px 0}.journey .freezpak-title{font-size:clamp(54px,8vw,120px);line-height:1;transform:none!important;opacity:1!important}.freezpak-content{height:auto;max-width:680px;margin-top:48px;margin-bottom:0}.freezpak-description{position:relative;inset:auto;margin:0 0 32px;opacity:1!important;transform:none!important}}

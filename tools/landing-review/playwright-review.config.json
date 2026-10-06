@@ -1,0 +1,10 @@
+{
+  "browser": {
+    "contextOptions": {
+      "recordVideo": {
+        "dir": "C:/Users/mimin/Desktop/jsl-project/tools/landing-review/artifacts/playwright-video",
+        "size": { "width": 1440, "height": 900 }
+      }
+    }
+  }
+}

@@ -1,0 +1,9 @@
+.journey-hero-motion{position:relative;height:260svh;background:#070709}
+.journey-hero-motion .journey-hero{position:sticky;top:0;height:100svh;min-height:0;max-height:none;overflow:hidden}
+.journey-hero-motion .journey-hero::after{content:"";position:absolute;inset:0;z-index:8;pointer-events:none;background:linear-gradient(to bottom,#08070d 0%,#100957 16%,#163ec4 32%,#4e9cff 50%,#c8efff 70%,#fff 88%);transform:translate3d(0,var(--hero-wash-y,110%),0);will-change:transform}
+.journey-hero-motion .journey-hero-copy{will-change:transform,clip-path,opacity}
+.journey-hero-motion .journey-orbit{will-change:transform}
+.journey-hero-motion .journey-horizon{transform:translateY(170%);will-change:transform}
+@media(max-width:900px){.journey-hero-motion{height:220svh}.journey-hero-motion .journey-hero{height:100svh;min-height:0}}
+@media(max-width:600px){.journey-hero-motion{height:190svh}.journey-hero-motion .journey-hero{min-height:0;height:100svh}}
+@media(prefers-reduced-motion:reduce){.journey-hero-motion{height:auto}.journey-hero-motion .journey-hero{position:relative;min-height:900px;height:100svh}.journey-hero-motion .journey-hero::after{display:none}.journey-hero-motion .journey-hero-copy{clip-path:none!important;opacity:1!important;transform:none!important}.journey-hero-motion .journey-horizon{transform:none}}

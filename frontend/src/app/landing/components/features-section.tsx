@@ -130,13 +130,15 @@ function settleThenScroll(id: string, cancelled: () => boolean) {
 function useHashSelection(
   codes: string[],
   active: string,
-  select: (code: string) => void
+  select: (code: string) => void,
+  enabled = true
 ) {
   // 해시로 들어왔지만 아직 화면에 반영되지 않은 대상. 반영되는 순간 소비한다.
   const pending = React.useRef<string | null>(null)
 
   React.useEffect(() => {
     const sync = () => {
+      if (!enabled) return
       const hash = window.location.hash.slice(1).toUpperCase()
       if (!codes.includes(hash)) return
 
@@ -150,7 +152,7 @@ function useHashSelection(
     // 구독은 한 번이면 된다. codes 는 로케일이 바뀌어도 같은 5개 코드고,
     // select 는 setState 라 안정적이다.
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [])
+  }, [enabled])
 
   React.useEffect(() => {
     if (pending.current !== active) return
@@ -165,7 +167,7 @@ function useHashSelection(
   }, [active])
 }
 
-export function FeaturesSection() {
+export function FeaturesSection({ onlyValueAdded = false }: { onlyValueAdded?: boolean }) {
   const { services } = useContent()
   const { modes, valueAdded, modeCta } = services
   const reduced = usePrefersReducedMotion()
@@ -173,7 +175,7 @@ export function FeaturesSection() {
   const codes = React.useMemo(() => modes.map((mode) => mode.code), [modes])
   const [active, setActive] = React.useState(codes[0])
 
-  useHashSelection(codes, active, setActive)
+  useHashSelection(codes, active, setActive, !onlyValueAdded)
 
   /*
     사진 페이드는 클릭 이후에만 돈다 — initial={false} 라 하이드레이션 직후에는
@@ -188,8 +190,9 @@ export function FeaturesSection() {
   const activeMode = modes.find((mode) => mode.code === active)
 
   return (
-    <section id="features" className="border-b bg-background py-24 sm:py-32">
+    <section id={onlyValueAdded ? "features-value-added" : "features"} className="border-b bg-background py-24 sm:py-32">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+        {!onlyValueAdded && <>
         {/* Section Header */}
         {/* 섹션 머리말 — 가운데 정렬 대신 좌측 정렬. 그리드 축과 맞아 읽는 눈이 덜 움직인다 */}
         <div className="mb-16 max-w-2xl">
@@ -352,6 +355,7 @@ export function FeaturesSection() {
           </div>
         </div>
 
+        </>}
         {/*
           부가 서비스
 

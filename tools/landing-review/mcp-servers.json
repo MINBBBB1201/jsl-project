@@ -1,0 +1,19 @@
+{
+  "jsl_playwright": {
+    "entry": "node_modules/@playwright/mcp/cli.js",
+    "args": ["--browser", "chrome", "--executable-path", "{toolRoot}/browsers/chrome-win64/chrome.exe", "--headless", "--isolated", "--viewport-size", "1440x900", "--no-webmcp", "--output-dir", "{toolRoot}/artifacts/playwright", "--config", "{toolRoot}/playwright-review.config.json"]
+  },
+  "jsl_chrome_devtools": {
+    "entry": "node_modules/chrome-devtools-mcp/build/src/bin/chrome-devtools-mcp.js",
+    "args": ["--headless", "--isolated", "--executablePath", "{toolRoot}/browsers/chrome-win64/chrome.exe", "--viewport", "1440x900", "--no-usage-statistics", "--no-performance-crux", "--workspace", "{projectRoot}"],
+    "env": {"CHROME_DEVTOOLS_MCP_NO_UPDATE_CHECKS": "1"}
+  },
+  "jsl_next_devtools": {
+    "entry": "node_modules/next-devtools-mcp/dist/index.js",
+    "args": []
+  },
+  "jsl_context7": {
+    "entry": "node_modules/@upstash/context7-mcp/dist/index.js",
+    "args": ["--transport", "stdio"]
+  }
+}

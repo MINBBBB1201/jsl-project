@@ -1,0 +1,29 @@
+{
+  "schemaVersion": 1,
+  "referenceUrl": "",
+  "sceneId": "",
+  "baselineCheckpoint": "",
+  "viewports": [ { "width": 1440, "height": 900 }, { "width": 390, "height": 844 } ],
+  "observedMotion": "",
+  "proposedTransition": "",
+  "assetFiles": [],
+  "changedFiles": [],
+  "captures": [
+    { "phase": "entry", "progress": 0, "file": "" },
+    { "phase": "middle", "progress": 0.5, "file": "" },
+    { "phase": "exit", "progress": 1, "file": "" }
+  ],
+  "equipmentPhasesIfApplicable": ["start", "lift", "loaded", "departure"],
+  "checks": {
+    "assetsDecoded": null,
+    "contactThroughoutLift": null,
+    "containerOnTrailer": null,
+    "oldWhiteContainerAbsent": null,
+    "scaleContinuity": null,
+    "reverseScroll": null,
+    "resize": null,
+    "reducedMotion": null,
+    "otherScenesPreserved": null
+  },
+  "status": "not-reviewed"
+}
