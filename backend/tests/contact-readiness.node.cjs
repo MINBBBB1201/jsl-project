@@ -5,6 +5,7 @@ const request = require("supertest");
 const mongoose = require("mongoose");
 const { MongoMemoryServer } = require("mongodb-memory-server");
 const Contact = require("../src/models/contact.model");
+const Notification = require("../src/models/notification.model");
 const {
   createContactInquiryRouter,
 } = require("../src/routes/contact-inquiry.router");
@@ -24,6 +25,9 @@ const policy = {
 };
 function appFor(options = {}) {
   const app = express();
+  app.use(
+    require("../src/middleware/request-body.middleware").createRequestBodyParser(),
+  );
   app.use(
     "/api/contact",
     createContactInquiryRouter({
@@ -53,9 +57,11 @@ before(async () => {
   });
   await mongoose.connect(mongod.getUri());
   await Contact.createIndexes();
+  await Notification.createIndexes();
 });
 beforeEach(async () => {
   await Contact.deleteMany({});
+  await Notification.deleteMany({});
 });
 after(async () => {
   await mongoose.disconnect();
@@ -212,7 +218,7 @@ test("missing unique index blocks all persistence instead of using unsafe local 
   }
 });
 
-test("an orderly MongoDB restart keeps the receipt and unique index", async () => {
+test("a journaled receipt and unique index survive a MongoDB process restart", async () => {
   const body = await sample();
   const first = await send(body, "restart-mongo-key");
   assert.equal(first.status, 201);
@@ -220,8 +226,170 @@ test("an orderly MongoDB restart keeps the receipt and unique index", async () =
   await mongod.stop({ doCleanup: false });
   await mongod.start();
   await mongoose.connect(mongod.getUri());
+  assert.equal(
+    await Contact.countDocuments(),
+    1,
+    "The original database must survive restart",
+  );
+  const restoredIndexes = await Contact.collection.indexes();
+  assert(
+    restoredIndexes.some(
+      (index) => index.name === "contact_inquiry_request_unique",
+    ),
+    `The unique index must survive restart: ${JSON.stringify(restoredIndexes)}`,
+  );
   const replay = await send(body, "restart-mongo-key", appFor());
   assert.equal(replay.status, 200);
   assert.equal(replay.body.data.id, first.body.data.id);
   assert.equal(await Contact.countDocuments(), 1);
+});
+
+test("language-specific notices cannot silently fall back to Korean", async () => {
+  const target = appFor({
+    policies: {
+      ko: policy,
+      en: {
+        ...policy,
+        noticeId: "english-v1",
+        purpose: "English synthetic notice",
+      },
+    },
+  });
+  const notice = (await request(target).get("/api/contact/notice?language=en"))
+    .body;
+  assert.equal(notice.language, "en");
+  assert.equal(
+    (await request(target).get("/api/contact/notice?language=vi")).status,
+    503,
+  );
+  assert.equal(
+    (await request(target).get("/api/contact/notice?language=unknown")).status,
+    400,
+  );
+  const body = await sample();
+  body.consent.language = "en";
+  assert.equal((await send(body, "language-test-key", target)).status, 409);
+  body.consent.noticeId = notice.noticeId;
+  body.consent.noticeHash = notice.noticeHash;
+  assert.equal((await send(body, "language-test-key", target)).status, 201);
+});
+
+test("renewed consent after a lost response returns the original receipt", async () => {
+  const body = await sample();
+  const first = await send(body, "notice-renewal-key");
+  const target = appFor({
+    policy: {
+      ...policy,
+      noticeId: "renewed-notice",
+      purpose: "Updated synthetic purpose",
+    },
+  });
+  assert.equal((await send(body, "notice-renewal-key", target)).status, 409);
+  const notice = (await request(target).get("/api/contact/notice")).body;
+  body.consent.noticeId = notice.noticeId;
+  body.consent.noticeHash = notice.noticeHash;
+  const replay = await send(body, "notice-renewal-key", target);
+  assert.equal(replay.status, 200);
+  assert.equal(replay.body.data.id, first.body.data.id);
+  assert.equal(await Contact.countDocuments(), 1);
+  assert.equal((await Contact.findOne()).consent.noticeId, policy.noticeId);
+});
+
+test("maximum-length Korean content fits the JSON intake limit", async () => {
+  const body = await sample();
+  body.message = "가".repeat(5000);
+  assert.equal((await send(body)).status, 201);
+});
+
+test("operator notification failures do not undo a durable receipt", async () => {
+  let calls = 0;
+  const target = appFor({
+    notifyReceipt: async () => {
+      calls++;
+      throw new Error("synthetic notification failure");
+    },
+  });
+  const body = await sample();
+  const first = await send(body, "notification-retry-key", target);
+  const replay = await send(body, "notification-retry-key", target);
+  assert.equal(first.status, 201);
+  assert.equal(replay.status, 200);
+  assert.equal(first.body.data.id, replay.body.data.id);
+  assert.equal(calls, 2);
+  assert.equal(await Contact.countDocuments(), 1);
+});
+
+test("policy loader fails closed without disclosing file errors", () => {
+  const { loadContactPolicies } = require("../src/config/contact-policy");
+  for (const content of ["{", "[]", '{"unexpected":{}}']) {
+    assert(
+      Object.values(
+        loadContactPolicies({
+          policyPath: "synthetic.json",
+          readFile: () => content,
+        }),
+      ).every((value) => value === null),
+    );
+  }
+  assert(
+    Object.values(loadContactPolicies({ policyPath: "" })).every(
+      (value) => value === null,
+    ),
+  );
+  assert(
+    Object.values(
+      loadContactPolicies({
+        policyPath: "synthetic.json",
+        readFile: () => {
+          throw new Error("private path");
+        },
+      }),
+    ).every((value) => value === null),
+  );
+  assert.deepEqual(
+    loadContactPolicies({
+      policyPath: "synthetic.json",
+      readFile: () => JSON.stringify({ ko: policy }),
+    }).ko,
+    policy,
+  );
+});
+
+test("real operator notifications deduplicate receipts without copying customer data", async () => {
+  // Isolate log/config startup; the real notification model and service are exercised.
+  const loggerPath = require.resolve("../src/utils/logger");
+  const previousLogger = require.cache[loggerPath];
+  require.cache[loggerPath] = { exports: { error() {} } };
+  try {
+    const {
+      notifyContactReceipt,
+    } = require("../src/services/notification.service");
+    const target = appFor({ notifyReceipt: notifyContactReceipt });
+    const body = await sample();
+    const first = await send(body, "real-notification-key", target);
+    const replay = await send(body, "real-notification-key", target);
+    assert.equal(first.status, 201);
+    assert.equal(replay.status, 200);
+    assert.equal(await Notification.countDocuments(), 1);
+    const notification = await Notification.findOne().lean();
+    assert.equal(notification.dedupeKey, `contact:${first.body.data.id}`);
+    assert(!notification.message.includes(body.email));
+    assert(!notification.message.includes(body.contactName));
+  } finally {
+    if (previousLogger) require.cache[loggerPath] = previousLogger;
+    else delete require.cache[loggerPath];
+  }
+});
+
+test("a notice with minimum fields rejects undisclosed optional data", async () => {
+  const target = appFor({
+    policy: { ...policy, items: ["contactName", "email", "message"] },
+  });
+  const notice = (await request(target).get("/api/contact/notice")).body;
+  const body = await sample();
+  body.consent.noticeHash = notice.noticeHash;
+  body.companyName = "Undisclosed synthetic company";
+  assert.equal((await send(body, "minimal-fields-key", target)).status, 400);
+  delete body.companyName;
+  assert.equal((await send(body, "minimal-fields-key", target)).status, 201);
 });

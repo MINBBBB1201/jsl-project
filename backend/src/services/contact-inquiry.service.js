@@ -162,12 +162,8 @@ function createInquiryService({
           noticeSnapshot: result.current,
         };
         // Client timestamps, IPs, user agents and extra fields are never used as evidence.
-        const fingerprint = digest({
-          ...result.data,
-          noticeId: consent.noticeId,
-          noticeHash: consent.noticeHash,
-          language: consent.language,
-        });
+        // Notice refresh must not turn a retry of the same inquiry into a new inquiry.
+        const fingerprint = digest({ ...result.data, language: consent.language });
         const saved = await repository.saveOnce({
           key: idempotencyKey,
           fingerprint,

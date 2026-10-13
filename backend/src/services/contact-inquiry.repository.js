@@ -24,10 +24,14 @@ function createContactInquiryRepository(ContactModel) {
     async saveOnce({ key, fingerprint, record }) {
       await ensureIndex();
       try {
-        const saved = await ContactModel.create({
+        const document = new ContactModel({
           ...record,
           inquiryRequestKey: key,
           inquiryFingerprint: fingerprint,
+        });
+        // Acknowledgement must include the journal, including on a standalone DB.
+        const saved = await document.save({
+          writeConcern: { w: "majority", j: true, wtimeout: 10000 },
         });
         return { record: receipt(saved), replayed: false };
       } catch (error) {

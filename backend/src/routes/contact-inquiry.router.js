@@ -5,27 +5,38 @@ const {
   createContactInquiryRepository,
 } = require("../services/contact-inquiry.repository");
 
-// Integration factory. The existing production contact route is not switched yet.
+// Each published notice has an explicitly configured language and approval.
 function createContactInquiryRouter({
   policy,
+  policies,
   ContactModel,
   allowFixture = false,
+  notifyReceipt = async () => {},
 }) {
-  const service = createInquiryService({
-    policy,
-    repository: createContactInquiryRepository(ContactModel),
-    allowFixture,
-  });
+  const configured = policies ?? { ko: policy };
+  const services = new Map(
+    ["ko", "en", "zh", "vi"].map((language) => [
+      language,
+      createInquiryService({
+        policy: configured[language],
+        repository: createContactInquiryRepository(ContactModel),
+        allowFixture,
+      }),
+    ]),
+  );
   const router = express.Router();
   router.use((_req, res, next) => {
     res.set("Cache-Control", "no-store");
     next();
   });
-  router.get("/notice", (_req, res) => {
-    const notice = service.getNotice();
+  router.get("/notice", (req, res) => {
+    const language = req.query.language ?? "ko";
+    if (typeof language !== "string" || !services.has(language))
+      return res.status(400).json({ success: false, code: "INVALID_LANGUAGE" });
+    const notice = services.get(language).getNotice();
     if (!notice)
       return res.status(503).json({ success: false, code: "POLICY_NOT_READY" });
-    res.json(notice);
+    res.json({ ...notice, language });
   });
   router.post(
     "/",
@@ -43,7 +54,26 @@ function createContactInquiryRouter({
           code: "VALIDATION_FAILED",
           errors: [{ field: "email", code: "INVALID_EMAIL" }],
         });
-      const result = await service.submit(req.body, req.get("Idempotency-Key"));
+      const language = req.body?.consent?.language;
+      if (!services.has(language))
+        return res
+          .status(400)
+          .json({
+            success: false,
+            code: "VALIDATION_FAILED",
+            errors: [{ field: "consent", code: "INVALID_LANGUAGE" }],
+          });
+      const result = await services
+        .get(language)
+        .submit(req.body, req.get("Idempotency-Key"));
+      // Notification failure must never change a durable inquiry receipt into an error.
+      if (result.body.success) {
+        try {
+          await notifyReceipt(result.body.data.id);
+        } catch {
+          /* retry on the next receipt replay */
+        }
+      }
       res.status(result.status).json(result.body);
     },
   );
@@ -54,17 +84,15 @@ function createContactInquiryRouter({
         : error.type === "entity.parse.failed"
           ? 400
           : 503;
-    res
-      .status(status)
-      .json({
-        success: false,
-        code:
-          status === 413
-            ? "BODY_TOO_LARGE"
-            : status === 400
-              ? "INVALID_JSON"
-              : "REQUEST_FAILED",
-      });
+    res.status(status).json({
+      success: false,
+      code:
+        status === 413
+          ? "BODY_TOO_LARGE"
+          : status === 400
+            ? "INVALID_JSON"
+            : "REQUEST_FAILED",
+    });
   });
   return router;
 }

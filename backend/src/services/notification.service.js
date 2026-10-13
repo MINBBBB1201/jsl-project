@@ -57,6 +57,14 @@ exports.notifyNewContact = (contact) =>
     message: `신규 문의: ${contact.companyName || contact.contactName || "이름 미기재"}`,
   });
 
+// A retry of the same receipt must not duplicate the operator notification.
+exports.notifyContactReceipt = (id) =>
+  create({
+    type: NOTIFICATION_TYPES.CONTACT,
+    message: `신규 문의 접수 번호: ${id}`,
+    dedupeKey: `contact:${id}`,
+  });
+
 /**
  * 지연위험/지연 감지.
  * 같은 화물은 KST 하루에 한 번만 알린다.
