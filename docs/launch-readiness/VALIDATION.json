@@ -163,7 +163,7 @@
     },
     {
       "path": "backend/src/services/contact-inquiry.service.js",
-      "sha256": "a07fa9b4d9f46d1cea16ea647ad3fce3ed4304099dceb3f8733b9922e8faa542"
+      "sha256": "53c33c6c951b02cd06face17032dcd5376cc1d1720a1862a4ed07145afdab96b"
     },
     {
       "path": "backend/src/services/contact-inquiry.repository.js",
@@ -195,5 +195,6 @@
     "actual-site tracking/accessibility/content/assets/legal review",
     "single batch PR review/merge and deployment"
   ],
-  "archiveVerification": "separate prototype archive verification; not an app build"
+  "archiveVerification": "separate prototype archive; not an app build",
+  "strictFixtureBooleanGuard": "pass in prototype and application core; strings and number rejected"
 }

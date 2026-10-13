@@ -48,7 +48,7 @@ function policyReadiness(policy, { allowFixture = false } = {}) {
   if (!text(policy.refusalConsequence)) missing.push("refusalConsequence");
   if (!text(policy.privacyContact)) missing.push("privacyContact");
   if (!["operational", "fixture"].includes(policy.kind)) missing.push("kind");
-  if (policy.kind === "fixture" && !allowFixture)
+  if (policy.kind === "fixture" && allowFixture !== true)
     missing.push("fixtureNotAllowed");
   return { ready: missing.length === 0, missing };
 }
