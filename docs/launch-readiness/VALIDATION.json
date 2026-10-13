@@ -1,0 +1,199 @@
+{
+  "dateKST": "2026-10-13",
+  "review": "manual source review plus lint and regression cases; no external independent reviewer approval",
+  "serviceTests": {
+    "passed": 22,
+    "failed": 0
+  },
+  "browserFailures": {
+    "fixtureOnly": true,
+    "productionConnected": false,
+    "noticeFailureCases": [
+      {
+        "mode": "http-error",
+        "pass": true,
+        "contactRequests": 0
+      },
+      {
+        "mode": "malformed-json",
+        "pass": true,
+        "contactRequests": 0
+      },
+      {
+        "mode": "offline",
+        "pass": true,
+        "contactRequests": 0
+      },
+      {
+        "mode": "javascript-disabled",
+        "pass": true
+      }
+    ],
+    "recordsSaved": 0
+  },
+  "browser": {
+    "dateKST": "2026-10-13",
+    "fixtureOnly": true,
+    "productionConnected": false,
+    "viewports": [
+      {
+        "viewport": {
+          "width": 1440,
+          "height": 900
+        },
+        "colorScheme": "light",
+        "violations": 0,
+        "incomplete": 0,
+        "initialCookies": 0,
+        "failedRequests": 0,
+        "tabOrder": [
+          "companyName",
+          "contactName",
+          "email",
+          "subject",
+          "message",
+          "consent"
+        ]
+      },
+      {
+        "viewport": {
+          "width": 1440,
+          "height": 900
+        },
+        "colorScheme": "dark",
+        "violations": 0,
+        "incomplete": 0,
+        "initialCookies": 0,
+        "failedRequests": 0,
+        "tabOrder": [
+          "companyName",
+          "contactName",
+          "email",
+          "subject",
+          "message",
+          "consent"
+        ]
+      },
+      {
+        "viewport": {
+          "width": 390,
+          "height": 844
+        },
+        "colorScheme": "light",
+        "violations": 0,
+        "incomplete": 0,
+        "initialCookies": 0,
+        "failedRequests": 0,
+        "tabOrder": [
+          "companyName",
+          "contactName",
+          "email",
+          "subject",
+          "message",
+          "consent"
+        ]
+      },
+      {
+        "viewport": {
+          "width": 390,
+          "height": 844
+        },
+        "colorScheme": "dark",
+        "violations": 0,
+        "incomplete": 0,
+        "initialCookies": 0,
+        "failedRequests": 0,
+        "tabOrder": [
+          "companyName",
+          "contactName",
+          "email",
+          "subject",
+          "message",
+          "consent"
+        ]
+      }
+    ],
+    "interactiveStateViewport": {
+      "width": 1440,
+      "height": 900,
+      "colorScheme": "light"
+    },
+    "errorSummaryFocus": "pass",
+    "keyboardErrorLink": "pass",
+    "keyboardCheckbox": "pass",
+    "stateViolations": {
+      "errors": 0,
+      "receipt": 0
+    },
+    "idempotentReceipt": "pass",
+    "optionalRequests": {
+      "initial": 0,
+      "rejected": 0,
+      "allowed": 1,
+      "afterWithdrawal": 1
+    },
+    "preferenceCookieRemoved": "pass",
+    "negativeA11yDetection": [
+      "button-name",
+      "image-alt"
+    ],
+    "fullAccessibilityOrLegalAcceptance": false
+  },
+  "mongoIntegration": {
+    "passed": 10,
+    "failed": 0,
+    "concurrentRequests": 12,
+    "instances": 2,
+    "orderlyDatabaseRestartReceipt": "pass",
+    "indexRemovalBlocksExistingAndNewAdapter": "pass",
+    "binary": "existing MongoDB 7.0.24",
+    "mongoose": "8.15.2",
+    "express": "4.21.2",
+    "initialAttempt": "ENOSPC during download; own failed download removed; existing binary used successfully",
+    "disposableDatabaseOnly": true,
+    "productionDatabaseUsed": false,
+    "smallJournalForTestOnly": true
+  },
+  "backendLint": "pass",
+  "backendSyntax": "pass",
+  "appSourceHashes": [
+    {
+      "path": "backend/src/models/contact.model.js",
+      "sha256": "ecf6f914059fc0b00726e51f503357219e23bf314993b4e9494c50e97f136797"
+    },
+    {
+      "path": "backend/src/services/contact-inquiry.service.js",
+      "sha256": "a07fa9b4d9f46d1cea16ea647ad3fce3ed4304099dceb3f8733b9922e8faa542"
+    },
+    {
+      "path": "backend/src/services/contact-inquiry.repository.js",
+      "sha256": "ef74d7160b4c091ca7a723f6b9ebcf4f846b52d3c5701b73414ac41c51fa9c09"
+    },
+    {
+      "path": "backend/src/routes/contact-inquiry.router.js",
+      "sha256": "88c017ca3e36419b69d0d87c4ed89a756a07ec3a82b051f3aafffe891a692974"
+    },
+    {
+      "path": "backend/tests/contact-readiness.node.cjs",
+      "sha256": "abc7a2acf909b115fe41ae2876e968bf264ecf5d54a8536dff42986216cb1cf1"
+    }
+  ],
+  "productionPreservation": {
+    "checkedFiles": 358,
+    "changedFiles": [],
+    "missingFiles": [],
+    "productionWritesPerformed": false,
+    "otherSessionCheckoutOrServerChanges": false,
+    "scope": "source/config/package/governance only; assets/untracked/cache excluded"
+  },
+  "pending": [
+    "approved operational policy",
+    "frontend/route connection",
+    "production DB index migration",
+    "notifications and deletion/backup workflow",
+    "full-site tsc/lint/build and browser-to-production-config verification",
+    "actual-site tracking/accessibility/content/assets/legal review",
+    "single batch PR review/merge and deployment"
+  ],
+  "archiveVerification": "separate prototype archive verification; not an app build"
+}
