@@ -159,8 +159,11 @@
   "deployment": {
     "productionDeploymentInvoked": false,
     "mainMerged": false,
-    "autoDeployVerified": false,
-    "inspectionLimit": "Vercel project details returned 403 authorization error"
+    "inspectionLimit": "Vercel project details returned 403 authorization error",
+    "productionAutoDeployVerified": false,
+    "previewAutoDeployConfirmedByGitHub": true,
+    "previewDeploymentHead": "c76c658ee171bdc0e310de06e263091bf15ceef5",
+    "previewDeploymentStatus": "success"
   },
   "limits": [
     "Next routing, server rendering, hydration, deployment origins and full production build unverified",
