@@ -27,7 +27,16 @@ const newsletterSchema = z.object({
 })
 
 
-export function LandingFooter() {
+interface LandingFooterProps {
+  /**
+   * 랜딩은 journey.css 가 푸터 바탕을 테마와 무관하게 밝은 색(#f5f5f3)으로 고정한다.
+   * 그 자리에서는 "light" 를 넘겨 다크 모드에서도 밝은 바탕용 로고를 쓰게 한다.
+   * PublicPageShell 의 푸터는 테마를 따르므로 기본값("theme") 그대로 둔다.
+   */
+  logoSurface?: "theme" | "light"
+}
+
+export function LandingFooter({ logoSurface = "theme" }: LandingFooterProps) {
   const { footer } = useContent()
 
   /*
@@ -96,7 +105,7 @@ export function LandingFooter() {
           <div className="col-span-4 lg:col-span-2 max-w-2xl">
             <div className="flex items-center space-x-2 mb-4 max-lg:justify-center">
               <Link href="/landing" className="flex items-center space-x-2 cursor-pointer">
-                <LogoWordmark className="h-12" />
+                <LogoWordmark className="h-12" surface={logoSurface} />
               </Link>
             </div>
             <p className="text-muted-foreground mb-6 max-lg:text-center">
