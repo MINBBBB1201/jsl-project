@@ -16,7 +16,7 @@ import { ContactSection } from "./components/contact-section"
 import { LandingFooter } from "./components/footer"
 import { LandingThemeCustomizer, LandingThemeCustomizerTrigger } from "./components/landing-theme-customizer"
 import { JourneyIntro, JourneyYard, JourneyOcean, JourneyPartners, JourneyCta, JourneyPlane, JourneyProgressRail, useJourneyMotion } from "./components/journey-sections"
-import { IndustrialJourney } from "./components/industrial-journey"
+import { MultimodalJourney } from "./components/multimodal-journey"
 import { JourneyHeroMotion } from "./components/journey-hero-motion"
 import "./journey.css"
 
@@ -31,7 +31,7 @@ export function LandingPageContent() {
       <JourneyHeroMotion />
       <JourneyIntro />
       <JourneyYard />
-      <IndustrialJourney />
+      <MultimodalJourney />
       <div className="journey-services journey-dark"><FeaturesSection onlyValueAdded /></div>
       <JourneyOcean />
       <div className="journey-network journey-editorial"><NetworkSection /></div>
