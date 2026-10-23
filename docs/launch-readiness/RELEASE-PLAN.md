@@ -58,12 +58,21 @@
 
 ## 테스트 재실행
 
+문의 통합 테스트(`backend/tests/contact-readiness.node.cjs`)는 Node 내장 `node:test` 형식이라 jest의 `testMatch`에 잡히지 않는다. 기본 `npm test`에는 포함되지 않으므로 아래 스크립트로 따로 실행한다. 폐기 가능한 MongoDB(`mongodb-memory-server`)를 띄우므로 여유 메모리가 1.2GB 이상일 때 실행한다.
+
+```powershell
+cd backend
+npm run test:contact
+```
+
+저장소 밖의 의존성이나 미리 받아 둔 바이너리를 재사용하는 환경이라면 환경 변수를 추가한다.
+
 ```powershell
 $env:NODE_PATH = 'C:/Users/mimin/Desktop/jsl-project/backend/node_modules'
 $env:MONGOMS_SYSTEM_BINARY = 'C:/Users/mimin/Desktop/jsl-project/backend/node_modules/.cache/mongodb-memory-server/mongod-x64-win32-7.0.24.exe'
 $env:MONGOMS_RUNTIME_DOWNLOAD = '0'
 $env:JSL_TEST_SMALL_JOURNAL = '1'
-node --test backend/tests/contact-readiness.node.cjs
+npm run test:contact
 ```
 
 일반 환경에서는 이 worktree의 backend 의존성을 설치하고 테스트 바이너리를 준비한다. 작은 journal 옵션은 이 폐기 가능한 테스트에만 적용하며 운영 DB 설정으로 옮기지 않는다. 옵션의 존재는 [MongoDB 7.0.24 소스](https://github.com/mongodb/mongo/blob/r7.0.24/src/mongo/db/storage/wiredtiger/wiredtiger_global_options.idl)에 확인했다. DB 고유 제약은 애플리케이션 validator와 다르므로 [Mongoose의 인덱스 지침](https://mongoosejs.com/docs/validation.html#the-unique-option-is-not-a-validator)을 따른다.
