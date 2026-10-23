@@ -7,8 +7,9 @@ import { SceneHeader, MonoLabel } from "./journey-kit"
  */
 const LEGS = ["ROAD", "OPERATIONS", "OCEAN", "AIR"] as const
 
+// Decorative: the sequence that follows carries the content, so assistive tech skips this.
 export function JourneyLeadIn({ index, total }: { index: number; total: number }) {
-  return <section className="jk-section jk-paper jk-lead-in" aria-label="Transport sequence: road, operations, ocean and air">
+  return <section className="jk-section jk-paper jk-lead-in" aria-hidden="true" lang="en">
     <SceneHeader path="ROAD · OCEAN · AIR" index={index} total={total} />
     <ol className="jk-legs">
       {LEGS.map((leg, i) => <li key={leg}><MonoLabel>{String(i + 1).padStart(2, "0")}</MonoLabel><span>{leg}</span></li>)}

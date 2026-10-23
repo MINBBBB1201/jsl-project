@@ -14,7 +14,7 @@ import { SiteLink } from "@/components/site-link"
 export function SceneHeader({ path, index, total }: { path: string; index?: number; total?: number }) {
   const pad = (n: number) => String(n).padStart(2, "0")
   return <div className="jk-scene-header" aria-hidden="true">
-    <span className="jk-mono">JSL / {path}</span>
+    <span className="jk-mono" lang="en">JSL / {path}</span>
     {index && total ? <span className="jk-mono jk-counter">{pad(index)} / {pad(total)}</span> : null}
   </div>
 }

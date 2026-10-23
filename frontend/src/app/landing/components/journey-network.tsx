@@ -49,7 +49,7 @@ export function JourneyNetwork({ index, total }: { index: number; total: number 
             const left = LABEL_LEFT.has(office.cityEn), dx = left ? -14 : 14, anchor = left ? "end" : "start"
             return <g key={office.cityEn} transform={`translate(${x} ${y})`}>
               <rect x={-5} y={-5} width={10} height={10} className={office.isHq ? "jk-chart-hub" : "jk-chart-node"} />
-              <text x={dx} y={4} textAnchor={anchor} className="jk-chart-label">{office.cityEn.toUpperCase()}</text>
+              <text x={dx} y={4} textAnchor={anchor} className={left ? "jk-chart-label is-left" : "jk-chart-label"}>{office.cityEn.toUpperCase()}</text>
               <text x={dx} y={22} textAnchor={anchor} className="jk-chart-tick">{people(office.headcount)}</text>
             </g>
           })}

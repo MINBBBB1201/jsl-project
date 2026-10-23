@@ -127,3 +127,5 @@
 .jk-rule-scale{height:14px;margin-top:40px;border-bottom:4px solid var(--jk-ink);background:repeating-linear-gradient(90deg,var(--jk-ink) 0 1px,transparent 1px calc(100% / 40)) bottom/100% 8px no-repeat}
 .jk-scroll-cue{display:block;margin-top:18px}
 @media(max-width:600px){.jk-legs{grid-template-columns:repeat(2,minmax(0,1fr));row-gap:24px}}
+/* On phones Weihai's label sits under its node so it clears Seoul's on the same parallel. */
+@media(max-width:600px){.jk-chart-label.is-left{text-anchor:start;transform:translate(14px,44px)}}
