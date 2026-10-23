@@ -7,7 +7,8 @@ export function JourneyConsulting({ index, total }: { index: number; total: numb
   const { consulting } = useContent()
 
   return <section id="consulting" className="jk-section jk-paper-2" aria-labelledby="jk-consulting-title">
-    <SceneHeader path={consulting.badge.toUpperCase()} index={index} total={total} />
+    {/* consulting.badge is a "New" tag, not a section name. */}
+    <SceneHeader path="CONSULTING" index={index} total={total} />
     <div className="jk-section-intro">
       <TwoToneHeading lead={<span id="jk-consulting-title">{consulting.title}</span>} />
       <p className="jk-lead">{consulting.description}</p>
