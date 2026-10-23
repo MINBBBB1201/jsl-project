@@ -1,0 +1,24 @@
+/* Host frame for the generated sequence. Its own styles stay scoped to #jsl-marine-native. */
+.multimodal-journey{position:relative;background:#fff}
+.multimodal-cargo-anchor{position:absolute;top:0;left:0;width:1px;height:1px}
+.multimodal-stage{position:relative;height:100svh;min-height:600px;overflow:hidden;isolation:isolate;background:#fff}
+.multimodal-guest,.multimodal-stage #jsl-marine-native{height:100%}
+/* The prototype is an 8:5 review frame; on the landing it fills the pinned stage. */
+.multimodal-stage #jsl-marine-native .uc-screen{aspect-ratio:auto;height:100%}
+/* Review controls stay in the DOM because the engine reads them; scroll drives progress instead. */
+.multimodal-stage #jsl-marine-native>.viz-controls,.multimodal-stage #jsl-marine-native>.form-label{display:none}
+
+.multimodal-stage a.multimodal-action{display:inline-flex;align-items:center;gap:14px;min-height:44px;margin-top:14px;color:inherit;text-decoration:none;font-size:11px;font-weight:600;letter-spacing:.08em}
+.multimodal-action>span:last-child{display:grid;place-items:center;flex:none;width:34px;height:34px;background:#ec761e;color:#fff;font-size:20px;line-height:1}
+.multimodal-action:hover>span:last-child{background:#ff9239}
+
+/* Sits in the guest header just before its counter and takes the header's phase colour. */
+.multimodal-stage #jsl-marine-native .uc-header .multimodal-skip{order:1;margin:-6px 0 -6px auto;min-height:44px;padding:0 4px;border:0;background:none;color:inherit;font-family:Consolas,monospace;font-size:11px;letter-spacing:.06em;cursor:pointer}
+.multimodal-stage #jsl-marine-native .uc-header .uc-counter{order:2;margin-left:0}
+.multimodal-skip span{margin-left:8px;color:#ec761e}
+.multimodal-skip:focus-visible,.multimodal-stage a.multimodal-action:focus-visible{outline:2px solid #ec761e;outline-offset:3px}
+@media (max-width:767px){
+  .multimodal-stage{min-height:560px}
+}
+/* The pin starts at "top top"; the landing-wide 90px anchor margin would stop short of it. */
+.journey section.multimodal-journey[id]{scroll-margin-top:0}
