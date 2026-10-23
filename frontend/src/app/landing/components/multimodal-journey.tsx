@@ -93,7 +93,7 @@ export function MultimodalJourney() {
         if (cancelled) return
         Object.assign(window, { JslMarineThree: THREE })
         window.dispatchEvent(new Event("jsl-marine-ready"))
-      })
+      }).catch(() => {}) // without Three.js the engine keeps its static fallback
       const [{ gsap }, { ScrollTrigger }] = await Promise.all([import("gsap"), import("gsap/ScrollTrigger")])
       if (cancelled) return
       gsap.registerPlugin(ScrollTrigger)
@@ -159,6 +159,8 @@ export function MultimodalJourney() {
     const goHere = () => void ensure().then(() => {
       if (cancelled) return
       window.scrollTo({ top: element.getBoundingClientRect().top + window.scrollY, behavior: "smooth" })
+      // Keyboard and screen-reader position follow the scroll instead of staying on the link.
+      focusQuietly(element)
     })
     const onAnchorClick = (event: MouseEvent) => {
       const link = (event.target as Element).closest<HTMLAnchorElement>("a[href]")
