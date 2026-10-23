@@ -122,7 +122,7 @@
 .jk-lead-in .jk-scene-header{margin-bottom:56px}
 .jk-legs{display:grid;grid-template-columns:repeat(4,minmax(0,1fr))}
 .jk-legs li{display:flex;flex-direction:column;gap:10px;padding-right:16px}
-.jk-legs li>span:last-child{font-size:clamp(34px,4.4vw,84px);font-weight:700;letter-spacing:-.055em;line-height:1}
+.jk-legs li>span:last-child{font-size:clamp(26px,3vw,58px);font-weight:700;letter-spacing:-.05em;line-height:1;overflow-wrap:anywhere}
 .jk-legs li:not(:first-child)>span:last-child{color:var(--jk-ink-2)}
 .jk-rule-scale{height:14px;margin-top:40px;border-bottom:4px solid var(--jk-ink);background:repeating-linear-gradient(90deg,var(--jk-ink) 0 1px,transparent 1px calc(100% / 40)) bottom/100% 8px no-repeat}
 .jk-scroll-cue{display:block;margin-top:18px}
