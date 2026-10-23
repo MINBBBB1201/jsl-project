@@ -2,13 +2,10 @@
 
 import { useState } from "react"
 import { LandingNavbar } from "./components/navbar"
-import { AboutSection } from "./components/about-section"
-import { CertificationsBar } from "./components/certifications-bar"
-import { ConsultingSection } from "./components/consulting-section"
 import { ContactSection } from "./components/contact-section"
 import { LandingFooter } from "./components/footer"
 import { LandingThemeCustomizer, LandingThemeCustomizerTrigger } from "./components/landing-theme-customizer"
-import { JourneyIntro, JourneyPartners, JourneyProgressRail, useJourneyMotion } from "./components/journey-sections"
+import { JourneyIntro, JourneyProgressRail, useJourneyMotion } from "./components/journey-sections"
 import { MultimodalJourney } from "./components/multimodal-journey"
 import { JourneyHeroMotion } from "./components/journey-hero-motion"
 import { JourneyValueAdded } from "./components/journey-value-added"
@@ -18,6 +15,9 @@ import { JourneyOperations } from "./components/journey-operations"
 import { JourneyFaq } from "./components/journey-faq"
 import { JourneyClosing } from "./components/journey-closing"
 import { JourneyLeadIn } from "./components/journey-lead-in"
+import { JourneyAbout } from "./components/journey-about"
+import { JourneyPartners } from "./components/journey-partners"
+import { JourneyConsulting } from "./components/journey-consulting"
 import "./journey.css"
 import "./components/journey-kit.css"
 
@@ -40,9 +40,9 @@ export function LandingPageContent() {
       {/* The sequence already shows ocean and air, so the separate ocean and plane scenes are gone. */}
       <JourneyValueAdded index={4} total={STOPS} />
       <JourneyNetwork index={5} total={STOPS} />
-      <div className="journey-about journey-editorial"><AboutSection /><CertificationsBar /></div>
+      <JourneyAbout index={6} total={STOPS} />
       <JourneyPartners />
-      <div className="journey-consulting journey-editorial"><ConsultingSection /></div>
+      <JourneyConsulting index={8} total={STOPS} />
       <JourneyOperations index={9} total={STOPS} />
       <JourneyPricing index={10} total={STOPS} />
       <JourneyFaq index={11} total={STOPS} />
