@@ -93,17 +93,31 @@ test("rejects a 200 login page", async () => {
   })
 })
 
-test("rejects data-lang and data-href without real lang or href attributes", async () => {
+test("rejects data-lang without a real lang attribute", async () => {
   await withServer((request, response) => {
     const path = new URL(request.url, "http://fixture").pathname
     if (path === "/landing") {
       response.writeHead(200, { "content-type": "text/html" })
-      response.end('<!doctype html><html data-lang="ko"><head><title>JSL</title></head><body><footer><a data-href="/notices">Notices</a></footer></body></html>')
+      response.end('<!doctype html><html data-lang="ko"><head><title>JSL</title></head><body><footer><a href="/notices">Notices</a></footer></body></html>')
       return
     }
     successHandler(request, response)
   }, async (baseUrl) => {
     await assert.rejects(checkNoticeLinks(baseUrl), /missing <html lang>/)
+  })
+})
+
+test("rejects data-href without a real href attribute", async () => {
+  await withServer((request, response) => {
+    const path = new URL(request.url, "http://fixture").pathname
+    if (path === "/landing") {
+      response.writeHead(200, { "content-type": "text/html" })
+      response.end('<!doctype html><html lang="ko"><head><title>JSL</title></head><body><footer><a data-href="/notices">Notices</a></footer></body></html>')
+      return
+    }
+    successHandler(request, response)
+  }, async (baseUrl) => {
+    await assert.rejects(checkNoticeLinks(baseUrl), /footer is missing href=\/notices/)
   })
 })
 
