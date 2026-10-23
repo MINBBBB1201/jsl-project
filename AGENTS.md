@@ -25,7 +25,7 @@
 - **공개 도구 페이지**: `[locale]/(public)/<slug>/page.tsx` + `<slug>-client.tsx` + `PublicPageShell`. `middleware.ts`의 `LOCALIZED_SEGMENTS`에 새 슬러그 추가 필수(빠뜨리면 비영어 로케일 404).
 - **대시보드(내부) 데이터 훅**: `use-async-resource.ts`의 `useAsyncResource<T>(fetcher, fallbackMessage)` 패턴을 재사용.
 - **PII 원칙**: 여러 건을 한 번에 보여주는 목록은 `customer` 등 연락처를 제외하고, 담당자가 건 하나를 처리하는 상세 화면은 포함한다. `backend/src/controllers/shipment.controller.js`의 `PII_EXCLUDED_FIELDS` 참고.
-- **PR 준비**: 검토 가능한 커밋을 일반 푸시하고 Draft PR을 만든다. 본문은 `.github/pull_request_template.md`를 따른다. `gh` 사용 가능 여부와 인증은 먼저 확인한다. 다중 행 본문은 파일로 작성해 `--body-file`로 전달한다.
+- **PR 준비**: 검토 가능한 커밋을 일반 푸시하고 Draft PR을 만든다. 본문은 `.github/pull_request_template.md`를 따른다. `gh` 사용 가능 여부와 인증은 먼저 확인한다. 다중 행 본문은 UTF-8 파일로 작성해 `--body-file`로 전달한다. Windows에서는 인코딩을 명시하고 UTF-16 기본 리디렉션을 피한다. gh 설치·인증이 없으면 사용자에게 필요한 조치를 알리고, 사용자가 브라우저로 진행할 경우 compare 화면에서 Draft PR을 생성하도록 안내한다.
 - **브랜치 작업 시작 전**: `main` 대비 뒤처졌으면 먼저 병합하고 재검증부터.
 
 ## 커밋 메시지
@@ -48,5 +48,5 @@
 
 ## 과거 기록
 
-- 기술 스택, 완료된 작업 목록(PR #3~#6), 진행 중인 무역서류 생성기 작업의 상세 배경은 `SESSION_HISTORY.md`에 있습니다.
+- 기술 스택, 완료된 작업 목록(PR #3~#6), 당시 진행 중이던 무역서류 생성기 작업의 배경은 `SESSION_HISTORY.md`에 있다. 현재 상태는 브랜치와 PR을 조회해 확인한다.
 - 과거 브랜치 존재 여부는 실제 브랜치·PR·worktree 조회로 확인한다. 과거 메모만으로 새 브랜치를 만들거나 기존 브랜치를 변경하지 않는다.

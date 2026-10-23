@@ -1,5 +1,8 @@
 # JSL LOGISTICS — Claude Code 진입 지침
 
+@AGENTS.md
+@docs/ISSUE-WORKFLOW.md
+
 작업 전에 저장소 루트의 `AGENTS.md`와 `docs/ISSUE-WORKFLOW.md`를 읽고 공통 절차를 따른다. 두 문서가 이 저장소의 작업 범위, 이슈 선점, 검증, 교차 리뷰, PR 절차의 정본이다.
 
 - 현재 사용자 지시와 승인 범위를 우선한다. 과거 세션 기록은 새 구현 승인으로 해석하지 않는다.
