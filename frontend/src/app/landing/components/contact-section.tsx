@@ -96,6 +96,9 @@ export function ContactSection() {
       const confirmed = response.ok ? readReceipt(result) : null
       if (!confirmed) { setFailure(copy.failed); return }
       setReceipt(confirmed)
+      // 접수가 확정되면 이 키의 역할은 끝난다. 다음 전송은 새 문의이므로 새 키를 쓴다.
+      // 실패·응답 유실 때는 위에서 return 하거나 catch 로 가므로 키가 남아 재시도가 보호된다.
+      retryRef.current = null
     } catch { setFailure(copy.failed) }
     finally { clearTimeout(timeout); sendingRef.current = false }
   }

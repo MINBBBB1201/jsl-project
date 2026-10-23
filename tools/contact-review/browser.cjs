@@ -180,13 +180,17 @@ async function main() {
       .waitFor();
     const receiptText = await page.getByRole("status").textContent();
     await submit(page);
-    await page
-      .getByRole("status")
-      .filter({ hasText: "문의 접수 번호" })
-      .waitFor();
-    assert.equal(await page.getByRole("status").textContent(), receiptText);
-    assert.equal(await Contact.countDocuments(), 1);
-    summary.flows.push("receipt and repeated submit retain one record");
+    await page.waitForFunction((previous) => {
+      const status = document.querySelector("[role=status]");
+      return (
+        status &&
+        status.textContent.includes("문의 접수 번호") &&
+        status.textContent !== previous
+      );
+    }, receiptText);
+    assert.notEqual(await page.getByRole("status").textContent(), receiptText);
+    assert.equal(await Contact.countDocuments(), 2);
+    summary.flows.push("submit after a receipt creates a new inquiry");
     await page.locator("textarea").fill("Lost response synthetic cargo");
     let first = true;
     await page.route("**/api/contact", async (route) => {
@@ -204,7 +208,7 @@ async function main() {
       .getByRole("status")
       .filter({ hasText: "문의 접수 번호" })
       .waitFor();
-    assert.equal(await Contact.countDocuments(), 2);
+    assert.equal(await Contact.countDocuments(), 3);
     summary.flows.push("lost response retries original key without duplicate");
     await page.unroute("**/api/contact");
     configure({
@@ -225,14 +229,14 @@ async function main() {
       .getByRole("status")
       .filter({ hasText: "문의 접수 번호" })
       .waitFor();
-    assert.equal(await Contact.countDocuments(), 3);
+    assert.equal(await Contact.countDocuments(), 4);
     summary.flows.push("changed notice requires renewed consent");
     await Contact.collection.dropIndex("contact_inquiry_request_unique");
     await page.locator("textarea").fill("No index synthetic inquiry");
     await submit(page);
     await page.getByRole("alert").waitFor();
     assert.equal(await page.getByRole("status").count(), 0);
-    assert.equal(await Contact.countDocuments(), 3);
+    assert.equal(await Contact.countDocuments(), 4);
     await Contact.createIndexes();
     summary.flows.push("database save failure never displays a receipt");
     configure(null);
