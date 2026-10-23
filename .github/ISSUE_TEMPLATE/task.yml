@@ -39,6 +39,6 @@ body:
     id: ownership
     attributes:
       label: 담당과 외부 입력
-      description: GitHub 담당자도 지정합니다. 제작자·검토자·공유 파일 소유자·사람이 해야 할 일을 적습니다.
+      description: GitHub 담당자를 지정합니다. 같은 계정의 AI 역할은 제작·검토 모델과 작업 세션으로 구분하고 공유 파일 소유자·사람이 해야 할 일을 적습니다.
     validations:
       required: true
