@@ -138,19 +138,41 @@ export function MultimodalJourney() {
         return () => { scrollTween?.kill(); guest.removeEventListener("click", follow); exit.current = jumpPast }
       }, element)
       teardown.push(() => context.revert())
-      void document.fonts.ready.then(() => { if (!cancelled) ScrollTrigger.refresh() })
+      // Refresh restores the scroll position it measured, so callers scroll only after it.
+      await document.fonts.ready
+      if (!cancelled) ScrollTrigger.refresh()
     }
 
+    // A failed chunk leaves the section on its fallback skip instead of breaking the page.
+    let loading: Promise<void> | null = null
+    const ensure = () => (loading ??= start().catch(() => {}))
     const near = new IntersectionObserver(entries => {
       if (!entries.some(entry => entry.isIntersecting)) return
       near.disconnect()
-      // A failed chunk leaves the section on its fallback skip instead of breaking the page.
-      start().catch(() => {})
+      void ensure()
     }, { rootMargin: "150% 0px" })
     near.observe(element)
+
+    // Loading mid-scroll inserts the pin spacer and cuts a smooth anchor scroll short, so anchors
+    // to this section load first and scroll once the layout has settled.
+    const anchors = new Set(["#features", "#cargo-journey"])
+    const goHere = () => void ensure().then(() => {
+      if (cancelled) return
+      window.scrollTo({ top: element.getBoundingClientRect().top + window.scrollY, behavior: "smooth" })
+    })
+    const onAnchorClick = (event: MouseEvent) => {
+      const link = (event.target as Element).closest<HTMLAnchorElement>("a[href]")
+      if (!link || link.origin !== window.location.origin || link.pathname !== window.location.pathname || !anchors.has(link.hash)) return
+      event.preventDefault()
+      history.pushState(null, "", link.hash)
+      goHere()
+    }
+    document.addEventListener("click", onAnchorClick)
+    if (anchors.has(window.location.hash)) goHere()
     return () => {
       cancelled = true
       near.disconnect()
+      document.removeEventListener("click", onAnchorClick)
       for (const run of teardown.splice(0)) run()
     }
   }, [reduced])
