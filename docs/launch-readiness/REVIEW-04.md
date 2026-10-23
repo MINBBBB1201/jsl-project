@@ -30,5 +30,7 @@ PR #25에 대한 독립 리뷰(OpenCode `oc-2`, 읽기 전용)에서 확인된 �
 
 - `npm run test:contact`: 17건 통과. 폐기 가능한 MongoDB 7.0.24와 메인 체크아웃의 `node_modules`를 `NODE_PATH`로 읽기 전용 재사용했다.
 - frontend: `eslint .` 통과, `tsc --noEmit` 통과, `npm run test:units` 70건 통과.
-- 기본 `npm test`(jest, `--runInBand`): 94건 중 43건 통과, 51건 실패, 3개 스위트 실패. 실패한 스위트는 모두 `mongod` 기동 단계의 `fassert() failure`와 연결 시간 초과였다. 실행 시점에 C: 드라이브 여유 공간이 약 10MB였고, 이번 변경은 backend 소스를 건드리지 않았다. 디스크 부족이 원인이라는 직접 증거(ENOSPC 메시지)는 확인하지 못했으므로 충분한 디스크에서 다시 실행해야 한다.
-- 요청 키 초기화는 컴포넌트 안의 한 줄이며 이를 단독으로 검증하는 자동 테스트는 없다(프런트 유닛 테스트에 컴포넌트 렌더링 환경이 없다). `tools/contact-review/browser.cjs`는 문법만 확인했고 실행하지 못했다.
+- 기본 `npm test`(jest, `--runInBand`): 처음 실행은 C: 여유가 약 10MB인 상태에서 94건 중 51건이 `mongod` 기동 단계의 `fassert() failure`로 실패했다. 디스크를 확보한 뒤 다시 실행해 5개 스위트 94건이 모두 통과했다. 첫 실패의 원인이 디스크라는 직접 증거(ENOSPC 메시지)는 확인하지 못했지만, 같은 코드가 여유 공간 확보 후 통과했다.
+- backend `eslint .` 통과.
+- `tools/contact-review/browser.cjs`: 하네스를 빌드해 실제 ContactSection, Express 라우터, 폐기 가능한 MongoDB로 실행했다. 16개 상태의 접근성 오류 0건, 6개 흐름 통과. 이 중 "submit after a receipt creates a new inquiry"가 요청 키 초기화를 확인한다(성공 후 재전송이 다른 접수 번호와 레코드 2건을 만들고, 응답 유실 재시도는 원래 키로 중복 없이 처리). Playwright, axe, Chrome은 저장소 밖 도구 폴더와 설치된 Chrome을 사용했다. 산출물은 저장소 밖에 두었다.
+- 컴포넌트 단위의 요청 키 자동 테스트는 따로 없다(프런트 유닛 테스트에 컴포넌트 렌더링 환경이 없다). 위 브라우저 흐름이 대신 확인한다.
