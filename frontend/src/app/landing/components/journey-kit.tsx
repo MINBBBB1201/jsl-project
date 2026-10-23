@@ -7,12 +7,15 @@ import { SiteLink } from "@/components/site-link"
  * square arrow. Sections compose these instead of badges, cards and pill buttons.
  */
 
-/** "JSL / GLOBAL NETWORK ······ 05 / 12" */
-export function SceneHeader({ path, index, total }: { path: string; index: number; total: number }) {
+/**
+ * "JSL / GLOBAL NETWORK ······ 05 / 12". The counter marks stops on the journey only;
+ * supporting sections (certifications, partners) pass no index and keep just the route.
+ */
+export function SceneHeader({ path, index, total }: { path: string; index?: number; total?: number }) {
   const pad = (n: number) => String(n).padStart(2, "0")
   return <div className="jk-scene-header" aria-hidden="true">
     <span className="jk-mono">JSL / {path}</span>
-    <span className="jk-mono jk-counter">{pad(index)} / {pad(total)}</span>
+    {index && total ? <span className="jk-mono jk-counter">{pad(index)} / {pad(total)}</span> : null}
   </div>
 }
 

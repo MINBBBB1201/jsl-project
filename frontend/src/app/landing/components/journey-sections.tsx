@@ -8,6 +8,7 @@ import { useContent } from "@/config/use-content";
 import { SiteLink } from "@/components/site-link";
 import { LanguageSwitcher } from "@/components/language-switcher";
 import { CountUp as NumericText } from "./count-up";
+import { SceneHeader } from "./journey-kit";
 
 const Globe = dynamic(() => import("./journey-globe"), { ssr: false });
 const asset = (name: string) => `/images/journey/${name}`;
@@ -80,7 +81,7 @@ export function JourneyHero() {
 
 export function JourneyIntro() {
   const { redesign, stats } = useContent();
-  return <section id="what-we-do" className="journey-intro journey-pad" data-scene><div className="journey-intro-title journey-reveal"><div className="journey-intro-thumb"><SceneImage name="intro.jpg" /></div><p className="journey-eyebrow">{redesign.whatWeDo.eyebrow}</p><h2>{redesign.whatWeDo.title}<span>{redesign.hero.headline2}</span></h2></div><div className="journey-intro-right"><p className="journey-lead">{redesign.hero.subheadline}</p><div className="journey-intro-services">{redesign.whatWeDo.cards.map((card) => <div key={card.title}><h3>{card.title}</h3><p>{card.description}</p></div>)}</div><dl className="journey-figures">{stats.map((stat) => <div key={stat.label} className="journey-reveal"><dt>{stat.label}</dt><dd><NumericText value={stat.value} /></dd><p>{stat.description}</p></div>)}</dl></div></section>;
+  return <section id="what-we-do" className="journey-intro journey-pad" data-scene><SceneHeader path={String(redesign.whatWeDo.eyebrow).toUpperCase()} index={1} total={12} /><div className="journey-intro-title journey-reveal"><h2>{redesign.whatWeDo.title}<span>{redesign.hero.headline2}</span></h2></div><div className="journey-intro-right"><p className="journey-lead">{redesign.hero.subheadline}</p><div className="journey-intro-services">{redesign.whatWeDo.cards.map((card) => <div key={card.title}><h3>{card.title}</h3><p>{card.description}</p></div>)}</div><dl className="journey-figures">{stats.map((stat) => <div key={stat.label} className="journey-reveal"><dt>{stat.label}</dt><dd><NumericText value={stat.value} /></dd><p>{stat.description}</p></div>)}</dl></div></section>;
 }
 
 export function JourneyYard() {
