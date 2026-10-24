@@ -129,7 +129,7 @@
     "replayed": true,
     "sameReceipt": true,
     "countAfterRetry": 3,
-    "formValuesRestored": false,
+    "emailRestored": false,
     "consentRestored": false,
     "metadataCleared": true
   }

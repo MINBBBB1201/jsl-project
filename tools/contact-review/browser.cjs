@@ -239,7 +239,7 @@ async function main() {
       replayed: replayedReceipt.replayed,
       sameReceipt: replayedReceipt.data.id === lostReceipt.data.id,
       countAfterRetry,
-      formValuesRestored: false,
+      emailRestored: false,
       consentRestored: false,
       metadataCleared: true,
     };
