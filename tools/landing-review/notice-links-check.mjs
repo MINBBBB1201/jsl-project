@@ -7,6 +7,17 @@ const LOCALES = [
 
 const DEFAULT_TIMEOUT_MS = 5_000
 const DEFAULT_MAX_BYTES = 2 * 1024 * 1024
+const RAW_TEXT_TAGS = new Set([
+  "iframe",
+  "noembed",
+  "noframes",
+  "noscript",
+  "script",
+  "style",
+  "textarea",
+  "title",
+  "xmp",
+])
 
 export class NoticeLinksCheckError extends Error {
   constructor(message) {
@@ -104,11 +115,166 @@ async function readLimitedHtml(response, routePath, maxBytes) {
   return html
 }
 
+function tagEndIndex(html, startIndex) {
+  let quote = null
+  for (let index = startIndex + 1; index < html.length; index += 1) {
+    const character = html[index]
+    if (quote) {
+      if (character === quote) quote = null
+    } else if (character === '"' || character === "'") {
+      quote = character
+    } else if (character === ">") {
+      return index
+    }
+  }
+  return -1
+}
+
+function rawTextEnd(html, contentStart, tagName) {
+  if (tagName === "plaintext") {
+    return { contentEnd: html.length, nextIndex: html.length }
+  }
+
+  const closingTag = new RegExp(`</${tagName}(?=\\s|/?>)`, "ig")
+  closingTag.lastIndex = contentStart
+  const match = closingTag.exec(html)
+  if (!match) {
+    return { contentEnd: html.length, nextIndex: html.length }
+  }
+
+  const endIndex = tagEndIndex(html, match.index)
+  if (endIndex === -1) {
+    return { contentEnd: match.index, nextIndex: html.length }
+  }
+  return { contentEnd: match.index, nextIndex: endIndex + 1 }
+}
+
+function escapeMarkupText(value) {
+  return value.replace(/</g, "&lt;").replace(/>/g, "&gt;")
+}
+
+function* tagTokens(html) {
+  let index = 0
+  while (index < html.length) {
+    const startIndex = html.indexOf("<", index)
+    if (startIndex === -1) return
+
+    const tagEnd = tagEndIndex(html, startIndex)
+    if (tagEnd === -1) {
+      return
+    }
+
+    const tag = html.slice(startIndex, tagEnd + 1)
+    const match = tag.match(/^<(\/?)([a-z][a-z0-9:-]*)\b/i)
+    if (match) {
+      yield {
+        tag,
+        name: match[2].toLowerCase(),
+        closing: match[1] === "/",
+        startIndex,
+        endIndex: tagEnd + 1,
+      }
+    }
+    index = tagEnd + 1
+  }
+}
+
+function elementContent(html, tagName) {
+  let contentStart = -1
+  let depth = 0
+  for (const token of tagTokens(html)) {
+    if (token.name !== tagName) continue
+    if (token.closing) {
+      if (depth > 0) depth -= 1
+      if (depth === 0 && contentStart !== -1) {
+        return html.slice(contentStart, token.startIndex)
+      }
+    } else {
+      if (depth === 0) contentStart = token.endIndex
+      depth += 1
+    }
+  }
+  return null
+}
+
+function stripInertMarkup(html) {
+  const visibleParts = []
+  let index = 0
+  let templateDepth = 0
+
+  while (index < html.length) {
+    if (html.startsWith("<!--", index)) {
+      const commentEnd = html.indexOf("-->", index + 4)
+      index = commentEnd === -1 ? html.length : commentEnd + 3
+      continue
+    }
+
+    if (html[index] !== "<") {
+      const nextTag = html.indexOf("<", index)
+      const nextIndex = nextTag === -1 ? html.length : nextTag
+      if (templateDepth === 0) visibleParts.push(html.slice(index, nextIndex))
+      index = nextIndex
+      continue
+    }
+
+    const endIndex = tagEndIndex(html, index)
+    if (endIndex === -1) {
+      if (templateDepth === 0) visibleParts.push(html.slice(index))
+      break
+    }
+
+    const tag = html.slice(index, endIndex + 1)
+    const match = tag.match(/^<(\/?)([a-z][a-z0-9:-]*)\b/i)
+    if (!match) {
+      if (templateDepth === 0) visibleParts.push(tag)
+      index = endIndex + 1
+      continue
+    }
+
+    const closing = match[1] === "/"
+    const tagName = match[2].toLowerCase()
+
+    if (templateDepth > 0) {
+      if (!closing && (RAW_TEXT_TAGS.has(tagName) || tagName === "plaintext")) {
+        index = rawTextEnd(html, endIndex + 1, tagName).nextIndex
+        continue
+      }
+      if (tagName === "template") {
+        templateDepth += closing ? -1 : 1
+      }
+      index = endIndex + 1
+      continue
+    }
+
+    if (!closing && tagName === "template") {
+      templateDepth = 1
+      index = endIndex + 1
+      continue
+    }
+
+    if (!closing && (RAW_TEXT_TAGS.has(tagName) || tagName === "plaintext")) {
+      const rawText = rawTextEnd(html, endIndex + 1, tagName)
+      if (tagName === "title") {
+        visibleParts.push(`<title>${escapeMarkupText(html.slice(endIndex + 1, rawText.contentEnd))}</title>`)
+      }
+      index = rawText.nextIndex
+      continue
+    }
+
+    visibleParts.push(tag)
+    index = endIndex + 1
+  }
+
+  return visibleParts.join("")
+}
+
 function looksLikeLoginPage(html) {
-  const title = html.match(/<title\b[^>]*>([\s\S]*?)<\/title>/i)?.[1] ?? ""
+  const title = elementContent(html, "title") ?? ""
   if (/\b(?:log[ -]?in|sign[ -]?in|authentication)\b|로그인/i.test(title)) return true
-  return [...html.matchAll(/<input\b[^>]*>/gi)]
-    .some(([tag]) => tagAttributeValue(tag, "type")?.toLowerCase() === "password")
+  return [...tagTokens(html)]
+    .some((token) => !token.closing
+      && token.name === "input"
+      && tagAttributeValue(token.tag, "type")?.toLowerCase() === "password")
 }
 
 async function fetchHtml(fetchImpl, baseUrl, routePath, { timeoutMs, maxBytes }) {
@@ -154,21 +320,37 @@ async function fetchHtml(fetchImpl, baseUrl, routePath, { timeoutMs, maxBytes })
       throw error
     }
 
-    if (looksLikeLoginPage(html)) {
+    const visibleHtml = stripInertMarkup(html)
+    if (looksLikeLoginPage(visibleHtml)) {
       throw new NoticeLinksCheckError(`${routePath} returned a login page instead of the app`)
     }
-    return { html, requestUrl, contentLanguage: response.headers.get("content-language") }
+    return { html: visibleHtml, requestUrl, contentLanguage: response.headers.get("content-language") }
   } finally {
     clearTimeout(timer)
   }
 }
 
 function decodeAttribute(value) {
-  return value
-    .replace(/&amp;/gi, "&")
-    .replace(/&quot;/gi, '"')
-    .replace(/&#(?:39|x27);/gi, "'")
-    .replace(/&#(?:47|x2f);/gi, "/")
+  const namedReferences = {
+    amp: "&",
+    apos: "'",
+    gt: ">",
+    lt: "<",
+    quot: '"',
+  }
+  return value.replace(/&(?:amp|apos|gt|lt|quot|#(?:\d+|x[0-9a-f]+));/gi, (reference) => {
+    const entity = reference.slice(1, -1).toLowerCase()
+    if (Object.hasOwn(namedReferences, entity)) return namedReferences[entity]
+
+    const codePoint = entity[1] === "x"
+      ? Number.parseInt(entity.slice(2), 16)
+      : Number.parseInt(entity.slice(1), 10)
+    if (!Number.isInteger(codePoint) || codePoint === 0 || codePoint > 0x10ffff
+      || (codePoint >= 0xd800 && codePoint <= 0xdfff)) {
+      return "\uFFFD"
+    }
+    return String.fromCodePoint(codePoint)
+  })
 }
 
 function tagAttributeValue(tag, attributeName) {
@@ -186,7 +368,7 @@ function tagAttributeValue(tag, attributeName) {
 }
 
 function documentLanguage(html, routePath) {
-  const tag = html.match(/<html\b[^>]*>/i)?.[0] ?? ""
+  const tag = [...tagTokens(html)].find((token) => token.name === "html" && !token.closing)?.tag ?? ""
   const language = (tagAttributeValue(tag, "lang") ?? "").trim().toLowerCase()
   if (!language) {
     throw new NoticeLinksCheckError(`${routePath} is missing <html lang>`)
@@ -209,13 +391,14 @@ function assertLanguage(document, expectedLocale, routePath) {
 }
 
 function footerHrefs(html, routePath) {
-  const footer = html.match(/<footer\b[^>]*>[\s\S]*?<\/footer>/i)?.[0]
-  if (!footer) {
+  const footer = elementContent(html, "footer")
+  if (footer === null) {
     throw new NoticeLinksCheckError(`${routePath} is missing a footer element`)
   }
 
-  return [...footer.matchAll(/<a\b[^>]*>/gi)]
-    .map(([tag]) => tagAttributeValue(tag, "href"))
+  return [...tagTokens(footer)]
+    .filter((token) => token.name === "a" && !token.closing)
+    .map((token) => tagAttributeValue(token.tag, "href"))
     .filter((href) => href !== null)
 }
 

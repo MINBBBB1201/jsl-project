@@ -27,7 +27,7 @@ PASS vi: /vi/landing -> /vi/notices
 
 1. 랜딩 경로가 redirect 없이 HTTP 200 HTML을 반환하는지 확인한다.
 2. 랜딩의 `<html>` 태그에 있는 실제 `lang` 속성이 요청 로케일과 같은지 확인한다.
-3. SSR HTML의 `<footer>` 안에 실제 `href` 속성이 있는 링크 중 같은 origin의 정확한 notices 경로가 있는지 확인한다.
+3. SSR HTML의 실제 문서 마크업에서 `<footer>`를 찾고, 그 안에 실제 `href` 속성이 있는 링크 중 같은 origin의 정확한 notices 경로가 있는지 확인한다.
 4. notices 경로가 redirect 없이 HTTP 200 HTML을 반환하는지 확인한다.
 5. notices의 `<html lang>`이 요청 로케일과 같은지 확인한다.
 
@@ -37,6 +37,7 @@ PASS vi: /vi/landing -> /vi/notices
 - HTTP 401, 403, 404와 그 밖의 non-200 상태
 - HTTP 200으로 반환된 로그인 제목 또는 실제 `input[type="password"]`가 있는 문서
 - HTML이 아닌 응답, 빈 문서, footer 또는 notices href 누락
+- 주석, script/style/textarea 등의 raw text, template 콘텐츠 안에만 있는 footer 마크업
 - 잘못된 `<html lang>` 또는 `Content-Language`
 - 5초 timeout
 - 선언 크기 또는 실제 읽은 크기가 2MiB를 넘는 응답
@@ -51,8 +52,8 @@ node --check tools/landing-review/notice-links-check.test.mjs
 node --test tools/landing-review/notice-links-check.test.mjs
 ```
 
-테스트는 `node:http`가 연 loopback 임시 포트만 사용하며 각 테스트 안에서 닫는다. 정상 4로케일과 외부 redirect, 로그인 redirect·문서, `data-lang`/`data-href`만 있는 문서, 일반 제목과 password 입력을 가진 HTTP 200 문서, 403, 404, href 누락, 언어 불일치, timeout, 과대 응답, CLI 실패 종료 코드를 포함한다.
+테스트는 loopback 임시 HTTP 서버와 인메모리 `Response` fixture를 사용한다. 임시 서버는 테스트가 끝나면 닫는다. 정상 4로케일과 외부 redirect, 로그인 redirect·문서, `data-lang`/`data-href`만 있는 문서, 주석·script/style/textarea·template 안의 footer 문자열, 속성 값 안의 `>`, 숫자 문자 참조 password type, 이중 인코딩 href, 403, 404, href 누락, 언어 불일치, timeout, 과대 응답, CLI 실패 종료 코드를 포함한다.
 
 ## 한계
 
-이 도구는 SSR HTML의 상태·언어·footer href를 확인한다. 브라우저 클릭, hydration 이후 동작, 키보드 접근성, 라이트·다크 화면, 모바일 레이아웃, 시각적 품질을 검증하지 않는다. API가 없어 공지 카드가 오류 상태를 표시하는 문제도 이 도구의 대상이 아니다.
+이 도구는 SSR HTML의 상태·언어·footer href를 확인한다. 주석, raw-text 요소, template 콘텐츠를 제외하는 제한된 스캐너를 사용하며 표준 HTML 파서가 아니다. 브라우저 클릭, hydration 이후 동작, 키보드 접근성, 라이트·다크 화면, 모바일 레이아웃, 시각적 품질을 검증하지 않는다. API가 없어 공지 카드가 오류 상태를 표시하는 문제도 이 도구의 대상이 아니다.

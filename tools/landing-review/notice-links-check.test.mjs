@@ -50,11 +50,35 @@ async function withServer(handler, run) {
   }
 }
 
+function responseFetch(bodyForRoute) {
+  return async (requestUrl) => {
+    const route = ROUTES.get(new URL(requestUrl).pathname)
+    return new Response(html(route.locale, bodyForRoute(route)), {
+      headers: { "content-type": "text/html" },
+    })
+  }
+}
+
 test("accepts four locale landing footers and notices documents", async () => {
   await withServer(successHandler, async (baseUrl) => {
     const results = await checkNoticeLinks(baseUrl)
     assert.deepEqual(results.map((result) => result.locale), ["ko", "en", "zh", "vi"])
   })
+})
+
+test("handles a trailing incomplete less-than without breaking checks", async () => {
+  const results = await checkNoticeLinks("https://fixture.example", {
+    fetchImpl: async (requestUrl) => {
+      const route = ROUTES.get(new URL(requestUrl).pathname)
+      const body = route.type === "landing"
+        ? `<footer><a href="${route.noticesPath}">Notices</a></footer>`
+        : "<main>Notices</main>"
+      return new Response(`${html(route.locale, body)}<`, {
+        headers: { "content-type": "text/html" },
+      })
+    },
+  })
+  assert.deepEqual(results.map((result) => result.locale), ["ko", "en", "zh", "vi"])
 })
 
 test("rejects a redirect to another origin", async () => {
@@ -121,6 +145,26 @@ test("rejects data-href without a real href attribute", async () => {
   })
 })
 
+const INERT_FOOTER_MARKUP = [
+  ["an HTML comment", (path) => `<!-- <footer><a href="${path}">Notice</a></footer> -->`],
+  ["script text", (path) => `<script>const sample = '<footer><a href="${path}">Notice</a></footer>';</script>`],
+  ["script text after a similar closing tag", (path) => `<script>const sample = '</script-data><footer><a href="${path}">Notice</a></footer>';</script>`],
+  ["style text", (path) => `<style>.sample::after { content: "<footer><a href=${path}>Notice</a></footer>"; }</style>`],
+  ["textarea text", (path) => `<textarea><footer><a href="${path}">Notice</a></footer></textarea>`],
+  ["template content", (path) => `<template><footer><a href="${path}">Notice</a></footer></template>`],
+]
+
+for (const [description, inertMarkup] of INERT_FOOTER_MARKUP) {
+  test(`does not accept a footer in ${description}`, async () => {
+    await assert.rejects(
+      checkNoticeLinks("https://fixture.example", {
+        fetchImpl: responseFetch((route) => route.type === "landing" ? inertMarkup(route.noticesPath) : ""),
+      }),
+      /is missing a footer element/,
+    )
+  })
+}
+
 test("rejects a 200 password page with a normal title", async () => {
   await withServer((request, response) => {
     const path = new URL(request.url, "http://fixture").pathname
@@ -133,6 +177,33 @@ test("rejects a 200 password page with a normal title", async () => {
   }, async (baseUrl) => {
     await assert.rejects(checkNoticeLinks(baseUrl), /login page instead of the app/)
   })
+})
+
+for (const [description, input] of [
+  ['a quoted ">" attribute before type', '<input data-expr="a > b" type="password">'],
+  ["a numeric character reference in type", '<input type="pass&#119;ord">'],
+]) {
+  test(`rejects a normal-title 200 login page with ${description}`, async () => {
+    await assert.rejects(
+      checkNoticeLinks("https://fixture.example", {
+        fetchImpl: responseFetch((route) => route.type === "landing"
+          ? `<main>${input}</main><footer><a href="${route.noticesPath}">Notices</a></footer>`
+          : "<main>Notices</main>"),
+      }),
+      /login page instead of the app/,
+    )
+  })
+}
+
+test("rejects a doubly encoded notices href", async () => {
+  await assert.rejects(
+    checkNoticeLinks("https://fixture.example", {
+      fetchImpl: responseFetch((route) => route.type === "landing"
+        ? `<footer><a href="&amp;#47;${route.noticesPath.slice(1)}">Notices</a></footer>`
+        : "<main>Notices</main>"),
+    }),
+    /footer is missing href=\/notices/,
+  )
 })
 
 test("rejects an HTTP not-found response", async () => {
