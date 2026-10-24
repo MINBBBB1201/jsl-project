@@ -18,7 +18,7 @@ export function JourneyClosing({ index, total }: { index: number; total: number 
       <TextLink href={cta.secondaryCta.href}>{cta.secondaryCta.label}</TextLink>
     </div>
     <ul className="jk-inline-list">
-      {[...cta.highlights, ...cta.trustIndicators].map(item => <li key={item}><MonoLabel>{item}</MonoLabel></li>)}
+      {[...cta.highlights, ...cta.trustIndicators].map((item, i) => <li key={`${i}-${item}`}><MonoLabel>{item}</MonoLabel></li>)}
     </ul>
   </section>
 }

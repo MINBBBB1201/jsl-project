@@ -33,7 +33,7 @@ export function LandingPageContent() {
     <JourneyProgressRail />
     <main>
       <JourneyHeroMotion />
-      <JourneyIntro />
+      <JourneyIntro index={1} total={STOPS} />
       {/* Replaces the stock yard scene; leads straight into the pinned sequence. */}
       <JourneyLeadIn index={2} total={STOPS} />
       <MultimodalJourney />

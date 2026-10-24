@@ -22,8 +22,10 @@ export function JourneyNetwork({ index, total }: { index: number; total: number 
   const { network, redesign } = useContent()
   // "4명" stays tight; a word unit such as "staff" needs a space.
   const people = (count: number) => `${count}${/^[A-Za-z]/.test(network.headcountUnit) ? " " : ""}${network.headcountUnit}`
-  const hub = network.items.find(office => office.isHq)
-  const hubPoint = hub ? project(COORDINATES[hub.cityEn] ?? [0, 0]) : null
+  // Only offices with known coordinates are plotted; the list below still names every office.
+  const plotted = network.items.filter(office => office.cityEn in COORDINATES)
+  const hub = plotted.find(office => office.isHq)
+  const hubPoint = hub ? project(COORDINATES[hub.cityEn]) : null
   const meridians = [105, 110, 115, 120, 125, 130], parallels = [20, 25, 30, 35, 40]
 
   return <section id="network" className="jk-section jk-sea" aria-labelledby="jk-network-title">
@@ -36,16 +38,16 @@ export function JourneyNetwork({ index, total }: { index: number; total: number 
           {redesign.hero.stats.map(stat => <div key={stat.label}><dt>{stat.label}</dt><dd>{stat.value}</dd></div>)}
         </dl>
       </div>
-      <figure className="jk-chart" aria-label={network.title}>
-        <svg viewBox={`0 0 ${W} ${H}`} role="img" aria-hidden="true">
+      <figure className="jk-chart" aria-hidden="true">
+        <svg viewBox={`0 0 ${W} ${H}`}>
           {meridians.map(lon => { const [x] = project([lon, BOX.south]); return <g key={lon}><line x1={x} y1={0} x2={x} y2={H} className="jk-chart-grid" /><text x={x + 6} y={H - 10} className="jk-chart-tick">{lon}°E</text></g> })}
           {parallels.map(lat => { const [, y] = project([BOX.west, lat]); return <g key={lat}><line x1={0} y1={y} x2={W} y2={y} className="jk-chart-grid" /><text x={6} y={y - 6} className="jk-chart-tick">{lat}°N</text></g> })}
-          {hubPoint && network.items.filter(office => !office.isHq).map(office => {
-            const [x, y] = project(COORDINATES[office.cityEn] ?? [0, 0])
+          {hubPoint && plotted.filter(office => !office.isHq).map(office => {
+            const [x, y] = project(COORDINATES[office.cityEn])
             return <line key={office.cityEn} x1={hubPoint[0]} y1={hubPoint[1]} x2={x} y2={y} className="jk-chart-route" />
           })}
-          {network.items.map(office => {
-            const [x, y] = project(COORDINATES[office.cityEn] ?? [0, 0])
+          {plotted.map(office => {
+            const [x, y] = project(COORDINATES[office.cityEn])
             const left = LABEL_LEFT.has(office.cityEn), dx = left ? -14 : 14, anchor = left ? "end" : "start"
             return <g key={office.cityEn} transform={`translate(${x} ${y})`}>
               <rect x={-5} y={-5} width={10} height={10} className={office.isHq ? "jk-chart-hub" : "jk-chart-node"} />
