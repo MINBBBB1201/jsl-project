@@ -1,0 +1,125 @@
+{
+  "scope": "Actual ContactSection component + real Express router + disposable MongoDB; Next routing, server rendering and production fonts excluded",
+  "states": [
+    {
+      "language": "ko",
+      "theme": "light",
+      "viewport": "desktop",
+      "accessibilityViolations": 0,
+      "horizontalOverflow": false
+    },
+    {
+      "language": "ko",
+      "theme": "light",
+      "viewport": "mobile",
+      "accessibilityViolations": 0,
+      "horizontalOverflow": false
+    },
+    {
+      "language": "ko",
+      "theme": "dark",
+      "viewport": "desktop",
+      "accessibilityViolations": 0,
+      "horizontalOverflow": false
+    },
+    {
+      "language": "ko",
+      "theme": "dark",
+      "viewport": "mobile",
+      "accessibilityViolations": 0,
+      "horizontalOverflow": false
+    },
+    {
+      "language": "en",
+      "theme": "light",
+      "viewport": "desktop",
+      "accessibilityViolations": 0,
+      "horizontalOverflow": false
+    },
+    {
+      "language": "en",
+      "theme": "light",
+      "viewport": "mobile",
+      "accessibilityViolations": 0,
+      "horizontalOverflow": false
+    },
+    {
+      "language": "en",
+      "theme": "dark",
+      "viewport": "desktop",
+      "accessibilityViolations": 0,
+      "horizontalOverflow": false
+    },
+    {
+      "language": "en",
+      "theme": "dark",
+      "viewport": "mobile",
+      "accessibilityViolations": 0,
+      "horizontalOverflow": false
+    },
+    {
+      "language": "zh",
+      "theme": "light",
+      "viewport": "desktop",
+      "accessibilityViolations": 0,
+      "horizontalOverflow": false
+    },
+    {
+      "language": "zh",
+      "theme": "light",
+      "viewport": "mobile",
+      "accessibilityViolations": 0,
+      "horizontalOverflow": false
+    },
+    {
+      "language": "zh",
+      "theme": "dark",
+      "viewport": "desktop",
+      "accessibilityViolations": 0,
+      "horizontalOverflow": false
+    },
+    {
+      "language": "zh",
+      "theme": "dark",
+      "viewport": "mobile",
+      "accessibilityViolations": 0,
+      "horizontalOverflow": false
+    },
+    {
+      "language": "vi",
+      "theme": "light",
+      "viewport": "desktop",
+      "accessibilityViolations": 0,
+      "horizontalOverflow": false
+    },
+    {
+      "language": "vi",
+      "theme": "light",
+      "viewport": "mobile",
+      "accessibilityViolations": 0,
+      "horizontalOverflow": false
+    },
+    {
+      "language": "vi",
+      "theme": "dark",
+      "viewport": "desktop",
+      "accessibilityViolations": 0,
+      "horizontalOverflow": false
+    },
+    {
+      "language": "vi",
+      "theme": "dark",
+      "viewport": "mobile",
+      "accessibilityViolations": 0,
+      "horizontalOverflow": false
+    }
+  ],
+  "flows": [
+    "keyboard consent toggle and required-field focus",
+    "submit after a receipt creates a new inquiry",
+    "lost response survives reload and renewed consent without duplicate",
+    "changed notice requires renewed consent",
+    "database save failure never displays a receipt",
+    "unapproved policy disables online intake"
+  ]
+}

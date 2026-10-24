@@ -203,13 +203,22 @@ async function main() {
     await submit(page);
     await page.getByRole("alert").waitFor();
     assert.equal(await page.locator("button[type=submit]").isEnabled(), true);
+    const pendingMetadata = await page.evaluate(() => JSON.parse(sessionStorage.getItem('jsl.contact.retry.v1')));
+    assert.deepEqual(Object.keys(pendingMetadata).sort(), ['expiresAt', 'identityHash', 'key', 'version']);
+    assert(!JSON.stringify(pendingMetadata).includes('person@example.test'));
+    await page.reload();
+    await page.waitForFunction(() => !document.querySelectorAll('input:not([type=checkbox])')[1].disabled);
+    assert.equal(await page.getByRole('checkbox').isChecked(), false);
+    assert.equal(await page.locator('input[type=email]').inputValue(), '');
+    await fill(page, 'Lost response synthetic cargo');
     await submit(page);
     await page
       .getByRole("status")
       .filter({ hasText: "문의 접수 번호" })
       .waitFor();
     assert.equal(await Contact.countDocuments(), 3);
-    summary.flows.push("lost response retries original key without duplicate");
+    assert.equal(await page.evaluate(() => sessionStorage.getItem('jsl.contact.retry.v1')), null);
+    summary.flows.push("lost response survives reload and renewed consent without duplicate");
     await page.unroute("**/api/contact");
     configure({
       ...policy,

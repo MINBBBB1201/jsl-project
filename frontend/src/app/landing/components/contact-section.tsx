@@ -24,6 +24,7 @@ import { useEffect, useRef, useState } from 'react'
 import { useLocale } from 'next-intl'
 import { inquiryCopy } from '@/lib/contact-inquiry-copy'
 import { inquiryPayload, readNotice, readReceipt, retryIdentity, type ContactNotice, type InquiryReceipt, type InquiryLanguage } from '@/lib/contact-inquiry'
+import { acquireInquiryRetry, completeInquiryRetry, inquiryRetryStorage, type InquiryRetry } from '@/lib/contact-inquiry-retry'
 import { useContent } from '@/config/use-content'
 import { API_BASE_URL } from '@/lib/api'
 
@@ -36,7 +37,7 @@ export function ContactSection() {
   const [receipt, setReceipt] = useState<InquiryReceipt | null>(null)
   const [failure, setFailure] = useState('')
   const errorRef = useRef<HTMLParagraphElement>(null)
-  const retryRef = useRef<{ identity: string; key: string } | null>(null)
+  const retryRef = useRef<InquiryRetry | null>(null)
   const sendingRef = useRef(false)
   const contactFormSchema = z.object({
     company: z.string().trim().max(200, copy.invalid),
@@ -79,10 +80,12 @@ export function ContactSection() {
     const timeout = setTimeout(() => controller.abort(), 15000)
     try {
       const identity = retryIdentity({ ...values, company: currentNotice.items.includes('companyName') ? values.company : '', subject: currentNotice.items.includes('subject') ? values.subject : '' }, language)
-      if (retryRef.current?.identity !== identity) retryRef.current = { identity, key: crypto.randomUUID() }
+      const storage = inquiryRetryStorage()
+      const retry = await acquireInquiryRetry(identity, retryRef.current, storage)
+      retryRef.current = retry
       const response = await fetch(`${API_BASE_URL}/api/contact`, {
         method: 'POST', signal: controller.signal,
-        headers: { 'Content-Type': 'application/json', 'Idempotency-Key': retryRef.current.key },
+        headers: { 'Content-Type': 'application/json', 'Idempotency-Key': retry.key },
         body: JSON.stringify(inquiryPayload(values, currentNotice)),
       })
       const result = await response.json().catch(() => null)
@@ -96,9 +99,9 @@ export function ContactSection() {
       const confirmed = response.ok ? readReceipt(result) : null
       if (!confirmed) { setFailure(copy.failed); return }
       setReceipt(confirmed)
-      // 접수가 확정되면 이 키의 역할은 끝난다. 다음 전송은 새 문의이므로 새 키를 쓴다.
-      // 실패·응답 유실 때는 위에서 return 하거나 catch 로 가므로 키가 남아 재시도가 보호된다.
-      retryRef.current = null
+      // 확정된 키는 저장소에서 지우고, 삭제 실패 시에도 같은 페이지에서 다시 쓰지 않는다.
+      // 실패·응답 유실 때는 미확정 키가 남아 재시도가 보호된다.
+      retryRef.current = completeInquiryRetry(retry, storage)
     } catch { setFailure(copy.failed) }
     finally { clearTimeout(timeout); sendingRef.current = false }
   }
