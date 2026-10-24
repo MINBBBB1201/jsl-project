@@ -193,16 +193,23 @@ async function main() {
     summary.flows.push("submit after a receipt creates a new inquiry");
     await page.locator("textarea").fill("Lost response synthetic cargo");
     let first = true;
+    let lostReceipt;
     await page.route("**/api/contact", async (route) => {
       if (first) {
         first = false;
-        await route.fetch();
+        const savedResponse = await route.fetch();
+        assert.equal(savedResponse.status(), 201);
+        lostReceipt = await savedResponse.json();
+        assert.equal(lostReceipt.replayed, false);
         await route.abort();
       } else await route.continue();
     });
     await submit(page);
     await page.getByRole("alert").waitFor();
     assert.equal(await page.locator("button[type=submit]").isEnabled(), true);
+    const countBeforeReload = await Contact.countDocuments();
+    assert.equal(countBeforeReload, 3);
+    assert.equal(typeof lostReceipt?.data?.id, 'string');
     const pendingMetadata = await page.evaluate(() => JSON.parse(sessionStorage.getItem('jsl.contact.retry.v1')));
     assert.deepEqual(Object.keys(pendingMetadata).sort(), ['expiresAt', 'identityHash', 'key', 'version']);
     assert(!JSON.stringify(pendingMetadata).includes('person@example.test'));
@@ -211,13 +218,31 @@ async function main() {
     assert.equal(await page.getByRole('checkbox').isChecked(), false);
     assert.equal(await page.locator('input[type=email]').inputValue(), '');
     await fill(page, 'Lost response synthetic cargo');
+    const replayResponsePromise = page.waitForResponse(response => response.url() === `${base}/api/contact` && response.request().method() === 'POST');
     await submit(page);
+    const replayResponse = await replayResponsePromise;
+    assert.equal(replayResponse.status(), 200);
+    const replayedReceipt = await replayResponse.json();
+    assert.equal(replayedReceipt.replayed, true);
+    assert.equal(replayedReceipt.data.id, lostReceipt.data.id);
     await page
       .getByRole("status")
       .filter({ hasText: "문의 접수 번호" })
       .waitFor();
-    assert.equal(await Contact.countDocuments(), 3);
+    const countAfterRetry = await Contact.countDocuments();
+    assert.equal(countAfterRetry, 3);
     assert.equal(await page.evaluate(() => sessionStorage.getItem('jsl.contact.retry.v1')), null);
+    summary.reloadRetryProof = {
+      initialStatus: 201,
+      countBeforeReload,
+      retryStatus: replayResponse.status(),
+      replayed: replayedReceipt.replayed,
+      sameReceipt: replayedReceipt.data.id === lostReceipt.data.id,
+      countAfterRetry,
+      formValuesRestored: false,
+      consentRestored: false,
+      metadataCleared: true,
+    };
     summary.flows.push("lost response survives reload and renewed consent without duplicate");
     await page.unroute("**/api/contact");
     configure({

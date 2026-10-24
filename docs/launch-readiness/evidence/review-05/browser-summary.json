@@ -121,5 +121,16 @@
     "changed notice requires renewed consent",
     "database save failure never displays a receipt",
     "unapproved policy disables online intake"
-  ]
+  ],
+  "reloadRetryProof": {
+    "initialStatus": 201,
+    "countBeforeReload": 3,
+    "retryStatus": 200,
+    "replayed": true,
+    "sameReceipt": true,
+    "countAfterRetry": 3,
+    "formValuesRestored": false,
+    "consentRestored": false,
+    "metadataCleared": true
+  }
 }
