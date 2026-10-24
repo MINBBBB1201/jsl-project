@@ -8,7 +8,7 @@ import { SiteLink } from "@/components/site-link"
  */
 
 /**
- * "JSL / GLOBAL NETWORK ······ 05 / 12". The counter marks stops on the journey only;
+ * "JSL / GLOBAL NETWORK ······ 05 / 11". The counter marks stops on the journey only;
  * supporting sections (certifications, partners) pass no index and keep just the route.
  */
 export function SceneHeader({ path, index, total }: { path: string; index?: number; total?: number }) {

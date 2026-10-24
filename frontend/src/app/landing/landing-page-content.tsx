@@ -22,7 +22,7 @@ import "./journey.css"
 import "./components/journey-kit.css"
 
 /** Numbered stops after the hero; the transport sequence carries its own 01–04 counter. */
-const STOPS = 12
+const STOPS = 11
 
 /** Visual composition only. API clients, translations, forms and internal layouts stay independent. */
 export function LandingPageContent() {
@@ -42,12 +42,12 @@ export function LandingPageContent() {
       <JourneyNetwork index={5} total={STOPS} />
       <JourneyAbout index={6} total={STOPS} />
       <JourneyPartners />
-      <JourneyConsulting index={8} total={STOPS} />
-      <JourneyOperations index={9} total={STOPS} />
-      <JourneyPricing index={10} total={STOPS} />
-      <JourneyFaq index={11} total={STOPS} />
+      <JourneyConsulting index={7} total={STOPS} />
+      <JourneyOperations index={8} total={STOPS} />
+      <JourneyPricing index={9} total={STOPS} />
+      <JourneyFaq index={10} total={STOPS} />
       {/* One closing call replaces the two stacked CTA bands; the form itself is unchanged. */}
-      <JourneyClosing index={12} total={STOPS} />
+      <JourneyClosing index={11} total={STOPS} />
       <div className="journey-contact journey-editorial"><ContactSection /></div>
     </main>
     <div className="journey-footer"><LandingFooter /><div className="journey-wordmark" aria-hidden="true">JSL LOGISTICS</div></div>
