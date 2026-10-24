@@ -5,7 +5,6 @@ import {
   LayoutDashboard,
   MessageCircle,
   ScanSearch,
-  Settings,
   LayoutTemplate,
   FileText,
   Megaphone,
@@ -70,37 +69,6 @@ const data = {
           url: "/landing",
           target: "_blank",
           icon: LayoutTemplate,
-        },
-        {
-          title: "Settings",
-          url: "#",
-          icon: Settings,
-          items: [
-            {
-              title: "User Settings",
-              url: "/settings/user",
-            },
-            {
-              title: "Account Settings",
-              url: "/settings/account",
-            },
-            {
-              title: "Plans & Billing",
-              url: "/settings/billing",
-            },
-            {
-              title: "Appearance",
-              url: "/settings/appearance",
-            },
-            {
-              title: "Notifications",
-              url: "/settings/notifications",
-            },
-            {
-              title: "Connections",
-              url: "/settings/connections",
-            },
-          ],
         },
       ],
     },

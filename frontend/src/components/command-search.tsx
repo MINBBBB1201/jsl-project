@@ -11,12 +11,6 @@ import {
   FileText,
   Megaphone,
   LayoutTemplate,
-  Settings,
-  CreditCard,
-  User,
-  Bell,
-  Link2,
-  Palette,
   type LucideIcon,
 } from "lucide-react"
 
@@ -130,14 +124,6 @@ export function CommandSearch({ open, onOpenChange }: CommandSearchProps) {
     { title: "무역서류", url: "/trade-documents", group: "업무 도구", icon: FileText },
     { title: "공지사항", url: "/announcements", group: "업무 도구", icon: Megaphone },
     { title: "JSL 홈페이지", url: "/landing", group: "외부 사이트", icon: LayoutTemplate },
-
-    // Settings
-    { title: "User Settings", url: "/settings/user", group: "Settings", icon: User },
-    { title: "Account Settings", url: "/settings/account", group: "Settings", icon: Settings },
-    { title: "Plans & Billing", url: "/settings/billing", group: "Settings", icon: CreditCard },
-    { title: "Appearance", url: "/settings/appearance", group: "Settings", icon: Palette },
-    { title: "Notifications", url: "/settings/notifications", group: "Settings", icon: Bell },
-    { title: "Connections", url: "/settings/connections", group: "Settings", icon: Link2 },
   ]
 
   const groupedItems = searchItems.reduce((acc, item) => {
