@@ -1,18 +1,6 @@
 "use client"
 
-import { zodResolver } from "@hookform/resolvers/zod"
-import { useForm } from "react-hook-form"
-import { z } from "zod"
 import { Separator } from '@/components/ui/separator'
-import { Button } from '@/components/ui/button'
-import { Input } from '@/components/ui/input'
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormMessage,
-} from "@/components/ui/form"
 import { LogoWordmark } from '@/components/logo'
 import { Link } from '@/i18n/navigation'
 import { SiteLink } from '@/components/site-link'
@@ -20,14 +8,16 @@ import { Mail, Phone, MapPin } from 'lucide-react'
 import { company } from '@/config/landing-content'
 import { useContent } from '@/config/use-content'
 
-const newsletterSchema = z.object({
-  email: z.string().email({
-    message: "올바른 이메일 주소를 입력해 주세요.",
-  }),
-})
+interface LandingFooterProps {
+  /**
+   * 랜딩은 journey.css 가 푸터 바탕을 테마와 무관하게 밝은 색(#f5f5f3)으로 고정한다.
+   * 그 자리에서는 "light" 를 넘겨 다크 모드에서도 밝은 바탕용 로고를 쓰게 한다.
+   * PublicPageShell 의 푸터는 테마를 따르므로 기본값("theme") 그대로 둔다.
+   */
+  logoSurface?: "theme" | "light"
+}
 
-
-export function LandingFooter() {
+export function LandingFooter({ logoSurface = "theme" }: LandingFooterProps) {
   const { footer } = useContent()
 
   /*
@@ -41,62 +31,16 @@ export function LandingFooter() {
     icon: lineIcons[line.kind],
   }))
 
-  const form = useForm<z.infer<typeof newsletterSchema>>({
-    resolver: zodResolver(newsletterSchema),
-    defaultValues: {
-      email: "",
-    },
-  })
-
-  // TODO: 실제 구독 API가 준비되면 연결 (현재는 콘솔 출력만)
-  function onSubmit(values: z.infer<typeof newsletterSchema>) {
-    console.log(values)
-    form.reset()
-  }
-
   return (
     <footer className="border-t bg-background">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-16">
-        {/* Newsletter Section */}
-        <div className="mb-16">
-          <div className="mx-auto max-w-2xl text-center">
-            <h3 className="text-2xl font-bold mb-4">{footer.newsletter.title}</h3>
-            <p className="text-muted-foreground mb-6">
-              {footer.newsletter.description}
-            </p>
-            <Form {...form}>
-              <form onSubmit={form.handleSubmit(onSubmit)} className="flex flex-col gap-2 max-w-md mx-auto sm:flex-row">
-                <FormField
-                  control={form.control}
-                  name="email"
-                  render={({ field }) => (
-                    <FormItem className="flex-1">
-                      <FormControl>
-                        <Input
-                          type="email"
-                          placeholder={footer.newsletter.placeholder}
-                          {...field}
-                        />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-                <Button type="submit" className="cursor-pointer">
-                  {footer.newsletter.submitLabel}
-                </Button>
-              </form>
-            </Form>
-          </div>
-        </div>
-
         {/* Main Footer Content */}
         <div className="grid gap-8 grid-cols-4 lg:grid-cols-6">
           {/* Brand Column */}
           <div className="col-span-4 lg:col-span-2 max-w-2xl">
             <div className="flex items-center space-x-2 mb-4 max-lg:justify-center">
               <Link href="/landing" className="flex items-center space-x-2 cursor-pointer">
-                <LogoWordmark className="h-12" />
+                <LogoWordmark className="h-12" surface={logoSurface} />
               </Link>
             </div>
             <p className="text-muted-foreground mb-6 max-lg:text-center">
