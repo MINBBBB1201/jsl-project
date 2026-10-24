@@ -11,7 +11,7 @@
 .jk-scene-header{display:flex;justify-content:space-between;align-items:center;padding-bottom:18px;margin-bottom:72px;border-bottom:1px solid var(--jk-rule)}
 .jk-counter{font-variant-numeric:tabular-nums}
 
-.jk-heading{font-size:clamp(40px,4.9vw,92px);font-weight:700;letter-spacing:-.055em;line-height:1.02;max-width:15ch;word-break:keep-all}
+.jk-heading{font-size:clamp(40px,4.9vw,92px);font-weight:700;letter-spacing:-.055em;line-height:1.02;max-width:15ch;word-break:keep-all;overflow-wrap:anywhere}
 .jk-heading>span{display:block}
 .jk-heading-tail{color:var(--jk-ink-2)}
 .jk-lead{max-width:440px;margin-top:28px;font-size:15px;line-height:1.6;color:var(--jk-ink-2)}
@@ -126,6 +126,7 @@
 .jk-legs li:not(:first-child)>span:last-child{color:var(--jk-ink-2)}
 .jk-rule-scale{height:14px;margin-top:40px;border-bottom:4px solid var(--jk-ink);background:repeating-linear-gradient(90deg,var(--jk-ink) 0 1px,transparent 1px calc(100% / 40)) bottom/100% 8px no-repeat}
 .jk-scroll-cue{display:block;margin-top:18px}
-@media(max-width:600px){.jk-legs{grid-template-columns:repeat(2,minmax(0,1fr));row-gap:24px}}
+@media(max-width:900px){.jk-legs{grid-template-columns:repeat(2,minmax(0,1fr));row-gap:24px}}
+@media(max-width:600px){.jk-legs li>span:last-child{font-size:clamp(18px,5.6vw,26px)}}
 /* On phones Weihai's label sits under its node so it clears Seoul's on the same parallel. */
 @media(max-width:600px){.jk-chart-label.is-left{text-anchor:start;transform:translate(14px,44px)}}
