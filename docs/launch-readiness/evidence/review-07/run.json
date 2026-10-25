@@ -1,0 +1,101 @@
+{
+  "sourceHead": "466c5e4c60e40a03032e20d3f704127511bb7c76",
+  "dateLocal": "2026-10-25",
+  "timezone": "Asia/Shanghai",
+  "scope": "Fresh existing contact harness plus one existing concurrency test and a compiled-CSS representative-element probe. No application or harness source changes.",
+  "sources": [
+    {
+      "file": "tools/contact-review/build.cjs",
+      "sha256": "8054879e91967e3645f589acf20d81d04262e5fb094f151657be0c614f8d8f4b"
+    },
+    {
+      "file": "tools/contact-review/browser.cjs",
+      "sha256": "ac65b7fbf2ef2588e892c42cdb01817abc6d7ad9430c115b19db75bbb753931e"
+    },
+    {
+      "file": "backend/tests/contact-readiness.node.cjs",
+      "sha256": "e82a62e1b5a76fc3ca87d78a49b6bef8425ca2851a57936c4b7f234aca0ee388"
+    }
+  ],
+  "artifacts": [
+    {
+      "name": "browser-summary.json",
+      "sha256": "81af348bf984cb27559f68c0dc932d87f0b7c64932b347a350dc1dd390e44832",
+      "size": 3330,
+      "mtimeUtc": "2026-10-25T10:09:32.541798+00:00"
+    },
+    {
+      "name": "concurrency.log",
+      "sha256": "defe44be457e54d859edea420c51aafef53afcd24e30d66be28c241f74f7a6bc",
+      "size": 212,
+      "mtimeUtc": "2026-10-25T10:10:50.839639+00:00"
+    },
+    {
+      "name": "contact.css",
+      "sha256": "7cfa0f8c0ac4c22a59c0d9bbb6d6d08fb4dce47fc88a87f4cf3b516aaa4c2bf9",
+      "size": 348661,
+      "mtimeUtc": "2026-10-25T10:08:15.410580+00:00"
+    },
+    {
+      "name": "contact.js",
+      "sha256": "ae7014b72d037f0cccf3841e6d304995975168d673ef5b2d4f7bf094ce1c22e5",
+      "size": 2327011,
+      "mtimeUtc": "2026-10-25T10:08:09.845655+00:00"
+    },
+    {
+      "name": "index.html",
+      "sha256": "bba0bd94459747b2ee7df8d06a9462b7a01b9bb86b29a4935cd98b512223d3fe",
+      "size": 287,
+      "mtimeUtc": "2026-10-25T10:08:15.410580+00:00"
+    },
+    {
+      "name": "ko-dark-desktop.png",
+      "sha256": "e8cb848b58f7c6041168ef26bb73449ac03df015df8d35be367ba8906e51c4b0",
+      "size": 72950,
+      "mtimeUtc": "2026-10-25T10:09:08.368925+00:00"
+    },
+    {
+      "name": "ko-dark-mobile.png",
+      "sha256": "06460ffd60d723bf94a0363968a6e60985e914635d03013b70f6c67509816731",
+      "size": 66124,
+      "mtimeUtc": "2026-10-25T10:09:09.950245+00:00"
+    },
+    {
+      "name": "ko-light-desktop.png",
+      "sha256": "1d31fed3562864d2069fe8c1fe4a4c0a6dbce7691968bc098438ee2d3621872b",
+      "size": 73178,
+      "mtimeUtc": "2026-10-25T10:09:05.164767+00:00"
+    },
+    {
+      "name": "ko-light-mobile.png",
+      "sha256": "c69f8a5615618535d1629bc277d95e6dd55bad13abbefb0123701e890010f8c6",
+      "size": 66931,
+      "mtimeUtc": "2026-10-25T10:09:06.655482+00:00"
+    },
+    {
+      "name": "reduced-motion-css.json",
+      "sha256": "1b66dcb3b0b3c49404cb5a50e4f8d13ed3d98901bf6195f7b68a1f9d4780539d",
+      "size": 782,
+      "mtimeUtc": "2026-10-25T10:10:53.533240+00:00"
+    }
+  ],
+  "checks": {
+    "browserStates": 16,
+    "browserFlows": 6,
+    "autoAccessibilityViolations": 0,
+    "horizontalOverflowStates": 0,
+    "selectedConcurrentHttpTestPassed": 1,
+    "concurrentRequests": 12,
+    "savedRecordsForSameKey": 1,
+    "cssMotionAssertionsPassed": 7
+  },
+  "notRun": [
+    "full Next production build",
+    "Next deployment routing/SSR/hydration/CORS",
+    "production API or DB",
+    "screen reader or real mobile device",
+    "in-flight browser click race",
+    "actual React spinner with reduced-motion"
+  ],
+  "cleanup": "Existing harness finally closed its own browser, localhost server and disposable DB. Each exact owned heavy.lock was removed; no other servers or processes were stopped."
+}

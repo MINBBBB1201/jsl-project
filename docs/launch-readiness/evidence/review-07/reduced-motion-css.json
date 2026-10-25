@@ -1,0 +1,23 @@
+{
+  "sourceHead": "466c5e4c60e40a03032e20d3f704127511bb7c76",
+  "scope": "Fresh compiled project CSS on representative animate-spin and transition-all elements, not the React submit spinner or full landing motion. All network requests blocked.",
+  "browserVersion": "155.0.8059.85",
+  "compiledCssSha256": "7cfa0f8c0ac4c22a59c0d9bbb6d6d08fb4dce47fc88a87f4cf3b516aaa4c2bf9",
+  "assertionsPassed": 7,
+  "states": [
+    {
+      "reduced": false,
+      "animationDuration": "1s",
+      "animationIterationCount": "infinite",
+      "transitionDuration": "0.2s",
+      "scrollBehavior": "smooth"
+    },
+    {
+      "reduced": true,
+      "animationDuration": "1e-05s",
+      "animationIterationCount": "1",
+      "transitionDuration": "1e-05s",
+      "scrollBehavior": "auto"
+    }
+  ]
+}
