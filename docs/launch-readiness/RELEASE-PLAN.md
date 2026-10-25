@@ -18,7 +18,7 @@
 | 1 | Form consent, necessary data, 접수 안정성 | 실제 폼·언어별 고지·라우트·접수 번호 연결, 저널 저장·중복 방지·알림 실패 처리 구현. 다음: 확정된 운영 고지, 전체 Next build·배포 흐름, 알림 자동 재시도 |
 | 2 | Privacy policy, 데이터 보유·삭제 | 기존 초안 확인. 다음: 회사 보유기간·담당자·처리업체·국가 확인, 폼/DB/로그/백업/삭제 방식과 일치 |
 | 3 | Accessibility, alt, contrast, keyboard, button labels | 독립 폼 검사 완료. 다음: 실제 사이트 폼부터 메뉴/언어/dialog/이미지/확대/낭독기/모션 순으로 자동·수동 검수와 수정 |
-| 4 | Cookie consent, tracking, third-party embeds | 검사기·로컬 요청 시나리오 준비. 다음: 실제 배포본의 시간 지연/클릭/재방문 요청과 저장소 분류, 필요한 SDK/iframe 실행 차단·철회·고지 버전 관리 |
+| 4 | Cookie consent, tracking, third-party embeds | 10월 25일 소스 284개 조사·언어 쿠키 합성 재현·미리보기 진입 요청 확인. 인증 리다이렉트로 앱 네트워크는 미검사. 다음: 기존 인증으로 실제 지연/클릭/재방문·저장소 검사, 선택 서비스 확정 뒤 차단·철회 검수 |
 | 5 | Real business details, fake reviews, unsupported claims | 회사 공식 자료 확인, 비노출 후기/블로그는 유지. 다음: 노출 중인 회사정보·실적·인증을 증빙과 대조하고 미확인 주장 수정 |
 | 6 | Copyright on images | 권리 대장 템플릿 준비. 다음: 실제 자산 경로/출처/상업 사용/인물·브랜드 조건/만료 확인 및 불명확 자산 대체 |
 | 7 | T&C, refund policy, cookies policy, local laws | 기존 약관 초안과 적용 조건 조사. 다음: 홈페이지/운송 계약 범위, 결제·취소·환불 운영 방식, 대상 국가에 맞춘 공식 근거·내용 검토 |
@@ -27,7 +27,7 @@
 
 ## 현재 단계
 
-실제 ContactSection과 운영 라우트 연결까지 전용 브랜치에 구현했다. 최신 범위·검증·제한은 [REVIEW-03.md](REVIEW-03.md)와 [VALIDATION.json](VALIDATION.json)을 따른다. 운영 고지 미확정으로 접수는 기본 비활성이고, main 병합·운영 배포는 하지 않았다.
+실제 ContactSection과 운영 라우트 연결, 같은 탭에서 새로고침 후 미확정 요청 키 복구까지 전용 브랜치에 구현했다. 10월 25일 기술 조사는 [REVIEW-06.md](REVIEW-06.md), 19개 항목의 완료·미검증·외부 입력은 [출시 증빙표](LAUNCH-CHECKLIST-20261025.md), 10월 24일 복구·화면 검사는 [REVIEW-05.md](REVIEW-05.md)를 따른다. [VALIDATION.json](VALIDATION.json)의 Review 03 결과는 역사 기록이며 최신 보완 항목과 구분한다. 운영 고지 미확정으로 접수는 기본 비활성이고 main 병합·운영 배포는 하지 않았다.
 
 ## 이전 단계의 기반 구현
 

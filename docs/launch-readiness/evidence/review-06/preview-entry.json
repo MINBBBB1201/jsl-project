@@ -1,0 +1,14 @@
+{
+  "url": "https://jsl-logistics-frontend-git-codex-s-b4aada-minbbbb1201s-projects.vercel.app/landing",
+  "method": "GET",
+  "status": 302,
+  "redirectOrigin": "https://vercel.com",
+  "redirectedToVercelAuthentication": true,
+  "setCookieNames": [
+    "_vercel_sso_nonce"
+  ],
+  "appNetworkVerified": false,
+  "storageOrSubresourcesObserved": false,
+  "credentialsUsed": false,
+  "limit": "HTTP entry probe only. No browser was launched, no redirects followed and no application tracking or storage verdict inferred."
+}

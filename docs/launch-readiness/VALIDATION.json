@@ -172,5 +172,32 @@
     "Operator notification retries require receipt replay; independent retry worker pending",
     "Spam/rate controls and deployment-level protection pending",
     "Full-site accessibility, tracking/embeds, asset rights, business evidence and applicable-law review pending"
-  ]
+  ],
+  "latestSupplement": {
+    "dateLocal": "2026-10-25",
+    "timezone": "Asia/Shanghai",
+    "sourceHead": "a52f709d081b41eeb799d2af8fcde2dc1a807df6",
+    "report": "REVIEW-06.md",
+    "checklist": "LAUNCH-CHECKLIST-20261025.md",
+    "currentRuns": {
+      "staticAuditTestsPassed": 6,
+      "sourceFiles": 284,
+      "landingImportReachableModules": 85,
+      "localeMiddlewareSyntheticCases": 5,
+      "localeMiddlewareAssertionsPassed": 6,
+      "frontendUnitsPassed": 80,
+      "previewEntryStatus": 302,
+      "appNetworkVerified": false
+    },
+    "notRerun": [
+      "full Next build",
+      "app tsc/lint",
+      "MongoDB integration",
+      "16-condition browser/a11y captures"
+    ],
+    "historicalEvidence": "Review 03 is 2026-10-13; Review 05 browser results are 2026-10-24. Neither is a current run.",
+    "appSourceChanged": false,
+    "uiChanged": false,
+    "productionDeploymentInvoked": false
+  }
 }
