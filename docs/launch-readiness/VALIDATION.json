@@ -278,5 +278,30 @@
     "backendRevisionOrCauseConfirmed": false,
     "appSourceChanged": false,
     "productionDeploymentInvoked": false
+  },
+  "latestBackendDeploymentSupplement": {
+    "dateLocal": "2026-10-27",
+    "timezone": "Asia/Shanghai",
+    "sourceHead": "4298bb19c03f1cabbefa965d5864eac472dc7e29",
+    "report": "REVIEW-10.md",
+    "deployedBackendCommit": "7a32c958235f9ffb70d61c25432ecd34e73afbe6",
+    "backendTreeMatchesMain": true,
+    "healthStatus": 200,
+    "mongooseConnectionState": "connected",
+    "noticeStatus": 500,
+    "noticeGetAbsentFromDeployedCode": true,
+    "missingRouteMessageMatched": true,
+    "developmentErrorEnvelopeObserved": true,
+    "rawErrorOrStackRetained": false,
+    "totalPublicGets": 3,
+    "inquiryPosted": false,
+    "appSourceChanged": false,
+    "settingsChanged": false,
+    "productionDeploymentInvoked": false,
+    "unresolved": [
+      "Approved operational policy and cross-release API contract",
+      "Public error envelope and missing-route status: issue #41",
+      "Full integrated browser/API/DB/device verification"
+    ]
   }
 }

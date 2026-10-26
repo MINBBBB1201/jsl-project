@@ -15,7 +15,7 @@
 
 | 순서 | 기존 목록의 항목 | 현재 상태와 다음 완료 기준 |
 | --- | --- | --- |
-| 1 | Form consent, necessary data, 접수 안정성 | 구현·하네스 검사 기록 존재. 10월 26일 실제 번들 API의 고지 GET은 시간 초과·재시도 500, OPTIONS 204. 다음: backend 상태·계약·운영 고지, 실제 배포 흐름과 알림 자동 재시도 |
+| 1 | Form consent, necessary data, 접수 안정성 | 구현·하네스 검사 기록 존재. 10월 27일 실제 Live backend는 main과 같은 구 계약, health 200·Mongoose 상태 connected 관찰, 없는 고지 GET은 500·개발용 오류 형식. 다음: #41 오류 처리, 회사 고지 승인과 프런트/백엔드 이행·배포 계약, 실제 흐름과 알림 자동 재시도 |
 | 2 | Privacy policy, 데이터 보유·삭제 | 10월 26일 exact-head 배포 방침·약관의 실제 200 본문과 폼의 불일치 확인. 다음: 회사명 필수/선택·보유기간·담당자·챗봇·시행일 승인, 업체·국가·보유/삭제 운영과 일치 |
 | 3 | Accessibility, alt, contrast, keyboard, button labels | 10월 25일 현재 소스의 기존 문의 하네스 16조건·6회복 흐름 재검수. 동시 요청 한 건·대표 CSS reduced-motion도 확인. 다음: 실제 Next 화면·전체 탭 순서·낭독기·통합 랜딩·실제 로더 모션 검수 |
 | 4 | Cookie consent, tracking, third-party embeds | 10월 25일 소스 284개 조사·언어 쿠키 합성 재현·미리보기 진입 요청 확인. 인증 리다이렉트로 앱 네트워크는 미검사. 다음: 기존 인증으로 실제 지연/클릭/재방문·저장소 검사, 선택 서비스 확정 뒤 차단·철회 검수 |
@@ -27,7 +27,7 @@
 
 ## 현재 단계
 
-실제 ContactSection과 운영 라우트 연결, 같은 탭에서 새로고침 후 미확정 요청 키 복구까지 전용 브랜치에 구현했다. 최신 [REVIEW-09.md](REVIEW-09.md)는 실제 번들 API 주소·고지 GET·OPTIONS의 읽기 결과다. [REVIEW-08.md](REVIEW-08.md)는 실제 배포 HTML·정책 문구 검토이며 둘 다 브라우저 통과가 아니다. 10월 25일 하네스는 [REVIEW-07.md](REVIEW-07.md), 소스 조사는 [REVIEW-06.md](REVIEW-06.md), 남은 조건은 [출시 증빙표](LAUNCH-CHECKLIST-20261025.md)에 있다. 이전 검증과 날짜를 구분하며 운영 고지 미확정·main 병합 및 운영 배포 미실행 상태는 유지한다.
+실제 ContactSection과 운영 라우트 연결, 같은 탭에서 새로고침 후 미확정 요청 키 복구까지 전용 브랜치에 구현했다. 최신 [REVIEW-10.md](REVIEW-10.md)는 실제 Render Live 커밋·health 응답·새 경로 미배포와 미등록 경로 500/개발용 오류 형식을 구분한다. 이전 [REVIEW-09.md](REVIEW-09.md)는 번들 API·GET·OPTIONS, [REVIEW-08.md](REVIEW-08.md)는 배포 HTML·정책 문구 검토다. 이 결과들은 앱 브라우저 흐름 통과가 아니다. 10월 25일 하네스는 [REVIEW-07.md](REVIEW-07.md), 소스 조사는 [REVIEW-06.md](REVIEW-06.md), 남은 조건은 [출시 증빙표](LAUNCH-CHECKLIST-20261025.md)에 있다. 이전 검증과 날짜를 구분하며 운영 고지 미확정·main 병합 및 운영 배포 미실행 상태는 유지한다.
 
 ## 이전 단계의 기반 구현
 
