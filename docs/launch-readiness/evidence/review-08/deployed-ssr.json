@@ -1,0 +1,300 @@
+{
+  "dateLocal": "2026-10-26",
+  "timezone": "Asia/Shanghai",
+  "sourceHead": "ccca758488fcd6605c456f10c9be26caaeb05286",
+  "deployment": {
+    "id": "dpl_4K3LQqh8vqB8HsgbxMJqMqubpN5n",
+    "hostname": "jsl-logistics-frontend-8nsgba35p-minbbbb1201s-projects.vercel.app",
+    "state": "READY",
+    "gitSha": "ccca758488fcd6605c456f10c9be26caaeb05286"
+  },
+  "access": {
+    "method": "Existing authorized Vercel MCP connection",
+    "cookieValuesRetained": false,
+    "htmlBodiesRetained": false,
+    "browserStarted": false,
+    "inquirySubmitted": false,
+    "accessPolicyChanged": false
+  },
+  "documents": [
+    {
+      "path": "/landing",
+      "status": 200,
+      "htmlLang": "ko",
+      "contactFound": true,
+      "heading": null,
+      "formLabels": [
+        "회사명 ( 선택 )",
+        "담당자명 ( 필수 )",
+        "이메일 ( 필수 )",
+        "제목 ( 선택 )",
+        "문의 내용 ( 필수 )",
+        "개인정보 수집·이용에 동의합니다. (필수)"
+      ],
+      "privacyLinkPaths": [
+        "/privacy"
+      ],
+      "ssrSubmitDisabled": true,
+      "responseCookieNames": [
+        {
+          "name": "NEXT_LOCALE",
+          "category": "language-preference-response"
+        }
+      ]
+    },
+    {
+      "path": "/en/landing",
+      "status": 200,
+      "htmlLang": "ko",
+      "contactFound": true,
+      "heading": null,
+      "formLabels": [
+        "Company ( Optional )",
+        "Contact name ( Required )",
+        "Email ( Required )",
+        "Subject ( Optional )",
+        "Message ( Required )",
+        "I agree to the collection and use of my personal data. (Required)"
+      ],
+      "privacyLinkPaths": [
+        "/en/privacy"
+      ],
+      "ssrSubmitDisabled": true,
+      "responseCookieNames": [
+        {
+          "name": "NEXT_LOCALE",
+          "category": "language-preference-response"
+        }
+      ]
+    },
+    {
+      "path": "/zh/landing",
+      "status": 200,
+      "htmlLang": "ko",
+      "contactFound": true,
+      "heading": null,
+      "formLabels": [
+        "公司名称 ( 选填 )",
+        "联系人 ( 必填 )",
+        "邮箱 ( 必填 )",
+        "主题 ( 选填 )",
+        "咨询内容 ( 必填 )",
+        "我同意收集与使用个人信息。(必填)"
+      ],
+      "privacyLinkPaths": [
+        "/zh/privacy"
+      ],
+      "ssrSubmitDisabled": true,
+      "responseCookieNames": [
+        {
+          "name": "NEXT_LOCALE",
+          "category": "language-preference-response"
+        }
+      ]
+    },
+    {
+      "path": "/vi/landing",
+      "status": 200,
+      "htmlLang": "ko",
+      "contactFound": true,
+      "heading": null,
+      "formLabels": [
+        "Tên công ty ( Tùy chọn )",
+        "Người liên hệ ( Bắt buộc )",
+        "Email ( Bắt buộc )",
+        "Tiêu đề ( Tùy chọn )",
+        "Nội dung ( Bắt buộc )",
+        "Tôi đồng ý cho thu thập và sử dụng thông tin cá nhân. (Bắt buộc)"
+      ],
+      "privacyLinkPaths": [
+        "/vi/privacy"
+      ],
+      "ssrSubmitDisabled": true,
+      "responseCookieNames": [
+        {
+          "name": "NEXT_LOCALE",
+          "category": "language-preference-response"
+        }
+      ]
+    },
+    {
+      "path": "/privacy",
+      "status": 200,
+      "htmlLang": "ko",
+      "contactFound": false,
+      "heading": "개인정보처리방침",
+      "formLabels": [],
+      "privacyLinkPaths": [],
+      "ssrSubmitDisabled": null,
+      "responseCookieNames": [
+        {
+          "name": "NEXT_LOCALE",
+          "category": "language-preference-response"
+        }
+      ]
+    },
+    {
+      "path": "/terms",
+      "status": 200,
+      "htmlLang": "ko",
+      "contactFound": false,
+      "heading": "이용약관",
+      "formLabels": [],
+      "privacyLinkPaths": [],
+      "ssrSubmitDisabled": null,
+      "responseCookieNames": [
+        {
+          "name": "NEXT_LOCALE",
+          "category": "language-preference-response"
+        }
+      ]
+    },
+    {
+      "path": "/en/privacy",
+      "status": 200,
+      "htmlLang": "ko",
+      "contactFound": false,
+      "heading": "Privacy Policy",
+      "formLabels": [],
+      "privacyLinkPaths": [],
+      "ssrSubmitDisabled": null,
+      "responseCookieNames": [
+        {
+          "name": "NEXT_LOCALE",
+          "category": "language-preference-response"
+        }
+      ]
+    },
+    {
+      "path": "/en/terms",
+      "status": 200,
+      "htmlLang": "ko",
+      "contactFound": false,
+      "heading": "Terms of Service",
+      "formLabels": [],
+      "privacyLinkPaths": [],
+      "ssrSubmitDisabled": null,
+      "responseCookieNames": [
+        {
+          "name": "NEXT_LOCALE",
+          "category": "language-preference-response"
+        }
+      ]
+    }
+  ],
+  "koreanSsrContact": {
+    "htmlLang": "ko",
+    "contactFound": true,
+    "labels": [
+      "회사명 ( 선택 )",
+      "담당자명 ( 필수 )",
+      "이메일 ( 필수 )",
+      "제목 ( 선택 )",
+      "문의 내용 ( 필수 )",
+      "개인정보 수집·이용에 동의합니다. (필수)"
+    ],
+    "legalLinks": [
+      {
+        "pathname": "/privacy",
+        "label": "개인정보처리방침 전문 보기",
+        "newTab": true
+      },
+      {
+        "pathname": "/terms",
+        "label": "이용약관",
+        "newTab": false
+      },
+      {
+        "pathname": "/privacy",
+        "label": "개인정보처리방침",
+        "newTab": false
+      },
+      {
+        "pathname": "/terms",
+        "label": "이용약관",
+        "newTab": false
+      },
+      {
+        "pathname": "/privacy",
+        "label": "개인정보처리방침",
+        "newTab": false
+      }
+    ],
+    "statuses": [
+      "온라인 문의 접수 준비 중입니다. 아래 연락처를 이용해 주세요."
+    ],
+    "inputs": [
+      {
+        "type": "text",
+        "disabled": true
+      },
+      {
+        "type": "text",
+        "disabled": true
+      },
+      {
+        "type": "email",
+        "disabled": true
+      },
+      {
+        "type": "text",
+        "disabled": true
+      },
+      {
+        "type": "checkbox",
+        "disabled": true
+      }
+    ],
+    "submitPresent": true,
+    "submitDisabled": true
+  },
+  "koreanSsrButtonNames": [
+    {
+      "aria": "언어 선택",
+      "text": "KO"
+    },
+    {
+      "aria": "언어 선택",
+      "text": "KO"
+    },
+    {
+      "aria": "테마 설정",
+      "text": ""
+    }
+  ],
+  "actualKoreanPolicyFlags": [
+    {
+      "path": "/privacy",
+      "status": 200,
+      "heading": "개인정보처리방침",
+      "hasVisibleDraftNotice": false,
+      "hasCompanyRequiredClaim": true,
+      "hasThreeYearRetentionClaim": true,
+      "hasChatbotClaim": true,
+      "hasPredefinedEffectiveDate": true,
+      "hasPrivacyOfficerSection": true
+    },
+    {
+      "path": "/terms",
+      "status": 200,
+      "heading": "이용약관",
+      "hasVisibleDraftNotice": false,
+      "hasCompanyRequiredClaim": false,
+      "hasThreeYearRetentionClaim": false,
+      "hasChatbotClaim": true,
+      "hasPredefinedEffectiveDate": true
+    }
+  ],
+  "nextAsset": {
+    "path": "/_next/static/chunks/746c21f1ca746a10.js",
+    "status": 200,
+    "contentType": "application/javascript",
+    "textCharacters": 30226
+  },
+  "limits": [
+    "SSR and direct HTTP entry checks only; no hydration or browser interaction",
+    "No client network trace, cookie jar, localStorage or sessionStorage observed",
+    "No inquiry POST or operational business data write",
+    "PR25-alone lang attribute is a known PR27 integration dependency, not a new source issue"
+  ]
+}
