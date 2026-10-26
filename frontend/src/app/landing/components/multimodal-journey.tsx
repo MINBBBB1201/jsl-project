@@ -48,6 +48,7 @@ export function MultimodalJourney() {
   const [header, setHeader] = useState<HTMLElement | null>(null)
   const [selected, setSelected] = useState(-1)
   const [servicePhase, setServicePhase] = useState(true)
+  const [loadFailed, setLoadFailed] = useState(false)
 
   useEffect(() => {
     const element = root.current
@@ -65,6 +66,7 @@ export function MultimodalJourney() {
       if (cancelled) return
       // React never renders into this container, so it cannot replace the DOM the engine binds to.
       if (!container.querySelector("#jsl-marine-native")) container.innerHTML = `<style>${css}</style>${markup}`
+      setLoadFailed(false)
       const guest = container.querySelector<Guest>("#jsl-marine-native")!
       const range = guest.querySelector<HTMLInputElement>("input[type=range]")!
       const modes = guest.querySelector<HTMLElement>(".uc-service-nav")!
@@ -101,11 +103,12 @@ export function MultimodalJourney() {
         const stage = element.querySelector<HTMLElement>(".multimodal-stage")!
         const driver = { progress: 0 }
         const draw = () => {
+          const focusedAction = action.current && document.activeElement === action.current ? action.current : null
           range.value = (driver.progress * 100).toFixed(2)
           guest.ucRender?.()
           const inServicePhase = driver.progress < SERVICE_PHASE_END
-          // The service link unmounts past its phase; keep keyboard focus inside the journey.
-          if (!inServicePhase && action.current && document.activeElement === action.current) skip.current?.focus({ preventScroll: true })
+          // The engine can make the link inert before React removes it. Capture focus before rendering.
+          if (focusedAction && (!inServicePhase || !focusedAction.isConnected || focusedAction.closest("[inert]"))) skip.current?.focus({ preventScroll: true })
           setServicePhase(inServicePhase)
         }
         draw()
@@ -145,7 +148,9 @@ export function MultimodalJourney() {
 
     // A failed chunk leaves the section on its fallback skip instead of breaking the page.
     let loading: Promise<void> | null = null
-    const ensure = () => (loading ??= start().catch(() => {}))
+    const ensure = () => (loading ??= start().catch(() => {
+      if (!cancelled && !container.querySelector("#jsl-marine-native")) setLoadFailed(true)
+    }))
     const near = new IntersectionObserver(entries => {
       if (!entries.some(entry => entry.isIntersecting)) return
       near.disconnect()
@@ -187,6 +192,10 @@ export function MultimodalJourney() {
     <div id="cargo-journey" className="multimodal-cargo-anchor" aria-hidden="true" />
     <div className="multimodal-stage">
       <div className="multimodal-guest" ref={host} />
+      {loadFailed && <div className="multimodal-load-fallback" role="status">
+        <p>Unable to load the transport journey.</p>
+        <button type="button" onClick={() => exit.current()}>Skip journey <span aria-hidden="true">↓</span></button>
+      </div>}
       {copy && servicePhase && createPortal(
         <Link ref={action} href={service?.href ?? "#contact"} className="multimodal-action"><span>{service ? "VIEW SERVICE" : "EXPLORE SERVICES"}</span><span aria-hidden="true">↗</span></Link>,
         copy,

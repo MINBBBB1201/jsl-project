@@ -3,6 +3,9 @@
 .multimodal-cargo-anchor{position:absolute;top:0;left:0;width:1px;height:1px}
 .multimodal-stage{position:relative;height:100svh;min-height:600px;overflow:hidden;isolation:isolate;background:#fff}
 .multimodal-guest,.multimodal-stage #jsl-marine-native{height:100%}
+.multimodal-load-fallback{position:absolute;inset:0;display:flex;flex-direction:column;align-items:flex-start;justify-content:center;gap:16px;padding:6%;color:#111;background:#fff}
+.multimodal-load-fallback button{min-height:44px;padding:8px 12px;border:1px solid currentColor;background:transparent;cursor:pointer}
+.multimodal-load-fallback button:focus-visible{outline:2px solid #ec761e;outline-offset:3px}
 /* The prototype is an 8:5 review frame; on the landing it fills the pinned stage. */
 .multimodal-stage #jsl-marine-native .uc-screen{aspect-ratio:auto;height:100%}
 /* Review controls stay in the DOM because the engine reads them; scroll drives progress instead. */
