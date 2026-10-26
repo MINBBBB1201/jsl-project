@@ -52,5 +52,16 @@
     "machineCode": null,
     "cannotGetNoticeRouteMessage": false,
     "responseBodyRetained": false
+  },
+  "sourceVersionComparison": {
+    "mainSha": "c8c5489a662ae9aab354335483332116f1962072",
+    "mainRegistersNoticeGet": false,
+    "pr25RegistersNoticeGet": true,
+    "pr25Merged": false,
+    "renderBackendRevisionConfirmed": false,
+    "commonPreRouteDbReconnectMayReturn500": true,
+    "observed500IdentifiesBackendVersion": false,
+    "actualDatabaseFailureConfirmed": false,
+    "additionalApiRequestsMade": false
   }
 }

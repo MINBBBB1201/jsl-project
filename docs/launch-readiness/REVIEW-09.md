@@ -26,6 +26,14 @@
 
 현재 코드의 `contact-inquiry.router.js`는 고지가 준비되지 않으면 503 `POLICY_NOT_READY`, 잘못된 언어면 400, 준비된 고지면 200을 반환한다. 이번에 관찰한 500은 이 정책 미승인 분기와 다른 결과다. 실제 backend commit·환경·로그·DB 상태는 조회하지 않았으므로 특정 버전, DB 장애, cold start, 설정 누락 중 어느 것이 원인인지 단정하지 않는다. 404를 관찰한 것도 아니므로 이전 API 버전이라고 확정하지 않는다.
 
+| 버전 범위 | 소스로 확인한 계약 | 실제 서버에 대해 말할 수 없는 부분 |
+| --- | --- | --- |
+| 최신 `origin/main`의 `c8c5489` | `contact.routes.js`는 POST만 등록하고 GET `/notice`는 없음 | Render가 이 main revision을 사용하는지는 미확인 |
+| PR #25 | 운영 라우트가 새 factory를 연결하며 GET `/notice`와 동의·요청 키 계약이 있음 | PR은 미병합 상태이고 이 backend가 Render에 별도 배포됐다는 증거도 없음 |
+| 공용 Render | 실제 고지 GET 한 번의 재시도는 500 | endpoint 계약이나 배포 revision을 이 응답으로 판별할 수 없음 |
+
+두 소스의 `backend/src/server.js`에는 라우트 등록 전에 MongoDB 재연결을 시도하고 실패하면 500을 반환하는 공통 미들웨어가 있다. CORS는 그보다 먼저 처리되므로 OPTIONS 204와 GET 500이 함께 나올 수 있는 코드 경로가 존재한다. 이 사실은 실제 Render의 DB 오류를 증명하지 않으며 PR #25에서 새로 만든 결함이라는 근거도 아니다. 또한 middleware 단계에서 실패하면 새 GET이 아예 미배포된 상태라도 경로의 404까지 도달하지 못할 수 있다. backend revision·상태 근거를 먼저 확인해야 한다.
+
 `ContactSection`은 고지 GET에 10초 AbortController 제한을 두고, 응답 실패나 잘못된 고지면 준비 중 상태를 유지하도록 작성돼 있다. 이번 읽기 결과에서는 접수를 활성화할 정상 고지를 확인하지 못했다. 이는 코드상 예상 동작이며 실제 브라우저의 최종 표시를 재현한 결과는 아니다.
 
 CORS 사전요청 204는 필요한 헤더가 허용된다는 범위의 근거다. 서버 저장 가능, 정책 승인, POST 성공, 실제 브라우저 CORS 통과를 의미하지 않는다. 이전 [API 호환성 메모](CONTACT-API-COMPATIBILITY.md)의 프런트·백엔드 계약 일치 조건은 여전히 남아 있다.
