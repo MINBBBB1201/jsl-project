@@ -55,9 +55,32 @@ export function MultimodalJourney() {
     const container = host.current
     if (!element || !container || reduced) return
     let cancelled = false
+    let navigationVersion = 0
+    let pendingSkip = false
+    let skippedY = 0
     const teardown: (() => void)[] = []
     // Until GSAP is ready, or if it never loads, skipping still lands on the next section.
-    const jumpPast = () => { element.nextElementSibling?.scrollIntoView(); focusQuietly(element.nextElementSibling) }
+    const jumpPast = () => {
+      pendingSkip = true
+      navigationVersion++
+      element.nextElementSibling?.scrollIntoView({ behavior: "instant" })
+      skippedY = window.scrollY
+      focusQuietly(element.nextElementSibling)
+    }
+    // Pin setup and refresh must not move content that an early skip already reached.
+    const preserveSkippedView = () => {
+      const next = element.nextElementSibling
+      if (!pendingSkip || window.scrollY < skippedY - 1 || !next) {
+        pendingSkip = false
+        return
+      }
+      const top = next.getBoundingClientRect().top
+      return () => {
+        if (!pendingSkip || !next.isConnected) return
+        window.scrollBy({ top: next.getBoundingClientRect().top - top, behavior: "instant" })
+        skippedY = window.scrollY
+      }
+    }
     exit.current = jumpPast
 
     // The engine, Three.js and GSAP load only as the section approaches, never for the first view.
@@ -99,6 +122,7 @@ export function MultimodalJourney() {
       const [{ gsap }, { ScrollTrigger }] = await Promise.all([import("gsap"), import("gsap/ScrollTrigger")])
       if (cancelled) return
       gsap.registerPlugin(ScrollTrigger)
+      const restoreAfterPin = preserveSkippedView()
       const context = gsap.context(() => {
         const stage = element.querySelector<HTMLElement>(".multimodal-stage")!
         const driver = { progress: 0 }
@@ -137,13 +161,22 @@ export function MultimodalJourney() {
           move(trigger.start + target * (trigger.end - trigger.start))
         }
         guest.addEventListener("click", follow)
-        exit.current = () => move(trigger.end + window.innerHeight, () => focusQuietly(element.nextElementSibling))
+        exit.current = () => {
+          pendingSkip = false
+          navigationVersion++
+          move(trigger.end + window.innerHeight, () => focusQuietly(element.nextElementSibling))
+        }
         return () => { scrollTween?.kill(); guest.removeEventListener("click", follow); exit.current = jumpPast }
       }, element)
+      restoreAfterPin?.()
       teardown.push(() => context.revert())
       // Refresh restores the scroll position it measured, so callers scroll only after it.
       await document.fonts.ready
-      if (!cancelled) ScrollTrigger.refresh()
+      if (!cancelled) {
+        const restoreAfterRefresh = preserveSkippedView()
+        ScrollTrigger.refresh()
+        restoreAfterRefresh?.()
+      }
     }
 
     // A failed chunk leaves the section on its fallback skip instead of breaking the page.
@@ -161,12 +194,16 @@ export function MultimodalJourney() {
     // Loading mid-scroll inserts the pin spacer and cuts a smooth anchor scroll short, so anchors
     // to this section load first and scroll once the layout has settled.
     const anchors = new Set(["#features", "#cargo-journey"])
-    const goHere = () => void ensure().then(() => {
-      if (cancelled) return
-      window.scrollTo({ top: element.getBoundingClientRect().top + window.scrollY, behavior: "smooth" })
-      // Keyboard and screen-reader position follow the scroll instead of staying on the link.
-      focusQuietly(element)
-    })
+    const goHere = () => {
+      pendingSkip = false
+      const version = ++navigationVersion
+      void ensure().then(() => {
+        if (cancelled || version !== navigationVersion) return
+        window.scrollTo({ top: element.getBoundingClientRect().top + window.scrollY, behavior: "smooth" })
+        // Keyboard and screen-reader position follow the scroll instead of staying on the link.
+        focusQuietly(element)
+      })
+    }
     const onAnchorClick = (event: MouseEvent) => {
       const link = (event.target as Element).closest<HTMLAnchorElement>("a[href]")
       if (!link || link.origin !== window.location.origin || link.pathname !== window.location.pathname || !anchors.has(link.hash)) return
