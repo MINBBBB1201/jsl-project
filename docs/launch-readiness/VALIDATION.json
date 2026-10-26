@@ -258,5 +258,25 @@
       "full build/lint/types/test",
       "inquiry POST"
     ]
+  },
+  "latestApiReadSupplement": {
+    "dateLocal": "2026-10-26",
+    "timezone": "Asia/Shanghai",
+    "sourceHead": "72bd36680c8a3caf8092b12c736ae60a332a18b4",
+    "report": "REVIEW-09.md",
+    "exactHeadDeploymentState": "READY",
+    "publicApiExportVerified": true,
+    "firstNoticeGetAttempts": 4,
+    "firstNoticeGetTimeouts": 4,
+    "singleKoreanRetryStatus": 500,
+    "contactPreflightStatus": 204,
+    "corsHeaderMatchesPreviewOrigin": true,
+    "idempotencyHeaderAllowedByPreflight": true,
+    "normalNoticeConfirmed": false,
+    "browserFlowVerified": false,
+    "inquiryPosted": false,
+    "backendRevisionOrCauseConfirmed": false,
+    "appSourceChanged": false,
+    "productionDeploymentInvoked": false
   }
 }
