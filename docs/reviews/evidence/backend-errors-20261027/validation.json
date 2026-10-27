@@ -90,6 +90,51 @@
     "backend/tests/helpers/app.js": "cd2159a6c00bd85928b98c537a6850e9c877474431d6ba614eddbde08f0de928",
     "backend/tests/error-response.test.js": "d1a88aef0e06f0957955972860ed562c621d126883f21eea6112e67ee4b07341"
   },
+  "localServerSmoke": {
+    "sourceHead": "a5ff7eccb3335527c43b514fff00d1fab3b04228",
+    "scope": "Actual src/server.js + actual route/DB middleware + disposable authenticated local MongoDB",
+    "mode": "development",
+    "loopbackBindingAdapter": true,
+    "loggerTransportsSilenced": true,
+    "schedulerDisabled": true,
+    "productionRequests": 0,
+    "results": [
+      {
+        "name": "health reports connected against the disposable DB",
+        "passed": true
+      },
+      {
+        "name": "root route remains available",
+        "passed": true
+      },
+      {
+        "name": "unregistered /missing uses the real 404 handler",
+        "passed": true
+      },
+      {
+        "name": "unregistered /api/contact/notice uses the real 404 handler",
+        "passed": true
+      },
+      {
+        "name": "HEAD of an unregistered route returns 404 without a body",
+        "passed": true
+      },
+      {
+        "name": "protected notifications still reject a missing login",
+        "passed": true
+      },
+      {
+        "name": "malformed JSON stays generic under the real development server",
+        "passed": true
+      },
+      {
+        "name": "CORS preflight is handled before the fallback",
+        "passed": true
+      }
+    ],
+    "passed": true,
+    "serverShutdown": "Existing SIGTERM handler requested; exit observed before timeout, numeric exit code not recorded"
+  },
   "otherChecks": {
     "backendEslint": "passed",
     "changedFilePrettier": "passed",
@@ -115,7 +160,8 @@
   },
   "limits": [
     "Tests use an existing dependency installation; matching listed key versions is not a clean npm ci reproduction.",
-    "The error fixture uses actual middleware, but does not start the production server or its DB reconnect middleware. Production and shared route-test helper wiring were reviewed separately.",
+    "The 50-case error fixture is isolated; the separate local server smoke starts actual server.js against an authenticated disposable DB, with loopback listen/IPC and silent logger adapters.",
+    "The local server was asked to stop through its existing SIGTERM handler and exited before the timeout; its numeric exit code was not recorded.",
     "Existing controller-owned JSON errors and DB-before-route behavior are unchanged; this is not an all-API information-leak audit.",
     "headersSent forwarding is asserted at middleware level; real streamed-socket termination is not tested.",
     "No frontend build, type check, visual capture, real Render runtime validation or deployment was performed."
