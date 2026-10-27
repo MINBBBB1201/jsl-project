@@ -28,52 +28,54 @@ const handleValidationErrorDB = (err) => {
   return new AppError(message, 400);
 };
 
-const sendErrorDev = (err, res) => {
-  res.status(err.statusCode).json({
-    status: err.status,
-    error: err,
-    message: err.message,
-    stack: err.stack,
+const sendUnexpectedError = (err, res) => {
+  try {
+    logger.error("ERROR 💥", err);
+  } catch {
+    // 로그 저장 실패가 공개 오류 응답을 바꾸지 않게 한다.
+  }
+  res.status(500).json({
+    status: "error",
+    message: "Something went wrong!",
   });
 };
 
-const sendErrorProd = (err, res) => {
-  if (err.isOperational) {
-    res.status(err.statusCode).json({
-      status: err.status,
-      message: err.message,
-    });
-  } else {
-    logger.error("ERROR 💥", err);
-    res.status(500).json({
-      status: "error",
-      message: "Something went wrong!",
-    });
-  }
+const notFoundHandler = (_req, _res, next) => {
+  next(new AppError("Route not found.", 404));
 };
 
-// Express 는 인자 4개짜리 함수만 에러 핸들러로 인식한다. next 는 쓰지 않지만
-// 시그니처에서 뺄 수 없어 _ 접두사로 미사용 표시만 한다.
-const errorHandler = (err, req, res, _next) => {
-  err.statusCode = err.statusCode || 500;
-  err.status = err.status || "error";
+const errorHandler = (err, _req, res, next) => {
+  if (res.headersSent) return next(err);
 
-  if (process.env.NODE_ENV === "development") {
-    sendErrorDev(err, res);
-  } else {
-    let error = { ...err };
-    error.message = err.message;
-
+  try {
+    let error = err;
     if (error.name === "CastError") error = handleCastErrorDB(error);
     if (error.code === 11000) error = handleDuplicateFieldsDB(error);
     if (error.name === "ValidationError")
       error = handleValidationErrorDB(error);
 
-    sendErrorProd(error, res);
+    if (
+      error.isOperational === true &&
+      Number.isInteger(error.statusCode) &&
+      error.statusCode >= 400 &&
+      error.statusCode <= 599 &&
+      typeof error.message === "string"
+    ) {
+      return res.status(error.statusCode).json({
+        status: error.statusCode < 500 ? "fail" : "error",
+        message: error.message,
+      });
+    }
+  } catch {
+    // 정규화 실패도 공통 응답으로 처리해 기본 개발 오류 화면의 노출을 막는다.
   }
+
+  // 개발 모드로 배포됐더라도 원시 오류·스택을 공개 응답에 넣지 않는다.
+  sendUnexpectedError(err, res);
 };
 
 module.exports = {
   AppError,
+  notFoundHandler,
   errorHandler,
 };

@@ -13,7 +13,11 @@ const {
 } = require("./config/config");
 const { connectDB } = require("./config/database");
 const logger = require("./utils/logger");
-const { AppError, errorHandler } = require("./middleware/error.middleware");
+const {
+  AppError,
+  notFoundHandler,
+  errorHandler,
+} = require("./middleware/error.middleware");
 const { checkDbConnection } = require("./middleware/db.middleware");
 const authRoutes = require("./routes/auth.routes");
 const shipmentRoutes = require("./routes/shipment.routes");
@@ -149,9 +153,7 @@ app.get("/", (req, res) => {
 });
 
 // Handle undefined routes
-app.all("*", (req, res, next) => {
-  next(new Error(`Can't find ${req.originalUrl} on this server!`));
-});
+app.use(notFoundHandler);
 
 // Error handling middleware
 app.use(errorHandler);

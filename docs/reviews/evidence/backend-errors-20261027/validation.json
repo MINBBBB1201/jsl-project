@@ -1,0 +1,123 @@
+{
+  "dateLocal": "2026-10-27",
+  "timezone": "Asia/Shanghai",
+  "issue": 41,
+  "base": "c8c5489a662ae9aab354335483332116f1962072",
+  "branch": "codex/backend-error-responses",
+  "node": "v24.14.1",
+  "dependencies": {
+    "express": {
+      "installed": "4.21.2",
+      "lock": "4.21.2",
+      "matchesLock": true
+    },
+    "mongoose": {
+      "installed": "8.15.2",
+      "lock": "8.15.2",
+      "matchesLock": true
+    },
+    "jest": {
+      "installed": "29.7.0",
+      "lock": "29.7.0",
+      "matchesLock": true
+    },
+    "supertest": {
+      "installed": "6.3.4",
+      "lock": "6.3.4",
+      "matchesLock": true
+    },
+    "mongodb-memory-server": {
+      "installed": "10.4.3",
+      "lock": "10.4.3",
+      "matchesLock": true
+    }
+  },
+  "mongoSystemBinaryVersion": "7.0.24",
+  "dependencyInstallRun": false,
+  "baselineSubset": {
+    "testsRun": 5,
+    "passed": 3,
+    "failed": 2,
+    "skipped": 24,
+    "failures": [
+      "public error envelope with NODE_ENV=development unexpected errors return a generic response without diagnostics",
+      "an error after headers were sent is delegated without another response"
+    ],
+    "scope": "Initial selected unexpected-error and headers-sent checks only; not the final expanded suite."
+  },
+  "fullBackend": {
+    "suites": 6,
+    "passedSuites": 6,
+    "tests": 144,
+    "passed": 144,
+    "failed": 0,
+    "files": [
+      {
+        "file": "backend/tests/trade-document.test.js",
+        "passed": 24,
+        "failed": 0
+      },
+      {
+        "file": "backend/tests/notice.test.js",
+        "passed": 20,
+        "failed": 0
+      },
+      {
+        "file": "backend/src/utils/delay-risk.test.js",
+        "passed": 25,
+        "failed": 0
+      },
+      {
+        "file": "backend/src/utils/delivery-completion.test.js",
+        "passed": 18,
+        "failed": 0
+      },
+      {
+        "file": "backend/tests/shipment.pii.test.js",
+        "passed": 7,
+        "failed": 0
+      },
+      {
+        "file": "backend/tests/error-response.test.js",
+        "passed": 50,
+        "failed": 0
+      }
+    ]
+  },
+  "sourceHashes": {
+    "backend/src/middleware/error.middleware.js": "7e152f8cb2b4f706fb996874f90ae6ded8d36005e8b731d0bc31b2a207788f11",
+    "backend/src/server.js": "4da46aee9515bb7e53fc3859d2e6122e837e66819b66fe7b5e28f25a51b0b9ba",
+    "backend/tests/helpers/app.js": "cd2159a6c00bd85928b98c537a6850e9c877474431d6ba614eddbde08f0de928",
+    "backend/tests/error-response.test.js": "d1a88aef0e06f0957955972860ed562c621d126883f21eea6112e67ee4b07341"
+  },
+  "otherChecks": {
+    "backendEslint": "passed",
+    "changedFilePrettier": "passed",
+    "changedSourceNodeSyntax": "passed",
+    "diffCheck": "passed"
+  },
+  "testResources": {
+    "newErrorHttpFixture": "127.0.0.1, ephemeral port, actual Express 4 and middleware",
+    "database": "Disposable local MongoDB; no production data",
+    "mongoRuntimeDownloadEnabled": false,
+    "heavyJobLock": "Acquired exclusively and released; no other session lock removed",
+    "temporaryEmptyLogs": "Only the two empty files created in this new worktree were removed"
+  },
+  "scope": {
+    "frontendChanged": false,
+    "appConfigChanged": false,
+    "lockfileChanged": false,
+    "contactContractChanged": false,
+    "productionHttpSent": false,
+    "operationalSettingsChanged": false,
+    "merged": false,
+    "deployed": false
+  },
+  "limits": [
+    "Tests use an existing dependency installation; matching listed key versions is not a clean npm ci reproduction.",
+    "The error fixture uses actual middleware, but does not start the production server or its DB reconnect middleware. Production and shared route-test helper wiring were reviewed separately.",
+    "Existing controller-owned JSON errors and DB-before-route behavior are unchanged; this is not an all-API information-leak audit.",
+    "headersSent forwarding is asserted at middleware level; real streamed-socket termination is not tested.",
+    "No frontend build, type check, visual capture, real Render runtime validation or deployment was performed."
+  ]
+}
