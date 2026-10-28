@@ -49,6 +49,11 @@ const errorHandler = (err, _req, res, next) => {
 
   try {
     let error = err;
+    if (error.type === "entity.parse.failed" && error.statusCode === 400) {
+      error = new AppError("Invalid JSON request body.", 400);
+    } else if (error.type === "entity.too.large" && error.statusCode === 413) {
+      error = new AppError("Request body is too large.", 413);
+    }
     if (error.name === "CastError") error = handleCastErrorDB(error);
     if (error.code === 11000) error = handleDuplicateFieldsDB(error);
     if (error.name === "ValidationError")

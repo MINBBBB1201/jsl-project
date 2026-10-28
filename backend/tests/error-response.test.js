@@ -13,6 +13,8 @@ const originalMode = process.env.NODE_ENV;
 const app = express();
 let server;
 
+app.use(express.json({ limit: "1kb" }));
+app.post("/json", (_req, res) => res.json({ ok: true }));
 app.get("/success", (_req, res) => res.json({ ok: true }));
 app.get("/operational", (_req, _res, next) =>
   next(new AppError("Request not allowed.", 409)),
@@ -58,6 +60,24 @@ app.get("/malformed-database-error", (_req, _res, next) => {
 app.get("/invalid-status", (_req, _res, next) =>
   next(new AppError("internal diagnostic fixture", 200)),
 );
+app.get("/untrusted-exposed-error", (_req, _res, next) => {
+  const error = new Error("internal diagnostic fixture");
+  Object.assign(error, {
+    statusCode: 400,
+    expose: true,
+    body: "private fixture body",
+  });
+  next(error);
+});
+app.get("/mismatched-parser-error", (_req, _res, next) => {
+  const error = new Error("internal diagnostic fixture");
+  Object.assign(error, {
+    type: "entity.parse.failed",
+    statusCode: 500,
+    expose: true,
+  });
+  next(error);
+});
 app.use(notFoundHandler);
 app.use(errorHandler);
 
@@ -107,6 +127,44 @@ describe.each(["development", "production", "test", undefined])(
         message: "Request not allowed.",
       });
     });
+
+    test.each([
+      ["malformed JSON", "{", 400, "Invalid JSON request body."],
+      [
+        "oversized JSON",
+        { message: "x".repeat(2048) },
+        413,
+        "Request body is too large.",
+      ],
+    ])(
+      "body parser %s returns a fixed client error without logging the body",
+      async (_label, payload, status, message) => {
+        const log = jest.spyOn(logger, "error");
+        try {
+          const response = await request(server)
+            .post("/json")
+            .set("Content-Type", "application/json")
+            .send(payload);
+          expect(response.status).toBe(status);
+          expect(response.body).toEqual({ status: "fail", message });
+          expect(log).not.toHaveBeenCalled();
+        } finally {
+          log.mockRestore();
+        }
+      },
+    );
+
+    test.each(["/untrusted-exposed-error", "/mismatched-parser-error"])(
+      "untrusted parser-like error %s stays generic",
+      async (url) => {
+        const response = await request(server).get(url);
+        expect(response.status).toBe(500);
+        expect(response.body).toEqual({
+          status: "error",
+          message: "Something went wrong!",
+        });
+      },
+    );
 
     test.each([
       ["/cast", "Invalid shipmentId: fixture-value"],
