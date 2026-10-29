@@ -1,4 +1,5 @@
 const User = require("../models/user.model");
+const { requireUsernameIndex } = require("../services/username-index");
 const logger = require("../utils/logger");
 const { signToken, jwtExpiresIn } = require("../utils/jwt");
 
@@ -71,6 +72,19 @@ exports.register = async (req, res) => {
   const { email, password, name, role, username } = req.body;
 
   try {
+    if (username) {
+      try {
+        await requireUsernameIndex();
+      } catch {
+        return res
+          .status(503)
+          .json({
+            success: false,
+            code: "USERNAME_NOT_READY",
+            error: "아이디 발급을 준비 중입니다. 잠시 후 다시 시도해 주세요.",
+          });
+      }
+    }
     const normalizedEmail = String(email).toLowerCase().trim();
     const exists = await User.exists({ email: normalizedEmail });
 
@@ -94,12 +108,10 @@ exports.register = async (req, res) => {
     res.status(201).json({ success: true, data: { user: user.toSafeJSON() } });
   } catch (error) {
     if (error.code === 11000) {
-      return res
-        .status(409)
-        .json({
-          success: false,
-          error: "이미 등록된 이메일 또는 아이디입니다.",
-        });
+      return res.status(409).json({
+        success: false,
+        error: "이미 등록된 이메일 또는 아이디입니다.",
+      });
     }
     logger.error("계정 발급 중 오류:", error);
     res.status(500).json({

@@ -1,6 +1,7 @@
 // Input is a JSON object on stdin. Never pass passwords as command arguments.
 const bcrypt = require("bcryptjs");
 const User = require("../models/user.model");
+const { requireUsernameIndex } = require("../services/username-index");
 
 async function setAccountLogin({ email, username, password }) {
   if (
@@ -14,18 +15,7 @@ async function setAccountLogin({ email, username, password }) {
     throw new Error("INVALID_ACCOUNT_INPUT");
   const account = await User.findOne({ email: email.toLowerCase().trim() });
   if (!account) throw new Error("ACCOUNT_NOT_FOUND");
-  const indexes = await User.collection.indexes();
-  if (
-    !indexes.some(
-      (index) =>
-        index.unique === true &&
-        index.key.username === 1 &&
-        Object.keys(index.key).length === 1 &&
-        index.partialFilterExpression?.username?.$type === "string",
-    )
-  ) {
-    throw new Error("USERNAME_INDEX_NOT_READY");
-  }
+  await requireUsernameIndex();
   const hashed = await bcrypt.hash(password, 12);
   const updated = await User.findOneAndUpdate(
     { _id: account._id },
@@ -44,8 +34,19 @@ if (require.main === module) {
       const input = JSON.parse(require("node:fs").readFileSync(0, "utf8"));
       await connectDB();
       console.log(JSON.stringify(await setAccountLogin(input)));
-    } catch {
-      console.error("Account update failed; no credentials are printed.");
+    } catch (error) {
+      const allowed = [
+        "INVALID_ACCOUNT_INPUT",
+        "ACCOUNT_NOT_FOUND",
+        "USERNAME_INDEX_NOT_READY",
+      ];
+      const code =
+        error.code === 11000
+          ? "DUPLICATE_USERNAME"
+          : allowed.includes(error.message)
+            ? error.message
+            : "ACCOUNT_UPDATE_FAILED";
+      console.error(code);
       process.exitCode = 1;
     } finally {
       await closeDB();

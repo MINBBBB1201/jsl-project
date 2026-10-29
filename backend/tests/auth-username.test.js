@@ -22,6 +22,37 @@ const user = (extra = {}) =>
 const login = (email, secret = password) =>
   request(app).post("/api/auth/login").send({ email, password: secret });
 
+test("missing username index blocks registration and setup before any write", async () => {
+  const admin = await user({ role: "admin" });
+  const indexes = await User.collection.indexes();
+  await User.collection.dropIndex(
+    indexes.find((index) => index.key.username === 1).name,
+  );
+  try {
+    const res = await request(app)
+      .post("/api/auth/register")
+      .set({ Authorization: `Bearer ${signToken(admin)}` })
+      .send({
+        email: "blocked@example.test",
+        username: "Blocked_User",
+        password,
+        name: "Fixture",
+      });
+    expect(res.status).toBe(503);
+    expect(res.body.code).toBe("USERNAME_NOT_READY");
+    await expect(
+      setAccountLogin({
+        email: admin.email,
+        username: "Blocked_User",
+        password,
+      }),
+    ).rejects.toThrow("USERNAME_INDEX_NOT_READY");
+    expect(await User.countDocuments()).toBe(1);
+  } finally {
+    await User.createIndexes();
+  }
+});
+
 test("legacy email-only accounts remain valid", async () => {
   await user();
   const res = await login("fixture@example.test");
