@@ -1,12 +1,24 @@
 import type { Metadata } from "next";
-import "./globals.css";
+import "@/app/globals.css";
 
 import { ThemeProvider } from "@/components/theme-provider";
 import { SidebarConfigProvider } from "@/contexts/sidebar-context";
 import { Toaster } from "@/components/ui/sonner";
 import { beVietnamPro, generalSans, poppins } from "@/lib/fonts";
 
-export const metadata: Metadata = {
+/**
+ * 루트 레이아웃이 여러 개라서 <html> 문서 껍데기를 여기 한 곳에 둔다.
+ *
+ * 예전에는 app/layout.tsx 하나가 모든 경로를 감싸며 <html lang="ko"> 를 고정했다.
+ * 루트 레이아웃은 [locale] 보다 위에 있어서 로케일을 알 수 없고, next-intl 의
+ * getLocale() 로 읽으면 요청 헤더를 보게 되어 모든 페이지가 동적 렌더로 바뀐다.
+ * 그래서 루트 레이아웃을 셋으로 나눴다 — 공개 페이지([locale]), 인증((auth)),
+ * 대시보드((dashboard)). 각자 이 컴포넌트로 같은 문서를 그리고 lang 만 다르다.
+ *
+ * ⚠️ 루트 레이아웃끼리 오가는 이동(예: 랜딩 → 로그인)은 Next 가 전체 페이지를
+ *    새로 불러온다. 클라이언트 상태가 이어지지 않는 것은 의도된 동작이다.
+ */
+export const rootMetadata: Metadata = {
   title: "JSL Logistics",
   description: "JSL Logistics 물류 운영 관리 시스템",
   // 파비콘은 로고에서 뽑은 정사각 마크를 쓴다 (public/logo-mark.png 기준)
@@ -17,9 +29,11 @@ export const metadata: Metadata = {
   },
 };
 
-export default function RootLayout({
+export function RootDocument({
+  lang,
   children,
 }: {
+  lang: string;
   children: React.ReactNode;
 }) {
   /*
@@ -38,7 +52,7 @@ export default function RootLayout({
   */
   return (
     <html
-      lang="ko"
+      lang={lang}
       className={`${generalSans.variable} ${poppins.variable} ${beVietnamPro.variable} antialiased`}
       suppressHydrationWarning
     >

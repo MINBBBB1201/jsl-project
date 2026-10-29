@@ -11,6 +11,7 @@
  */
 
 import { API_BASE_URL } from "@/lib/api"
+import { getApiErrorMessage } from "@/lib/api-error"
 import { ApiError, authHeaders } from "@/lib/auth"
 import type {
   ApiTradeDocumentType,
@@ -41,7 +42,7 @@ async function request<T extends ApiEnvelope>(
 
   if (!res.ok || json?.success === false) {
     throw new ApiError(
-      json?.error ?? json?.errors?.[0]?.msg ?? `요청에 실패했습니다. (HTTP ${res.status})`,
+      getApiErrorMessage(json, `요청에 실패했습니다. (HTTP ${res.status})`),
       res.status,
       json?.code
     )

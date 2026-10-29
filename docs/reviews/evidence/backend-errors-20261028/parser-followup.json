@@ -1,0 +1,152 @@
+{
+  "dateLocal": "2026-10-28",
+  "timezone": "Asia/Shanghai",
+  "issue": 41,
+  "executionBaseHead": "a15e442061137603c1dcb093c6fdc3f0ae930eb3",
+  "sourceHeadAtExecution": null,
+  "uncommittedSourceAtExecution": true,
+  "sourceIdentity": "SHA-256 of LF source; compare with the follow-up commit. Tests did not run on unchanged a15e442.",
+  "sourceHashes": {
+    "backend/src/middleware/error.middleware.js": "b509e675d0600b0038c41dba18926286f496a20e0b8bd42156a7911dee10ab92",
+    "backend/src/server.js": "4da46aee9515bb7e53fc3859d2e6122e837e66819b66fe7b5e28f25a51b0b9ba",
+    "backend/tests/helpers/app.js": "cd2159a6c00bd85928b98c537a6850e9c877474431d6ba614eddbde08f0de928",
+    "backend/tests/error-response.test.js": "3d104799316af60d38a7fd3ec2462caee5c1e950e49484f7f2f484ee6340c4da"
+  },
+  "precedingEvidence": "../backend-errors-20261027/validation.json",
+  "crossCompanyReview": {
+    "provenance": "User-forwarded Claude Code desktop report; this session did not independently inspect the model invocation.",
+    "reportedModel": "Claude Opus 5.5 (claude-opus-5-5)",
+    "reviewedHead": "a15e442061137603c1dcb093c6fdc3f0ae930eb3",
+    "reviewedBase": "c8c5489a662ae9aab354335483332116f1962072",
+    "scope": "Read-only source, hash and prior evidence review; no project test or HTTP execution by reviewer.",
+    "acceptedFinding": "Known body-parser client errors became generic 500 responses.",
+    "followUpDeltaReview": "pending; keep PR Draft",
+    "humanGitHubApproval": false
+  },
+  "parserPolicy": {
+    "fixedMappings": [
+      {
+        "type": "entity.parse.failed",
+        "statusCode": 400,
+        "message": "Invalid JSON request body."
+      },
+      {
+        "type": "entity.too.large",
+        "statusCode": 413,
+        "message": "Request body is too large."
+      }
+    ],
+    "trustArbitraryExpose": false,
+    "exposeParserBodyOrOriginalMessage": false,
+    "logKnownParserClientErrors": false,
+    "actualServerJsonLimit": "10kb, unchanged",
+    "fixtureJsonLimit": "1kb",
+    "productionBehaviorChange": "These two known parser errors change from generic 500 to fixed 400/413; public fields stay status/message."
+  },
+  "beforeParserFix": {
+    "selectedTests": 8,
+    "passed": 0,
+    "failed": 8,
+    "skipped": 58,
+    "scope": "Actual Express JSON parser cases only; not the entire final suite."
+  },
+  "fullBackend": {
+    "suites": 6,
+    "passedSuites": 6,
+    "tests": 160,
+    "passed": 160,
+    "failed": 0,
+    "files": [
+      {
+        "file": "backend/tests/error-response.test.js",
+        "passed": 66,
+        "failed": 0
+      },
+      {
+        "file": "backend/tests/trade-document.test.js",
+        "passed": 24,
+        "failed": 0
+      },
+      {
+        "file": "backend/tests/notice.test.js",
+        "passed": 20,
+        "failed": 0
+      },
+      {
+        "file": "backend/tests/shipment.pii.test.js",
+        "passed": 7,
+        "failed": 0
+      },
+      {
+        "file": "backend/src/utils/delay-risk.test.js",
+        "passed": 25,
+        "failed": 0
+      },
+      {
+        "file": "backend/src/utils/delivery-completion.test.js",
+        "passed": 18,
+        "failed": 0
+      }
+    ]
+  },
+  "localServerSmoke": {
+    "scope": "Actual src/server.js + actual route/DB middleware + disposable authenticated local MongoDB",
+    "mode": "development",
+    "loopbackBindingAdapter": true,
+    "loggerTransportsSilenced": true,
+    "schedulerDisabled": true,
+    "productionRequests": 0,
+    "results": [
+      {
+        "name": "health reports connected against the disposable DB",
+        "passed": true
+      },
+      {
+        "name": "root route remains available",
+        "passed": true
+      },
+      {
+        "name": "unregistered /missing uses the real 404 handler",
+        "passed": true
+      },
+      {
+        "name": "unregistered /api/contact/notice uses the real 404 handler",
+        "passed": true
+      },
+      {
+        "name": "HEAD of an unregistered route returns 404 without a body",
+        "passed": true
+      },
+      {
+        "name": "protected notifications still reject a missing login",
+        "passed": true
+      },
+      {
+        "name": "malformed JSON returns fixed 400 under the real development server",
+        "passed": true
+      },
+      {
+        "name": "JSON exceeding the actual 10kb limit returns fixed 413",
+        "passed": true
+      },
+      {
+        "name": "CORS preflight is handled before the fallback",
+        "passed": true
+      }
+    ],
+    "passed": true,
+    "serverShutdown": "graceful",
+    "serverExitCode": 0
+  },
+  "otherChecks": {
+    "backendEslint": "passed",
+    "changedJsPrettier": "passed"
+  },
+  "limits": [
+    "Existing dependency installation and MongoDB binary reused; no fresh npm ci or download.",
+    "Local server smoke is separate from the 160 Jest tests and is not a Render production check.",
+    "Middleware headersSent forwarding is covered; actual streamed-socket termination and DB reconnect failure are not.",
+    "Frontend error/message compatibility remains a separate follow-up; no frontend source changed.",
+    "No merge or deployment. Cross-company review of the parser-fix delta remains pending."
+  ]
+}

@@ -739,8 +739,7 @@ export const footer = {
       { name: "자주 묻는 질문", href: "/landing#faq" },
       { name: "화물 추적", href: "/tracking" },
       { name: "견적 요청", href: "/landing#contact" },
-      // TODO: 공지사항 페이지 준비되면 링크 연결
-      { name: "공지사항", href: "#" },
+      { name: "공지사항", href: "/notices" },
     ],
     약관: [
       { name: "이용약관", href: "/terms" },

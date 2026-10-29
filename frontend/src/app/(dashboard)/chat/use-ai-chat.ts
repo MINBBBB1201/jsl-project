@@ -2,6 +2,7 @@
 
 import { useCallback, useState } from "react"
 import { API_BASE_URL } from "@/lib/api"
+import { getApiErrorMessage } from "@/lib/api-error"
 
 export type KnowledgeCategory = "customs" | "sop" | "faq"
 
@@ -27,6 +28,17 @@ export interface ChatMessage {
 export interface CategoryCount {
   category: KnowledgeCategory
   count: number
+}
+
+/**
+ * 채팅은 첫 검증 오류(errors[0].msg)를 error 보다 먼저 보여 준다. 공통 helper 는 error 를
+ * 먼저 읽으므로, 이 순서를 지키려고 helper 앞에서 따로 읽는다.
+ */
+function firstValidationMessage(body: unknown): string | undefined {
+  const errors = (body as { errors?: unknown } | null)?.errors
+  const first = Array.isArray(errors) ? errors[0] : undefined
+  const msg = (first as { msg?: unknown } | undefined)?.msg
+  return typeof msg === "string" && msg.trim() ? msg : undefined
 }
 
 const createId = () =>
@@ -71,9 +83,8 @@ export function useAiChat() {
 
         if (!res.ok || !json?.success) {
           const detail =
-            json?.errors?.[0]?.msg ??
-            json?.error ??
-            `요청이 실패했습니다. (HTTP ${res.status})`
+            firstValidationMessage(json) ??
+            getApiErrorMessage(json, `요청이 실패했습니다. (HTTP ${res.status})`)
           setMessages((prev) => [
             ...prev,
             {
