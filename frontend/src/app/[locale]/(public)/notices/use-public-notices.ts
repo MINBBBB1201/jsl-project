@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useState } from "react"
 import { API_BASE_URL } from "@/lib/api"
+import { getApiErrorMessage } from "@/lib/api-error"
 
 /**
  * 공개 공지사항 카드 리스트용 데이터.
@@ -32,7 +33,7 @@ export function usePublicNotices() {
       if (signal?.aborted) return
 
       if (!res.ok || !json?.success) {
-        setError(json?.error ?? `공지사항을 불러오지 못했습니다. (HTTP ${res.status})`)
+        setError(getApiErrorMessage(json, `공지사항을 불러오지 못했습니다. (HTTP ${res.status})`))
         setIsLoading(false)
         return
       }

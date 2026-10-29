@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useState } from "react"
 import { API_BASE_URL } from "@/lib/api"
 import { authHeaders } from "@/lib/auth"
+import { getApiErrorMessage } from "@/lib/api-error"
 
 /**
  * 대시보드 조회 훅의 공통 뼈대.
@@ -24,7 +25,7 @@ export const request = async <T,>(path: string): Promise<T> => {
   const json = await res.json().catch(() => null)
 
   if (!res.ok || !json?.success) {
-    throw new Error(json?.error ?? `요청이 실패했습니다. (HTTP ${res.status})`)
+    throw new Error(getApiErrorMessage(json, `요청이 실패했습니다. (HTTP ${res.status})`))
   }
   return json as T
 }
