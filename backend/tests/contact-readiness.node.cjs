@@ -202,6 +202,60 @@ test("HTTP parser rejects malformed, oversize, non-JSON and invalid email withou
   assert(!JSON.stringify(response.body).includes(body.email));
   assert.equal(await Contact.countDocuments(), 0);
 });
+test("contact router keeps its own errors while the shared 404 and parser handlers stay in force", async () => {
+  // server.js 와 같은 순서: 전역 body parser → 문의 라우터 → notFoundHandler → errorHandler.
+  // error.middleware 는 logger → config 를 불러오며 MONGO_URI 가 없으면 throw 한다.
+  // 이 테스트는 500 경로를 타지 않으므로 기존 알림 테스트처럼 logger 만 대체한다.
+  const loggerPath = require.resolve("../src/utils/logger");
+  const previousLogger = require.cache[loggerPath];
+  require.cache[loggerPath] = { exports: { error() {} } };
+  let notFoundHandler, errorHandler;
+  try {
+    ({
+      notFoundHandler,
+      errorHandler,
+    } = require("../src/middleware/error.middleware"));
+  } finally {
+    if (previousLogger) require.cache[loggerPath] = previousLogger;
+    else delete require.cache[loggerPath];
+  }
+  const shared = appFor();
+  shared.post("/api/other", (_req, res) => res.json({ ok: true }));
+  shared.use(notFoundHandler);
+  shared.use(errorHandler);
+  // 문의 경로: 32KB 파서와 문의 전용 공개 오류 코드를 유지한다.
+  const malformed = await request(shared)
+    .post("/api/contact")
+    .type("json")
+    .send("{");
+  assert.equal(malformed.status, 400);
+  assert.equal(malformed.body.code, "INVALID_JSON");
+  const oversize = await request(shared)
+    .post("/api/contact")
+    .type("json")
+    .send(JSON.stringify({ message: "a".repeat(33000) }));
+  assert.equal(oversize.status, 413);
+  assert.equal(oversize.body.code, "BODY_TOO_LARGE");
+  // 문의 라우터에 없는 하위 경로와 다른 경로는 공통 404 문구를 쓴다.
+  for (const path of ["/api/contact/unknown", "/api/unregistered"]) {
+    const missing = await request(shared).get(path);
+    assert.equal(missing.status, 404);
+    assert.deepEqual(missing.body, { status: "fail", message: "Route not found." });
+  }
+  // 문의 밖 경로는 전역 10KB 파서의 고정 413/400 응답을 유지한다.
+  const other = await request(shared)
+    .post("/api/other")
+    .type("json")
+    .send(JSON.stringify({ message: "a".repeat(11000) }));
+  assert.equal(other.status, 413);
+  assert.deepEqual(other.body, { status: "fail", message: "Request body is too large." });
+  const otherMalformed = await request(shared)
+    .post("/api/other")
+    .type("json")
+    .send("{");
+  assert.equal(otherMalformed.status, 400);
+  assert.deepEqual(otherMalformed.body, { status: "fail", message: "Invalid JSON request body." });
+});
 test("missing unique index blocks all persistence instead of using unsafe local dedupe", async () => {
   const body = await sample();
   await send(body, "before-index-removed");
