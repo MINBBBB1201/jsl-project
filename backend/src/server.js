@@ -68,8 +68,8 @@ app.use(
 logger.info(`CORS 허용 origin: ${allowedOrigins.join(", ")}`);
 
 // Body parser middleware
-app.use(express.json({ limit: "10kb" }));
-app.use(express.urlencoded({ extended: true, limit: "10kb" }));
+const { createRequestBodyParser } = require("./middleware/request-body.middleware");
+app.use(createRequestBodyParser());
 
 // Logging middleware
 app.use((req, res, next) => {

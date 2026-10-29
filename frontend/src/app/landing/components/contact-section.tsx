@@ -17,97 +17,93 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
+  FormDescription,
 } from "@/components/ui/form"
 import { Loader2, Mail } from 'lucide-react'
-import { toast } from 'sonner'
+import { useEffect, useRef, useState } from 'react'
+import { useLocale } from 'next-intl'
+import { inquiryCopy } from '@/lib/contact-inquiry-copy'
+import { inquiryPayload, readNotice, readReceipt, retryIdentity, type ContactNotice, type InquiryReceipt, type InquiryLanguage } from '@/lib/contact-inquiry'
+import { acquireInquiryRetry, completeInquiryRetry, inquiryRetryStorage, type InquiryRetry } from '@/lib/contact-inquiry-retry'
 import { useContent } from '@/config/use-content'
 import { API_BASE_URL } from '@/lib/api'
 
-const contactFormSchema = z.object({
-  company: z.string().min(2, {
-    message: "회사명을 2자 이상 입력해 주세요.",
-  }),
-  name: z.string().min(2, {
-    message: "담당자명을 2자 이상 입력해 주세요.",
-  }),
-  email: z.string().email({
-    message: "올바른 이메일 주소를 입력해 주세요.",
-  }),
-  subject: z.string().min(5, {
-    message: "제목을 5자 이상 입력해 주세요.",
-  }),
-  message: z.string().min(10, {
-    message: "문의 내용을 10자 이상 입력해 주세요.",
-  }),
-  // 개인정보를 수집하는 폼이라 동의 없이는 제출할 수 없다
-  privacyConsent: z.boolean().refine((checked) => checked === true, {
-    message: "개인정보 수집·이용에 동의해 주세요.",
-  }),
-})
-
 export function ContactSection() {
   const { contact } = useContent()
-
+  const language = useLocale() as InquiryLanguage
+  const copy = inquiryCopy[language] ?? inquiryCopy.ko
+  const [notice, setNotice] = useState<ContactNotice | null>(null)
+  const [noticeAttempt, setNoticeAttempt] = useState(0)
+  const [receipt, setReceipt] = useState<InquiryReceipt | null>(null)
+  const [failure, setFailure] = useState('')
+  const errorRef = useRef<HTMLParagraphElement>(null)
+  const retryRef = useRef<InquiryRetry | null>(null)
+  const sendingRef = useRef(false)
+  const contactFormSchema = z.object({
+    company: z.string().trim().max(200, copy.invalid),
+    name: z.string().trim().min(1, copy.invalid).max(100, copy.invalid),
+    email: z.string().trim().email(copy.invalid).max(320, copy.invalid),
+    subject: z.string().trim().max(200, copy.invalid),
+    message: z.string().trim().min(1, copy.invalid).max(5000, copy.invalid),
+    privacyConsent: z.boolean().refine(value => value === true, copy.consent),
+  })
   const form = useForm<z.infer<typeof contactFormSchema>>({
     resolver: zodResolver(contactFormSchema),
-    defaultValues: {
-      company: "",
-      name: "",
-      email: "",
-      subject: "",
-      message: "",
-      privacyConsent: false,
-    },
+    defaultValues: { company: '', name: '', email: '', subject: '', message: '', privacyConsent: false },
   })
-
+  const { setValue } = form
+  useEffect(() => {
+    const controller = new AbortController()
+    const timeout = setTimeout(() => controller.abort(), 10000)
+    let active = true
+    async function load() {
+      try {
+        const response = await fetch(`${API_BASE_URL}/api/contact/notice?language=${language}`, { signal: controller.signal, cache: 'no-store' })
+        const current = response.ok ? readNotice(await response.json(), language) : null
+        if (active) { setNotice(current); setValue('privacyConsent', false) }
+      } catch { if (active) setNotice(null) }
+      finally { clearTimeout(timeout) }
+    }
+    void load()
+    return () => { active = false; controller.abort(); clearTimeout(timeout) }
+  }, [language, noticeAttempt, setValue])
+  useEffect(() => { if (failure) errorRef.current?.focus() }, [failure])
   const isSubmitting = form.formState.isSubmitting
-  // form.watch() 대신 useWatch — watch() 는 매 렌더 새 함수를 반환해
-  // React Compiler 가 컴포넌트 메모이제이션을 건너뛴다.
-  const hasConsented = useWatch({
-    control: form.control,
-    name: "privacyConsent",
-  })
-
+  const hasConsented = useWatch({ control: form.control, name: 'privacyConsent' })
+  const currentNotice = notice?.language === language ? notice : null
   async function onSubmit(values: z.infer<typeof contactFormSchema>) {
+    if (!currentNotice || sendingRef.current) return
+    sendingRef.current = true
+    setFailure('')
+    setReceipt(null)
+    const controller = new AbortController()
+    const timeout = setTimeout(() => controller.abort(), 15000)
     try {
+      const identity = retryIdentity({ ...values, company: currentNotice.items.includes('companyName') ? values.company : '', subject: currentNotice.items.includes('subject') ? values.subject : '' }, language)
+      const storage = inquiryRetryStorage()
+      const retry = await acquireInquiryRetry(identity, retryRef.current, storage)
+      retryRef.current = retry
       const response = await fetch(`${API_BASE_URL}/api/contact`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          companyName: values.company,
-          contactName: values.name,
-          email: values.email,
-          subject: values.subject,
-          message: values.message,
-        }),
+        method: 'POST', signal: controller.signal,
+        headers: { 'Content-Type': 'application/json', 'Idempotency-Key': retry.key },
+        body: JSON.stringify(inquiryPayload(values, currentNotice)),
       })
-
       const result = await response.json().catch(() => null)
-
-      if (!response.ok) {
-        // 400은 서버 검증 실패(errors 배열), 그 외는 서버/DB 오류
-        const serverDetail = result?.errors?.[0]?.msg ?? result?.error
-        const description =
-          response.status === 400 && serverDetail
-            ? `입력값을 확인해 주세요. (${serverDetail})`
-            : `잠시 후 다시 시도해 주세요. (HTTP ${response.status})`
-        toast.error(contact.errorTitle, { description })
+      if (response.status === 409 && Array.isArray(result?.errors) && result.errors.some((error: { code?: string }) => error?.code === 'NOTICE_CHANGED')) {
+        setValue('privacyConsent', false)
+        setNotice(null)
+        setNoticeAttempt(value => value + 1)
+        setFailure(copy.changed)
         return
       }
-
-      toast.success(contact.successTitle, {
-        description: contact.successDescription,
-      })
-      form.reset()
-    } catch (error) {
-      // 네트워크 오류 / 서버 미기동 등 fetch 자체가 실패한 경우
-      toast.error(contact.errorTitle, {
-        description:
-          error instanceof Error
-            ? `서버에 연결할 수 없습니다. (${error.message})`
-            : '서버에 연결할 수 없습니다. 잠시 후 다시 시도해 주세요.',
-      })
-    }
+      const confirmed = response.ok ? readReceipt(result) : null
+      if (!confirmed) { setFailure(copy.failed); return }
+      setReceipt(confirmed)
+      // 확정된 키는 저장소에서 지우고, 삭제 실패 시에도 같은 페이지에서 다시 쓰지 않는다.
+      // 실패·응답 유실 때는 미확정 키가 남아 재시도가 보호된다.
+      retryRef.current = completeInquiryRetry(retry, storage)
+    } catch { setFailure(copy.failed) }
+    finally { clearTimeout(timeout); sendingRef.current = false }
   }
 
   return (
@@ -154,17 +150,21 @@ export function ContactSection() {
               </CardHeader>
               <CardContent>
                 <Form {...form}>
-                  <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+                  <form noValidate onSubmit={event => { void form.handleSubmit(onSubmit)(event) }} className="space-y-6">
+                    {!currentNotice && <div role="status" className="rounded-lg border p-4"><p>{copy.unavailable}</p><Button type="button" variant="outline" className="mt-3 min-h-11" onClick={() => setNoticeAttempt(value => value + 1)}>{copy.retry}</Button></div>}
+                    {failure && <p ref={errorRef} role="alert" tabIndex={-1} className="rounded-lg border p-4">{failure}</p>}
+                    {receipt && <p role="status" aria-live="polite" className="break-all rounded-lg border p-4">{contact.successTitle} · {copy.receipt}: {receipt.id}</p>}
                     <div className="grid gap-4 sm:grid-cols-2">
                       <FormField
                         control={form.control}
                         name="company"
                         render={({ field }) => (
                           <FormItem>
-                            <FormLabel>{contact.fields.company}</FormLabel>
+                            <FormLabel>{contact.fields.company} ({copy.optional})</FormLabel>
                             <FormControl>
-                              <Input placeholder={contact.formPlaceholders.company} {...field} />
+                              <Input maxLength={200} disabled={isSubmitting || !currentNotice?.items.includes('companyName')} autoComplete="organization" placeholder={contact.formPlaceholders.company} {...field} />
                             </FormControl>
+                            <FormDescription className="sr-only">{copy.optional}</FormDescription>
                             <FormMessage />
                           </FormItem>
                         )}
@@ -174,10 +174,11 @@ export function ContactSection() {
                         name="name"
                         render={({ field }) => (
                           <FormItem>
-                            <FormLabel>{contact.fields.name}</FormLabel>
+                            <FormLabel>{contact.fields.name} ({copy.required})</FormLabel>
                             <FormControl>
-                              <Input placeholder={contact.formPlaceholders.name} {...field} />
+                              <Input aria-required maxLength={100} disabled={isSubmitting || !currentNotice} autoComplete="name" placeholder={contact.formPlaceholders.name} {...field} />
                             </FormControl>
+                            <FormDescription className="sr-only">{copy.required}</FormDescription>
                             <FormMessage />
                           </FormItem>
                         )}
@@ -188,11 +189,12 @@ export function ContactSection() {
                       name="email"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel>{contact.fields.email}</FormLabel>
+                          <FormLabel>{contact.fields.email} ({copy.required})</FormLabel>
                           <FormControl>
-                            <Input type="email" placeholder={contact.formPlaceholders.email} {...field} />
+                            <Input aria-required type="email" maxLength={320} disabled={isSubmitting || !currentNotice} autoComplete="email" placeholder={contact.formPlaceholders.email} {...field} />
                           </FormControl>
-                          <FormMessage />
+                          <FormDescription className="sr-only">{copy.required}</FormDescription>
+                            <FormMessage />
                         </FormItem>
                       )}
                     />
@@ -201,11 +203,12 @@ export function ContactSection() {
                       name="subject"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel>{contact.fields.subject}</FormLabel>
+                          <FormLabel>{contact.fields.subject} ({copy.optional})</FormLabel>
                           <FormControl>
-                            <Input placeholder={contact.formPlaceholders.subject} {...field} />
+                            <Input maxLength={200} disabled={isSubmitting || !currentNotice?.items.includes('subject')} autoComplete="off" placeholder={contact.formPlaceholders.subject} {...field} />
                           </FormControl>
-                          <FormMessage />
+                          <FormDescription className="sr-only">{copy.optional}</FormDescription>
+                            <FormMessage />
                         </FormItem>
                       )}
                     />
@@ -214,16 +217,20 @@ export function ContactSection() {
                       name="message"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel>{contact.fields.message}</FormLabel>
+                          <FormLabel>{contact.fields.message} ({copy.required})</FormLabel>
                           <FormControl>
                             <Textarea
                               placeholder={contact.formPlaceholders.message}
+                              aria-required
                               rows={10}
+                              maxLength={5000}
+                              disabled={isSubmitting || !currentNotice}
                               className="min-h-50"
                               {...field}
                             />
                           </FormControl>
-                          <FormMessage />
+                          <FormDescription className="sr-only">{copy.required}</FormDescription>
+                            <FormMessage />
                         </FormItem>
                       )}
                     />
@@ -234,10 +241,13 @@ export function ContactSection() {
                         <FormItem className="flex flex-row items-start gap-3 rounded-lg border p-4">
                           <FormControl>
                             <Checkbox
+                              aria-required
                               checked={field.value}
                               onCheckedChange={field.onChange}
-                              className="mt-0.5 cursor-pointer"
-                              aria-describedby="privacy-consent-detail"
+                              ref={field.ref}
+                              onBlur={field.onBlur}
+                              disabled={isSubmitting || !currentNotice}
+                              className="mt-0.5 h-6 w-6 cursor-pointer"
                             />
                           </FormControl>
                           <div className="space-y-1.5">
@@ -259,12 +269,16 @@ export function ContactSection() {
                                 {contact.consentLink}
                               </Link>
                             </div>
-                            <p
-                              id="privacy-consent-detail"
-                              className="text-xs text-muted-foreground"
-                            >
-                              {contact.consentDetail}
-                            </p>
+                            <FormDescription className="text-sm text-foreground break-words">
+                              {currentNotice ? <>
+                                <span className="block">{copy.purpose}: {currentNotice.purpose}</span>
+                                <span className="block">{copy.items}: {currentNotice.items.map(item => ({ companyName: contact.fields.company, contactName: contact.fields.name, email: contact.fields.email, subject: contact.fields.subject, message: contact.fields.message })[item]).join(', ')}</span>
+                                <span className="block">{copy.retention}: {currentNotice.retentionDescription}</span>
+                                <span className="block">{copy.refusal}: {currentNotice.refusalConsequence}</span>
+                                <span className="block">{copy.contact}: {currentNotice.privacyContact}</span>
+                                <span className="block">{copy.date}: {currentNotice.effectiveDate}</span>
+                              </> : copy.unavailable}
+                            </FormDescription>
                             <FormMessage />
                           </div>
                         </FormItem>
@@ -273,8 +287,8 @@ export function ContactSection() {
 
                     <Button
                       type="submit"
-                      className="w-full cursor-pointer"
-                      disabled={isSubmitting || !hasConsented}
+                      className="w-full min-h-11 cursor-pointer"
+                      disabled={isSubmitting || !hasConsented || !currentNotice}
                     >
                       {isSubmitting && <Loader2 className="h-4 w-4 animate-spin" />}
                       {isSubmitting ? contact.submittingLabel : contact.submitLabel}

@@ -1,0 +1,62 @@
+{
+  "scope": "Installed next-intl middleware with the actual routing.ts configuration and synthetic requests. No browser, network, production Next server, client language switch or deployment middleware execution.",
+  "versions": {
+    "node": "24.14.1",
+    "next": "16.1.1",
+    "nextIntl": "4.13.6"
+  },
+  "assertionCount": 6,
+  "cases": [
+    {
+      "label": "fresh default-language document",
+      "pathname": "/landing",
+      "destination": "document",
+      "responseStatus": 200,
+      "cookies": []
+    },
+    {
+      "label": "fresh English document",
+      "pathname": "/en/landing",
+      "destination": "document",
+      "responseStatus": 200,
+      "cookies": [
+        {
+          "name": "NEXT_LOCALE",
+          "sameSite": "lax",
+          "maxAge": null,
+          "path": "/",
+          "secure": null
+        }
+      ]
+    },
+    {
+      "label": "fresh Chinese document",
+      "pathname": "/zh/landing",
+      "destination": "document",
+      "responseStatus": 200,
+      "cookies": [
+        {
+          "name": "NEXT_LOCALE",
+          "sameSite": "lax",
+          "maxAge": null,
+          "path": "/",
+          "secure": null
+        }
+      ]
+    },
+    {
+      "label": "non-document request",
+      "pathname": "/en/landing",
+      "destination": "empty",
+      "responseStatus": 200,
+      "cookies": []
+    },
+    {
+      "label": "disabled-cookie control only; project unchanged",
+      "pathname": "/en/landing",
+      "destination": "document",
+      "responseStatus": 200,
+      "cookies": []
+    }
+  ]
+}
