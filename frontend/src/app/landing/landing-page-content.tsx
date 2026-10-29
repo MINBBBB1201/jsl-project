@@ -45,7 +45,7 @@ export function LandingPageContent() {
       <JourneyCta />
       <div className="journey-contact journey-editorial"><CTASection /><ContactSection /></div>
     </main>
-    <div className="journey-footer"><LandingFooter /><div className="journey-wordmark" aria-hidden="true">JSL LOGISTICS</div></div>
+    <div className="journey-footer"><LandingFooter logoSurface="light" /><div className="journey-wordmark" aria-hidden="true">JSL LOGISTICS</div></div>
     <LandingThemeCustomizerTrigger onClick={() => setCustomizerOpen(true)} />
     <LandingThemeCustomizer open={customizerOpen} onOpenChange={setCustomizerOpen}/>
   </div>

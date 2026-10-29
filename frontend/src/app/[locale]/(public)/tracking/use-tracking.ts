@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useState } from "react"
 import { useTranslations } from "next-intl"
 import { API_BASE_URL } from "@/lib/api"
+import { getApiErrorMessage } from "@/lib/api-error"
 import type { RiskLevel, TransportMode } from "@/lib/transport-modes"
 
 export interface TrackedShipment {
@@ -86,9 +87,7 @@ export function useTracking() {
 
       if (!res.ok || !json?.success) {
         setError(
-          json?.error ??
-            json?.errors?.[0]?.msg ??
-            `조회에 실패했습니다. (HTTP ${res.status})`
+          getApiErrorMessage(json, `조회에 실패했습니다. (HTTP ${res.status})`)
         )
         return
       }
