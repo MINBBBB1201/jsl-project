@@ -34,6 +34,12 @@ const userSchema = new mongoose.Schema(
       trim: true,
       index: true,
     },
+    username: {
+      type: String,
+      lowercase: true,
+      trim: true,
+      match: /^[a-z0-9][a-z0-9_.-]{2,31}$/,
+    },
     /**
      * bcrypt 해시.
      * select:false — 실수로 다른 조회 응답에 섞여 나가지 않도록 기본 조회에서
@@ -65,6 +71,15 @@ const userSchema = new mongoose.Schema(
   { timestamps: true },
 );
 
+// Existing email-only accounts have no username and remain valid.
+userSchema.index(
+  { username: 1 },
+  {
+    unique: true,
+    partialFilterExpression: { username: { $type: "string" } },
+  },
+);
+
 /**
  * 저장 전 해싱.
  * 평문이 DB 에 들어가는 경로를 하나로 막기 위해 컨트롤러가 아니라 모델에서 처리한다.
@@ -94,6 +109,7 @@ userSchema.methods.toSafeJSON = function toSafeJSON() {
   return {
     id: this._id.toString(),
     email: this.email,
+    ...(this.username ? { username: this.username } : {}),
     name: this.name,
     role: this.role,
   };

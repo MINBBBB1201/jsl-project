@@ -13,9 +13,11 @@ exports.login = async (req, res) => {
   const { email, password } = req.body;
 
   try {
-    const user = await User.findOne({
-      email: String(email).toLowerCase().trim(),
-    }).select("+password");
+    const identity = String(email).toLowerCase().trim();
+    const query = identity.includes("@")
+      ? { email: identity }
+      : { username: identity };
+    const user = await User.findOne(query).select("+password");
 
     const passwordMatches = user ? await user.verifyPassword(password) : false;
 
@@ -23,7 +25,7 @@ exports.login = async (req, res) => {
       logger.warn(`로그인 실패: ${email}`);
       return res.status(401).json({
         success: false,
-        error: "이메일 또는 비밀번호가 올바르지 않습니다.",
+        error: "아이디/이메일 또는 비밀번호가 올바르지 않습니다.",
       });
     }
 
@@ -66,7 +68,7 @@ exports.me = async (req, res) => {
  * 로그인 게이트를 세운 의미가 없다.
  */
 exports.register = async (req, res) => {
-  const { email, password, name, role } = req.body;
+  const { email, password, name, role, username } = req.body;
 
   try {
     const normalizedEmail = String(email).toLowerCase().trim();
@@ -81,6 +83,7 @@ exports.register = async (req, res) => {
 
     const user = await User.create({
       email: normalizedEmail,
+      ...(username ? { username: username.toLowerCase().trim() } : {}),
       password,
       name,
       role: role || "sales",
@@ -90,6 +93,14 @@ exports.register = async (req, res) => {
 
     res.status(201).json({ success: true, data: { user: user.toSafeJSON() } });
   } catch (error) {
+    if (error.code === 11000) {
+      return res
+        .status(409)
+        .json({
+          success: false,
+          error: "이미 등록된 이메일 또는 아이디입니다.",
+        });
+    }
     logger.error("계정 발급 중 오류:", error);
     res.status(500).json({
       success: false,

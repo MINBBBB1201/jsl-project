@@ -36,9 +36,15 @@ router.post(
   loginLimiter,
   [
     body("email")
+      .if((value) => typeof value !== "string" || value.includes("@"))
       .isEmail()
       .withMessage("올바른 이메일을 입력해 주세요.")
       .normalizeEmail(),
+    body("email")
+      .if((value) => typeof value === "string" && !value.includes("@"))
+      .trim()
+      .matches(/^[a-zA-Z0-9][a-zA-Z0-9_.-]{2,31}$/)
+      .withMessage("아이디 형식이 올바르지 않습니다."),
     body("password")
       .isString()
       .notEmpty()
@@ -65,6 +71,13 @@ router.post(
       .isString()
       .isLength({ min: MIN_PASSWORD_LENGTH })
       .withMessage(`비밀번호는 ${MIN_PASSWORD_LENGTH}자 이상이어야 합니다.`),
+    body("username")
+      .optional()
+      .isString()
+      .bail()
+      .trim()
+      .matches(/^[a-zA-Z0-9][a-zA-Z0-9_.-]{2,31}$/)
+      .withMessage("아이디 형식이 올바르지 않습니다."),
     body("name")
       .isString()
       .trim()
