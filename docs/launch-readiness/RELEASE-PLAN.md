@@ -29,6 +29,8 @@
 
 실제 ContactSection과 운영 라우트 연결, 같은 탭에서 새로고침 후 미확정 요청 키 복구까지 전용 브랜치에 구현했다. 최신 [REVIEW-10.md](REVIEW-10.md)는 실제 Render Live 커밋·health 응답·새 경로 미배포와 미등록 경로 500/개발용 오류 형식을 구분한다. 이전 [REVIEW-09.md](REVIEW-09.md)는 번들 API·GET·OPTIONS, [REVIEW-08.md](REVIEW-08.md)는 배포 HTML·정책 문구 검토다. 이 결과들은 앱 브라우저 흐름 통과가 아니다. 10월 25일 하네스는 [REVIEW-07.md](REVIEW-07.md), 소스 조사는 [REVIEW-06.md](REVIEW-06.md), 남은 조건은 [출시 증빙표](LAUNCH-CHECKLIST-20261025.md)에 있다. 이전 검증과 날짜를 구분하며 운영 고지 미확정·main 병합 및 운영 배포 미실행 상태는 유지한다.
 
+2026-10-29 최신 main(`98d8f248`)을 이 브랜치에 병합하고 통합 소스를 다시 검증했다. 결과는 [REVIEW-11.md](REVIEW-11.md), 통합 head 기준 배포 순서·되돌림·운영 입력은 [호환성 메모의 체크리스트](CONTACT-API-COMPATIBILITY.md)에 있다. #41/#43/#45의 문제는 main의 #42/#44/#46으로 해결되어 더는 미해결 항목이 아니다.
+
 ## 이전 단계의 기반 구현
 
 `backend/src/services/contact-inquiry.service.js`: strict 동의 true, 현재 고지 ID/hash, 공개된 수집 필드·크기·언어, 빈 선택값 생략, 서버 시각·고지 snapshot, 동일 요청 fingerprint, 연락처 없는 접수 응답.
