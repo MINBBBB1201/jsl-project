@@ -88,6 +88,26 @@ export function ApprovedHeroGlobe() {
           tag.style.top = `${(p.y / size) * 100}%`
         }
       })
+
+      // 제목·메뉴 글자 줄 뒤에 깔린 태그는 조각만 보이므로 숨긴다. 거점 정보는 네트워크 섹션에 있다.
+      const hero = wrap.closest(".journey-hero")
+      const lines: DOMRect[] = []
+      hero?.querySelectorAll(".journey-hero-copy h1, .journey-hero-copy p, .journey-hero-navigation a").forEach((el) => {
+        // 글자 노드만 잰다. 요소째 재면 블록 span 의 줄 전체 폭이 잡힌다.
+        const walker = document.createTreeWalker(el, NodeFilter.SHOW_TEXT)
+        const range = document.createRange()
+        for (let node = walker.nextNode(); node; node = walker.nextNode()) {
+          range.selectNodeContents(node)
+          lines.push(...range.getClientRects())
+        }
+      })
+      for (const tag of tagRefs.current) {
+        if (!tag) continue
+        tag.style.visibility = ""
+        const t = tag.getBoundingClientRect()
+        const covered = lines.some((l) => t.left < l.right && l.left < t.right && t.top < l.bottom && l.top < t.bottom)
+        if (covered) tag.style.visibility = "hidden"
+      }
     }
 
     const schedule = () => {
