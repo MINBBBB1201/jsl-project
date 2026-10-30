@@ -112,17 +112,19 @@
 }
 
 @media (max-width: 700px) {
-  .jsl-an__scene { height: 1010px; min-height: 1010px; }
+  .jsl-an__scene { height: calc(1010px + var(--jsl-an-shift, 0px)); min-height: calc(1010px + var(--jsl-an-shift, 0px)); }
   .jsl-an__intro { left: 7%; top: 132px; width: 86%; }
   .jsl-an__eyebrow { font-size: 10px; letter-spacing: .045em; margin-bottom: 18px; }
   .jsl-an__title { font-size: 11.5cqw; line-height: 1.04; letter-spacing: -.05em; }
   .jsl-an__copy { font-size: 12px; margin-top: 20px; max-width: 310px; }
-  .jsl-an__detail { position: absolute; top: 635px; margin: 0; width: 290px; min-height: 142px; }
+  .jsl-an__detail { position: absolute; top: calc(635px + var(--jsl-an-shift, 0px)); margin: 0; width: 290px; min-height: 142px; }
   .jsl-an__detail-copy { font-size: 13px; min-height: 60px; }
   .jsl-an__label { min-width: 65px; padding: 9px 2px 9px 0; }
   .jsl-an__label strong { font-size: 18px; }
   .jsl-an__label small { font-size: 11px; margin-top: 4px; }
-  .jsl-an__globe { mask-image: linear-gradient(to bottom, transparent 0 340px, #000 390px, #000 710px, transparent 755px); }
+  .jsl-an__globe {
+    mask-image: linear-gradient(to bottom, transparent 0 calc(340px + var(--jsl-an-shift, 0px)), #000 calc(390px + var(--jsl-an-shift, 0px)), #000 calc(710px + var(--jsl-an-shift, 0px)), transparent calc(755px + var(--jsl-an-shift, 0px)));
+  }
   .jsl-an__footer { left: 7%; right: 7%; bottom: 20px; }
   .jsl-an__total { font-size: 10px; letter-spacing: 0; }
   .jsl-an__pager { gap: 10px; font-size: 10px; }

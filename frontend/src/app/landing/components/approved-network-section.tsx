@@ -27,6 +27,8 @@ const ARCS: [string, string][] = [
 ]
 const LAND_URL = "/images/approved-network/land.geojson"
 const MOBILE_MAX = 700
+/** 라벨은 칸 좌표에 세로 가운데를 맞춘다(translateY -50%). 모바일 라벨 높이의 절반 정도. */
+const LABEL_HALF_HEIGHT = 30
 const RAD = Math.PI / 180
 
 interface LandPoint { lon: number; lat: number; seed: number; grain: number; alt: number }
@@ -228,8 +230,19 @@ export function ApprovedNetworkSection() {
     const w = scene.clientWidth
     const h = scene.clientHeight
     const mobile = w <= MOBILE_MAX
+    // 모바일 라벨 칸은 원본 시안의 고정 px 이다. 번역 제목·설명이 길어 본문이 그 칸까지
+    // 내려오면, 지구본·라벨·상세·장면 높이를 같은 양만큼 함께 내린다(구도는 그대로).
+    let shift = 0
+    if (mobile) {
+      const top = scene.getBoundingClientRect().top
+      const text = introRef.current?.querySelectorAll(".jsl-an__eyebrow, .jsl-an__title, .jsl-an__copy") ?? []
+      const textBottom = Math.max(0, ...[...text].map((el) => el.getBoundingClientRect().bottom - top))
+      const firstLabelTop = Math.min(...Object.values(PLACES).map((p) => p.mobile[1])) - LABEL_HALF_HEIGHT
+      shift = Math.max(0, Math.ceil(textBottom + 16 - firstLabelTop))
+    }
+    scene.style.setProperty("--jsl-an-shift", `${shift}px`)
     geometryRef.current = mobile
-      ? { w, h, cx: w * 0.91, cy: 548, r: w * 0.81, mobile }
+      ? { w, h, cx: w * 0.91, cy: 548 + shift, r: w * 0.81, mobile }
       : { w, h, cx: w * 0.85, cy: h * 0.53, r: Math.min(h * 0.69, w * 0.49), mobile }
     const dpr = Math.min(window.devicePixelRatio || 1, 2)
     canvas.width = Math.round(w * dpr)
@@ -242,7 +255,7 @@ export function ApprovedNetworkSection() {
       if (!el || !place) return
       const [sx, sy] = mobile ? place.mobile : place.desktop
       el.style.left = `${Math.min(sx * w, w - el.offsetWidth - (mobile ? 24 : w * 0.045))}px`
-      el.style.top = `${mobile ? sy : sy * h}px`
+      el.style.top = `${mobile ? sy + shift : sy * h}px`
     })
     draw()
   }, [offices, draw])
@@ -329,6 +342,9 @@ export function ApprovedNetworkSection() {
     }
   }
 
+  // 단위가 라틴 문자로 시작하면(staff, người) 숫자와 띄운다. JourneyNetwork 와 같은 규칙이다.
+  const people = (n: number) =>
+    `${n}${/^[A-Za-z]/.test(network.headcountUnit) ? " " : ""}${network.headcountUnit}`
   const current = offices[active] ?? offices[0]
   const upcoming = offices[(active + 1) % count]
   const pad = (n: number) => String(n).padStart(2, "0")
@@ -348,8 +364,7 @@ export function ApprovedNetworkSection() {
           <p className="jsl-an__copy">{network.description}</p>
           <div className="jsl-an__detail" aria-live="polite" aria-atomic="true">
             <p className="jsl-an__detail-role">
-              {current.city} / {current.role} · {current.headcount}
-              {network.headcountUnit}
+              {current.city} / {current.role} · {people(current.headcount)}
             </p>
             <p className="jsl-an__detail-copy">{current.description}</p>
           </div>
@@ -399,8 +414,7 @@ export function ApprovedNetworkSection() {
             <div>
               <h3>{office.city}</h3>
               <small>
-                {office.role} · {office.headcount}
-                {network.headcountUnit}
+                {office.role} · {people(office.headcount)}
               </small>
             </div>
             <p>{office.description}</p>

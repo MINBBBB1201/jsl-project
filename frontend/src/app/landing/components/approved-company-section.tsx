@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useEffect, useRef, useState } from "react"
 import { SiteLink } from "@/components/site-link"
 import { useContent } from "@/config/use-content"
 import "./approved-company.css"
@@ -17,6 +17,20 @@ export function ApprovedCompanySection({ previewMedia }: { previewMedia?: string
   const { about } = useContent()
   const [failedMedia, setFailedMedia] = useState<string | null>(null)
   const showMedia = Boolean(previewMedia) && failedMedia !== previewMedia
+  const mediaRef = useRef<HTMLImageElement>(null)
+
+  // 서버가 그린 img 가 hydrate 전에 실패하면 onError 가 오지 않는다. decode 로 한 번 더 확인한다.
+  useEffect(() => {
+    const img = mediaRef.current
+    if (!img || !previewMedia) return
+    let alive = true
+    img.decode().catch(() => {
+      if (alive) setFailedMedia(previewMedia)
+    })
+    return () => {
+      alive = false
+    }
+  }, [previewMedia])
 
   return (
     <section id="about" className="jsl-ac" aria-labelledby="jsl-ac-title">
@@ -25,6 +39,7 @@ export function ApprovedCompanySection({ previewMedia }: { previewMedia?: string
           // 외부 참고 매체는 URL prop 으로만 받는다. 크기를 알 수 없어 next/image 대신 img 를 쓴다.
           // eslint-disable-next-line @next/next/no-img-element
           <img
+            ref={mediaRef}
             className="jsl-ac__media"
             src={previewMedia}
             alt=""
