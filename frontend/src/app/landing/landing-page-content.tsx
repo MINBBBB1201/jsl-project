@@ -50,7 +50,7 @@ export function LandingPageContent() {
       <JourneyClosing index={11} total={STOPS} />
       <div className="journey-contact journey-editorial"><ContactSection /></div>
     </main>
-    <div className="journey-footer"><LandingFooter /><div className="journey-wordmark" aria-hidden="true">JSL LOGISTICS</div></div>
+    <div className="journey-footer"><LandingFooter logoSurface="light" /><div className="journey-wordmark" aria-hidden="true">JSL LOGISTICS</div></div>
     <LandingThemeCustomizerTrigger onClick={() => setCustomizerOpen(true)} />
     <LandingThemeCustomizer open={customizerOpen} onOpenChange={setCustomizerOpen}/>
   </div>

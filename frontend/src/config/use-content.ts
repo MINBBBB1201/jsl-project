@@ -641,7 +641,7 @@ export function useContent() {
         { name: m.nav.containerPlanner, href: "/container-planner" },
         { name: m.nav.documentGenerator, href: "/document-generator" },
         { name: m.footer.linkQuote, href: "/landing#contact" },
-        { name: m.footer.linkNotice, href: "#" },
+        { name: m.footer.linkNotice, href: "/notices" },
       ],
       [m.footer.colLegal]: [
         { name: m.footer.linkTerms, href: "/terms" },
