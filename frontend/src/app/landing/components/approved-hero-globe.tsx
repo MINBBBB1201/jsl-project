@@ -18,7 +18,7 @@ const TAG_SIDE: Record<string, "left" | "right"> = {
  *
  * .journey-orbit 안에서 기존 점 지구본(JourneyGlobe)과 고정 도시 태그를 대신한다.
  * 어두운 구체·테두리 빛·궤도선과 스크롤에 따른 이동(journey-hero-motion 의 orbit
- * 트윈)은 바깥 요소가 그대로 맡는다. 어두운 바탕이라 입자는 밝게 그린다.
+ * 트윈)은 바깥 요소가 그대로 맡는다. 어두운 바탕이라 입자는 밝은 베이지로 그린다.
  * 장식이므로 aria-hidden 이며, 거점 정보는 아래 네트워크 섹션에서 읽힌다.
  */
 export function ApprovedHeroGlobe() {
@@ -53,7 +53,7 @@ export function ApprovedHeroGlobe() {
         if (p.z < 0) continue
         const alpha = (0.16 + p.z * 0.6) * (0.55 + item.seed * 0.45)
         const radius = (g.mobile ? 0.3 : 0.32) + item.grain * (g.mobile ? 0.6 : 0.8) + p.z * 0.2
-        ctx.fillStyle = `rgba(196,214,255,${alpha})`
+        ctx.fillStyle = `rgba(240,224,204,${alpha})`
         ctx.beginPath()
         ctx.arc(p.x, p.y, radius, 0, Math.PI * 2)
         ctx.fill()
