@@ -1,6 +1,7 @@
 "use client"
 
 import { useCallback, useEffect, useState } from "react"
+import { useTranslations } from "next-intl"
 import { API_BASE_URL } from "@/lib/api"
 import { getApiErrorMessage } from "@/lib/api-error"
 
@@ -24,6 +25,7 @@ export interface PublicNotice {
 export function usePublicNotices() {
   const [notices, setNotices] = useState<PublicNotice[]>([])
   const [isLoading, setIsLoading] = useState(true)
+  const t = useTranslations("notices")
   const [error, setError] = useState<string | null>(null)
 
   const load = useCallback(async (signal?: AbortSignal) => {
@@ -33,7 +35,7 @@ export function usePublicNotices() {
       if (signal?.aborted) return
 
       if (!res.ok || !json?.success) {
-        setError(getApiErrorMessage(json, `공지사항을 불러오지 못했습니다. (HTTP ${res.status})`))
+        setError(getApiErrorMessage(json, t("errorLoad")))
         setIsLoading(false)
         return
       }
@@ -42,10 +44,12 @@ export function usePublicNotices() {
       setIsLoading(false)
     } catch (err) {
       if (signal?.aborted) return
-      setError(err instanceof Error ? err.message : "공지사항을 불러오지 못했습니다.")
+      // 브라우저 예외 문구(Failed to fetch 등) 대신 번역된 안내를 보여 준다.
+      console.error(err)
+      setError(t("errorLoad"))
       setIsLoading(false)
     }
-  }, [])
+  }, [t])
 
   useEffect(() => {
     const controller = new AbortController()

@@ -126,7 +126,7 @@ function ResultCard({
 
 export function TrackingClient() {
   const t = useTranslations("tracking")
-  const { shipment, isLoading, error, searched, track } = useTracking()
+  const { shipment, isLoading, error, errorKind, searched, track } = useTracking()
   const samples = useSampleTrackingNumbers(4)
   const [value, setValue] = useState("")
 
@@ -211,8 +211,14 @@ export function TrackingClient() {
                 aria-hidden
               />
               <div className="space-y-1">
-                <p className="font-medium text-destructive">{t("notFoundTitle")}</p>
-                <p className="text-sm text-muted-foreground">{error}</p>
+                {errorKind === "network" ? (
+                  <p className="font-medium text-destructive">{error}</p>
+                ) : (
+                  <>
+                    <p className="font-medium text-destructive">{t("notFoundTitle")}</p>
+                    {error !== t("notFoundTitle") && <p className="text-sm text-muted-foreground">{error}</p>}
+                  </>
+                )}
               </div>
             </CardContent>
           </Card>
