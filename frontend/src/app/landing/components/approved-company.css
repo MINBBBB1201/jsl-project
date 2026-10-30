@@ -1,0 +1,146 @@
+/*
+ * 승인된 회사소개 장면 전용 스타일. 모든 선택자는 .jsl-ac 아래에만 적용된다.
+ * 원본: trust-pilot/scene.css (company-frame.html 이 쓰는 구도). 사이트 헤더·전역
+ * body 규칙·글꼴 선언은 옮기지 않았다.
+ */
+.jsl-ac {
+  position: relative;
+  z-index: 3;
+  --jsl-ac-paper: #fff;
+  --jsl-ac-orange: #ff7a22;
+  --jsl-ac-detail-bg: #f4f2ee;
+  --jsl-ac-detail-ink: #17242c;
+}
+.jsl-ac *,
+.jsl-ac *::before,
+.jsl-ac *::after { box-sizing: border-box; }
+.jsl-ac a { color: inherit; text-decoration: none; }
+.jsl-ac a:focus-visible { outline: 3px solid var(--jsl-ac-orange); outline-offset: 7px; }
+
+/* 매체가 없을 때도 같은 구도가 유지되도록 바탕은 짙은 단색이다. */
+.jsl-ac__scene {
+  position: relative;
+  isolation: isolate;
+  height: 100svh;
+  min-height: 620px;
+  overflow: hidden;
+  container-type: inline-size;
+  background: #26323a;
+  color: var(--jsl-ac-paper);
+}
+.jsl-ac__media,
+.jsl-ac__shade { position: absolute; inset: 0; width: 100%; height: 100%; z-index: -2; }
+.jsl-ac__media { object-fit: cover; object-position: 50% 50%; filter: saturate(.78); }
+.jsl-ac__shade {
+  z-index: -1;
+  background: linear-gradient(180deg, rgba(4,13,19,.45), rgba(4,13,19,.46) 34%, rgba(4,13,19,.4) 48%, rgba(4,13,19,.16) 62%, rgba(4,13,19,.66));
+}
+.jsl-ac__scene:not(.jsl-ac__scene--media) .jsl-ac__shade {
+  background: linear-gradient(180deg, rgba(4,13,19,.2), rgba(4,13,19,.55));
+}
+
+.jsl-ac__label {
+  position: absolute;
+  top: 21%;
+  left: 4.3%;
+  margin: 0;
+  font-size: 11px;
+  line-height: 1.4;
+  letter-spacing: .13em;
+  text-shadow: 0 1px 5px #08111a;
+}
+.jsl-ac__label span { margin: 0 14px; }
+/* 원본은 영문 두 단어를 한 줄로 고정했다. 번역 제목은 길이가 달라 줄바꿈을 허용한다. */
+.jsl-ac__title {
+  position: absolute;
+  left: 3.8%;
+  right: 4%;
+  top: 30%;
+  margin: 0;
+  font-size: clamp(52px, 6.6cqw, 128px);
+  font-weight: 400;
+  line-height: 1.04;
+  letter-spacing: -.05em;
+  text-wrap: balance;
+  text-shadow: 0 1px 8px rgba(8,17,26,.35);
+}
+.jsl-ac__wordmark {
+  position: absolute;
+  top: 60%;
+  left: 50%;
+  transform: translateX(-50%);
+  padding-right: .07em;
+  font-size: clamp(150px, 16.5cqw, 300px);
+  font-weight: 900;
+  line-height: .95;
+  letter-spacing: -.09em;
+  user-select: none;
+}
+.jsl-ac__foot { position: absolute; bottom: 5%; left: 4.3%; right: 4.3%; display: flex; justify-content: flex-end; }
+.jsl-ac__link { padding-bottom: 7px; border-bottom: 1px solid rgba(255,255,255,.6); font-size: 13px; white-space: nowrap; }
+.jsl-ac__link span { margin-left: 40px; font-size: 20px; }
+
+.jsl-ac__detail {
+  display: grid;
+  grid-template-columns: 1.1fr 1fr;
+  gap: 32px 80px;
+  padding: 80px max(6%, calc((100% - 1200px) / 2));
+  background: var(--jsl-ac-detail-bg);
+  color: var(--jsl-ac-detail-ink);
+}
+.jsl-ac__description { grid-column: 1 / -1; max-width: 860px; margin: 0; font-size: clamp(18px, 1.6vw, 24px); line-height: 1.55; letter-spacing: -.01em; }
+.jsl-ac__values-title { grid-column: 1 / -1; margin: 24px 0 0; font-size: 12px; font-weight: 600; letter-spacing: .12em; text-transform: uppercase; color: #53606a; }
+.jsl-ac__values {
+  grid-column: 1 / -1;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 0 32px;
+}
+.jsl-ac__value { padding-top: 22px; border-top: 1px solid #b9bcb8; }
+.jsl-ac__icon { width: 22px; height: 22px; color: #c75a20; }
+.jsl-ac__value h4 { margin: 16px 0 8px; font-size: 17px; font-weight: 600; line-height: 1.3; letter-spacing: -.02em; }
+.jsl-ac__value p { margin: 0; font-size: 14px; line-height: 1.6; color: #44525c; }
+.jsl-ac__cta { grid-column: 1 / -1; display: flex; align-items: center; justify-content: space-between; gap: 24px; margin-top: 24px; padding-top: 28px; border-top: 1px solid #b9bcb8; }
+.jsl-ac__cta p { margin: 0; font-size: 15px; line-height: 1.6; }
+.jsl-ac__actions { display: flex; gap: 12px; flex-wrap: wrap; }
+.jsl-ac__primary,
+.jsl-ac__secondary { display: inline-flex; align-items: center; min-height: 46px; padding: 0 22px; border-radius: 40px; font-size: 14px; font-weight: 600; }
+.jsl-ac__primary { background: var(--jsl-ac-orange); color: #10191e; }
+.jsl-ac__secondary { border: 1px solid #8f979b; }
+.jsl-ac .jsl-ac__primary:focus-visible,
+.jsl-ac .jsl-ac__secondary:focus-visible { outline-color: #bf4b0c; }
+
+@media (max-width: 1000px) and (min-width: 701px) {
+  .jsl-ac__values { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 28px 32px; }
+}
+
+@media (max-width: 700px) {
+  .jsl-ac__scene { min-height: 680px; }
+  .jsl-ac__media { object-position: 53% 50%; }
+  .jsl-ac__scene--media .jsl-ac__shade {
+    background: linear-gradient(180deg, rgba(4,13,19,.47), rgba(4,13,19,.4) 34%, rgba(4,13,19,.38) 46%, rgba(4,13,19,.15) 60%, rgba(4,13,19,.77));
+  }
+  .jsl-ac__label { left: 7%; font-size: 11px; letter-spacing: .1em; }
+  .jsl-ac__label span { margin: 0 8px; }
+  .jsl-ac__title { left: 6%; right: 6%; top: 29%; font-size: 12cqw; line-height: 1.05; letter-spacing: -.055em; }
+  .jsl-ac__wordmark { top: 60%; font-size: 43cqw; }
+  .jsl-ac__foot { left: 7%; right: 7%; bottom: 6%; justify-content: flex-start; }
+  .jsl-ac__link { font-size: 12px; }
+  .jsl-ac__link span { margin-left: 28px; font-size: 17px; }
+  .jsl-ac__detail { display: block; padding: 50px 7%; }
+  .jsl-ac__values-title { margin-top: 36px; }
+  .jsl-ac__values { display: block; }
+  .jsl-ac__value { margin-top: 22px; }
+  .jsl-ac__cta { display: block; margin-top: 36px; }
+  .jsl-ac__actions { margin-top: 18px; }
+}
+
+@media (max-height: 700px) and (min-width: 701px) {
+  .jsl-ac__scene { min-height: 560px; }
+  .jsl-ac__label { top: 18%; }
+  .jsl-ac__title { top: 27%; font-size: min(5.6cqw, 96px); }
+  .jsl-ac__wordmark { top: 58%; font-size: 14cqw; }
+}
