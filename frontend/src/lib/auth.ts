@@ -21,6 +21,7 @@ export type Role = "admin" | "operations" | "sales"
 export interface AuthUser {
   id: string
   email: string
+  username?: string
   name: string
   role: Role
 }
