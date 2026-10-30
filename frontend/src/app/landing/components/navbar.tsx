@@ -177,7 +177,8 @@ export function LandingNavbar() {
         <div className="hidden shrink-0 items-center space-x-1 3xl:flex">
           <LanguageSwitcher />
           <ModeToggle variant="ghost" />
-          <Button variant="outline" asChild className="h-10 cursor-pointer">
+          {/* 랜딩 헤더는 어두운 바탕 위 흰 글자라 outline 의 흰 바탕을 지운다. 지우지 않으면 글자가 보이지 않는다. */}
+          <Button variant="outline" asChild className="h-10 cursor-pointer bg-transparent">
             <Link href="/dashboard" target="_blank" rel="noopener noreferrer">
               <LayoutDashboard className="h-4 w-4 mr-2" />
               {navigation.dashboard}
@@ -327,7 +328,7 @@ export function LandingNavbar() {
                       <Link href="/sign-in">{navigation.signIn}</Link>
                     </Button>
                     <Button variant="brand" asChild size="lg" className="cursor-pointer" >
-                      <SiteLink href="#contact" onClick={() => setIsOpen(false)}>견적 문의</SiteLink>
+                      <SiteLink href="#contact" onClick={() => setIsOpen(false)}>{navigation.quoteCta}</SiteLink>
                     </Button>
                   </div>
                 </div>
