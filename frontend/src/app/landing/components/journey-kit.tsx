@@ -1,5 +1,7 @@
 import type { ReactNode } from "react"
 import { SiteLink } from "@/components/site-link"
+// 쓰는 쪽이 따로 불러오지 않아도 머리줄 배치가 깨지지 않게 여기서 불러온다.
+import "./journey-kit.css"
 
 /**
  * Shared pieces of the landing's visual language, taken from the transport sequence:
