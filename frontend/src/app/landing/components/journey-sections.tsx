@@ -1,16 +1,15 @@
 "use client";
 
 import Image from "next/image";
-import dynamic from "next/dynamic";
 import { useEffect, useRef } from "react";
 import { ArrowDown, ArrowUpRight, Globe2, ShieldCheck, Users } from "lucide-react";
+import { ApprovedHeroGlobe } from "./approved-hero-globe";
 import { useContent } from "@/config/use-content";
 import { SiteLink } from "@/components/site-link";
 import { LanguageSwitcher } from "@/components/language-switcher";
 import { CountUp as NumericText } from "./count-up";
 import { SceneHeader } from "./journey-kit";
 
-const Globe = dynamic(() => import("./journey-globe"), { ssr: false });
 const asset = (name: string) => `/images/journey/${name}`;
 
 /** Local, decorative assets; explicit sizes prevent jumps and lazy loading keeps the first view small. */
@@ -71,7 +70,7 @@ export function JourneyHero() {
   return <section id="hero" className="journey-hero" data-scene>
     <div className="journey-utility"><span>JSL NETWORK: SEOUL · SHANGHAI · WEIHAI · GUANGZHOU · HANOI</span>{tracking && <SiteLink href={tracking.href}>{tracking.name} <ArrowUpRight size={12} /></SiteLink>}</div>
     <div className="journey-stars" aria-hidden="true" />
-    <div className="journey-orbit" aria-hidden="true"><div className="journey-sphere" /><Globe /><div className="journey-rim" /><div className="journey-orbit-line" /><span className="journey-geo journey-geo-seoul"><i />SEOUL</span><span className="journey-geo journey-geo-shanghai"><i />SHANGHAI</span><span className="journey-geo journey-geo-hanoi"><i />HANOI</span></div>
+    <div className="journey-orbit" aria-hidden="true"><div className="journey-sphere" /><ApprovedHeroGlobe /><div className="journey-rim" /><div className="journey-orbit-line" /></div>
     <div className="journey-hero-navigation"><nav aria-label={navigation.items[0].name}>{navigation.items.filter((item) => !item.megaMenu).map((item) => <SiteLink key={item.href} href={item.href}>{item.name}</SiteLink>)}</nav><LanguageSwitcher /></div>
     <div className="journey-hero-copy"><p className="journey-eyebrow">{hero.eyebrow}</p><h1><span>{hero.headline1}</span><span>{hero.headline2}</span></h1><p className="journey-hero-description">{hero.subheadline}</p><div className="journey-actions"><SiteLink href={hero.primaryCta.href} className="journey-pill">{hero.primaryCta.label}<ArrowUpRight size={15} /></SiteLink><SiteLink href={hero.secondaryCta.href} className="journey-pill journey-pill-outline">{hero.secondaryCta.label}</SiteLink></div></div>
     <a href="#what-we-do" className="journey-scroll" aria-label={hero.secondaryCta.label}><ArrowDown size={18} /><span>01 — 05</span></a>
