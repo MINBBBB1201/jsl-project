@@ -4,21 +4,17 @@ import { useEffect, useRef } from "react"
 import { useContent } from "@/config/use-content"
 import { ARCS, PLACES, loadLand, project, type Geometry, type LandPoint } from "./approved-globe-core"
 
-/** 태그를 점의 어느 쪽에 둘지. 가까운 서울·웨이하이와 광저우·하노이가 겹치지 않게 나눈다. */
-const TAG_SIDE: Record<string, "left" | "right"> = {
-  Seoul: "right",
-  Weihai: "left",
-  Shanghai: "right",
-  Guangzhou: "right",
-  Hanoi: "left",
-}
+// Gap between stacked labels, and how far right of the city cluster the label column sits (share of the globe size).
+const LABEL_GAP = 46
+const COLUMN_OFFSET = 0.09
 
 /**
  * 히어로 지구본 자리에 들어가는 승인된 거친 입자 지구본과 다섯 거점.
  *
  * .journey-orbit 안에서 기존 점 지구본(JourneyGlobe)과 고정 도시 태그를 대신한다.
  * 어두운 구체·테두리 빛·궤도선과 스크롤에 따른 이동(journey-hero-motion 의 orbit
- * 트윈)은 바깥 요소가 그대로 맡는다. 어두운 바탕이라 입자는 밝은 베이지로 그린다.
+ * 트윈)은 바깥 요소가 그대로 맡는다. 라벨은 승인된 네트워크 장면과 같이 도시 점에서
+ * 지시선으로 이은 "도시 / 역할" 두 줄이고, 본사만 주황이다. 어두운 바탕이라 색만 뒤집었다.
  * 장식이므로 aria-hidden 이며, 거점 정보는 아래 네트워크 섹션에서 읽힌다.
  */
 export function ApprovedHeroGlobe() {
@@ -26,12 +22,14 @@ export function ApprovedHeroGlobe() {
   const offices = network.items
   const wrapRef = useRef<HTMLDivElement>(null)
   const canvasRef = useRef<HTMLCanvasElement>(null)
-  const tagRefs = useRef<(HTMLSpanElement | null)[]>([])
+  const leadersRef = useRef<SVGSVGElement>(null)
+  const labelRefs = useRef<(HTMLSpanElement | null)[]>([])
 
   useEffect(() => {
     const wrap = wrapRef.current
     const canvas = canvasRef.current
-    if (!wrap || !canvas) return
+    const leaders = leadersRef.current
+    if (!wrap || !canvas || !leaders) return
     let alive = true
     let frame = 0
     let points: LandPoint[] = []
@@ -74,22 +72,25 @@ export function ApprovedHeroGlobe() {
         ctx.stroke()
       }
 
-      offices.forEach((office, i) => {
+      // 도시 점, 그리고 승인 장면처럼 바깥 라벨 열을 지리 순서(위→아래)로 세운다.
+      const dots = offices.flatMap((office, i) => {
         const place = PLACES[office.cityEn]
-        const tag = tagRefs.current[i]
-        if (!place) return
-        const p = project(g, place.lon, place.lat)
-        ctx.beginPath()
-        ctx.arc(p.x, p.y, office.isHq ? 4.5 : 3.2, 0, Math.PI * 2)
-        ctx.fillStyle = "#ff6a2a"
-        ctx.fill()
-        if (tag) {
-          tag.style.left = `${(p.x / size) * 100}%`
-          tag.style.top = `${(p.y / size) * 100}%`
-        }
+        return place ? [{ i, hq: office.isHq, p: project(g, place.lon, place.lat) }] : []
       })
-
-      // 제목·메뉴 글자 줄 뒤에 깔린 태그는 조각만 보이므로 숨긴다. 거점 정보는 네트워크 섹션에 있다.
+      for (const { hq, p } of dots) {
+        ctx.beginPath()
+        ctx.arc(p.x, p.y, hq ? 5 : 3.2, 0, Math.PI * 2)
+        ctx.fillStyle = hq ? "#ff6a2a" : "#f0e0cc"
+        ctx.fill()
+        if (hq) {
+          ctx.beginPath()
+          ctx.arc(p.x, p.y, 9.5, 0, Math.PI * 2)
+          ctx.strokeStyle = "rgba(255,106,42,.45)"
+          ctx.lineWidth = 0.8
+          ctx.stroke()
+        }
+      }
+      // 제목·메뉴 글자 줄. 라벨 열이 이 줄들의 오른쪽 끝을 넘어서 시작해야 글자와 붙지 않는다.
       const hero = wrap.closest(".journey-hero")
       const lines: DOMRect[] = []
       hero?.querySelectorAll(".journey-hero-copy h1, .journey-hero-copy p, .journey-hero-navigation a").forEach((el) => {
@@ -101,13 +102,41 @@ export function ApprovedHeroGlobe() {
           lines.push(...range.getClientRects())
         }
       })
-      for (const tag of tagRefs.current) {
-        if (!tag) continue
-        tag.style.visibility = ""
-        const t = tag.getBoundingClientRect()
-        const covered = lines.some((l) => t.left < l.right && l.left < t.right && t.top < l.bottom && l.top < t.bottom)
-        if (covered) tag.style.visibility = "hidden"
+      const box = wrap.getBoundingClientRect()
+      const scale = box.width / size
+      const sorted = [...dots].sort((a, b) => a.p.y - b.p.y)
+      const bandTop = box.top + (sorted[0]?.p.y ?? 0) * scale - LABEL_GAP
+      const bandBottom = box.top + ((sorted[sorted.length - 1]?.p.y ?? 0) + LABEL_GAP * sorted.length) * scale
+      const textRight = Math.max(-Infinity, ...lines.filter((l) => l.bottom > bandTop && l.top < bandBottom).map((l) => l.right))
+      const columnX = Math.max(Math.max(...dots.map((d) => d.p.x)) + size * COLUMN_OFFSET, (textRight + 24 - box.left) / scale)
+      let lastY = -Infinity
+      leaders.setAttribute("viewBox", `0 0 ${size} ${size}`)
+      leaders.replaceChildren()
+      for (const { i, hq, p } of sorted) {
+        const label = labelRefs.current[i]
+        if (!label) continue
+        const y = Math.max(p.y, lastY + LABEL_GAP)
+        lastY = y
+        label.style.left = `${(columnX / size) * 100}%`
+        label.style.top = `${(y / size) * 100}%`
+        const line = document.createElementNS("http://www.w3.org/2000/svg", "path")
+        line.setAttribute("d", `M ${p.x} ${p.y} L ${columnX - 8} ${y}`)
+        line.setAttribute("class", hq ? "is-hq" : "")
+        line.dataset.index = String(i)
+        leaders.append(line)
       }
+
+      // 그래도 글자 뒤에 깔리거나 화면 오른쪽 띠(진행 표시)를 넘는 라벨이 하나라도 있으면, 일부만 남겨
+      // 어색해지지 않도록 라벨과 지시선을 모두 숨긴다. 점과 항로는 남고, 거점 정보는 네트워크 섹션에 있다.
+      const limit = window.innerWidth - 96
+      const placed = labelRefs.current.filter((label): label is HTMLSpanElement => !!label)
+      placed.forEach((label) => { label.style.visibility = "" })
+      const blocked = placed.some((label) => {
+        const t = label.getBoundingClientRect()
+        return t.right > limit || lines.some((l) => t.left < l.right && l.left < t.right && t.top < l.bottom && l.top < t.bottom)
+      })
+      placed.forEach((label) => { label.style.visibility = blocked ? "hidden" : "" })
+      leaders.style.visibility = blocked ? "hidden" : ""
     }
 
     const schedule = () => {
@@ -122,7 +151,7 @@ export function ApprovedHeroGlobe() {
         schedule()
       })
       .catch(() => {
-        // 육지 데이터가 없어도 기존 구체·테두리·궤도선과 거점 점은 남긴다.
+        // 육지 데이터가 없어도 기존 구체·테두리·궤도선과 거점 점·라벨은 남긴다.
         if (alive) {
           wrap.dataset.status = "failed"
           schedule()
@@ -130,6 +159,9 @@ export function ApprovedHeroGlobe() {
       })
     const resize = new ResizeObserver(schedule)
     resize.observe(wrap)
+    document.fonts?.ready.then(() => {
+      if (alive) schedule()
+    })
     return () => {
       alive = false
       resize.disconnect()
@@ -140,16 +172,17 @@ export function ApprovedHeroGlobe() {
   return (
     <div ref={wrapRef} className="journey-approved-globe" data-status="idle">
       <canvas ref={canvasRef} className="journey-globe-canvas" />
+      <svg ref={leadersRef} className="journey-approved-leaders" xmlns="http://www.w3.org/2000/svg" />
       {offices.map((office, i) => (
         <span
           key={office.cityEn}
           ref={(el) => {
-            tagRefs.current[i] = el
+            labelRefs.current[i] = el
           }}
-          className={`journey-geo journey-approved-geo journey-approved-geo--${TAG_SIDE[office.cityEn] ?? "right"}`}
+          className={`journey-approved-label${office.isHq ? " is-hq" : ""}`}
         >
-          <i />
-          {office.cityEn.toUpperCase()}
+          <strong>{office.city}</strong>
+          <small>{office.role}</small>
         </span>
       ))}
     </div>
