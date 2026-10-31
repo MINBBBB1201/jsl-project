@@ -4,17 +4,16 @@ import { useEffect, useRef } from "react"
 import { useContent } from "@/config/use-content"
 import { ARCS, PLACES, loadLand, project, type Geometry, type LandPoint } from "./approved-globe-core"
 
-// Gap between stacked labels, and how far right of the city cluster the label column sits (share of the globe size).
-const LABEL_GAP = 46
-const COLUMN_OFFSET = 0.09
+// Horizontal gap between the labels in the row.
+const LABEL_GAP = 26
 
 /**
  * 히어로 지구본 자리에 들어가는 승인된 거친 입자 지구본과 다섯 거점.
  *
  * .journey-orbit 안에서 기존 점 지구본(JourneyGlobe)과 고정 도시 태그를 대신한다.
  * 어두운 구체·테두리 빛·궤도선과 스크롤에 따른 이동(journey-hero-motion 의 orbit
- * 트윈)은 바깥 요소가 그대로 맡는다. 라벨은 승인된 네트워크 장면과 같이 도시 점에서
- * 지시선으로 이은 "도시 / 역할" 두 줄이고, 본사만 주황이다. 어두운 바탕이라 색만 뒤집었다.
+ * 트윈)은 바깥 요소가 그대로 맡는다. 라벨은 승인된 네트워크 장면의 "도시 / 역할" 두 줄을
+ * 도시 무리 위 한 줄로 세우고 점에서 지시선으로 잇는다. 본사만 주황이다.
  * 장식이므로 aria-hidden 이며, 거점 정보는 아래 네트워크 섹션에서 읽힌다.
  */
 export function ApprovedHeroGlobe() {
@@ -90,53 +89,25 @@ export function ApprovedHeroGlobe() {
           ctx.stroke()
         }
       }
-      // 제목·메뉴 글자 줄. 라벨 열이 이 줄들의 오른쪽 끝을 넘어서 시작해야 글자와 붙지 않는다.
-      const hero = wrap.closest(".journey-hero")
-      const lines: DOMRect[] = []
-      hero?.querySelectorAll(".journey-hero-copy h1, .journey-hero-copy p, .journey-hero-navigation a").forEach((el) => {
-        // 글자 노드만 잰다. 요소째 재면 블록 span 의 줄 전체 폭이 잡힌다.
-        const walker = document.createTreeWalker(el, NodeFilter.SHOW_TEXT)
-        const range = document.createRange()
-        for (let node = walker.nextNode(); node; node = walker.nextNode()) {
-          range.selectNodeContents(node)
-          lines.push(...range.getClientRects())
-        }
-      })
-      const box = wrap.getBoundingClientRect()
-      const scale = box.width / size
-      const sorted = [...dots].sort((a, b) => a.p.y - b.p.y)
-      const bandTop = box.top + (sorted[0]?.p.y ?? 0) * scale - LABEL_GAP
-      const bandBottom = box.top + ((sorted[sorted.length - 1]?.p.y ?? 0) + LABEL_GAP * sorted.length) * scale
-      const textRight = Math.max(-Infinity, ...lines.filter((l) => l.bottom > bandTop && l.top < bandBottom).map((l) => l.right))
-      const columnX = Math.max(Math.max(...dots.map((d) => d.p.x)) + size * COLUMN_OFFSET, (textRight + 24 - box.left) / scale)
-      let lastY = -Infinity
+      // 승인 시안(2안)처럼 도시 무리 위에 라벨을 서→동 한 줄로 세우고, 점에서 지시선을 올린다.
+      const rowY = Math.min(...dots.map((d) => d.p.y)) - size * 0.14
       leaders.setAttribute("viewBox", `0 0 ${size} ${size}`)
       leaders.replaceChildren()
-      for (const { i, hq, p } of sorted) {
-        const label = labelRefs.current[i]
-        if (!label) continue
-        const y = Math.max(p.y, lastY + LABEL_GAP)
-        lastY = y
-        label.style.left = `${(columnX / size) * 100}%`
-        label.style.top = `${(y / size) * 100}%`
+      const west = [...dots].sort((a, b) => a.p.x - b.p.x)
+      const widths = west.map((d) => labelRefs.current[d.i]?.offsetWidth ?? 80)
+      const total = widths.reduce((a, b) => a + b, 0) + LABEL_GAP * (west.length - 1)
+      let x = west.reduce((a, d) => a + d.p.x, 0) / west.length - total / 2
+      west.forEach((d, k) => {
+        const label = labelRefs.current[d.i]
+        if (!label) return
+        label.style.left = `${(x / size) * 100}%`
+        label.style.top = `${(rowY / size) * 100}%`
         const line = document.createElementNS("http://www.w3.org/2000/svg", "path")
-        line.setAttribute("d", `M ${p.x} ${p.y} L ${columnX - 8} ${y}`)
-        line.setAttribute("class", hq ? "is-hq" : "")
-        line.dataset.index = String(i)
+        line.setAttribute("d", `M ${d.p.x} ${d.p.y} L ${x + 2} ${rowY + 18}`)
+        line.setAttribute("class", d.hq ? "is-hq" : "")
         leaders.append(line)
-      }
-
-      // 그래도 글자 뒤에 깔리거나 화면 오른쪽 띠(진행 표시)를 넘는 라벨이 하나라도 있으면, 일부만 남겨
-      // 어색해지지 않도록 라벨과 지시선을 모두 숨긴다. 점과 항로는 남고, 거점 정보는 네트워크 섹션에 있다.
-      const limit = window.innerWidth - 96
-      const placed = labelRefs.current.filter((label): label is HTMLSpanElement => !!label)
-      placed.forEach((label) => { label.style.visibility = "" })
-      const blocked = placed.some((label) => {
-        const t = label.getBoundingClientRect()
-        return t.right > limit || lines.some((l) => t.left < l.right && l.left < t.right && t.top < l.bottom && l.top < t.bottom)
+        x += widths[k] + LABEL_GAP
       })
-      placed.forEach((label) => { label.style.visibility = blocked ? "hidden" : "" })
-      leaders.style.visibility = blocked ? "hidden" : ""
     }
 
     const schedule = () => {

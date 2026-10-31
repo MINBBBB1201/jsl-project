@@ -1,7 +1,7 @@
 /* All selectors are scoped: these tokens and layouts never reach dashboard or public tools. */
 .journey{--background:#fff;--foreground:#111;--card:#fff;--card-foreground:#111;--muted:#f3f3f3;--muted-foreground:#666;--border:#ddd;--primary:#141414;--primary-foreground:#fff;--brand-navy-deep:#101010;--brand-slate:#bdbdbd;--brand-cta:#151515;--brand-cta-foreground:#fff;--brand-orange:#ec761e;--brand-orange-deep:#c85a0c;color:#111;background:#fff;overflow:clip;isolation:isolate;font-family:var(--font-general-sans),"Pretendard",sans-serif}
 .journey :is(h1,h2,h3,p){text-wrap:pretty}.journey h2{letter-spacing:-.055em;line-height:1.08}.journey :is(a,button):focus-visible{outline:2px solid #ec761e;outline-offset:5px}.journey section[id]{scroll-margin-top:90px}
-.journey>.sticky{position:absolute;inset:0 0 auto;background:transparent!important;color:#fff;border:0;backdrop-filter:none!important;padding:8px 1vw}.journey>header .container{max-width:none}.journey>header a img{filter:grayscale(1) brightness(0) invert(1)}
+.journey>.sticky{position:absolute;inset:0 0 auto;background:transparent!important;color:#fff;border:0;backdrop-filter:none!important;padding:8px 1vw}.journey>header .container{max-width:none}/* 랜딩 헤더는 어두운 히어로 위에 있어 다크용 컬러 워드마크(배경 투명)만 쓴다. */.journey>header img[src*=wordmark-light]{display:none}.journey>header img[src*=wordmark-dark]{display:block}
 .journey-hero{position:relative;min-height:1060px;height:115svh;max-height:1400px;background:#070709;color:white;isolation:isolate;padding-top:100px;overflow:hidden}
 .journey-stars{position:absolute;inset:0;opacity:.5;background-image:radial-gradient(#8b8274 .6px,transparent .8px),radial-gradient(#aaa .5px,transparent .8px);background-size:57px 69px,113px 107px;background-position:3px 11px,38px 41px;mask-image:linear-gradient(#000,transparent)}
 .journey-orbit{position:absolute;width:76vw;max-width:1380px;aspect-ratio:1;top:3%;right:-20%;transform:translateY(calc(var(--progress,0) * 100px));pointer-events:none}
@@ -108,3 +108,26 @@
 .journey-approved-label small{font:400 10px/1.1 var(--font-general-sans),sans-serif;color:#ffffff8c}
 .journey-approved-label.is-hq strong,.journey-approved-label.is-hq small{color:#ff7a33}
 @media(max-width:900px){.journey-approved-label,.journey-approved-leaders{display:none}}
+
+/* 히어로 2안(2026-10-31 승인): 따뜻한 짙은 바탕, 상단 가로 메뉴, 오른쪽 아래에서 떠오르는 지구본, 화물조회 칸. */
+.journey .journey-hero-motion,.journey .journey-hero{background:#17100b}
+.journey-stars{opacity:.15}
+.journey-orbit{width:78vw;right:-8%;top:30%}
+.journey-hero-navigation{position:absolute;top:58px;left:50%;transform:translateX(-50%);margin:0;width:auto;align-items:center}
+.journey-hero-navigation nav{flex-direction:row;gap:30px;font-size:12px}
+.journey-hero-copy{margin:105px 0 0 6%;width:52%}
+.journey-hero h1{font-size:clamp(40px,4.4vw,84px);margin:16px 0 20px}
+.journey-hero .journey-eyebrow{color:#ff7a33}
+.journey-scroll{display:none}
+.journey-track{max-width:400px;margin-top:34px}
+.journey-track-form{display:flex;align-items:flex-end;gap:18px;padding-bottom:10px;border-bottom:1px solid #ffffff4d;transition:border-color .2s}
+.journey-track-form:focus-within{border-color:#ec761e}
+.journey-track-form label{display:flex;flex-direction:column;gap:8px;flex:1}
+.journey-track-form small{font:500 10px/1 var(--font-general-sans),sans-serif;letter-spacing:.14em;text-transform:uppercase;color:#ffffff73}
+.journey-track-form input{background:transparent;border:0;outline:0;padding:0;color:#fff;font:400 18px/1.2 var(--font-general-sans),sans-serif;letter-spacing:-.01em}
+.journey-track-form input::placeholder{color:#ffffff59}
+.journey-track-form button{display:grid;place-items:center;min-width:44px;min-height:32px;color:#ec761e;cursor:pointer}
+.journey-track-form button:focus-visible{outline:2px solid #ec761e;outline-offset:2px}
+.journey-track-clocks{display:flex;gap:22px;min-height:10px;margin-top:14px;font:400 10px/1 var(--font-general-sans),sans-serif;letter-spacing:.08em;text-transform:uppercase;color:#ffffff4d}
+.journey-hero .journey-actions{margin-top:22px}
+@media(max-width:900px){.journey-orbit{width:130vw;right:-15%;top:auto;bottom:-78vw}.journey-hero-copy{margin:100px 6% 0;width:88%}.journey-hero h1{font-size:40px}.journey-hero-navigation{left:auto;right:64px;transform:none;top:30px}}

@@ -1,7 +1,9 @@
 "use client";
 
 import Image from "next/image";
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState, type FormEvent } from "react";
+import { useTranslations } from "next-intl";
+import { useRouter } from "@/i18n/navigation";
 import { ArrowDown, ArrowUpRight, Globe2, ShieldCheck, Users } from "lucide-react";
 import { ApprovedHeroGlobe } from "./approved-hero-globe";
 import { useContent } from "@/config/use-content";
@@ -63,6 +65,38 @@ export function JourneyProgressRail() {
   return <aside className="journey-progress-rail" aria-label="Page sections"><output data-journey-progress aria-label="Scroll progress">00</output><div className="journey-progress-track" aria-hidden="true"><span /></div><nav>{stops.map(([href, label]) => <a key={href} href={href} aria-label={`Section ${label}`}>{label}</a>)}</nav><span aria-hidden="true">JSL / 5+1</span></aside>;
 }
 
+// 거점 현지 시각. 거점 목록(network.items)의 영문 도시명으로 시간대를 찾는다.
+const OFFICE_ZONES: Record<string, string> = { Seoul: "Asia/Seoul", Shanghai: "Asia/Shanghai", Hanoi: "Asia/Ho_Chi_Minh" };
+
+/** 히어로의 화물조회 칸. 기존 /tracking 페이지로 번호를 넘기고, 아래에 거점 현지 시각을 옅게 둔다. */
+function HeroTrack() {
+  const t = useTranslations("tracking");
+  const { network } = useContent();
+  const router = useRouter();
+  const [no, setNo] = useState("");
+  const [now, setNow] = useState<Date | null>(null);
+  useEffect(() => {
+    // 서버와 첫 렌더가 같도록 시각은 마운트 뒤에만 그린다.
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    setNow(new Date());
+    const timer = window.setInterval(() => setNow(new Date()), 30_000);
+    return () => window.clearInterval(timer);
+  }, []);
+  const submit = (event: FormEvent) => {
+    event.preventDefault();
+    const value = no.trim();
+    router.push(value ? `/tracking?no=${encodeURIComponent(value)}` : "/tracking");
+  };
+  const clocks = network.items.filter((office) => OFFICE_ZONES[office.cityEn]);
+  return <div className="journey-track">
+    <form onSubmit={submit} className="journey-track-form">
+      <label><small>{t("title")}</small><input value={no} onChange={(event) => setNo(event.target.value)} placeholder={t("inputPlaceholder")} aria-label={t("inputLabel")} /></label>
+      <button type="submit" aria-label={t("search")}><ArrowUpRight size={18} /></button>
+    </form>
+    <p className="journey-track-clocks" aria-hidden="true">{now && clocks.map((office) => <span key={office.cityEn}>{office.city} {now.toLocaleTimeString("en-GB", { hour: "2-digit", minute: "2-digit", timeZone: OFFICE_ZONES[office.cityEn] })}</span>)}</p>
+  </div>;
+}
+
 export function JourneyHero() {
   const { redesign, navigation } = useContent();
   const { hero } = redesign;
@@ -72,7 +106,7 @@ export function JourneyHero() {
     <div className="journey-stars" aria-hidden="true" />
     <div className="journey-orbit" aria-hidden="true"><div className="journey-sphere" /><ApprovedHeroGlobe /><div className="journey-rim" /><div className="journey-orbit-line" /></div>
     <div className="journey-hero-navigation"><nav aria-label={navigation.items[0].name}>{navigation.items.filter((item) => !item.megaMenu).map((item) => <SiteLink key={item.href} href={item.href}>{item.name}</SiteLink>)}</nav><LanguageSwitcher /></div>
-    <div className="journey-hero-copy"><p className="journey-eyebrow">{hero.eyebrow}</p><h1><span>{hero.headline1}</span><span>{hero.headline2}</span></h1><p className="journey-hero-description">{hero.subheadline}</p><div className="journey-actions"><SiteLink href={hero.primaryCta.href} className="journey-pill">{hero.primaryCta.label}<ArrowUpRight size={15} /></SiteLink><SiteLink href={hero.secondaryCta.href} className="journey-pill journey-pill-outline">{hero.secondaryCta.label}</SiteLink></div></div>
+    <div className="journey-hero-copy"><p className="journey-eyebrow">{hero.eyebrow}</p><h1><span>{hero.headline1}</span><span>{hero.headline2}</span></h1><p className="journey-hero-description">{hero.subheadline}</p><HeroTrack /><div className="journey-actions"><SiteLink href={hero.primaryCta.href} className="journey-pill">{hero.primaryCta.label}<ArrowUpRight size={15} /></SiteLink><SiteLink href={hero.secondaryCta.href} className="journey-pill journey-pill-outline">{hero.secondaryCta.label}</SiteLink></div></div>
     <a href="#what-we-do" className="journey-scroll" aria-label={hero.secondaryCta.label}><ArrowDown size={18} /><span>01 — 05</span></a>
     <div className="journey-hero-index" aria-hidden="true"><span>37.5665° N</span><span>126.9780° E</span></div><div className="journey-horizon" aria-hidden="true" />
   </section>;
