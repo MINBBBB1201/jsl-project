@@ -22,10 +22,3 @@
 }
 /* The pin starts at "top top"; the landing-wide 90px anchor margin would stop short of it. */
 .journey section.multimodal-journey[id]{scroll-margin-top:0}
-
-/* JSL route marks (multimodal-journey.tsx addRouteMarks): one orange line repeated on road and air. */
-.multimodal-stage #jsl-marine-native .mm-road-dashes{stroke:#ec761e}
-.multimodal-stage #jsl-marine-native .mm-jsl-border{fill:none;stroke:#ec761e;stroke-linecap:butt}
-/* The truck passes over the gate, not under it. */
-.multimodal-stage #jsl-marine-native .mm-top-truck{z-index:1}
-.multimodal-stage #jsl-marine-native .mm-jsl-track{position:absolute;left:0;z-index:10;height:0;border-top:2px dashed #ec761e;opacity:.85;pointer-events:none}

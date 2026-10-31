@@ -35,64 +35,6 @@ function focusQuietly(target: Element | null) {
   target.focus({ preventScroll: true })
 }
 
-const SVG = "http://www.w3.org/2000/svg"
-// The border gate crosses the straight run after the bend at this share of the stage height.
-const BORDER_AT = 0.78
-
-/**
- * JSL route marks laid over the generated engine without editing it (it is regenerated
- * from the prototypes): an orange border gate across the road and an orange flight track
- * behind the plane. Both follow the values the engine writes every frame, so the cargo
- * match-cut and the plane's white edge keep their own geometry. Returns the cleanup.
- */
-function addRouteMarks(guest: HTMLElement) {
-  const road = guest.querySelector<SVGPathElement>(".mm-road-line")
-  const plane = guest.querySelector<HTMLImageElement>(".mm-plane")
-  if (!road || !plane || guest.querySelector(".mm-jsl-border")) return () => {}
-
-  const gate = document.createElementNS(SVG, "path")
-  gate.setAttribute("class", "mm-jsl-border")
-  road.parentElement!.append(gate)
-  const followRoad = () => {
-    const d = road.getAttribute("d")
-    if (!d) return
-    gate.setAttribute("d", d)
-    const length = road.getTotalLength()
-    // The road runs downward after the bend, so y grows with length there: find where it meets BORDER_AT.
-    const target = (road.ownerSVGElement?.viewBox.baseVal.height ?? 0) * BORDER_AT
-    let low = 0, high = length
-    for (let i = 0; i < 24; i++) {
-      const mid = (low + high) / 2
-      if (road.getPointAtLength(mid).y < target) low = mid
-      else high = mid
-    }
-    // Two short bars across the lane read as a crossing point; the rest of the stroke is a gap.
-    gate.style.strokeDasharray = `0 ${low} 6 9 6 ${length}`
-    gate.style.strokeWidth = `${parseFloat(road.style.strokeWidth) * 1.2}px`
-  }
-
-  const track = document.createElement("div")
-  track.className = "mm-jsl-track"
-  track.setAttribute("aria-hidden", "true")
-  plane.before(track)
-  const followPlane = () => {
-    track.hidden = plane.hidden
-    if (plane.hidden || !plane.naturalWidth) return
-    const width = parseFloat(plane.style.width)
-    const centre = parseFloat(plane.style.top) + (width * plane.naturalHeight) / plane.naturalWidth / 2
-    // The plane flies to the right, so the track runs from the left edge to just inside its tail.
-    track.style.top = `${centre}px`
-    track.style.width = `${Math.max(0, parseFloat(plane.style.left) + width * 0.12)}px`
-  }
-
-  const watch = new MutationObserver(() => { followRoad(); followPlane() })
-  watch.observe(road, { attributes: true, attributeFilter: ["d", "style"] })
-  watch.observe(plane, { attributes: true, attributeFilter: ["style", "hidden"] })
-  followRoad()
-  followPlane()
-  return () => { watch.disconnect(); gate.remove(); track.remove() }
-}
-
 /** Slot 03: the reviewed road → cargo → sea → cloud → air sequence, driven by page scroll. */
 export function MultimodalJourney() {
   const { services } = useContent()
@@ -137,10 +79,8 @@ export function MultimodalJourney() {
       const observer = new MutationObserver(readMode)
       observer.observe(modes, { subtree: true, attributes: true, attributeFilter: ["aria-pressed"] })
       readMode()
-      const marks = addRouteMarks(guest)
       teardown.push(() => {
         observer.disconnect()
-        marks()
         // Strict Mode remounts the same node; release the GPU only once the guest has left the page.
         setTimeout(() => {
           if (guest.isConnected) return
