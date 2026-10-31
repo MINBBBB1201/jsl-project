@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import { useTranslations } from "next-intl"
 import {
   AlertCircle,
@@ -126,9 +126,19 @@ function ResultCard({
 
 export function TrackingClient() {
   const t = useTranslations("tracking")
-  const { shipment, isLoading, error, searched, track } = useTracking()
+  const { shipment, isLoading, error, errorKind, searched, track } = useTracking()
   const samples = useSampleTrackingNumbers(4)
   const [value, setValue] = useState("")
+
+  // 랜딩 히어로의 조회 칸은 /tracking?no=번호 로 보낸다. 들어오면 그 번호로 바로 조회한다.
+  // useSearchParams 대신 effect 에서 읽어 정적 렌더를 깨지 않는다.
+  useEffect(() => {
+    const no = new URLSearchParams(window.location.search).get("no")?.trim()
+    if (!no) return
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    setValue(no)
+    track(no)
+  }, [track])
 
   const submit = (next?: string) => {
     const target = next ?? value
@@ -211,8 +221,14 @@ export function TrackingClient() {
                 aria-hidden
               />
               <div className="space-y-1">
-                <p className="font-medium text-destructive">{t("notFoundTitle")}</p>
-                <p className="text-sm text-muted-foreground">{error}</p>
+                {errorKind === "network" ? (
+                  <p className="font-medium text-destructive">{error}</p>
+                ) : (
+                  <>
+                    <p className="font-medium text-destructive">{t("notFoundTitle")}</p>
+                    {error !== t("notFoundTitle") && <p className="text-sm text-muted-foreground">{error}</p>}
+                  </>
+                )}
               </div>
             </CardContent>
           </Card>

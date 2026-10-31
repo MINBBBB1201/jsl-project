@@ -49,6 +49,7 @@ import { company } from "@/config/landing-content"
  */
 
 const signupFormSchema = z.object({
+  username: z.string().trim().regex(/^[a-zA-Z0-9][a-zA-Z0-9_.-]{2,31}$/, "아이디는 영문·숫자로 시작하는 3-32자입니다.").or(z.literal("")),
   name: z.string().min(1, "이름을 입력해 주세요."),
   email: z.email("올바른 이메일 주소를 입력해 주세요."),
   password: z.string().min(10, "비밀번호는 10자 이상이어야 합니다."),
@@ -119,7 +120,7 @@ export function SignupForm1({
 
   const form = useForm<SignupFormValues>({
     resolver: zodResolver(signupFormSchema),
-    defaultValues: { name: "", email: "", password: "", role: "sales" },
+    defaultValues: { username: "", name: "", email: "", password: "", role: "sales" },
   })
 
   const onSubmit = async (values: SignupFormValues) => {
@@ -128,7 +129,7 @@ export function SignupForm1({
       const data = await apiFetch<{ user: AuthUser }>("/api/auth/register", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(values),
+        body: JSON.stringify({ ...values, username: values.username || undefined }),
       })
       setCreated(data.user)
       form.reset()
@@ -179,6 +180,20 @@ export function SignupForm1({
                       <FormControl>
                         <Input placeholder="홍길동" {...field} />
                       </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={form.control}
+                  name="username"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>아이디 (선택)</FormLabel>
+                      <FormControl>
+                        <Input autoComplete="off" maxLength={32} placeholder="영문·숫자·._- 3-32자" {...field} />
+                      </FormControl>
+                      <FormDescription>아이디를 생략하면 이메일로 로그인합니다. 아이디는 대소문자를 구분하지 않습니다.</FormDescription>
                       <FormMessage />
                     </FormItem>
                   )}

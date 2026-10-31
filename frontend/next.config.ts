@@ -14,6 +14,9 @@ const nextConfig: NextConfig = {
   outputFileTracingRoot: projectRoot,
   experimental: {
     optimizePackageImports: ["lucide-react", "@radix-ui/react-icons"],
+    // 루트 레이아웃이 여러 개라 app/not-found.tsx 를 감쌀 곳이 없다.
+    // 매칭되지 않는 URL 의 404 는 app/global-not-found.tsx 가 <html> 부터 그린다.
+    globalNotFound: true,
   },
   turbopack: {
     root: projectRoot,
@@ -60,6 +63,17 @@ const nextConfig: NextConfig = {
   // Redirects for better SEO
   async redirects() {
     return [
+      /*
+        루트는 공개 랜딩으로 보낸다. 예전에는 app/page.tsx 가 redirect 했지만
+        루트 레이아웃이 여러 개가 되면서 '/' 를 감쌀 레이아웃이 없어졌다.
+        middleware 도 같은 리다이렉트를 하지만, 미들웨어를 타지 않는 경로에서도
+        같은 목적지가 되도록 여기 둔다.
+      */
+      {
+        source: '/',
+        destination: '/landing',
+        permanent: false,
+      },
       {
         source: '/home',
         destination: '/dashboard',

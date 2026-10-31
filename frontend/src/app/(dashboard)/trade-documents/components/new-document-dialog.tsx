@@ -24,6 +24,7 @@ import {
   SelectValue,
 } from "@/components/ui/select"
 import { API_BASE_URL } from "@/lib/api"
+import { getApiErrorMessage } from "@/lib/api-error"
 import { authHeaders } from "@/lib/auth"
 import {
   buildInputFromShipment,
@@ -50,7 +51,7 @@ async function findShipment(trackingNumber: string): Promise<ShipmentDetail | nu
   if (res.status === 404) return null
   const json = await res.json().catch(() => null)
   if (!res.ok || !json?.success) {
-    throw new Error(json?.error ?? `화물 조회에 실패했습니다. (HTTP ${res.status})`)
+    throw new Error(getApiErrorMessage(json, `화물 조회에 실패했습니다. (HTTP ${res.status})`))
   }
   return json.data as ShipmentDetail
 }

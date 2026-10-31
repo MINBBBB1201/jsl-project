@@ -7,14 +7,10 @@ import {
   Search,
   LayoutDashboard,
   MessageCircle,
-  Shield,
-  AlertTriangle,
-  Settings,
-  CreditCard,
-  User,
-  Bell,
-  Link2,
-  Palette,
+  ScanSearch,
+  FileText,
+  Megaphone,
+  LayoutTemplate,
   type LucideIcon,
 } from "lucide-react"
 
@@ -122,31 +118,12 @@ export function CommandSearch({ open, onOpenChange }: CommandSearchProps) {
   const commandRef = React.useRef<HTMLDivElement>(null)
 
   const searchItems: SearchItem[] = [
-    // Dashboards
-    { title: "Dashboard", url: "/dashboard", group: "Dashboards", icon: LayoutDashboard },
-
-    // Apps
-    { title: "Chat", url: "/chat", group: "Apps", icon: MessageCircle },
-
-    // Auth Pages
-    { title: "Sign In", url: "/sign-in", group: "Auth Pages", icon: Shield },
-    { title: "Sign Up", url: "/sign-up", group: "Auth Pages", icon: Shield },
-    { title: "Forgot Password", url: "/forgot-password", group: "Auth Pages", icon: Shield },
-
-    // Errors
-    { title: "Unauthorized", url: "/errors/unauthorized", group: "Errors", icon: AlertTriangle },
-    { title: "Forbidden", url: "/errors/forbidden", group: "Errors", icon: AlertTriangle },
-    { title: "Not Found", url: "/errors/not-found", group: "Errors", icon: AlertTriangle },
-    { title: "Internal Server Error", url: "/errors/internal-server-error", group: "Errors", icon: AlertTriangle },
-    { title: "Under Maintenance", url: "/errors/under-maintenance", group: "Errors", icon: AlertTriangle },
-
-    // Settings
-    { title: "User Settings", url: "/settings/user", group: "Settings", icon: User },
-    { title: "Account Settings", url: "/settings/account", group: "Settings", icon: Settings },
-    { title: "Plans & Billing", url: "/settings/billing", group: "Settings", icon: CreditCard },
-    { title: "Appearance", url: "/settings/appearance", group: "Settings", icon: Palette },
-    { title: "Notifications", url: "/settings/notifications", group: "Settings", icon: Bell },
-    { title: "Connections", url: "/settings/connections", group: "Settings", icon: Link2 },
+    { title: "대시보드", url: "/dashboard", group: "운영", icon: LayoutDashboard },
+    { title: "AI 업무 지원", url: "/chat", group: "업무 도구", icon: MessageCircle },
+    { title: "화물 파손 판정", url: "/damage-inspection", group: "업무 도구", icon: ScanSearch },
+    { title: "무역서류", url: "/trade-documents", group: "업무 도구", icon: FileText },
+    { title: "공지사항", url: "/announcements", group: "업무 도구", icon: Megaphone },
+    { title: "JSL 홈페이지", url: "/landing", group: "외부 사이트", icon: LayoutTemplate },
   ]
 
   const groupedItems = searchItems.reduce((acc, item) => {

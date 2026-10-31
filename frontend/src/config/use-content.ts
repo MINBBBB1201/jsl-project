@@ -11,16 +11,19 @@ import {
   Factory,
   FileBadge,
   FileCheck2,
+  FileText,
   Globe2,
   Landmark,
   Handshake,
   Mail,
   MapPin,
+  Megaphone,
   Package,
   PackageOpen,
   PlaneTakeoff,
   Radar,
   Route,
+  Search,
   ShieldCheck,
   ShoppingCart,
   Ship,
@@ -641,7 +644,7 @@ export function useContent() {
         { name: m.nav.containerPlanner, href: "/container-planner" },
         { name: m.nav.documentGenerator, href: "/document-generator" },
         { name: m.footer.linkQuote, href: "/landing#contact" },
-        { name: m.footer.linkNotice, href: "#" },
+        { name: m.footer.linkNotice, href: "/notices" },
       ],
       [m.footer.colLegal]: [
         { name: m.footer.linkTerms, href: "/terms" },
@@ -667,7 +670,8 @@ export function useContent() {
     title: m.services.modes[code].title,
     description: m.services.modes[code].summary,
     icon,
-    href: "/landing#features",
+    // 모드마다 /services/{code} 상세 페이지가 있으므로 랜딩 섹션이 아니라 그쪽으로 보낸다.
+    href: `/services/${code.toLowerCase()}`,
   }))
 
   const megaMenus = {
@@ -687,18 +691,20 @@ export function useContent() {
           })),
         },
         {
-          title: m.nav.contact as string,
+          title: m.footer.colSupport as string,
+          /*
+            기존 공개 도구와 공지를 헤더에서도 찾을 수 있게 푸터(고객지원)와 같은 목록을
+            둔다. 새 페이지가 아니라 이미 있는 /tracking · /container-planner · /hs-code ·
+            /document-generator · /notices 로 가는 진입점이다. 마지막 "견적 요청"으로
+            이어지는 순서는 유지한다. FAQ 는 상단 메뉴에 따로 있어 여기서 뺐다.
+          */
           items: [
             { title: m.nav.tracking, description: m.tracking.subtitle, icon: Radar, href: "/tracking" },
-            /*
-              적재 계산기는 푸터(고객지원)에도 있지만 여기에도 둔다. HS코드 조회처럼
-              한 번 찾아보고 마는 참고 정보가 아니라, 화주가 견적을 받기 전에 몇 대가
-              필요한지 직접 따져 보는 도구라 화주 진입 경로에 있어야 한다.
-              바로 아래 "견적 요청"으로 이어지는 순서이기도 하다.
-            */
             { title: m.nav.containerPlanner, description: m.containerPlanner.subtitle, icon: PackageOpen, href: "/container-planner" },
+            { title: m.nav.hsCode, description: m.hsCode.subtitle, icon: Search, href: "/hs-code" },
+            { title: m.nav.documentGenerator, description: m.documentGenerator.subtitle, icon: FileText, href: "/document-generator" },
+            { title: m.footer.linkNotice, description: m.notices.subtitle, icon: Megaphone, href: "/notices" },
             { title: m.footer.linkQuote, description: m.contact.channelQuote.title, icon: Container, href: "/landing#contact" },
-            { title: m.nav.faq, description: m.faq.description, icon: BadgeCheck, href: "/landing#faq" },
           ],
         },
       ],

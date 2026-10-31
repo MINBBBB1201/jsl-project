@@ -1,0 +1,161 @@
+/*
+ * 승인된 네트워크 장면 전용 스타일. 모든 선택자는 .jsl-an 아래에만 적용된다.
+ * 원본: network-globe-pilot/scene.css + polish.css. 전역 body·h1·* 규칙과
+ * 사이트 헤더·글꼴 선언은 옮기지 않았다(글꼴은 페이지 것을 그대로 쓴다).
+ */
+.jsl-an {
+  --jsl-an-paper: #fafaf7;
+  --jsl-an-ink: #18272f;
+  --jsl-an-muted: #58646a;
+  --jsl-an-accent: #e76b25;
+  --jsl-an-accent-text: #a84b1c;
+  --jsl-an-rule: #b3b9b5;
+  background: var(--jsl-an-paper);
+  color: var(--jsl-an-ink);
+  -webkit-font-smoothing: antialiased;
+}
+.jsl-an *,
+.jsl-an *::before,
+.jsl-an *::after { box-sizing: border-box; }
+.jsl-an button { font: inherit; -webkit-tap-highlight-color: transparent; }
+.jsl-an a:focus-visible,
+.jsl-an button:focus-visible { outline: 3px solid #bf4b0c; outline-offset: 6px; }
+
+.jsl-an__scene {
+  position: relative;
+  isolation: isolate;
+  min-height: 800px;
+  height: 100svh;
+  overflow: hidden;
+  container-type: inline-size;
+}
+.jsl-an__globe,
+.jsl-an__canvas,
+.jsl-an__leaders { position: absolute; inset: 0; width: 100%; height: 100%; }
+.jsl-an__globe { z-index: -1; }
+.jsl-an__leaders { overflow: visible; }
+/* 지구본이 준비되기 전이나 실패하면 지구본과 거점 라벨만 숨긴다. 본문·상세·목록은 남는다. */
+.jsl-an__scene:not([data-status="ready"]) .jsl-an__globe,
+.jsl-an__scene:not([data-status="ready"]) .jsl-an__labels { visibility: hidden; }
+
+.jsl-an__intro { position: absolute; left: 5.4%; top: 24%; width: 44%; z-index: 2; }
+.jsl-an__eyebrow { margin: 0 0 26px; font-size: 11px; font-weight: 500; letter-spacing: .075em; line-height: 1.5; text-transform: uppercase; }
+.jsl-an__title {
+  margin: 0;
+  font-size: clamp(44px, 5cqw, 92px);
+  font-weight: 450;
+  line-height: 1.04;
+  letter-spacing: -.045em;
+  text-wrap: balance;
+}
+.jsl-an__copy { margin: 26px 0 0; max-width: 380px; font-size: 15px; line-height: 1.6; color: var(--jsl-an-muted); }
+.jsl-an__detail { margin-top: 34px; width: 320px; max-width: 100%; min-height: 140px; }
+.jsl-an__detail-role { margin: 0 0 10px; font-size: 11px; font-weight: 500; line-height: 1.5; letter-spacing: .025em; color: var(--jsl-an-accent-text); }
+.jsl-an__detail-copy { margin: 0; max-width: 310px; min-height: 65px; font-size: 14px; line-height: 1.55; }
+
+.jsl-an__label {
+  position: absolute;
+  z-index: 3;
+  min-width: 78px;
+  padding: 8px 3px 8px 0;
+  border: 0;
+  background: transparent;
+  color: #25363e;
+  text-align: left;
+  cursor: pointer;
+  transform: translate(0, -50%);
+  transition: color .18s;
+}
+.jsl-an__label strong { display: block; font-size: 22px; font-weight: 500; line-height: 1.1; letter-spacing: -.025em; white-space: nowrap; }
+.jsl-an__label small { display: block; margin-top: 5px; font-size: 12px; line-height: 1.35; color: #667176; }
+.jsl-an__label:hover,
+.jsl-an__label[aria-pressed="true"] { color: #bd511b; }
+.jsl-an__label[aria-pressed="true"] small { color: #9e5430; }
+
+.jsl-an__footer {
+  position: absolute;
+  z-index: 4;
+  left: 4.3%;
+  right: 4.3%;
+  bottom: 29px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+}
+.jsl-an__total { margin: 0; font-size: 11px; font-weight: 500; letter-spacing: .02em; }
+.jsl-an__pager { display: flex; align-items: center; gap: 20px; font-size: 11px; letter-spacing: .02em; }
+.jsl-an__next { width: 40px; height: 40px; border: 0; background: transparent; color: #173346; font-size: 25px; cursor: pointer; }
+.jsl-an__next:hover { color: #be4b0e; }
+
+.jsl-an__locations {
+  margin: 0;
+  padding: 90px 5.4%;
+  list-style: none;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  column-gap: 70px;
+  background: #f0f1ed;
+}
+.jsl-an__row { display: grid; grid-template-columns: 140px 1fr; gap: 24px; padding: 21px 0; border-top: 1px solid var(--jsl-an-rule); }
+.jsl-an__row h3 { margin: 0; font-size: 18px; font-weight: 500; letter-spacing: -.03em; }
+.jsl-an__row small { display: block; margin-top: 7px; font-size: 11px; line-height: 1.5; color: #576872; }
+.jsl-an__row p { margin: 0; font-size: 13px; line-height: 1.55; color: #354b57; }
+
+@media (max-width: 1000px) and (min-width: 701px) {
+  .jsl-an__intro { left: 4.3%; width: 46%; top: 24%; }
+  .jsl-an__title { font-size: 5.6cqw; }
+  .jsl-an__copy { font-size: 13px; max-width: 310px; }
+  .jsl-an__detail { width: 280px; margin-top: 28px; }
+  .jsl-an__label { min-width: 72px; }
+  .jsl-an__label strong { font-size: 19px; }
+}
+
+@media (max-width: 700px) {
+  .jsl-an__scene { height: calc(1010px + var(--jsl-an-shift, 0px)); min-height: calc(1010px + var(--jsl-an-shift, 0px)); }
+  .jsl-an__intro { left: 7%; top: 132px; width: 86%; }
+  .jsl-an__eyebrow { font-size: 10px; letter-spacing: .045em; margin-bottom: 18px; }
+  .jsl-an__title { font-size: 11.5cqw; line-height: 1.04; letter-spacing: -.05em; }
+  .jsl-an__copy { font-size: 12px; margin-top: 20px; max-width: 310px; }
+  .jsl-an__detail { position: absolute; top: calc(635px + var(--jsl-an-shift, 0px)); margin: 0; width: 290px; min-height: 142px; }
+  .jsl-an__detail-copy { font-size: 13px; min-height: 60px; }
+  .jsl-an__label { min-width: 65px; padding: 9px 2px 9px 0; }
+  .jsl-an__label strong { font-size: 18px; }
+  .jsl-an__label small { font-size: 11px; margin-top: 4px; }
+  .jsl-an__globe {
+    mask-image: linear-gradient(to bottom, transparent 0 calc(340px + var(--jsl-an-shift, 0px)), #000 calc(390px + var(--jsl-an-shift, 0px)), #000 calc(710px + var(--jsl-an-shift, 0px)), transparent calc(755px + var(--jsl-an-shift, 0px)));
+  }
+  .jsl-an__footer { left: 7%; right: 7%; bottom: 20px; }
+  .jsl-an__total { font-size: 10px; letter-spacing: 0; }
+  .jsl-an__pager { gap: 10px; font-size: 10px; }
+  .jsl-an__next { width: 32px; height: 32px; font-size: 23px; }
+  .jsl-an__locations { display: block; padding: 50px 7%; }
+  .jsl-an__row { grid-template-columns: 100px 1fr; gap: 18px; }
+  .jsl-an__row h3 { font-size: 17px; }
+  .jsl-an__row p { font-size: 12px; }
+}
+
+@media (max-height: 760px) and (min-width: 701px) {
+  .jsl-an__scene { min-height: 700px; }
+  .jsl-an__intro { top: 18%; }
+  .jsl-an__eyebrow { margin-bottom: 18px; }
+  .jsl-an__title { font-size: min(4.6cqw, 76px); }
+  .jsl-an__copy { font-size: 13px; margin-top: 18px; }
+  .jsl-an__detail { margin-top: 22px; min-height: 120px; }
+  .jsl-an__detail-copy { min-height: 50px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .jsl-an__label { transition: none; }
+}
+
+/* 지구본 없이 거점 정보만 보여 주는 변형(지구본은 히어로에 있다). */
+.jsl-an--info { container-type: inline-size; }
+.jsl-an__info-head { max-width: 980px; padding: 120px 5.4% 48px; }
+.jsl-an--info .jsl-an__title { font-size: clamp(40px, 5cqw, 84px); }
+.jsl-an--info .jsl-an__copy { max-width: 560px; }
+.jsl-an--info .jsl-an__total { margin-top: 28px; }
+@media (max-width: 700px) {
+  .jsl-an__info-head { padding: 72px 7% 28px; }
+  .jsl-an--info .jsl-an__title { font-size: 11.5cqw; }
+}

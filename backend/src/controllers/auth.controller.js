@@ -1,4 +1,5 @@
 const User = require("../models/user.model");
+const { requireUsernameIndex } = require("../services/username-index");
 const logger = require("../utils/logger");
 const { signToken, jwtExpiresIn } = require("../utils/jwt");
 
@@ -13,9 +14,11 @@ exports.login = async (req, res) => {
   const { email, password } = req.body;
 
   try {
-    const user = await User.findOne({
-      email: String(email).toLowerCase().trim(),
-    }).select("+password");
+    const identity = String(email).toLowerCase().trim();
+    const query = identity.includes("@")
+      ? { email: identity }
+      : { username: identity };
+    const user = await User.findOne(query).select("+password");
 
     const passwordMatches = user ? await user.verifyPassword(password) : false;
 
@@ -23,7 +26,7 @@ exports.login = async (req, res) => {
       logger.warn(`로그인 실패: ${email}`);
       return res.status(401).json({
         success: false,
-        error: "이메일 또는 비밀번호가 올바르지 않습니다.",
+        error: "아이디/이메일 또는 비밀번호가 올바르지 않습니다.",
       });
     }
 
@@ -66,9 +69,22 @@ exports.me = async (req, res) => {
  * 로그인 게이트를 세운 의미가 없다.
  */
 exports.register = async (req, res) => {
-  const { email, password, name, role } = req.body;
+  const { email, password, name, role, username } = req.body;
 
   try {
+    if (username) {
+      try {
+        await requireUsernameIndex();
+      } catch {
+        return res
+          .status(503)
+          .json({
+            success: false,
+            code: "USERNAME_NOT_READY",
+            error: "아이디 발급을 준비 중입니다. 잠시 후 다시 시도해 주세요.",
+          });
+      }
+    }
     const normalizedEmail = String(email).toLowerCase().trim();
     const exists = await User.exists({ email: normalizedEmail });
 
@@ -81,6 +97,7 @@ exports.register = async (req, res) => {
 
     const user = await User.create({
       email: normalizedEmail,
+      ...(username ? { username: username.toLowerCase().trim() } : {}),
       password,
       name,
       role: role || "sales",
@@ -90,6 +107,12 @@ exports.register = async (req, res) => {
 
     res.status(201).json({ success: true, data: { user: user.toSafeJSON() } });
   } catch (error) {
+    if (error.code === 11000) {
+      return res.status(409).json({
+        success: false,
+        error: "이미 등록된 이메일 또는 아이디입니다.",
+      });
+    }
     logger.error("계정 발급 중 오류:", error);
     res.status(500).json({
       success: false,
