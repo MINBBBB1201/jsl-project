@@ -343,7 +343,7 @@ function formatPeople(count: number, unit: string) {
  * 이 섹션은 다섯 거점의 도시·역할·인원·설명을 그대로 읽게 한다.
  */
 export function ApprovedNetworkInfo() {
-  const { network } = useContent()
+  const { network, redesign } = useContent()
   return (
     <section id="network" className="jsl-an jsl-an--info" aria-labelledby="jsl-an-title">
       <div className="jsl-an__info-head">
@@ -351,6 +351,15 @@ export function ApprovedNetworkInfo() {
         <h2 id="jsl-an-title" className="jsl-an__title">{network.title}</h2>
         <p className="jsl-an__copy">{network.description}</p>
         <p className="jsl-an__total">{network.totalLabel}</p>
+        {/* 건너뛴 해상 장면(JourneyOcean)에만 있던 거점·인력·항공 물동량 수치를 여기서 이어 보여 준다. */}
+        <dl className="jsl-an__stats">
+          {redesign.hero.stats.map((stat) => (
+            <div key={stat.label}>
+              <dt>{stat.label}</dt>
+              <dd>{stat.value}</dd>
+            </div>
+          ))}
+        </dl>
       </div>
       <ul className="jsl-an__locations" aria-label={network.totalLabel}>
         {network.items.map((office) => (
