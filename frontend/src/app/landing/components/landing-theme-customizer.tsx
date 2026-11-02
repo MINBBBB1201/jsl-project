@@ -408,8 +408,9 @@ export function LandingThemeCustomizerTrigger({ onClick }: { onClick: () => void
         장식이므로 이름은 이 라벨에서만 나온다.
       */
       aria-label={t("themeSettingsLabel")}
+      // 세로 가운데에 두면 모바일 히어로 화물조회 칸과 데스크톱 진행 막대를 가려 오른쪽 아래로 둔다.
       className={cn(
-        "fixed top-1/2 -translate-y-1/2 h-12 w-12 rounded-full shadow-lg z-50 bg-primary hover:bg-primary/90 text-primary-foreground cursor-pointer right-4"
+        "fixed bottom-6 h-12 w-12 rounded-full shadow-lg z-50 bg-primary hover:bg-primary/90 text-primary-foreground cursor-pointer right-4"
       )}
     >
       <Settings className="h-5 w-5" aria-hidden="true" />
