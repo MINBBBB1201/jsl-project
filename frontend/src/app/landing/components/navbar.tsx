@@ -46,7 +46,7 @@ import { LanguageSwitcher } from '@/components/language-switcher'
 type MobileMenuEntry = { title: string; name?: undefined; href?: undefined }
   | { title?: undefined; name: string; href: string }
 
-export function LandingNavbar() {
+export function LandingNavbar({ orangeTheme = false }: { orangeTheme?: boolean }) {
   const [isOpen, setIsOpen] = useState(false)
   const pendingAnchor = useRef<HTMLElement | null>(null)
   // 화주/포워더 드롭다운을 각각 접었다 펼 수 있게 세그먼트별로 상태를 둔다
@@ -184,6 +184,7 @@ export function LandingNavbar() {
             </Button>
           </SheetTrigger>
           <SheetContent
+            data-jsl-landing-menu={orangeTheme ? "orange" : undefined}
             onClickCapture={(event) => {
               // The journey capture handler already owns its downstream anchors when motion is on.
               // This fallback also serves reduced motion and upstream anchors, after Sheet unlocks.
@@ -218,9 +219,13 @@ export function LandingNavbar() {
               {/* Header */}
               <SheetHeader className="space-y-0 p-4 pb-2 border-b">
                 <div className="flex items-center gap-2">
-                  <div className="p-2 bg-primary/10 rounded-lg">
-                    <Logo size={16} />
-                  </div>
+                  {orangeTheme ? (
+                    <LogoWordmark className="jsl-menu-wordmark" />
+                  ) : (
+                    <div className="p-2 bg-primary/10 rounded-lg">
+                      <Logo size={16} />
+                    </div>
+                  )}
                   <SheetTitle className="text-lg font-semibold">{company.name}</SheetTitle>
                   <div className="ml-auto flex items-center gap-1">
                     {/* 데스크톱 네비가 3xl 부터라, 그 아래 폭에서는 여기가 유일한 언어 전환 지점이다 */}
