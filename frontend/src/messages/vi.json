@@ -609,6 +609,7 @@
     "emptyPrompt": "Nhập số vận đơn rồi nhấn Tra cứu.",
     "demoNotice": "Hiện chỉ có dữ liệu demo. Hãy thử với các số dưới đây.",
     "notFoundTitle": "Không tìm thấy kết quả",
+    "notFoundDescription": "Vui lòng kiểm tra lại số vận đơn.",
     "shippedAt": "Ngày lấy hàng",
     "estimatedArrival": "Ngày dự kiến đến",
     "elapsedRatio": "Tỷ lệ thời gian đã trôi qua",

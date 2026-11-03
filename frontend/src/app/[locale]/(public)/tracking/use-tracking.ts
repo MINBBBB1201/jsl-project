@@ -92,7 +92,8 @@ export function useTracking() {
       if (!res.ok || !json?.success) {
         const notFound = res.status === 404
         setErrorKind(notFound ? "notFound" : "network")
-        setError(getApiErrorMessage(json, notFound ? t("notFoundTitle") : t("errorNetwork")))
+        // 404 본문은 서버의 한국어 고정 문구라 다른 언어 화면에 그대로 내보내지 않는다.
+        setError(notFound ? t("notFoundDescription") : getApiErrorMessage(json, t("errorNetwork")))
         return
       }
 

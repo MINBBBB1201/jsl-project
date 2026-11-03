@@ -130,6 +130,13 @@ export function LandingThemeCustomizer({ open, onOpenChange }: LandingThemeCusto
         <SheetContent
           side="right"
           className="w-[400px] p-0 gap-0 pointer-events-auto [&>button]:hidden overflow-hidden flex flex-col"
+          // SheetTrigger 없이 여는 패널이라 Radix 가 포커스를 돌려줄 곳을 모른다. 여는 버튼으로 돌려준다.
+          onCloseAutoFocus={(e) => {
+            const trigger = document.querySelector<HTMLElement>(`[${TRIGGER_ATTRIBUTE}]`)
+            if (!trigger) return
+            e.preventDefault()
+            trigger.focus({ preventScroll: true })
+          }}
           onInteractOutside={(e) => {
             // Prevent the sheet from closing when dialog is open
             if (importModalOpen) {
@@ -394,13 +401,75 @@ export function LandingThemeCustomizer({ open, onOpenChange }: LandingThemeCusto
   )
 }
 
+/*
+  떠 있는 버튼이 비켜야 하는 조작부. 운송 시퀀스의 모드 탭(01 ROAD~04 AIR)은 고정 구간 내내
+  화면 아래에 붙어 있어, 좁은 폭에서는 04 · AIR 탭이 버튼 밑에 깔린다. 낮은 화면(320×640)에서는
+  첫 화면의 히어로 화물조회 칸도 같은 자리에 온다. 엔진 마크업은 생성 파일이라 바꾸지 않고 위치만 읽는다.
+*/
+const TRIGGER_AVOID_SELECTORS = ["#jsl-marine-native .mm-mode-nav", ".journey-track-form"]
+// 테마 패널이 닫힐 때 포커스를 돌려줄 버튼 표시
+const TRIGGER_ATTRIBUTE = "data-landing-theme-trigger"
+// 아래 className 의 bottom-6 · right-4 · h-12 w-12 와 같은 값
+const TRIGGER_BOTTOM = 24
+const TRIGGER_RIGHT = 16
+const TRIGGER_SIZE = 48
+const TRIGGER_GAP = 12
+
+/** 기본 자리에서 조작부와 겹치면 그 위로 올릴 거리(px), 아니면 0 */
+function measureTriggerLift() {
+  const viewportWidth = document.documentElement.clientWidth
+  const viewportHeight = document.documentElement.clientHeight
+  const left = viewportWidth - TRIGGER_RIGHT - TRIGGER_SIZE
+  const top = viewportHeight - TRIGGER_BOTTOM - TRIGGER_SIZE
+  let lift = 0
+  for (const selector of TRIGGER_AVOID_SELECTORS) {
+    for (const element of document.querySelectorAll<HTMLElement>(selector)) {
+      const rect = element.getBoundingClientRect()
+      if (!rect.width || !rect.height || getComputedStyle(element).visibility === "hidden") continue
+      const overlaps =
+        rect.left < left + TRIGGER_SIZE + TRIGGER_GAP && rect.right > left - TRIGGER_GAP &&
+        rect.top < top + TRIGGER_SIZE + TRIGGER_GAP && rect.bottom > top - TRIGGER_GAP
+      // 조작부 윗변에서 간격만큼 띄운 자리로 버튼 아랫변을 올린다.
+      if (overlaps) lift = Math.max(lift, viewportHeight - TRIGGER_BOTTOM - rect.top + TRIGGER_GAP)
+    }
+  }
+  return Math.round(lift)
+}
+
 // Floating trigger button for landing page
 export function LandingThemeCustomizerTrigger({ onClick }: { onClick: () => void }) {
   const t = useTranslations("common")
+  const [lift, setLift] = React.useState(0)
+
+  // 스크롤(양방향)·리사이즈마다 한 프레임에 한 번 다시 재서, 조작부가 있을 때만 비켜 선다.
+  React.useEffect(() => {
+    let frame = 0
+    let settle = 0
+    const update = () => {
+      frame = 0
+      setLift(measureTriggerLift())
+    }
+    const schedule = () => {
+      if (!frame) frame = requestAnimationFrame(update)
+      // 엔진은 스크롤이 멈춘 뒤에도 탭을 보이거나 숨길 수 있어, 멈춘 뒤 한 번 더 잰다.
+      window.clearTimeout(settle)
+      settle = window.setTimeout(schedule, 450)
+    }
+    schedule()
+    window.addEventListener("scroll", schedule, { passive: true })
+    window.addEventListener("resize", schedule)
+    return () => {
+      cancelAnimationFrame(frame)
+      window.clearTimeout(settle)
+      window.removeEventListener("scroll", schedule)
+      window.removeEventListener("resize", schedule)
+    }
+  }, [])
 
   return (
     <Button
       onClick={onClick}
+      style={lift ? { transform: `translateY(-${lift}px)` } : undefined}
       size="icon"
       /*
         아이콘만 있고 글자가 없는 버튼이라 aria-label 이 없으면 스크린리더가
@@ -408,8 +477,10 @@ export function LandingThemeCustomizerTrigger({ onClick }: { onClick: () => void
         장식이므로 이름은 이 라벨에서만 나온다.
       */
       aria-label={t("themeSettingsLabel")}
+      {...{ [TRIGGER_ATTRIBUTE]: "" }}
+      // 세로 가운데에 두면 모바일 히어로 화물조회 칸과 데스크톱 진행 막대를 가려 오른쪽 아래로 둔다.
       className={cn(
-        "fixed top-1/2 -translate-y-1/2 h-12 w-12 rounded-full shadow-lg z-50 bg-primary hover:bg-primary/90 text-primary-foreground cursor-pointer right-4"
+        "fixed bottom-6 h-12 w-12 rounded-full shadow-lg z-50 bg-primary hover:bg-primary/90 text-primary-foreground cursor-pointer right-4 motion-reduce:transition-none"
       )}
     >
       <Settings className="h-5 w-5" aria-hidden="true" />

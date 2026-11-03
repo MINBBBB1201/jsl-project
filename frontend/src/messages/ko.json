@@ -609,6 +609,7 @@
     "emptyPrompt": "운송장번호를 입력하고 조회하기를 눌러주세요.",
     "demoNotice": "현재는 데모용 데이터만 등록되어 있습니다. 아래 번호로 조회해 보세요.",
     "notFoundTitle": "조회 결과가 없습니다",
+    "notFoundDescription": "운송장번호를 다시 확인해 주세요.",
     "shippedAt": "집하일",
     "estimatedArrival": "예상 도착일",
     "elapsedRatio": "경과율",
