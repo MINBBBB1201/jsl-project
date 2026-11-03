@@ -153,24 +153,44 @@ export function MultimodalJourney() {
     }, { rootMargin: "150% 0px" })
     near.observe(element)
 
-    // Loading mid-scroll inserts the pin spacer and cuts a smooth anchor scroll short, so anchors
-    // to this section load first and scroll once the layout has settled.
+    // Resolve downstream anchors before loading, then measure again after the pin spacer exists.
+    // Otherwise a late engine load changes page height halfway through native smooth scrolling.
     const anchors = new Set(["#features", "#cargo-journey"])
-    const goHere = () => void ensure().then(() => {
-      if (cancelled) return
-      window.scrollTo({ top: element.getBoundingClientRect().top + window.scrollY, behavior: "smooth" })
-      // Keyboard and screen-reader position follow the scroll instead of staying on the link.
-      focusQuietly(element)
-    })
+    const anchorTarget = (hash: string): HTMLElement | null => {
+      if (anchors.has(hash)) return element
+      if (!hash || hash === "#") return null
+      let target: HTMLElement | null
+      try { target = document.getElementById(decodeURIComponent(hash.slice(1))) }
+      catch { return null }
+      if (!target || element.contains(target)) return null
+      return element.compareDocumentPosition(target) & Node.DOCUMENT_POSITION_FOLLOWING ? target : null
+    }
+    let navigation = 0
+    const goHere = (hash: string) => {
+      const request = ++navigation
+      void ensure().then(() => {
+        if (cancelled || request !== navigation) return
+        const target = anchorTarget(hash)
+        if (!target?.isConnected) return
+        window.scrollTo({ top: target.getBoundingClientRect().top + window.scrollY, behavior: "smooth" })
+        focusQuietly(target)
+      })
+    }
     const onAnchorClick = (event: MouseEvent) => {
-      const link = (event.target as Element).closest<HTMLAnchorElement>("a[href]")
-      if (!link || link.origin !== window.location.origin || link.pathname !== window.location.pathname || !anchors.has(link.hash)) return
+      if (event.defaultPrevented || event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return
+      if (!(event.target instanceof Element)) return
+      const link = event.target.closest<HTMLAnchorElement>("a[href]")
+      if (!link || link.origin !== window.location.origin || link.pathname !== window.location.pathname || link.search !== window.location.search) return
+      if (link.hasAttribute("download") || (link.target && link.target.toLowerCase() !== "_self")) return
+      // A newer native anchor navigation must also cancel an older pending engine navigation.
+      ++navigation
+      if (!anchorTarget(link.hash)) return
       event.preventDefault()
-      history.pushState(null, "", link.hash)
-      goHere()
+      if (window.location.hash !== link.hash) history.pushState(null, "", link.hash)
+      goHere(link.hash)
     }
     document.addEventListener("click", onAnchorClick)
-    if (anchors.has(window.location.hash)) goHere()
+    if (anchorTarget(window.location.hash)) goHere(window.location.hash)
     return () => {
       cancelled = true
       near.disconnect()
