@@ -16,3 +16,9 @@ Only the wrapper's anchor navigation changed: no transport engine, timing, scene
 Fixture does not mount React, load GSAP/Three or validate actual smooth animation/ScrollTrigger lifecycle. Full preview anchor travel at multiple positions, reduced motion, keyboard activation/back-forward behavior and #49/#52 combined integration remain to verify. No full build this turn, independent review pending. This does not close #53 yet. No merge or production deployment.
 
 Run from repository root using installed Playwright/Chromium, or set JSL_PLAYWRIGHT_MODULE / JSL_CHROMIUM_PATH for their existing installation. No dependency installation is performed by the script.
+
+
+## Follow-up after Claude integration evidence
+Claude's actual integrated build confirmed the native progress-rail fix, but mobile Sheet links and path-qualified mega-menu links still failed, also on baseline. The follow-up uses document capture before React/Next consumes the event. Navbar hash handlers no longer call scrollIntoView or use an arbitrary100ms timer; mobile callbacks still close the Sheet. The journey waits until the clicked link's Sheet is disconnected, then two animation frames for focus/scroll-lock cleanup, then measures and scrolls. Pending requests cancel on later eligible clicks or unmount.
+
+Fixture cleanup was updated for capture listeners. Added Next-style bubble-handler simulation and a closing-sheet DOM case. Final fixture:14conditions x2viewports=28pass. These simulate event order and Sheet lifetime; they do not mount actual Next Link or Radix. Changed-navbar/journey ESLint and full frontend TypeScript pass. Actual mobile/mega-menu travel on the follow-up and independent delta review remain pending. No scene/assets changes. #53 remains open; PR29 Draft.

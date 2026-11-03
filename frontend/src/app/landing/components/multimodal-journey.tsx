@@ -166,9 +166,18 @@ export function MultimodalJourney() {
       return element.compareDocumentPosition(target) & Node.DOCUMENT_POSITION_FOLLOWING ? target : null
     }
     let navigation = 0
-    const goHere = (hash: string) => {
+    const goHere = (hash: string, sheet?: Element | null) => {
       const request = ++navigation
-      void ensure().then(() => {
+      void ensure().then(async () => {
+        // Radix keeps the closing sheet and its scroll lock mounted through its exit animation.
+        // Wait for actual removal, not a guessed timeout, then let focus/lock cleanup finish.
+        while (sheet?.isConnected) {
+          if (cancelled || request !== navigation) return
+          await new Promise<void>(resolve => requestAnimationFrame(() => resolve()))
+        }
+        if (sheet) {
+          await new Promise<void>(resolve => requestAnimationFrame(() => requestAnimationFrame(() => resolve())))
+        }
         if (cancelled || request !== navigation) return
         const target = anchorTarget(hash)
         if (!target?.isConnected) return
@@ -187,14 +196,15 @@ export function MultimodalJourney() {
       if (!anchorTarget(link.hash)) return
       event.preventDefault()
       if (window.location.hash !== link.hash) history.pushState(null, "", link.hash)
-      goHere(link.hash)
+      goHere(link.hash, link.closest('[data-slot="sheet-content"]'))
     }
-    document.addEventListener("click", onAnchorClick)
+    // Capture before React/Next Link consumes same-document anchor navigation.
+    document.addEventListener("click", onAnchorClick, true)
     if (anchorTarget(window.location.hash)) goHere(window.location.hash)
     return () => {
       cancelled = true
       near.disconnect()
-      document.removeEventListener("click", onAnchorClick)
+      document.removeEventListener("click", onAnchorClick, true)
       for (const run of teardown.splice(0)) run()
     }
   }, [reduced])

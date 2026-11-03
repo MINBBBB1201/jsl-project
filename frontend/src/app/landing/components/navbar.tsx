@@ -46,19 +46,6 @@ import { LanguageSwitcher } from '@/components/language-switcher'
 type MobileMenuEntry = { title: string; name?: undefined; href?: undefined }
   | { title?: undefined; name: string; href: string }
 
-// Smooth scroll function
-const smoothScrollTo = (targetId: string) => {
-  if (targetId.startsWith('#')) {
-    const element = document.querySelector(targetId)
-    if (element) {
-      element.scrollIntoView({
-        behavior: 'smooth',
-        block: 'start',
-      })
-    }
-  }
-}
-
 export function LandingNavbar() {
   const [isOpen, setIsOpen] = useState(false)
   // 화주/포워더 드롭다운을 각각 접었다 펼 수 있게 세그먼트별로 상태를 둔다
@@ -137,12 +124,7 @@ export function LandingNavbar() {
                     <SiteLink
                       href={item.href}
                       className="group inline-flex h-10 w-max items-center justify-center whitespace-nowrap px-2.5 py-2 text-sm font-medium transition-colors hover:text-primary focus:text-primary focus:outline-none cursor-pointer"
-                      onClick={(e: React.MouseEvent) => {
-                        if (item.href.startsWith('#')) {
-                          e.preventDefault()
-                          smoothScrollTo(item.href)
-                        }
-                      }}
+
                     >
                       {item.name}
                     </SiteLink>
@@ -270,13 +252,7 @@ export function LandingNavbar() {
                                   key={solution.name}
                                   href={solution.href}
                                   className="flex items-center px-4 py-2 text-sm rounded-lg transition-colors hover:bg-accent hover:text-accent-foreground cursor-pointer"
-                                  onClick={(e) => {
-                                    setIsOpen(false)
-                                    if (solution.href.startsWith('#')) {
-                                      e.preventDefault()
-                                      setTimeout(() => smoothScrollTo(solution.href), 100)
-                                    }
-                                  }}
+                                  onClick={() => setIsOpen(false)}
                                 >
                                   {solution.name}
                                 </SiteLink>
@@ -295,13 +271,7 @@ export function LandingNavbar() {
                         <SiteLink
                           href={item.href}
                           className="flex items-center px-4 py-3 text-base font-medium rounded-lg transition-colors hover:bg-accent hover:text-accent-foreground cursor-pointer"
-                          onClick={(e) => {
-                            setIsOpen(false)
-                            if (item.href.startsWith('#')) {
-                              e.preventDefault()
-                              setTimeout(() => smoothScrollTo(item.href), 100)
-                            }
-                          }}
+                          onClick={() => setIsOpen(false)}
                         >
                           {item.name}
                         </SiteLink>
