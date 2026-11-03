@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from 'react'
+import { useRef, useState } from 'react'
 /*
   eslint-disable-next-line no-restricted-imports --
   공개 페이지 규칙의 의도적 예외다. 이 파일에서 next/link 로 남는 링크는
@@ -48,6 +48,7 @@ type MobileMenuEntry = { title: string; name?: undefined; href?: undefined }
 
 export function LandingNavbar() {
   const [isOpen, setIsOpen] = useState(false)
+  const pendingAnchor = useRef<HTMLElement | null>(null)
   // 화주/포워더 드롭다운을 각각 접었다 펼 수 있게 세그먼트별로 상태를 둔다
   const [openMenus, setOpenMenus] = useState<Record<string, boolean>>({})
   const { setTheme, theme } = useTheme()
@@ -182,7 +183,37 @@ export function LandingNavbar() {
               <span className="sr-only">Toggle menu</span>
             </Button>
           </SheetTrigger>
-          <SheetContent side="right" className="w-full sm:w-[400px] p-0 gap-0 [&>button]:hidden overflow-hidden flex flex-col">
+          <SheetContent
+            onClickCapture={(event) => {
+              // The journey capture handler already owns its downstream anchors when motion is on.
+              // This fallback also serves reduced motion and upstream anchors, after Sheet unlocks.
+              if (event.defaultPrevented || event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return
+              if (!(event.target instanceof Element)) return
+              const link = event.target.closest<HTMLAnchorElement>('a[href]')
+              if (!link || link.origin !== location.origin || link.pathname !== location.pathname || link.search !== location.search || !link.hash) return
+              if (link.hasAttribute('download') || (link.target && link.target.toLowerCase() !== '_self')) return
+              let target: HTMLElement | null
+              try { target = document.getElementById(decodeURIComponent(link.hash.slice(1))) } catch { return }
+              if (!target) return
+              event.preventDefault()
+              event.stopPropagation()
+              pendingAnchor.current = target
+              if (location.hash !== link.hash) history.pushState(null, '', link.hash)
+              setIsOpen(false)
+            }}
+            onCloseAutoFocus={(event) => {
+              const target = pendingAnchor.current
+              pendingAnchor.current = null
+              if (!target) return
+              event.preventDefault()
+              requestAnimationFrame(() => requestAnimationFrame(() => {
+                if (!target.isConnected) return
+                target.scrollIntoView({ behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'instant' : 'smooth', block: 'start' })
+                if (!target.hasAttribute('tabindex')) target.setAttribute('tabindex', '-1')
+                target.focus({ preventScroll: true })
+              }))
+            }}
+            side="right" className="w-full sm:w-[400px] p-0 gap-0 [&>button]:hidden overflow-hidden flex flex-col">
             <div className="flex flex-col h-full">
               {/* Header */}
               <SheetHeader className="space-y-0 p-4 pb-2 border-b">
