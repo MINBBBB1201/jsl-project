@@ -26,8 +26,8 @@ export function JourneyHeroMotion() {
         const horizon = root.querySelector<HTMLElement>(".journey-horizon");
         if (!hero || !orbit || !copy || !navigation || !stars || !horizon) return;
 
-        gsap.set(hero, { "--hero-wash-y": "110%" });
         gsap.set(horizon, { yPercent: 170 });
+        const wash = { y: 110 };
         const timeline = gsap.timeline({
           defaults: { ease: "none" },
           scrollTrigger: { trigger: root, start: "top top", end: "bottom bottom", scrub: 0.45, invalidateOnRefresh: true },
@@ -38,7 +38,9 @@ export function JourneyHeroMotion() {
           .to(copy, { yPercent: -16, clipPath: "inset(100% 0 0 0)", opacity: 0, duration: 0.34 }, 0.18)
           .to(navigation, { yPercent: -60, opacity: 0, duration: 0.25 }, 0.16)
           .to(horizon, { yPercent: 0, duration: 0.56 }, 0.36)
-          .to(hero, { "--hero-wash-y": "0%", duration: 0.54 }, 0.46);
+          // CSS 변수 문자열을 GSAP 가 직접 트윈하면 시작값이 refresh 뒤 사라지거나 되감을 때
+          // 0% 로 남아 위로 올려도 주황 막이 덮여 있었다. 숫자를 트윈하고 변수는 직접 쓴다.
+          .to(wash, { y: 0, duration: 0.54, onUpdate: () => hero.style.setProperty("--hero-wash-y", `${wash.y}%`) }, 0.46);
       }, root);
       ScrollTrigger.refresh();
     });

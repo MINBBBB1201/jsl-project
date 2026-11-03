@@ -1,0 +1,312 @@
+{
+  "base": "51da2816d0240a60e87e028794b9ebe2535367d6",
+  "method": "Real caller source transpiled in a vm sandbox with fetch/Response fixtures; hooks run once by a minimal runtime. No HTTP, React rendering, browser, AI call or data write.",
+  "before": {
+    "reproFailed": 47,
+    "reproPassed": 0,
+    "guardPassed": 43,
+    "guardFailed": 0
+  },
+  "after": {
+    "reproFailed": 0,
+    "reproPassed": 47,
+    "guardPassed": 43,
+    "guardFailed": 0
+  },
+  "failuresAfter": [],
+  "beforeRepro": [
+    {
+      "caller": "announcements",
+      "name": "common 400",
+      "passed": false,
+      "shown": "요청에 실패했습니다. (HTTP 400)"
+    },
+    {
+      "caller": "announcements",
+      "name": "common 403",
+      "passed": false,
+      "shown": "요청에 실패했습니다. (HTTP 403)"
+    },
+    {
+      "caller": "announcements",
+      "name": "common 404",
+      "passed": false,
+      "shown": "요청에 실패했습니다. (HTTP 404)"
+    },
+    {
+      "caller": "announcements",
+      "name": "common 413",
+      "passed": false,
+      "shown": "요청에 실패했습니다. (HTTP 413)"
+    },
+    {
+      "caller": "announcements",
+      "name": "common 500",
+      "passed": false,
+      "shown": "요청에 실패했습니다. (HTTP 500)"
+    },
+    {
+      "caller": "announcements",
+      "name": "object error uses fallback",
+      "passed": false,
+      "shown": "[object Object]"
+    },
+    {
+      "caller": "tradeApi",
+      "name": "common 400",
+      "passed": false,
+      "shown": "요청에 실패했습니다. (HTTP 400)"
+    },
+    {
+      "caller": "tradeApi",
+      "name": "common 403",
+      "passed": false,
+      "shown": "요청에 실패했습니다. (HTTP 403)"
+    },
+    {
+      "caller": "tradeApi",
+      "name": "common 404",
+      "passed": false,
+      "shown": "요청에 실패했습니다. (HTTP 404)"
+    },
+    {
+      "caller": "tradeApi",
+      "name": "common 413",
+      "passed": false,
+      "shown": "요청에 실패했습니다. (HTTP 413)"
+    },
+    {
+      "caller": "tradeApi",
+      "name": "common 500",
+      "passed": false,
+      "shown": "요청에 실패했습니다. (HTTP 500)"
+    },
+    {
+      "caller": "tradeApi",
+      "name": "object error uses fallback",
+      "passed": false,
+      "shown": "[object Object]"
+    },
+    {
+      "caller": "tradeDocumentDialog",
+      "name": "common 400",
+      "passed": false,
+      "shown": "화물 조회에 실패했습니다. (HTTP 400)"
+    },
+    {
+      "caller": "tradeDocumentDialog",
+      "name": "common 403",
+      "passed": false,
+      "shown": "화물 조회에 실패했습니다. (HTTP 403)"
+    },
+    {
+      "caller": "tradeDocumentDialog",
+      "name": "common 413",
+      "passed": false,
+      "shown": "화물 조회에 실패했습니다. (HTTP 413)"
+    },
+    {
+      "caller": "tradeDocumentDialog",
+      "name": "common 500",
+      "passed": false,
+      "shown": "화물 조회에 실패했습니다. (HTTP 500)"
+    },
+    {
+      "caller": "tradeDocumentDialog",
+      "name": "object error uses fallback",
+      "passed": false,
+      "shown": "[object Object]"
+    },
+    {
+      "caller": "tradeDocumentDialog",
+      "name": "first validation message",
+      "passed": false,
+      "shown": "화물 조회에 실패했습니다. (HTTP 422)"
+    },
+    {
+      "caller": "publicNotices",
+      "name": "common 400",
+      "passed": false,
+      "shown": "공지사항을 불러오지 못했습니다. (HTTP 400)"
+    },
+    {
+      "caller": "publicNotices",
+      "name": "common 403",
+      "passed": false,
+      "shown": "공지사항을 불러오지 못했습니다. (HTTP 403)"
+    },
+    {
+      "caller": "publicNotices",
+      "name": "common 404",
+      "passed": false,
+      "shown": "공지사항을 불러오지 못했습니다. (HTTP 404)"
+    },
+    {
+      "caller": "publicNotices",
+      "name": "common 413",
+      "passed": false,
+      "shown": "공지사항을 불러오지 못했습니다. (HTTP 413)"
+    },
+    {
+      "caller": "publicNotices",
+      "name": "common 500",
+      "passed": false,
+      "shown": "공지사항을 불러오지 못했습니다. (HTTP 500)"
+    },
+    {
+      "caller": "publicNotices",
+      "name": "object error uses fallback",
+      "passed": false,
+      "shown": {
+        "detail": "private fixture"
+      }
+    },
+    {
+      "caller": "publicNotices",
+      "name": "first validation message",
+      "passed": false,
+      "shown": "공지사항을 불러오지 못했습니다. (HTTP 422)"
+    },
+    {
+      "caller": "damageInspect",
+      "name": "common 400",
+      "passed": false,
+      "shown": "판정에 실패했습니다. (HTTP 400)"
+    },
+    {
+      "caller": "damageInspect",
+      "name": "common 403",
+      "passed": false,
+      "shown": "판정에 실패했습니다. (HTTP 403)"
+    },
+    {
+      "caller": "damageInspect",
+      "name": "common 404",
+      "passed": false,
+      "shown": "판정에 실패했습니다. (HTTP 404)"
+    },
+    {
+      "caller": "damageInspect",
+      "name": "common 413",
+      "passed": false,
+      "shown": "판정에 실패했습니다. (HTTP 413)"
+    },
+    {
+      "caller": "damageInspect",
+      "name": "common 500",
+      "passed": false,
+      "shown": "판정에 실패했습니다. (HTTP 500)"
+    },
+    {
+      "caller": "damageInspect",
+      "name": "object error uses fallback",
+      "passed": false,
+      "shown": {
+        "detail": "private fixture"
+      }
+    },
+    {
+      "caller": "damageInspect",
+      "name": "first validation message",
+      "passed": false,
+      "shown": "판정에 실패했습니다. (HTTP 422)"
+    },
+    {
+      "caller": "damageInspect",
+      "name": "rate limit common 429",
+      "passed": false,
+      "shown": "요청이 몰려 잠시 처리할 수 없습니다. 1분 후 다시 시도해 주세요."
+    },
+    {
+      "caller": "damageHistory",
+      "name": "common 400",
+      "passed": false,
+      "shown": "이력 조회에 실패했습니다. (HTTP 400)"
+    },
+    {
+      "caller": "damageHistory",
+      "name": "common 403",
+      "passed": false,
+      "shown": "이력 조회에 실패했습니다. (HTTP 403)"
+    },
+    {
+      "caller": "damageHistory",
+      "name": "common 404",
+      "passed": false,
+      "shown": "이력 조회에 실패했습니다. (HTTP 404)"
+    },
+    {
+      "caller": "damageHistory",
+      "name": "common 413",
+      "passed": false,
+      "shown": "이력 조회에 실패했습니다. (HTTP 413)"
+    },
+    {
+      "caller": "damageHistory",
+      "name": "common 500",
+      "passed": false,
+      "shown": "이력 조회에 실패했습니다. (HTTP 500)"
+    },
+    {
+      "caller": "damageHistory",
+      "name": "object error uses fallback",
+      "passed": false,
+      "shown": "[object Object]"
+    },
+    {
+      "caller": "damageHistory",
+      "name": "first validation message",
+      "passed": false,
+      "shown": "이력 조회에 실패했습니다. (HTTP 422)"
+    },
+    {
+      "caller": "aiChat",
+      "name": "common 400",
+      "passed": false,
+      "shown": "요청이 실패했습니다. (HTTP 400)"
+    },
+    {
+      "caller": "aiChat",
+      "name": "common 403",
+      "passed": false,
+      "shown": "요청이 실패했습니다. (HTTP 403)"
+    },
+    {
+      "caller": "aiChat",
+      "name": "common 404",
+      "passed": false,
+      "shown": "요청이 실패했습니다. (HTTP 404)"
+    },
+    {
+      "caller": "aiChat",
+      "name": "common 413",
+      "passed": false,
+      "shown": "요청이 실패했습니다. (HTTP 413)"
+    },
+    {
+      "caller": "aiChat",
+      "name": "common 500",
+      "passed": false,
+      "shown": "요청이 실패했습니다. (HTTP 500)"
+    },
+    {
+      "caller": "aiChat",
+      "name": "object error uses fallback",
+      "passed": false,
+      "shown": {
+        "detail": "private fixture"
+      }
+    },
+    {
+      "caller": "aiChat",
+      "name": "chat common 400 beats nothing",
+      "passed": false,
+      "shown": "요청이 실패했습니다. (HTTP 400)"
+    }
+  ],
+  "limits": [
+    "No React rendering: hooks run once with a minimal useState/useEffect runtime.",
+    "Import aliases and the API base are adapters; no real API or deployed request is tested.",
+    "The unexposed request/findShipment functions are reached through a test-only export on the transpiled copy."
+  ]
+}

@@ -637,6 +637,7 @@
     "title": "公告",
     "subtitle": "了解 JSL Logistics 的最新消息和公告事项。",
     "empty": "暂无公告。",
+    "errorLoad": "无法加载公告。请稍后重试。",
     "categories": {
       "general": "一般",
       "update": "更新",

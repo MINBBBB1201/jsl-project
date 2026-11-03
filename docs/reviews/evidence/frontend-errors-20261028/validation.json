@@ -1,0 +1,147 @@
+{
+  "dateLocal": "2026-10-28",
+  "timezone": "Asia/Shanghai",
+  "issue": 43,
+  "base": "c8c5489a662ae9aab354335483332116f1962072",
+  "sourceHeadAtExecution": null,
+  "uncommittedSourceAtExecution": true,
+  "hashAlgorithm": "SHA-256 of UTF-8 source after CRLF to LF normalization",
+  "sourceHashes": {
+    "frontend/src/lib/api-error.ts": "9cb342a23a0b5cdf07550f0567695ce44f8546dd4141f674561a1fe02146356b",
+    "frontend/src/lib/__tests__/api-error.test.ts": "6eb616b589ac1965caabadec4dc4192b6c8f5fc030d4bdfeb32eedb6d0ac162a",
+    "frontend/src/lib/auth.ts": "2d77fdb0018b17d5fe1cce15b11d663355c2fc35ff8ec57460ff878f9e01341f",
+    "frontend/src/app/(dashboard)/dashboard/use-async-resource.ts": "17cb52738a1cb347ae864b2974319c6feecbe0d3379d638e1b37ba1c7c93d9ff",
+    "frontend/src/app/[locale]/(public)/tracking/use-tracking.ts": "53445ee1fdfc9925215d99b0da34cfc26edd878f6b63bec813e9cda098e60da6",
+    "frontend/tsconfig.test.json": "61743eb76ae54dd7111d1313ea3a30611dd0be266b655bc6321b7079a2884f7b",
+    "tools/frontend-review/check-api-error-callers.cjs": "9d06283284b369598068c26d5b840b2701ac589be19dcf4bc067b892bfd871a5"
+  },
+  "units": {
+    "passed": 91,
+    "failed": 0,
+    "newHelperTests": 25,
+    "existingTests": 66,
+    "concurrency": 1,
+    "testTypeScriptCompilation": "passed"
+  },
+  "callerFixture": {
+    "baselineCommonMessagesVisible": 0,
+    "baselineCases": 10,
+    "currentCasesPassed": 20,
+    "results": [
+      {
+        "name": "auth fixed public 400",
+        "passed": true
+      },
+      {
+        "name": "dashboard fixed public 400",
+        "passed": true
+      },
+      {
+        "name": "auth fixed public 403",
+        "passed": true
+      },
+      {
+        "name": "dashboard fixed public 403",
+        "passed": true
+      },
+      {
+        "name": "auth fixed public 404",
+        "passed": true
+      },
+      {
+        "name": "dashboard fixed public 404",
+        "passed": true
+      },
+      {
+        "name": "auth fixed public 413",
+        "passed": true
+      },
+      {
+        "name": "dashboard fixed public 413",
+        "passed": true
+      },
+      {
+        "name": "auth fixed public 500",
+        "passed": true
+      },
+      {
+        "name": "dashboard fixed public 500",
+        "passed": true
+      },
+      {
+        "name": "auth legacy error",
+        "passed": true
+      },
+      {
+        "name": "auth HTML fallback",
+        "passed": true
+      },
+      {
+        "name": "auth empty fallback",
+        "passed": true
+      },
+      {
+        "name": "dashboard legacy error",
+        "passed": true
+      },
+      {
+        "name": "dashboard HTML fallback",
+        "passed": true
+      },
+      {
+        "name": "dashboard empty fallback",
+        "passed": true
+      },
+      {
+        "name": "auth success still unwraps data",
+        "passed": true
+      },
+      {
+        "name": "dashboard success keeps envelope",
+        "passed": true
+      },
+      {
+        "name": "auth failure code and cookie clearing preserved in fixture DOM",
+        "passed": true
+      },
+      {
+        "name": "auth application failure on HTTP 200 preserved",
+        "passed": true
+      }
+    ],
+    "method": "Actual apiFetch and exported dashboard request source, TypeScript transpilation and import adapters; fetch/DOM fixtures only, no HTTP or React rendering.",
+    "limits": [
+      "Tracking hook not mounted or executed; no actual React UI, browser, network, cookie persistence or deployed request tested.",
+      "Import aliases/API base and unused React imports are adapters; auth/caller response logic is loaded from actual source."
+    ]
+  },
+  "checks": {
+    "eslintChangedTs5": "passed",
+    "typeCheckChangedProductionTs4": "passed",
+    "fullFrontendTypeCheck": "incomplete: Node 512MB heap exhausted; not a passed type check",
+    "nextProductionBuild": "not run; local memory/disk pressure",
+    "installedDependenciesReused": true,
+    "dependenciesInstalled": false,
+    "lockfileChanged": false
+  },
+  "review": {
+    "differentCompany": "pending",
+    "humanGitHubApproval": false
+  },
+  "scope": {
+    "frontendErrorSelectionOnly": true,
+    "authSuccessAndCodeHandlingPreserved": true,
+    "designChanged": false,
+    "backendChanged": false,
+    "contactContractChanged": false,
+    "productionHttpSent": false,
+    "merged": false,
+    "deployed": false
+  },
+  "limits": [
+    "Actual tracking hook not mounted; no React component or actual browser verification of this unmerged change.",
+    "Fetch, document and unused framework imports are test adapters, not real cookies or network.",
+    "Selected message fields are publicly supplied by the backend; this is not an audit of every backend message.",
+    "Existing dependencies reused, not clean npm ci; full frontend types/build remain unverified."
+  ]
+}

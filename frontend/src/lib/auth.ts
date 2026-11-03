@@ -1,4 +1,5 @@
 import { API_BASE_URL } from "@/lib/api"
+import { getApiErrorMessage } from "@/lib/api-error"
 
 /**
  * 로그인 상태 관리 (클라이언트 측)
@@ -20,6 +21,7 @@ export type Role = "admin" | "operations" | "sales"
 export interface AuthUser {
   id: string
   email: string
+  username?: string
   name: string
   role: Role
 }
@@ -105,7 +107,7 @@ export async function apiFetch<T = unknown>(
     if (code && AUTH_FAILURE_CODES.includes(code)) clearToken()
 
     throw new ApiError(
-      json?.error ?? json?.errors?.[0]?.msg ?? `요청에 실패했습니다. (HTTP ${res.status})`,
+      getApiErrorMessage(json, `요청에 실패했습니다. (HTTP ${res.status})`),
       res.status,
       code
     )

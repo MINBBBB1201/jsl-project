@@ -637,6 +637,7 @@
     "title": "Thông báo",
     "subtitle": "Cập nhật tin tức và thông báo mới nhất từ JSL Logistics.",
     "empty": "Chưa có thông báo nào được đăng.",
+    "errorLoad": "Không tải được thông báo. Vui lòng thử lại sau.",
     "categories": {
       "general": "Chung",
       "update": "Cập nhật",

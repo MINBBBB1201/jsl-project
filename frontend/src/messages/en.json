@@ -637,6 +637,7 @@
     "title": "Notices",
     "subtitle": "Stay up to date with the latest news and announcements from JSL Logistics.",
     "empty": "No notices have been posted yet.",
+    "errorLoad": "Couldn't load notices. Please try again shortly.",
     "categories": {
       "general": "General",
       "update": "Update",

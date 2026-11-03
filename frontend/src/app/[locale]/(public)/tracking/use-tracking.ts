@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useState } from "react"
 import { useTranslations } from "next-intl"
 import { API_BASE_URL } from "@/lib/api"
+import { getApiErrorMessage } from "@/lib/api-error"
 import type { RiskLevel, TransportMode } from "@/lib/transport-modes"
 
 export interface TrackedShipment {
@@ -63,12 +64,15 @@ export function useTracking() {
   const [shipment, setShipment] = useState<TrackedShipment | null>(null)
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
+  // 결과 없음과 연결 실패는 제목이 다르다. 연결 실패에 "조회 결과가 없습니다"를 띄우면 잘못 안내한다.
+  const [errorKind, setErrorKind] = useState<"input" | "notFound" | "network" | null>(null)
   const [searched, setSearched] = useState(false)
 
   const track = useCallback(async (trackingNumber: string) => {
     const trimmed = trackingNumber.trim()
     if (!trimmed) {
       setError(t("errorEmpty"))
+      setErrorKind("input")
       setShipment(null)
       setSearched(true)
       return
@@ -76,6 +80,7 @@ export function useTracking() {
 
     setIsLoading(true)
     setError(null)
+    setErrorKind(null)
     setShipment(null)
 
     try {
@@ -85,24 +90,23 @@ export function useTracking() {
       const json = await res.json().catch(() => null)
 
       if (!res.ok || !json?.success) {
-        setError(
-          json?.error ??
-            json?.errors?.[0]?.msg ??
-            `조회에 실패했습니다. (HTTP ${res.status})`
-        )
+        const notFound = res.status === 404
+        setErrorKind(notFound ? "notFound" : "network")
+        setError(getApiErrorMessage(json, notFound ? t("notFoundTitle") : t("errorNetwork")))
         return
       }
 
       setShipment(json.data as TrackedShipment)
     } catch (err) {
-      setError(
-        err instanceof Error ? `${t("errorNetwork")} (${err.message})` : t("errorNetwork")
-      )
+      // 브라우저 예외 문구(Failed to fetch 등)는 방문자에게 보이지 않는다.
+      console.error(err)
+      setErrorKind("network")
+      setError(t("errorNetwork"))
     } finally {
       setIsLoading(false)
       setSearched(true)
     }
   }, [t])
 
-  return { shipment, isLoading, error, searched, track }
+  return { shipment, isLoading, error, errorKind, searched, track }
 }

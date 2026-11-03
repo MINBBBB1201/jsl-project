@@ -637,6 +637,7 @@
     "title": "공지사항",
     "subtitle": "JSL Logistics의 새로운 소식과 안내사항을 확인하세요.",
     "empty": "등록된 공지사항이 없습니다.",
+    "errorLoad": "공지사항을 불러오지 못했습니다. 잠시 후 다시 시도해 주세요.",
     "categories": {
       "general": "일반",
       "update": "업데이트",

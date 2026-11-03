@@ -3,10 +3,10 @@
 import { useState } from "react"
 import { LandingNavbar } from "./components/navbar"
 import { FeaturesSection } from "./components/features-section"
-import { AboutSection } from "./components/about-section"
+import { ApprovedCompanySection } from "./components/approved-company-section"
 import { CertificationsBar } from "./components/certifications-bar"
 import { ConsultingSection } from "./components/consulting-section"
-import { NetworkSection } from "./components/network-section"
+import { ApprovedNetworkInfo } from "./components/approved-network-section"
 import { PricingSection } from "./components/pricing-section"
 import { OpsStatusSection } from "./components/ops-status-section"
 import { StatsSection } from "./components/stats-section"
@@ -15,7 +15,7 @@ import { CTASection } from "./components/cta-section"
 import { ContactSection } from "./components/contact-section"
 import { LandingFooter } from "./components/footer"
 import { LandingThemeCustomizer, LandingThemeCustomizerTrigger } from "./components/landing-theme-customizer"
-import { JourneyIntro, JourneyYard, JourneyOcean, JourneyPartners, JourneyCta, JourneyPlane, JourneyProgressRail, useJourneyMotion } from "./components/journey-sections"
+import { JourneyIntro, JourneyOcean, JourneyPartners, JourneyCta, JourneyPlane, JourneyProgressRail, useJourneyMotion } from "./components/journey-sections"
 import { MultimodalJourney } from "./components/multimodal-journey"
 import { JourneyHeroMotion } from "./components/journey-hero-motion"
 import "./journey.css"
@@ -29,14 +29,16 @@ export function LandingPageContent() {
     <JourneyProgressRail />
     <main>
       <JourneyHeroMotion />
-      <JourneyIntro />
-      <JourneyYard />
+      <JourneyIntro index={1} total={11} />
+      {/* 리치스태커·컨테이너 장비 장면(JourneyYard)은 2026-10-30 사용자 요청으로 이번 흐름에서 건너뛴다. 소스는 다른 장면 자리로 보관한다. */}
       <MultimodalJourney />
       <div className="journey-services journey-dark"><FeaturesSection onlyValueAdded /></div>
       <JourneyOcean />
-      <div className="journey-network journey-editorial"><NetworkSection /></div>
+      <ApprovedNetworkInfo />
       <JourneyPlane />
-      <div className="journey-about journey-editorial"><AboutSection /><CertificationsBar /></div>
+      <ApprovedCompanySection previewMedia={process.env.NODE_ENV === "development" ? "/assembly-review/connected-scroll/media/company-reference-9s.jpg" : undefined} />
+      {process.env.NODE_ENV === "development" && <p className="px-6 py-3 text-sm">회사소개 이미지는 구도 확인용 외부 참고 매체이며, JSL 현장 또는 운영 배포용 자산이 아닙니다.</p>}
+      <div className="journey-about journey-editorial"><CertificationsBar /></div>
       <JourneyPartners />
       <div className="journey-consulting journey-editorial"><ConsultingSection /></div>
       <div className="journey-operations journey-dark journey-editorial"><OpsStatusSection /><StatsSection /></div>
@@ -45,7 +47,7 @@ export function LandingPageContent() {
       <JourneyCta />
       <div className="journey-contact journey-editorial"><CTASection /><ContactSection /></div>
     </main>
-    <div className="journey-footer"><LandingFooter /><div className="journey-wordmark" aria-hidden="true">JSL LOGISTICS</div></div>
+    <div className="journey-footer"><LandingFooter logoSurface="light" /><div className="journey-wordmark" aria-hidden="true">JSL LOGISTICS</div></div>
     <LandingThemeCustomizerTrigger onClick={() => setCustomizerOpen(true)} />
     <LandingThemeCustomizer open={customizerOpen} onOpenChange={setCustomizerOpen}/>
   </div>

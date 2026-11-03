@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useState } from "react"
 import { API_BASE_URL } from "@/lib/api"
+import { getApiErrorMessage } from "@/lib/api-error"
 import { authHeaders } from "@/lib/auth"
 
 export type DamageType = "찌그러짐" | "파손" | "젖음" | "포장손상" | "해당없음"
@@ -97,12 +98,14 @@ export function useDamageInspection() {
         if (res.status === 429) {
           setIsRateLimited(true)
           setError(
-            json?.error ??
+            getApiErrorMessage(
+              json,
               "요청이 몰려 잠시 처리할 수 없습니다. 1분 후 다시 시도해 주세요."
+            )
           )
           return null
         }
-        setError(json?.error ?? `판정에 실패했습니다. (HTTP ${res.status})`)
+        setError(getApiErrorMessage(json, `판정에 실패했습니다. (HTTP ${res.status})`))
         return null
       }
 
@@ -142,7 +145,7 @@ export function useInspectionHistory(limit = 8) {
     )
     const json = await res.json().catch(() => null)
     if (!res.ok || !json?.success) {
-      throw new Error(json?.error ?? `이력 조회에 실패했습니다. (HTTP ${res.status})`)
+      throw new Error(getApiErrorMessage(json, `이력 조회에 실패했습니다. (HTTP ${res.status})`))
     }
     return json.data as Inspection[]
   }, [limit])

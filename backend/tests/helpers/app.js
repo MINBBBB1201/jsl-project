@@ -9,7 +9,10 @@
 const express = require("express");
 
 const { checkDbConnection } = require("../../src/middleware/db.middleware");
-const { errorHandler } = require("../../src/middleware/error.middleware");
+const {
+  notFoundHandler,
+  errorHandler,
+} = require("../../src/middleware/error.middleware");
 const shipmentRoutes = require("../../src/routes/shipment.routes");
 const tradeDocumentRoutes = require("../../src/routes/trade-document.routes");
 const noticeRoutes = require("../../src/routes/notice.routes");
@@ -20,9 +23,7 @@ function buildApp() {
   app.use("/api/shipments", checkDbConnection, shipmentRoutes);
   app.use("/api/trade-documents", checkDbConnection, tradeDocumentRoutes);
   app.use("/api/notices", checkDbConnection, noticeRoutes);
-  app.all("*", (req, res, next) =>
-    next(new Error(`Can't find ${req.originalUrl}`)),
-  );
+  app.use(notFoundHandler);
   app.use(errorHandler);
   return app;
 }
