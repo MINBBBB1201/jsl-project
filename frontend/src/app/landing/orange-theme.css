@@ -1,0 +1,99 @@
+/* Approved globe-led landing palette. Scope includes only this landing and its portaled menu. */
+:is(.journey--orange, [data-jsl-landing-menu="orange"]) {
+  --jsl-night:#17100b;
+  --jsl-panel:#1e1712;
+  --jsl-paper:#f3efe7;
+  --jsl-ink:#28221c;
+  --jsl-muted:#6e6459;
+  --jsl-rule:#c8beb1;
+  --jsl-orange:#ff7a22;
+  --jsl-orange-text:#a63f07;
+}
+.journey.journey--orange {
+  --background:var(--jsl-paper);--foreground:var(--jsl-ink);
+  --card:var(--jsl-paper);--card-foreground:var(--jsl-ink);
+  --muted:#e7e0d5;--muted-foreground:var(--jsl-muted);--border:var(--jsl-rule);
+  --primary:var(--jsl-orange-text);--primary-foreground:#fff;
+  --brand-cta:var(--jsl-orange);--brand-cta-foreground:var(--jsl-night);
+  --brand-orange:var(--jsl-orange);--brand-orange-deep:#c9540a;
+  background:var(--jsl-paper);color:var(--jsl-ink);
+}
+:is(.journey--orange, [data-jsl-landing-menu="orange"]) ::selection{background:#ff7a22;color:#17100b}
+:is(.journey--orange, [data-jsl-landing-menu="orange"]) :is(a,button,input,textarea):focus-visible{outline:2px solid var(--jsl-orange);outline-offset:4px}
+/* One familiar primary action, from the globe to the form. Hero composition is intact. */
+.journey--orange .journey-hero .journey-actions .journey-pill:not(.journey-pill-outline){background:var(--jsl-orange);color:var(--jsl-night)}
+.journey--orange .journey-hero .journey-actions .journey-pill-outline{border-color:#8e7c6c;color:var(--jsl-paper)}
+.journey--orange .journey-hero-description{color:#d1c5b8}
+/* Portaled navigation shares the globe's warm dark surface, not the app UI's cool card. */
+[data-jsl-landing-menu="orange"]{
+  background:var(--jsl-night);color:var(--jsl-paper);border:0;box-shadow:none;
+  --background:var(--jsl-night);--foreground:var(--jsl-paper);
+  --primary:var(--jsl-orange);--primary-foreground:var(--jsl-night);
+  --muted:#30251d;--muted-foreground:#bcad9d;--accent:#30251d;
+  --accent-foreground:var(--jsl-paper);--border:#4b3a2d;
+}
+[data-jsl-landing-menu="orange"] [data-slot=sheet-header]{padding:24px 24px 18px;border-color:#4b3a2d}
+[data-jsl-landing-menu="orange"] [data-slot=sheet-title]{font-size:15px;font-weight:550;letter-spacing:.01em;color:var(--jsl-paper)}
+[data-jsl-landing-menu="orange"] [data-slot=sheet-header] button{color:var(--jsl-paper);background:transparent;border:0;border-radius:0;box-shadow:none}
+[data-jsl-landing-menu="orange"] [data-slot=sheet-header] button:hover{color:var(--jsl-orange)}
+[data-jsl-landing-menu="orange"] nav{padding:20px 24px}
+[data-jsl-landing-menu="orange"] nav>div{border-bottom:1px solid #3a2c22;margin:0}
+[data-jsl-landing-menu="orange"] nav>div:last-child{border-bottom:0}
+[data-jsl-landing-menu="orange"] nav>div>a,
+[data-jsl-landing-menu="orange"] nav>div>[data-slot=collapsible]>button{
+  padding:11px 0;min-height:48px;font-size:26px;font-weight:450;letter-spacing:-.02em;line-height:1.12;border-radius:0;background:transparent;
+}
+[data-jsl-landing-menu="orange"] nav a:hover,
+[data-jsl-landing-menu="orange"] nav button:hover{color:var(--jsl-orange);background:transparent}
+[data-jsl-landing-menu="orange"] nav [data-slot=collapsible-content]{padding-left:0}
+[data-jsl-landing-menu="orange"] nav [data-slot=collapsible-content] a{padding-left:0;border-radius:0}
+[data-jsl-landing-menu="orange"] nav [data-slot=collapsible-content] p{color:#bcad9d}
+[data-jsl-landing-menu="orange"] .border-t{border-color:#4b3a2d}
+[data-jsl-landing-menu="orange"] .border-t.p-6{padding:20px 24px 24px}
+[data-jsl-landing-menu="orange"] .border-t a{border-radius:2px;box-shadow:none;background:transparent;color:var(--jsl-paper);border-color:#66503d}
+[data-jsl-landing-menu="orange"] .border-t a[href='#contact']{background:var(--jsl-orange);color:var(--jsl-night);border-color:var(--jsl-orange)}
+/* Desktop mega menu uses the same navigation surface. */
+.journey--orange [data-slot=navigation-menu-content]{background:var(--jsl-night);color:var(--jsl-paper);--foreground:var(--jsl-paper);--muted-foreground:#bcad9d;--accent:#30251d;--accent-foreground:var(--jsl-paper);--border:#4b3a2d;--primary:var(--jsl-orange);border-color:#4b3a2d;box-shadow:none;border-radius:2px}
+.journey--orange [data-slot=navigation-menu-content] a{border-radius:0}
+.journey--orange [data-slot=navigation-menu-content] .text-primary{color:var(--jsl-orange)}
+/* Reading surfaces are paper, with warm ink rather than blue-grey. */
+.journey--orange .jsl-an{
+ --jsl-an-paper:var(--jsl-paper);--jsl-an-ink:var(--jsl-ink);--jsl-an-muted:var(--jsl-muted);
+ --jsl-an-accent:var(--jsl-orange);--jsl-an-accent-text:var(--jsl-orange-text);--jsl-an-rule:var(--jsl-rule);
+ background:var(--jsl-paper);color:var(--jsl-ink);
+}
+.journey--orange .jsl-an__locations{background:var(--jsl-paper)}
+.journey--orange .jsl-an__row{border-color:var(--jsl-rule)}
+.journey--orange .jsl-an__row :is(p,small){color:var(--jsl-muted)}
+.journey--orange .jsl-an__row h3{color:var(--jsl-ink)}
+.journey--orange .jsl-an__total{color:var(--jsl-orange-text)}
+.journey--orange .journey-contact,
+.journey--orange .journey-contact #contact{background:var(--jsl-paper);color:var(--jsl-ink)}
+.journey--orange .journey-contact [data-slot=card]{background:transparent;color:var(--jsl-ink);box-shadow:none}
+.journey--orange .journey-contact .text-muted-foreground{color:var(--jsl-muted)}
+.journey--orange .journey-contact :is(input,textarea){background:transparent;color:var(--jsl-ink);border-color:#938474;border-radius:0;box-shadow:none;caret-color:var(--jsl-orange-text)}
+.journey--orange .journey-contact :is(input,textarea)::placeholder{color:var(--jsl-muted);opacity:1}
+.journey--orange .journey-contact button[type=submit]{background:var(--jsl-orange);color:var(--jsl-night);border-radius:2px}
+.journey--orange .journey-contact input:focus,
+.journey--orange .journey-contact textarea:focus{border-color:var(--jsl-orange-text);box-shadow:none}
+.journey--orange .jsl-ac{--jsl-ac-detail-bg:var(--jsl-paper);--jsl-ac-detail-ink:var(--jsl-ink);--jsl-ac-orange:var(--jsl-orange)}
+.journey--orange .jsl-ac__scene{background:var(--jsl-night)}
+.journey--orange .jsl-ac__scene:not(.jsl-ac__scene--media) .jsl-ac__shade{background:none}
+.journey--orange .journey-footer{background:var(--jsl-paper);color:var(--jsl-ink)}
+@media(max-width:380px){[data-jsl-landing-menu="orange"] nav>div>a,[data-jsl-landing-menu="orange"] nav>div>[data-slot=collapsible]>button{font-size:24px}}
+/* Real LogoWordmark renders both existing assets; this dark menu fixes their surface variant. */
+[data-jsl-landing-menu="orange"] [data-slot=sheet-title]{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip-path:inset(50%);white-space:nowrap;border:0}
+[data-jsl-landing-menu="orange"] a:focus-visible,
+[data-jsl-landing-menu="orange"] button:focus-visible{outline:2px solid var(--jsl-orange);outline-offset:4px;box-shadow:none}
+.journey--orange [data-slot=navigation-menu-content]{--background:var(--jsl-night);--popover:var(--jsl-night);--popover-foreground:var(--jsl-paper)}
+.journey--orange [data-slot=navigation-menu-content]>.bg-background{background:var(--jsl-night)}
+.journey--orange>header [data-slot=navigation-menu-content] .text-foreground{color:var(--jsl-paper)!important}
+.journey--orange>header [data-slot=navigation-menu-content] .text-muted-foreground{color:#bcad9d!important}
+.journey--orange [data-slot=navigation-menu-viewport]{background:var(--jsl-night);color:var(--jsl-paper);border-color:#66503d;border-radius:2px;box-shadow:none}
+.journey--orange [data-slot=navigation-menu-trigger][data-state=open]{background:#30251d;color:var(--jsl-orange)}
+@media(min-width:1728px){.journey--orange .journey-hero-navigation{display:none}}
+[data-jsl-landing-menu="orange"] {font-family:var(--font-general-sans),"Pretendard",sans-serif}
+[data-jsl-landing-menu="orange"] .jsl-menu-wordmark {width:52px;height:40px;object-fit:contain}
+[data-jsl-landing-menu="orange"] .jsl-menu-wordmark[src*="wordmark-light"] {display:none}
+[data-jsl-landing-menu="orange"] .jsl-menu-wordmark[src*="wordmark-dark"] {display:block}
+

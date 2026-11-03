@@ -19,13 +19,14 @@ import { JourneyIntro, JourneyOcean, JourneyPartners, JourneyCta, JourneyPlane, 
 import { MultimodalJourney } from "./components/multimodal-journey"
 import { JourneyHeroMotion } from "./components/journey-hero-motion"
 import "./journey.css"
+import "./orange-theme.css"
 
 /** Visual composition only. API clients, translations, forms and internal layouts stay independent. */
 export function LandingPageContent() {
   const [customizerOpen, setCustomizerOpen] = useState(false)
   const ref = useJourneyMotion()
-  return <div className="journey" ref={ref}>
-    <LandingNavbar />
+  return <div className="journey journey--orange" ref={ref}>
+    <LandingNavbar orangeTheme />
     <JourneyProgressRail />
     <main>
       <JourneyHeroMotion />

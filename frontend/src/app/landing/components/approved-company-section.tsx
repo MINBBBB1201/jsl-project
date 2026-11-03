@@ -9,7 +9,7 @@ import "./approved-company.css"
  * 승인된 회사소개 장면 — 화면 대부분을 차지하는 현장 매체 위로 큰 제목이 가로지르는 구도.
  *
  * 원본: design-direction-20261024/connected-scroll/company-frame.html + trust-pilot/scene.css.
- * 문구는 전부 useContent().about 의 번역 값을 쓴다. 매체는 previewMedia 가 있을 때만
+ * 브랜드 제목은 승인 초안 문구를 유지하고, 설명·가치·CTA는 about 번역 값을 쓴다. 매체는 previewMedia 가 있을 때만
  * 보여 주며, 없거나 불러오지 못해도 아래 상세 영역의 본문·가치·CTA 는 그대로 읽힌다.
  * 인증 정보는 바깥의 CertificationsBar 가 표시하므로 여기서 다시 그리지 않는다.
  */
@@ -53,12 +53,14 @@ export function ApprovedCompanySection({ previewMedia }: { previewMedia?: string
           JSL LOGISTICS <span aria-hidden="true">/</span> {about.badge}
         </p>
         <h2 id="jsl-ac-title" className="jsl-ac__title">
-          {about.title}
+          <span lang="en">Every move.</span>{" "}
+          <em lang="en">One JSL.</em>
         </h2>
         <div className="jsl-ac__wordmark" aria-hidden="true">
           JSL
         </div>
         <div className="jsl-ac__foot">
+          <p className="jsl-ac__summary">{about.title}</p>
           <a href="#about-detail" className="jsl-ac__link">
             {about.valuesTitle} <span aria-hidden="true">↘</span>
           </a>

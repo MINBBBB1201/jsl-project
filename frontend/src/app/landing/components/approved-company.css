@@ -50,20 +50,21 @@
   text-shadow: 0 1px 5px #08111a;
 }
 .jsl-ac__label span { margin: 0 14px; }
-/* 원본은 영문 두 단어를 한 줄로 고정했다. 번역 제목은 길이가 달라 줄바꿈을 허용한다. */
+/* 승인 초안의 브랜드 제목과 주황 강조를 유지한다. 번역 제목은 하단에 표시한다. */
 .jsl-ac__title {
   position: absolute;
   left: 3.8%;
   right: 4%;
-  top: 30%;
+  top: 33%;
   margin: 0;
-  font-size: clamp(52px, 6.6cqw, 128px);
+  font-size: clamp(64px, 9.55cqw, 180px);
   font-weight: 400;
   line-height: 1.04;
   letter-spacing: -.05em;
-  text-wrap: balance;
+  white-space: nowrap;
   text-shadow: 0 1px 8px rgba(8,17,26,.35);
 }
+.jsl-ac__title em { font-style: normal; color: var(--jsl-ac-orange); }
 .jsl-ac__wordmark {
   position: absolute;
   top: 60%;
@@ -76,7 +77,8 @@
   letter-spacing: -.09em;
   user-select: none;
 }
-.jsl-ac__foot { position: absolute; bottom: 5%; left: 4.3%; right: 4.3%; display: flex; justify-content: flex-end; }
+.jsl-ac__foot { position: absolute; bottom: 5%; left: 4.3%; right: 4.3%; display: flex; align-items: flex-end; gap: 24px; justify-content: space-between; }
+.jsl-ac__summary { margin: 0; max-width: 390px; font-size: 15px; line-height: 1.55; text-wrap: balance; }
 .jsl-ac__link { padding-bottom: 7px; border-bottom: 1px solid rgba(255,255,255,.6); font-size: 13px; white-space: nowrap; }
 .jsl-ac__link span { margin-left: 40px; font-size: 20px; }
 
@@ -125,10 +127,12 @@
   }
   .jsl-ac__label { left: 7%; font-size: 11px; letter-spacing: .1em; }
   .jsl-ac__label span { margin: 0 8px; }
-  .jsl-ac__title { left: 6%; right: 6%; top: 29%; font-size: 12cqw; line-height: 1.05; letter-spacing: -.055em; }
-  .jsl-ac__wordmark { top: 60%; font-size: 43cqw; }
-  .jsl-ac__foot { left: 7%; right: 7%; bottom: 6%; justify-content: flex-start; }
-  .jsl-ac__link { font-size: 12px; }
+  .jsl-ac__title { left: 6%; right: 6%; top: 31%; font-size: 15.3cqw; white-space: normal; line-height: 1.05; letter-spacing: -.055em; }
+  .jsl-ac__title span, .jsl-ac__title em { display: block; white-space: nowrap; }
+  .jsl-ac__wordmark { top: 57%; font-size: 43cqw; }
+  .jsl-ac__foot { left: 7%; right: 7%; bottom: 6%; display: block; }
+  .jsl-ac__summary { font-size: 13px; }
+  .jsl-ac__link { display: inline-block; margin-top: 23px; font-size: 12px; }
   .jsl-ac__link span { margin-left: 28px; font-size: 17px; }
   .jsl-ac__detail { display: block; padding: 50px 7%; }
   .jsl-ac__values-title { margin-top: 36px; }
@@ -141,6 +145,6 @@
 @media (max-height: 700px) and (min-width: 701px) {
   .jsl-ac__scene { min-height: 560px; }
   .jsl-ac__label { top: 18%; }
-  .jsl-ac__title { top: 27%; font-size: min(5.6cqw, 96px); }
+  .jsl-ac__title { top: 27%; font-size: min(9.55cqw, 128px); }
   .jsl-ac__wordmark { top: 58%; font-size: 14cqw; }
 }

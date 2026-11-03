@@ -153,28 +153,58 @@ export function MultimodalJourney() {
     }, { rootMargin: "150% 0px" })
     near.observe(element)
 
-    // Loading mid-scroll inserts the pin spacer and cuts a smooth anchor scroll short, so anchors
-    // to this section load first and scroll once the layout has settled.
+    // Resolve downstream anchors before loading, then measure again after the pin spacer exists.
+    // Otherwise a late engine load changes page height halfway through native smooth scrolling.
     const anchors = new Set(["#features", "#cargo-journey"])
-    const goHere = () => void ensure().then(() => {
-      if (cancelled) return
-      window.scrollTo({ top: element.getBoundingClientRect().top + window.scrollY, behavior: "smooth" })
-      // Keyboard and screen-reader position follow the scroll instead of staying on the link.
-      focusQuietly(element)
-    })
-    const onAnchorClick = (event: MouseEvent) => {
-      const link = (event.target as Element).closest<HTMLAnchorElement>("a[href]")
-      if (!link || link.origin !== window.location.origin || link.pathname !== window.location.pathname || !anchors.has(link.hash)) return
-      event.preventDefault()
-      history.pushState(null, "", link.hash)
-      goHere()
+    const anchorTarget = (hash: string): HTMLElement | null => {
+      if (anchors.has(hash)) return element
+      if (!hash || hash === "#") return null
+      let target: HTMLElement | null
+      try { target = document.getElementById(decodeURIComponent(hash.slice(1))) }
+      catch { return null }
+      if (!target || element.contains(target)) return null
+      return element.compareDocumentPosition(target) & Node.DOCUMENT_POSITION_FOLLOWING ? target : null
     }
-    document.addEventListener("click", onAnchorClick)
-    if (anchors.has(window.location.hash)) goHere()
+    let navigation = 0
+    const goHere = (hash: string, sheet?: Element | null) => {
+      const request = ++navigation
+      void ensure().then(async () => {
+        // Radix keeps the closing sheet and its scroll lock mounted through its exit animation.
+        // Wait for actual removal, not a guessed timeout, then let focus/lock cleanup finish.
+        while (sheet?.isConnected) {
+          if (cancelled || request !== navigation) return
+          await new Promise<void>(resolve => requestAnimationFrame(() => resolve()))
+        }
+        if (sheet) {
+          await new Promise<void>(resolve => requestAnimationFrame(() => requestAnimationFrame(() => resolve())))
+        }
+        if (cancelled || request !== navigation) return
+        const target = anchorTarget(hash)
+        if (!target?.isConnected) return
+        window.scrollTo({ top: target.getBoundingClientRect().top + window.scrollY, behavior: "smooth" })
+        focusQuietly(target)
+      })
+    }
+    const onAnchorClick = (event: MouseEvent) => {
+      if (event.defaultPrevented || event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return
+      if (!(event.target instanceof Element)) return
+      const link = event.target.closest<HTMLAnchorElement>("a[href]")
+      if (!link || link.origin !== window.location.origin || link.pathname !== window.location.pathname || link.search !== window.location.search) return
+      if (link.hasAttribute("download") || (link.target && link.target.toLowerCase() !== "_self")) return
+      // A newer native anchor navigation must also cancel an older pending engine navigation.
+      ++navigation
+      if (!anchorTarget(link.hash)) return
+      event.preventDefault()
+      if (window.location.hash !== link.hash) history.pushState(null, "", link.hash)
+      goHere(link.hash, link.closest('[data-slot="sheet-content"]'))
+    }
+    // Capture before React/Next Link consumes same-document anchor navigation.
+    document.addEventListener("click", onAnchorClick, true)
+    if (anchorTarget(window.location.hash)) goHere(window.location.hash)
     return () => {
       cancelled = true
       near.disconnect()
-      document.removeEventListener("click", onAnchorClick)
+      document.removeEventListener("click", onAnchorClick, true)
       for (const run of teardown.splice(0)) run()
     }
   }, [reduced])
