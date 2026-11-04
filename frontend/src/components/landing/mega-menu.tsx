@@ -16,8 +16,14 @@ export function MegaMenu({ audience }: { audience: MegaMenuAudience }) {
   const { navigation } = useContent()
   const menu = navigation.megaMenus[audience]
 
+  /*
+    화주 메뉴는 설명이 길어 1800×1000 에서도 패널이 화면 아래로 넘쳤고, 뷰포트(Radix)가
+    overflow:hidden 이라 마지막 링크에 닿으려면 페이지를 내려야 했다. 패널 높이를 화면 높이에
+    맞춰 묶고 안에서 스크롤한다. 7.5rem 은 헤더 아래 패널 시작점(약 100px)과 하단 여백이다.
+    overscroll-contain 으로 끝까지 굴려도 뒤의 페이지가 따라 움직이지 않게 한다.
+  */
   return (
-    <div className="w-[700px] max-w-[95vw] bg-background p-4 sm:p-6 lg:p-8">
+    <div className="w-[700px] max-w-[95vw] max-h-[calc(100dvh-7.5rem)] overflow-y-auto overscroll-contain scroll-py-6 bg-background p-4 sm:p-6 lg:p-8">
       {/* 세그먼트 안내 */}
       <div className="mb-6 border-b pb-4">
         <p className="text-base font-semibold text-foreground">{menu.question}</p>
