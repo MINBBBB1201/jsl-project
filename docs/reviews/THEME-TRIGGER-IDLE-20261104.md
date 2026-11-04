@@ -10,3 +10,6 @@ Candidate uses a single delayed measurement after scroll/resize, target attribut
 - This fixture extracts the actual geometry/effect block but does not mount React, Next or the full transport engine. Actual preview check, full-app performance and independent latest-delta review remain pending. No battery/performance improvement has been measured.
 
 No change to PR29, PR49's author-owned branch, PR52, assets, transport scenes, backend, main or production.
+
+## Follow-up: service navigation at 320 × 640
+The deployed 24f6572 preview showed the theme trigger covering the EXPRESS service navigation item. The avoidance list now also observes the service navigation. The source fixture reads the selector list from the implementation and checks late insertion of that navigation. Real combined-preview validation and a fresh independent review of this follow-up remain required.
