@@ -71,11 +71,14 @@ async function check(browser, version, source) {
     await page.evaluate(() => { document.querySelector('.multimodal-guest').innerHTML = '<div id="jsl-marine-native"><nav class="uc-service-nav" style="position:fixed;right:16px;bottom:24px;width:200px;height:40px"></nav></div>' })
     await page.waitForTimeout(650)
     const serviceNav = await page.evaluate(() => window.values.at(-1))
+    await page.evaluate(() => { document.querySelector('#jsl-marine-native').innerHTML = '<div class="uc-information" style="position:fixed;right:16px;bottom:24px;width:200px;height:150px"><nav class="uc-service-nav"></nav></div>' })
+    await page.waitForTimeout(650)
+    const serviceContent = await page.evaluate(() => window.values.at(-1))
     const beforeCleanup = await page.evaluate(() => window.measureCount)
     await page.evaluate(() => { window.dispose(); window.dispatchEvent(new Event('scroll')) })
     await page.waitForTimeout(600)
     const afterCleanup = await page.evaluate(() => window.measureCount)
-    return { version, initial, idle, idleMeasurements: idle.count - initial.count, unrelatedMeasurements: unrelated - idle.count, scrollMeasurements: afterScroll - unrelated, laterMeasurements: afterScrollSettled - afterScroll, added, hidden, shown, removed, serviceNav, beforeCleanup, afterCleanup }
+    return { version, initial, idle, idleMeasurements: idle.count - initial.count, unrelatedMeasurements: unrelated - idle.count, scrollMeasurements: afterScroll - unrelated, laterMeasurements: afterScrollSettled - afterScroll, added, hidden, shown, removed, serviceNav, serviceContent, beforeCleanup, afterCleanup }
   } finally { await page.close() }
 }
 
@@ -87,6 +90,6 @@ async function check(browser, version, source) {
     const before = await check(browser, 'baseline', baseline)
     const after = await check(browser, 'candidate', candidate)
     console.log(JSON.stringify([before, after], null, 2))
-    if (!(before.idleMeasurements > 0 && after.initial.lift > 0 && after.idleMeasurements === 0 && after.unrelatedMeasurements === 0 && after.scrollMeasurements === 2 && after.laterMeasurements === 0 && after.added > 0 && after.hidden === 0 && after.shown > 0 && after.removed === 0 && after.serviceNav > 0 && after.beforeCleanup === after.afterCleanup)) process.exitCode = 1
+    if (!(before.idleMeasurements > 0 && after.initial.lift > 0 && after.idleMeasurements === 0 && after.unrelatedMeasurements === 0 && after.scrollMeasurements === 2 && after.laterMeasurements === 0 && after.added > 0 && after.hidden === 0 && after.shown > 0 && after.removed === 0 && after.serviceNav > 0 && after.serviceContent > after.serviceNav && after.beforeCleanup === after.afterCleanup)) process.exitCode = 1
   } finally { await browser.close() }
 })().catch((error) => { console.error(error); process.exitCode = 1 })

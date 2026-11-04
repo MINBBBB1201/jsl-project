@@ -406,7 +406,7 @@ export function LandingThemeCustomizer({ open, onOpenChange }: LandingThemeCusto
   화면 아래에 붙어 있어, 좁은 폭에서는 04 · AIR 탭이 버튼 밑에 깔린다. 낮은 화면(320×640)에서는
   첫 화면의 히어로 화물조회 칸도 같은 자리에 온다. 엔진 마크업은 생성 파일이라 바꾸지 않고 위치만 읽는다.
 */
-const TRIGGER_AVOID_SELECTORS = ["#jsl-marine-native .mm-mode-nav", "#jsl-marine-native .uc-service-nav", ".journey-track-form"]
+const TRIGGER_AVOID_SELECTORS = ["#jsl-marine-native .mm-mode-nav", "#jsl-marine-native .uc-service-nav", "#jsl-marine-native .uc-information", ".journey-track-form"]
 // 테마 패널이 닫힐 때 포커스를 돌려줄 버튼 표시
 const TRIGGER_ATTRIBUTE = "data-landing-theme-trigger"
 // 아래 className 의 bottom-6 · right-4 · h-12 w-12 와 같은 값
@@ -424,6 +424,7 @@ function measureTriggerLift() {
   let lift = 0
   for (const selector of TRIGGER_AVOID_SELECTORS) {
     for (const element of document.querySelectorAll<HTMLElement>(selector)) {
+      if (selector.endsWith(".uc-information") && viewportWidth > 480) continue
       const rect = element.getBoundingClientRect()
       if (!rect.width || !rect.height || getComputedStyle(element).visibility === "hidden") continue
       const overlaps =
@@ -476,7 +477,7 @@ export function LandingThemeCustomizerTrigger({ onClick }: { onClick: () => void
     // The transport markup loads later and can be replaced when reduced motion changes.
     const structure = new MutationObserver(records => {
       // Ignore the engine's routine text updates; only rebind when a target or its container changes.
-      const relevant = ".journey-track-form, .multimodal-guest, #jsl-marine-native, .mm-mode-nav, .uc-service-nav"
+      const relevant = ".journey-track-form, .multimodal-guest, #jsl-marine-native, .mm-mode-nav, .uc-service-nav, .uc-information"
       if (records.some(record => [...record.addedNodes, ...record.removedNodes].some(node =>
         node instanceof Element && (node.matches(relevant) || !!node.querySelector(relevant))
       ))) watchTargets()

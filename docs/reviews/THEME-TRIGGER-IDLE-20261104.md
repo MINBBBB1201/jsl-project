@@ -13,3 +13,5 @@ No change to PR29, PR49's author-owned branch, PR52, assets, transport scenes, b
 
 ## Follow-up: service navigation at 320 × 640
 The deployed 24f6572 preview showed the theme trigger covering the EXPRESS service navigation item. The avoidance list now also observes the service navigation. The source fixture reads the selector list from the implementation and checks late insertion of that navigation. Real combined-preview validation and a fresh independent review of this follow-up remain required.
+
+The first follow-up preview (d97010f) moved the trigger off the service buttons but over the description at 320×640. A second follow-up adds the full service-information region to avoidance only at viewport widths of 480px or less. The fixture exercises late insertion of that larger region; an actual preview and renewed independent review are still needed.
