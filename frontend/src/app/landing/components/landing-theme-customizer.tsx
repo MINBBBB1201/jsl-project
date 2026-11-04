@@ -441,26 +441,60 @@ export function LandingThemeCustomizerTrigger({ onClick }: { onClick: () => void
   const t = useTranslations("common")
   const [lift, setLift] = React.useState(0)
 
-  // 스크롤(양방향)·리사이즈마다 한 프레임에 한 번 다시 재서, 조작부가 있을 때만 비켜 선다.
+  // Measure at most once per frame, plus once after scrolling settles.
+  // Target observers handle the engine appearing or changing visibility while idle.
   React.useEffect(() => {
     let frame = 0
     let settle = 0
+    let targets: HTMLElement[] = []
     const update = () => {
       frame = 0
       setLift(measureTriggerLift())
     }
-    const schedule = () => {
+    const scheduleFrame = () => {
       if (!frame) frame = requestAnimationFrame(update)
-      // 엔진은 스크롤이 멈춘 뒤에도 탭을 보이거나 숨길 수 있어, 멈춘 뒤 한 번 더 잰다.
-      window.clearTimeout(settle)
-      settle = window.setTimeout(schedule, 450)
     }
+    const schedule = () => {
+      scheduleFrame()
+      window.clearTimeout(settle)
+      settle = window.setTimeout(scheduleFrame, 450)
+    }
+    const targetChanges = new MutationObserver(scheduleFrame)
+    const targetSizes = new ResizeObserver(scheduleFrame)
+    const watchTargets = () => {
+      const next = TRIGGER_AVOID_SELECTORS.flatMap(selector => Array.from(document.querySelectorAll<HTMLElement>(selector)))
+      if (next.length === targets.length && next.every((item, index) => item === targets[index])) return
+      targetChanges.disconnect()
+      targetSizes.disconnect()
+      targets = next
+      for (const target of targets) {
+        targetChanges.observe(target, { attributes: true, attributeFilter: ["style", "class", "hidden"] })
+        targetSizes.observe(target)
+      }
+      scheduleFrame()
+    }
+    // The transport markup loads later and can be replaced when reduced motion changes.
+    const structure = new MutationObserver(records => {
+      // Ignore the engine's routine text updates; only rebind when a target or its container changes.
+      const relevant = ".journey-track-form, .multimodal-guest, #jsl-marine-native, .mm-mode-nav"
+      if (records.some(record => [...record.addedNodes, ...record.removedNodes].some(node =>
+        node instanceof Element && (node.matches(relevant) || !!node.querySelector(relevant))
+      ))) watchTargets()
+    })
+    const journey = document.querySelector(".journey")
+    if (journey) structure.observe(journey, { childList: true, subtree: true })
+    watchTargets()
     schedule()
     window.addEventListener("scroll", schedule, { passive: true })
     window.addEventListener("resize", schedule)
+    document.fonts.addEventListener("loadingdone", scheduleFrame)
     return () => {
       cancelAnimationFrame(frame)
       window.clearTimeout(settle)
+      targetChanges.disconnect()
+      targetSizes.disconnect()
+      structure.disconnect()
+      document.fonts.removeEventListener("loadingdone", scheduleFrame)
       window.removeEventListener("scroll", schedule)
       window.removeEventListener("resize", schedule)
     }
@@ -469,7 +503,7 @@ export function LandingThemeCustomizerTrigger({ onClick }: { onClick: () => void
   return (
     <Button
       onClick={onClick}
-      style={lift ? { transform: `translateY(-${lift}px)` } : undefined}
+      style={{ transform: lift ? `translateY(-${lift}px)` : undefined, transition: "none" }}
       size="icon"
       /*
         아이콘만 있고 글자가 없는 버튼이라 aria-label 이 없으면 스크린리더가
