@@ -15,3 +15,11 @@ No change to PR29, PR49's author-owned branch, PR52, assets, transport scenes, b
 The deployed 24f6572 preview showed the theme trigger covering the EXPRESS service navigation item. The avoidance list now also observes the service navigation. The source fixture reads the selector list from the implementation and checks late insertion of that navigation. Real combined-preview validation and a fresh independent review of this follow-up remain required.
 
 The first follow-up preview (d97010f) moved the trigger off the service buttons but over the description at 320×640. A second follow-up adds the full service-information region to avoidance only at viewport widths of 480px or less. The fixture exercises late insertion of that larger region; an actual preview and renewed independent review are still needed.
+
+## 2026-11-05: intermediate widths and stacked obstacles
+
+The actual Vercel preview for 2f36064 reproduces EXPRESS underline obstruction at 600×900, progress 8%, including a reverse return to 8%. Hit-testing temporarily disables the trigger's pointer events, samples its footprint, and restores its inline value. The 740×360 sample did not reproduce visible content obstruction; the prior landscape concern remains a code-path risk rather than an observed failure there.
+
+The implementation now evaluates service information at every width using actual horizontal intersection, and checks obstacles from bottom to top against the button's updated position. This prevents avoiding a lower tab from placing the button over an upper menu. Scene geometry, transport engine, images, colors, and focus behavior are unchanged.
+
+Validation before commit: actual-source DOM fixture passes eight viewport sizes (320/480/481/600/740/767/768/1440), a stacked-menu regression, idle scheduling, dynamic target visibility/insertion and cleanup. Fixture constants now come from the source alongside selectors. Changed-file ESLint, full frontend TypeScript, diff check and scoped design detector pass. The fixture is not a full React application test. Matching preview build and before/after screen verification follow the push; latest-delta independent review, Safari and real hardware remain pending. PR stays Draft.

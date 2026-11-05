@@ -422,16 +422,19 @@ function measureTriggerLift() {
   const left = viewportWidth - TRIGGER_RIGHT - TRIGGER_SIZE
   const top = viewportHeight - TRIGGER_BOTTOM - TRIGGER_SIZE
   let lift = 0
+  const obstacles: DOMRect[] = []
   for (const selector of TRIGGER_AVOID_SELECTORS) {
     for (const element of document.querySelectorAll<HTMLElement>(selector)) {
-      if (selector.endsWith(".uc-information") && viewportWidth > 480) continue
       const rect = element.getBoundingClientRect()
       if (!rect.width || !rect.height || getComputedStyle(element).visibility === "hidden") continue
-      const overlaps =
-        rect.left < left + TRIGGER_SIZE + TRIGGER_GAP && rect.right > left - TRIGGER_GAP &&
-        rect.top < top + TRIGGER_SIZE + TRIGGER_GAP && rect.bottom > top - TRIGGER_GAP
-      // 조작부 윗변에서 간격만큼 띄운 자리로 버튼 아랫변을 올린다.
-      if (overlaps) lift = Math.max(lift, viewportHeight - TRIGGER_BOTTOM - rect.top + TRIGGER_GAP)
+      if (rect.left < left + TRIGGER_SIZE + TRIGGER_GAP && rect.right > left - TRIGGER_GAP) obstacles.push(rect)
+    }
+  }
+  // 아래부터 확인해야 첫 조작부를 피한 위치에서 다른 메뉴나 설명문을 덮지 않는다.
+  // 화면 폭 대신 실제 좌표를 사용해 중간 폭·가로 모드에도 같은 규칙을 적용한다.
+  for (const rect of obstacles.sort((a, b) => b.bottom - a.bottom)) {
+    if (rect.top < top - lift + TRIGGER_SIZE + TRIGGER_GAP && rect.bottom > top - lift - TRIGGER_GAP) {
+      lift = viewportHeight - TRIGGER_BOTTOM - rect.top + TRIGGER_GAP
     }
   }
   return Math.round(lift)

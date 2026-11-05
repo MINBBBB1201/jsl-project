@@ -20,8 +20,13 @@ function compile(source) {
   const hook = source.slice(hookStart, hookEnd) + '\n  }, [])'
   const program = `
     ${selectors}
-    const TRIGGER_BOTTOM = 24, TRIGGER_RIGHT = 16, TRIGGER_SIZE = 48, TRIGGER_GAP = 12
+    ${['TRIGGER_BOTTOM', 'TRIGGER_RIGHT', 'TRIGGER_SIZE', 'TRIGGER_GAP'].map(name => {
+      const declaration = source.match(new RegExp(`^const ${name} = .+$`, 'm'))?.[0]
+      if (!declaration) throw Error(`Missing ${name}`)
+      return declaration
+    }).join('\n')}
     ${helper}
+    window.measureActual = measureActual
     function measureTriggerLift() { window.measureCount++; return measureActual() }
     function install() {
       let cleanup
@@ -82,6 +87,30 @@ async function check(browser, version, source) {
   } finally { await page.close() }
 }
 
+async function checkWidths(browser, source) {
+  const page = await browser.newPage()
+  const results = []
+  try {
+    for (const [width, height] of [[320, 640], [480, 640], [481, 640], [600, 900], [740, 360], [767, 640], [768, 1024], [1440, 900]]) {
+      await page.setViewportSize({ width, height })
+      await page.setContent('<div class="journey"><div id="jsl-marine-native"><div class="uc-information" style="position:fixed;right:16px;bottom:24px;width:200px;height:150px"></div></div></div>')
+      await page.evaluate(() => { window.values = []; window.measureCount = 0 })
+      await page.addScriptTag({ content: compile(source) })
+      const value = await page.evaluate(() => { const lift=window.measureActual(); window.dispose(); return lift })
+      if (value !== 162) throw Error(`Description remains obstructed at ${width}x${height}: lift ${value}`)
+      results.push({ width, height, lift: value })
+    }
+    // The upper obstacle does not intersect the default button, only its first lifted position.
+    // Reverse DOM order to ensure geometry, rather than selector order, determines the result.
+    await page.setContent('<div class="journey"><div id="jsl-marine-native"><nav class="mm-mode-nav" style="position:fixed;right:16px;bottom:24px;width:200px;height:40px"></nav><nav class="uc-service-nav" style="position:fixed;right:16px;bottom:100px;width:200px;height:44px"></nav></div></div>')
+    await page.evaluate(() => { window.values = []; window.measureCount = 0 })
+    await page.addScriptTag({ content: compile(source) })
+    const stacked = await page.evaluate(() => { const lift=window.measureActual(); window.dispose(); return lift })
+    if (stacked !== 132) throw Error(`Lifted trigger overlaps upper navigation: ${stacked}`)
+    return { widths: results, stackedLift: stacked }
+  } finally { await page.close() }
+}
+
 ;(async () => {
   const browser = await chromium.launch({ headless: true, ...(process.env.JSL_CHROMIUM_PATH ? { executablePath: process.env.JSL_CHROMIUM_PATH } : {}) })
   try {
@@ -89,6 +118,7 @@ async function check(browser, version, source) {
     const candidate = fs.readFileSync(path.join(root, sourcePath), 'utf8')
     const before = await check(browser, 'baseline', baseline)
     const after = await check(browser, 'candidate', candidate)
+    console.log(JSON.stringify(await checkWidths(browser, candidate), null, 2))
     console.log(JSON.stringify([before, after], null, 2))
     if (!(before.idleMeasurements > 0 && after.initial.lift > 0 && after.idleMeasurements === 0 && after.unrelatedMeasurements === 0 && after.scrollMeasurements === 2 && after.laterMeasurements === 0 && after.added > 0 && after.hidden === 0 && after.shown > 0 && after.removed === 0 && after.serviceNav > 0 && after.serviceContent > after.serviceNav && after.beforeCleanup === after.afterCleanup)) process.exitCode = 1
   } finally { await browser.close() }
