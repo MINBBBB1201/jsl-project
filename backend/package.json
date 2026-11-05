@@ -6,6 +6,7 @@
     "start": "node src/server.js",
     "dev": "nodemon src/server.js",
     "test": "jest",
+    "test:contact": "node --test tests/contact-readiness.node.cjs",
     "lint": "eslint .",
     "format": "prettier --write .",
     "seed:knowledge": "node src/scripts/seed-knowledge.js",

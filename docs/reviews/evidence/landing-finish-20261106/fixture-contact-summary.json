@@ -1,0 +1,398 @@
+{
+  "scope": "Next integrated contact UI; every contact API response is a synthetic Playwright route fixture. No API server, database, approved operational policy, or live submission is used.",
+  "limitations": [
+    "Reduced motion and light theme only",
+    "Mock response handling does not verify backend validation, persistence, database indexes, operational policy approval, CORS, or delivery",
+    "External resources and other APIs are blocked"
+  ],
+  "base": "http://localhost:4192",
+  "cases": [
+    {
+      "name": "ko-1440x1000",
+      "scope": "Next contact UI with mocked API, light theme and reduced motion",
+      "checks": [
+        {
+          "name": "unavailable notice",
+          "pass": true,
+          "controlsDisabled": true,
+          "channels": [
+            "견적 문의",
+            "화물 추적",
+            "이메일 문의"
+          ],
+          "postCount": 0
+        },
+        {
+          "name": "required-field validation focus",
+          "pass": true,
+          "focusedField": "name"
+        },
+        {
+          "name": "synthetic approved notice and receipt",
+          "pass": true,
+          "status": 201,
+          "receipt": "fixture-ko-1440-receipt-1"
+        },
+        {
+          "name": "lost response and reload retry",
+          "pass": true,
+          "sameRequestKey": true,
+          "sameFixtureReceipt": true,
+          "fixtureReceiptCountBefore": 2,
+          "fixtureReceiptCountAfter": 2,
+          "realDatabaseUsed": false
+        },
+        {
+          "name": "stale notice and renewed consent",
+          "pass": true,
+          "initialStatus": 409,
+          "confirmedStatus": 201,
+          "updatedNoticeVersion": 2
+        }
+      ],
+      "stages": [
+        {
+          "label": "create isolated browser context",
+          "pass": true,
+          "milliseconds": 18
+        },
+        {
+          "label": "create page",
+          "pass": true,
+          "milliseconds": 127
+        },
+        {
+          "label": "503 notice and disabled intake",
+          "pass": true,
+          "milliseconds": 2206
+        },
+        {
+          "label": "approved notice and required-field focus",
+          "pass": true,
+          "milliseconds": 204
+        },
+        {
+          "label": "synthetic 201 receipt",
+          "pass": true,
+          "milliseconds": 608
+        },
+        {
+          "label": "lost response and same-key reload retry",
+          "pass": true,
+          "milliseconds": 1844
+        },
+        {
+          "label": "stale notice and renewed consent",
+          "pass": true,
+          "milliseconds": 895
+        }
+      ],
+      "captures": [
+        "fixture-contact-ko-1440x1000-unavailable-503.png",
+        "fixture-contact-ko-1440x1000-approved-synthetic-receipt-201.png",
+        "fixture-contact-ko-1440x1000-stale-notice-renew-consent.png"
+      ],
+      "pageErrors": [],
+      "blockedExternal": [],
+      "blockedOtherApi": [
+        "/api/shipments/public-summary"
+      ],
+      "activeStage": "stale notice and renewed consent",
+      "horizontalOverflow": false,
+      "pass": true,
+      "mockedNoticeRequests": 4,
+      "mockedPostRequests": 5
+    },
+    {
+      "name": "en-1440x1000",
+      "scope": "Next contact UI with mocked API, light theme and reduced motion",
+      "checks": [
+        {
+          "name": "unavailable notice",
+          "pass": true,
+          "controlsDisabled": true,
+          "channels": [
+            "Quotation enquiry",
+            "Shipment tracking",
+            "Email enquiry"
+          ],
+          "postCount": 0
+        },
+        {
+          "name": "required-field validation focus",
+          "pass": true,
+          "focusedField": "name"
+        },
+        {
+          "name": "synthetic approved notice and receipt",
+          "pass": true,
+          "status": 201,
+          "receipt": "fixture-en-1440-receipt-1"
+        },
+        {
+          "name": "lost response and reload retry",
+          "pass": true,
+          "sameRequestKey": true,
+          "sameFixtureReceipt": true,
+          "fixtureReceiptCountBefore": 2,
+          "fixtureReceiptCountAfter": 2,
+          "realDatabaseUsed": false
+        },
+        {
+          "name": "stale notice and renewed consent",
+          "pass": true,
+          "initialStatus": 409,
+          "confirmedStatus": 201,
+          "updatedNoticeVersion": 2
+        }
+      ],
+      "stages": [
+        {
+          "label": "create isolated browser context",
+          "pass": true,
+          "milliseconds": 6
+        },
+        {
+          "label": "create page",
+          "pass": true,
+          "milliseconds": 78
+        },
+        {
+          "label": "503 notice and disabled intake",
+          "pass": true,
+          "milliseconds": 1353
+        },
+        {
+          "label": "approved notice and required-field focus",
+          "pass": true,
+          "milliseconds": 180
+        },
+        {
+          "label": "synthetic 201 receipt",
+          "pass": true,
+          "milliseconds": 506
+        },
+        {
+          "label": "lost response and same-key reload retry",
+          "pass": true,
+          "milliseconds": 1256
+        },
+        {
+          "label": "stale notice and renewed consent",
+          "pass": true,
+          "milliseconds": 1071
+        }
+      ],
+      "captures": [
+        "fixture-contact-en-1440x1000-unavailable-503.png",
+        "fixture-contact-en-1440x1000-approved-synthetic-receipt-201.png",
+        "fixture-contact-en-1440x1000-stale-notice-renew-consent.png"
+      ],
+      "pageErrors": [],
+      "blockedExternal": [],
+      "blockedOtherApi": [
+        "/api/shipments/public-summary"
+      ],
+      "activeStage": "stale notice and renewed consent",
+      "horizontalOverflow": false,
+      "pass": true,
+      "mockedNoticeRequests": 4,
+      "mockedPostRequests": 5
+    },
+    {
+      "name": "vi-390x844",
+      "scope": "Next contact UI with mocked API, light theme and reduced motion",
+      "checks": [
+        {
+          "name": "unavailable notice",
+          "pass": true,
+          "controlsDisabled": true,
+          "channels": [
+            "Yêu cầu báo giá",
+            "Theo dõi hàng hóa",
+            "Liên hệ qua email"
+          ],
+          "postCount": 0
+        },
+        {
+          "name": "required-field validation focus",
+          "pass": true,
+          "focusedField": "name"
+        },
+        {
+          "name": "synthetic approved notice and receipt",
+          "pass": true,
+          "status": 201,
+          "receipt": "fixture-vi-390-receipt-1"
+        },
+        {
+          "name": "lost response and reload retry",
+          "pass": true,
+          "sameRequestKey": true,
+          "sameFixtureReceipt": true,
+          "fixtureReceiptCountBefore": 2,
+          "fixtureReceiptCountAfter": 2,
+          "realDatabaseUsed": false
+        },
+        {
+          "name": "stale notice and renewed consent",
+          "pass": true,
+          "initialStatus": 409,
+          "confirmedStatus": 201,
+          "updatedNoticeVersion": 2
+        }
+      ],
+      "stages": [
+        {
+          "label": "create isolated browser context",
+          "pass": true,
+          "milliseconds": 5
+        },
+        {
+          "label": "create page",
+          "pass": true,
+          "milliseconds": 94
+        },
+        {
+          "label": "503 notice and disabled intake",
+          "pass": true,
+          "milliseconds": 1469
+        },
+        {
+          "label": "approved notice and required-field focus",
+          "pass": true,
+          "milliseconds": 221
+        },
+        {
+          "label": "synthetic 201 receipt",
+          "pass": true,
+          "milliseconds": 383
+        },
+        {
+          "label": "lost response and same-key reload retry",
+          "pass": true,
+          "milliseconds": 1431
+        },
+        {
+          "label": "stale notice and renewed consent",
+          "pass": true,
+          "milliseconds": 663
+        }
+      ],
+      "captures": [
+        "fixture-contact-vi-390x844-unavailable-503.png",
+        "fixture-contact-vi-390x844-approved-synthetic-receipt-201.png",
+        "fixture-contact-vi-390x844-stale-notice-renew-consent.png"
+      ],
+      "pageErrors": [],
+      "blockedExternal": [],
+      "blockedOtherApi": [
+        "/api/shipments/public-summary"
+      ],
+      "activeStage": "stale notice and renewed consent",
+      "horizontalOverflow": false,
+      "pass": true,
+      "mockedNoticeRequests": 4,
+      "mockedPostRequests": 5
+    },
+    {
+      "name": "ko-390x844",
+      "scope": "Next contact UI with mocked API, light theme and reduced motion",
+      "checks": [
+        {
+          "name": "unavailable notice",
+          "pass": true,
+          "controlsDisabled": true,
+          "channels": [
+            "견적 문의",
+            "화물 추적",
+            "이메일 문의"
+          ],
+          "postCount": 0
+        },
+        {
+          "name": "required-field validation focus",
+          "pass": true,
+          "focusedField": "name"
+        },
+        {
+          "name": "synthetic approved notice and receipt",
+          "pass": true,
+          "status": 201,
+          "receipt": "fixture-ko-390-receipt-1"
+        },
+        {
+          "name": "lost response and reload retry",
+          "pass": true,
+          "sameRequestKey": true,
+          "sameFixtureReceipt": true,
+          "fixtureReceiptCountBefore": 2,
+          "fixtureReceiptCountAfter": 2,
+          "realDatabaseUsed": false
+        },
+        {
+          "name": "stale notice and renewed consent",
+          "pass": true,
+          "initialStatus": 409,
+          "confirmedStatus": 201,
+          "updatedNoticeVersion": 2
+        }
+      ],
+      "stages": [
+        {
+          "label": "create isolated browser context",
+          "pass": true,
+          "milliseconds": 3
+        },
+        {
+          "label": "create page",
+          "pass": true,
+          "milliseconds": 66
+        },
+        {
+          "label": "503 notice and disabled intake",
+          "pass": true,
+          "milliseconds": 1277
+        },
+        {
+          "label": "approved notice and required-field focus",
+          "pass": true,
+          "milliseconds": 220
+        },
+        {
+          "label": "synthetic 201 receipt",
+          "pass": true,
+          "milliseconds": 392
+        },
+        {
+          "label": "lost response and same-key reload retry",
+          "pass": true,
+          "milliseconds": 1490
+        },
+        {
+          "label": "stale notice and renewed consent",
+          "pass": true,
+          "milliseconds": 784
+        }
+      ],
+      "captures": [
+        "fixture-contact-ko-390x844-unavailable-503.png",
+        "fixture-contact-ko-390x844-approved-synthetic-receipt-201.png",
+        "fixture-contact-ko-390x844-stale-notice-renew-consent.png"
+      ],
+      "pageErrors": [],
+      "blockedExternal": [],
+      "blockedOtherApi": [
+        "/api/shipments/public-summary"
+      ],
+      "activeStage": "stale notice and renewed consent",
+      "horizontalOverflow": false,
+      "pass": true,
+      "mockedNoticeRequests": 4,
+      "mockedPostRequests": 5
+    }
+  ],
+  "startedAt": "2026-11-05T16:39:15.364Z",
+  "finishedAt": "2026-11-05T16:39:34.578Z",
+  "pass": true
+}
