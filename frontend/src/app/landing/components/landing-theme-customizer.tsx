@@ -425,13 +425,15 @@ function measureTriggerLift() {
   const obstacles: DOMRect[] = []
   for (const selector of TRIGGER_AVOID_SELECTORS) {
     for (const element of document.querySelectorAll<HTMLElement>(selector)) {
+      // 엔진의 세로 배치는 767px까지다. PC 정보 영역에는 넓은 빈 여백도 포함된다.
+      if (selector.endsWith(".uc-information") && viewportWidth > 767) continue
       const rect = element.getBoundingClientRect()
       if (!rect.width || !rect.height || getComputedStyle(element).visibility === "hidden") continue
       if (rect.left < left + TRIGGER_SIZE + TRIGGER_GAP && rect.right > left - TRIGGER_GAP) obstacles.push(rect)
     }
   }
   // 아래부터 확인해야 첫 조작부를 피한 위치에서 다른 메뉴나 설명문을 덮지 않는다.
-  // 화면 폭 대신 실제 좌표를 사용해 중간 폭·가로 모드에도 같은 규칙을 적용한다.
+  // 중간 폭·가로 모드에서도 이동한 위치를 실제 좌표로 다시 확인한다.
   for (const rect of obstacles.sort((a, b) => b.bottom - a.bottom)) {
     if (rect.top < top - lift + TRIGGER_SIZE + TRIGGER_GAP && rect.bottom > top - lift - TRIGGER_GAP) {
       lift = viewportHeight - TRIGGER_BOTTOM - rect.top + TRIGGER_GAP

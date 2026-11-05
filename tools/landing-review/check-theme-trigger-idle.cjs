@@ -97,7 +97,7 @@ async function checkWidths(browser, source) {
       await page.evaluate(() => { window.values = []; window.measureCount = 0 })
       await page.addScriptTag({ content: compile(source) })
       const value = await page.evaluate(() => { const lift=window.measureActual(); window.dispose(); return lift })
-      if (value !== 162) throw Error(`Description remains obstructed at ${width}x${height}: lift ${value}`)
+      if (value !== (width <= 767 ? 162 : 0)) throw Error(`Unexpected description avoidance at ${width}x${height}: lift ${value}`)
       results.push({ width, height, lift: value })
     }
     // The upper obstacle does not intersect the default button, only its first lifted position.
