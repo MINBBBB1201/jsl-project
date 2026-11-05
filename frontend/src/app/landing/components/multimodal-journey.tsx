@@ -49,6 +49,39 @@ export function MultimodalJourney() {
   const [selected, setSelected] = useState(-1)
   const [servicePhase, setServicePhase] = useState(true)
 
+  // Reduced motion has no journey engine, but same-page Next links still need target focus.
+  useEffect(() => {
+    if (!reduced) return
+    let frame = 0
+    const onReducedAnchorClick = (event: MouseEvent) => {
+      if (event.defaultPrevented || event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return
+      if (!(event.target instanceof Element)) return
+      const link = event.target.closest<HTMLAnchorElement>("a[href]")
+      // Sheet navigation waits for its actual close/unlock lifecycle in LandingNavbar.
+      if (!link || link.closest('[data-slot="sheet-content"]') || link.origin !== location.origin || link.pathname !== location.pathname || link.search !== location.search || !link.hash) return
+      if (link.hasAttribute("download") || (link.target && link.target.toLowerCase() !== "_self")) return
+      let target: HTMLElement | null
+      try { target = document.getElementById(decodeURIComponent(link.hash.slice(1))) } catch { return }
+      if (!target) return
+      event.preventDefault()
+      cancelAnimationFrame(frame)
+      if (location.hash !== link.hash) history.pushState(null, "", link.hash)
+      // Let the menu selection event finish before moving focus outside the menu.
+      frame = requestAnimationFrame(() => {
+        frame = requestAnimationFrame(() => {
+          if (!target.isConnected) return
+          target.scrollIntoView({ behavior: "instant", block: "start" })
+          focusQuietly(target)
+        })
+      })
+    }
+    document.addEventListener("click", onReducedAnchorClick, true)
+    return () => {
+      cancelAnimationFrame(frame)
+      document.removeEventListener("click", onReducedAnchorClick, true)
+    }
+  }, [reduced])
+
   useEffect(() => {
     const element = root.current
     const container = host.current
