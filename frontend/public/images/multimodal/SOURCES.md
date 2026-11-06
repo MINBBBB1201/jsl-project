@@ -15,4 +15,6 @@ Copied unchanged from `jsl-design-prototypes` (`build-app-module.mjs` output). P
 | `GeneralSans-400.woff2`, `GeneralSans-700.woff2` | Prototype font files | Confirm source and license |
 | `vessel-hold-photographic.jpg`, `vessel-fallback-mobile.jpg` | Internal Cycles renders at progress 65, used when WebGL is unavailable | Inherited model and asset clearance applies |
 
-The live vessel and water are Three.js geometry and shaders in `src/app/landing/multimodal/jsl-multimodal.mjs`, not images.
+The live scene uses the Three.js renderer in `src/app/landing/multimodal/jsl-multimodal.mjs`. Water uses geometry and shaders, while the selected vessel appearance also loads `sea-vessel-photo.webp`. Static vessel fallbacks remain part of the runtime assets. Rendering with Three.js does not remove the source requirements for these images.
+
+The two GeneralSans files above are the sequence's own font assets. The application also loads `src/fonts/GeneralSans-400.woff2`, `GeneralSans-500.woff2`, `GeneralSans-600.woff2`, and `GeneralSans-700.woff2` through `src/lib/fonts.ts`. A review limited to the two sequence files does not cover all four global font files.

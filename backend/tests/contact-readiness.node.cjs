@@ -240,7 +240,10 @@ test("contact router keeps its own errors while the shared 404 and parser handle
   for (const path of ["/api/contact/unknown", "/api/unregistered"]) {
     const missing = await request(shared).get(path);
     assert.equal(missing.status, 404);
-    assert.deepEqual(missing.body, { status: "fail", message: "Route not found." });
+    assert.deepEqual(missing.body, {
+      status: "fail",
+      message: "Route not found.",
+    });
   }
   // 문의 밖 경로는 전역 10KB 파서의 고정 413/400 응답을 유지한다.
   const other = await request(shared)
@@ -248,13 +251,19 @@ test("contact router keeps its own errors while the shared 404 and parser handle
     .type("json")
     .send(JSON.stringify({ message: "a".repeat(11000) }));
   assert.equal(other.status, 413);
-  assert.deepEqual(other.body, { status: "fail", message: "Request body is too large." });
+  assert.deepEqual(other.body, {
+    status: "fail",
+    message: "Request body is too large.",
+  });
   const otherMalformed = await request(shared)
     .post("/api/other")
     .type("json")
     .send("{");
   assert.equal(otherMalformed.status, 400);
-  assert.deepEqual(otherMalformed.body, { status: "fail", message: "Invalid JSON request body." });
+  assert.deepEqual(otherMalformed.body, {
+    status: "fail",
+    message: "Invalid JSON request body.",
+  });
 });
 test("missing unique index blocks all persistence instead of using unsafe local dedupe", async () => {
   const body = await sample();
@@ -373,6 +382,64 @@ test("operator notification failures do not undo a durable receipt", async () =>
   assert.equal(await Contact.countDocuments(), 1);
 });
 
+test("pending notifications do not delay a new receipt or its replay", async () => {
+  const pending = [];
+  const target = appFor({
+    notifyReceipt: (id) =>
+      new Promise((resolve, reject) => {
+        pending.push({ id, resolve, reject });
+      }),
+  });
+  try {
+    const body = await sample();
+    const first = await send(body, "pending-notification-key", target).timeout({
+      response: 1000,
+      deadline: 1500,
+    });
+    const replay = await send(body, "pending-notification-key", target).timeout(
+      {
+        response: 1000,
+        deadline: 1500,
+      },
+    );
+    assert.equal(first.status, 201);
+    assert.equal(replay.status, 200);
+    assert.equal(replay.body.replayed, true);
+    assert.equal(replay.body.data.id, first.body.data.id);
+    assert.deepEqual(
+      pending.map((notification) => notification.id),
+      [first.body.data.id, first.body.data.id],
+    );
+    assert.equal(await Contact.countDocuments(), 1);
+
+    // Reject after both HTTP responses. An unhandled rejection fails node:test;
+    // the test must not attach its own catch and mask the router's responsibility.
+    pending[0].reject(new Error("synthetic delayed notification failure"));
+    pending[1].resolve();
+    await new Promise((resolve) => setImmediate(resolve));
+    assert.equal(await Contact.countDocuments(), 1);
+  } finally {
+    // Also settle these promises when a timeout exposes the old blocking path.
+    for (const notification of pending) notification.resolve();
+    await new Promise((resolve) => setImmediate(resolve));
+  }
+});
+
+test("a synchronous notification exception cannot replace a saved receipt", async () => {
+  const target = appFor({
+    notifyReceipt: () => {
+      throw new Error("synthetic synchronous notification failure");
+    },
+  });
+  const body = await sample();
+  const response = await send(body, "sync-notification-key", target).timeout({
+    response: 1000,
+    deadline: 1500,
+  });
+  assert.equal(response.status, 201);
+  assert.equal(await Contact.countDocuments(), 1);
+});
+
 test("policy loader fails closed without disclosing file errors", () => {
   const { loadContactPolicies } = require("../src/config/contact-policy");
   for (const content of ["{", "[]", '{"unexpected":{}}']) {
@@ -418,12 +485,21 @@ test("real operator notifications deduplicate receipts without copying customer 
     const {
       notifyContactReceipt,
     } = require("../src/services/notification.service");
-    const target = appFor({ notifyReceipt: notifyContactReceipt });
+    const notifications = [];
+    const target = appFor({
+      notifyReceipt: (id) => {
+        const notification = notifyContactReceipt(id);
+        notifications.push(notification);
+        return notification;
+      },
+    });
     const body = await sample();
     const first = await send(body, "real-notification-key", target);
     const replay = await send(body, "real-notification-key", target);
     assert.equal(first.status, 201);
     assert.equal(replay.status, 200);
+    // HTTP receipt delivery no longer waits for this optional database write.
+    await Promise.all(notifications);
     assert.equal(await Notification.countDocuments(), 1);
     const notification = await Notification.findOne().lean();
     assert.equal(notification.dedupeKey, `contact:${first.body.data.id}`);

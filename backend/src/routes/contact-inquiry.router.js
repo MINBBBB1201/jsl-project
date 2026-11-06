@@ -56,25 +56,24 @@ function createContactInquiryRouter({
         });
       const language = req.body?.consent?.language;
       if (!services.has(language))
-        return res
-          .status(400)
-          .json({
-            success: false,
-            code: "VALIDATION_FAILED",
-            errors: [{ field: "consent", code: "INVALID_LANGUAGE" }],
-          });
+        return res.status(400).json({
+          success: false,
+          code: "VALIDATION_FAILED",
+          errors: [{ field: "consent", code: "INVALID_LANGUAGE" }],
+        });
       const result = await services
         .get(language)
         .submit(req.body, req.get("Idempotency-Key"));
-      // Notification failure must never change a durable inquiry receipt into an error.
-      if (result.body.success) {
-        try {
-          await notifyReceipt(result.body.data.id);
-        } catch {
-          /* retry on the next receipt replay */
-        }
-      }
       res.status(result.status).json(result.body);
+      // A durable receipt must not wait for best-effort operator notification.
+      // Replays retry delivery; the notification service retains its dedupe key.
+      if (result.body.success) {
+        void Promise.resolve()
+          .then(() => notifyReceipt(result.body.data.id))
+          .catch(() => {
+            /* retry on the next receipt replay */
+          });
+      }
     },
   );
   router.use((error, _req, res, _next) => {
