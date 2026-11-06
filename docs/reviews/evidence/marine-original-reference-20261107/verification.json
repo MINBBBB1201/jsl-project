@@ -1,0 +1,50 @@
+{
+  "cases": 8,
+  "proof": [
+    {
+      "width": 1440,
+      "reverse65PngIdentical": true,
+      "holdSha256": "ce6ca02a5260d8a9ce83e3748e32eca0b2b13e176df5ab8852b0eb55605aebc9",
+      "native52PngIdentical": false,
+      "native52CurrentProgress": 0.52,
+      "native52PreviousProgress": 0.52,
+      "native52Limit": "Exact PNG byte identity is not claimed. Camera, progress and clock match; RGB comparison above2 levels found only1 pixel, outside the central cargo region.",
+      "native52PixelComparison": {
+        "thresholdPerChannel": 2,
+        "differentPixelsAboveThreshold": 1,
+        "bounds": [
+          366,
+          747,
+          366,
+          747
+        ],
+        "centralCargoRegion": [
+          640,
+          0,
+          810,
+          600
+        ],
+        "centralCargoDifferentPixelsAboveThreshold": 0
+      }
+    },
+    {
+      "width": 390,
+      "reverse65PngIdentical": true,
+      "holdSha256": "c13eba7d985bfba01c67f3abd85cde2b2ab5b3e2dc6dac8c662cad893459765d",
+      "native52PngIdentical": true,
+      "native52CurrentProgress": 0.52,
+      "native52PreviousProgress": 0.52
+    }
+  ],
+  "webpackBuildAndTypeScript": "passed78 static pages",
+  "prototypeVerify": {
+    "syntaxChecks": 76,
+    "daylightContracts": 8,
+    "inlineBytes": 992459,
+    "archiveBytes": 20913765
+  },
+  "limits": [
+    "Local Chromium emulated viewports; Safari, real-device and GPU performance unverified",
+    "Final user visual approval and cross-company review remain"
+  ]
+}

@@ -1,0 +1,20 @@
+{
+  "beforeMarineAppCommit": "09eeb2c1ec92625270dd20b3b966c6242eee79cb",
+  "originalPrototypeCommit": "c9763d57bdbed14a057af9ce9016ee235d9d0460",
+  "originalRoof": {
+    "bytes": 69357,
+    "sha256": "af120258fe0b376f8bdd840e9830b7949fcb8e28470676afc0f0e522214cc038",
+    "sameAsHistorical": true,
+    "dimensions": [
+      6144,
+      1516
+    ]
+  },
+  "neutralPlate": {
+    "bytes": 308874,
+    "sha256": "ebd6ee5d0199a408e049554b696fa4d6fb2b480ac555c09b2adca9c4bd0476b8",
+    "sourceCommit": "7b5ade7e5085073b0aec9054bd8dc9909d0b620e"
+  },
+  "method": "Original shared roof texture and native geometry UV axes inside the existing photo material; no new lettering, box, decal mesh or generated image this pass",
+  "observedOriginal": "Pronounced corrugation, weathered orange coating, small central white JSL"
+}
