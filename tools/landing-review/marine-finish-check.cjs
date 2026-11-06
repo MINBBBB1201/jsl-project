@@ -47,20 +47,32 @@ const digest = (value) => crypto.createHash('sha256').update(value).digest('hex'
           const screen = document.querySelector('.uc-screen');
           const runtime = document.querySelector('#jsl-marine-native').marineRuntime;
           const water = runtime.scene.children.find((child) => child.material?.fragmentShader?.includes('void wave('));
+          const containers = runtime.model.group.getObjectByName('Native ISO containers / coherent paint and metric grid');
+          const colors = containers?.instanceColor?.array || [];
+          let orangeModelSlots = 0;
+          for (let i = 0; i < colors.length; i += 3) {
+            if (colors[i] > .4 && colors[i] > colors[i + 1] * 1.6 && colors[i + 1] > colors[i + 2] * 1.8) orangeModelSlots++;
+          }
           return {
             progress: Number(screen.dataset.progress), fallback: screen.dataset.nativeFallback,
             camera: JSON.parse(screen.dataset.nativeCamera), photo: runtime.model.group.userData.photoVessel.status,
             daylight: runtime.daylight.status, waterShader: water?.material.fragmentShader,
             waterTime: water?.material.uniforms.seaTime.value, waterDrift: water?.material.uniforms.drift.value,
+            orangeModelSlots,
             overflow: document.documentElement.scrollWidth - innerWidth,
           };
         });
         assert(Math.abs(info.progress - progress) < .001, 'Scroll driver did not settle');
         assert.equal(info.fallback, 'false');
         assert.equal(info.overflow, 0);
+        assert.equal(info.orangeModelSlots, 1, 'Native cargo grid must contain exactly one orange hero container');
         assert(info.waterShader, 'Live water shader missing');
         const waveletCalls = (info.waterShader.match(/wavelet\(m,/g) || []).length;
         assert.equal(waveletCalls, oldAsset ? 0 : 12, 'Wrong water version served by the local build');
+        if (!oldAsset) {
+          assert(info.waterShader.includes('col*=1.189207'), 'Water brightness follow-up is not in this build');
+          if (progress === .65) assert.equal(info.camera.screenAngle, width === 390 ? 78 : 14, 'Wrong follow-up camera angle');
+        }
         assert.equal(await servedAssetHash, expectedAssetHash, 'Served vessel texture differs from the review asset');
         assert.deepEqual(errors, []);
         const shaderHash = digest(info.waterShader);
