@@ -26,6 +26,7 @@ import { inquiryCopy } from '@/lib/contact-inquiry-copy'
 import { inquiryPayload, readNotice, readReceipt, retryIdentity, type ContactNotice, type InquiryReceipt, type InquiryLanguage } from '@/lib/contact-inquiry'
 import { acquireInquiryRetry, completeInquiryRetry, inquiryRetryStorage, type InquiryRetry } from '@/lib/contact-inquiry-retry'
 import { useContent } from '@/config/use-content'
+import { company } from '@/config/landing-content'
 import { API_BASE_URL } from '@/lib/api'
 import './contact-section.css'
 
@@ -34,7 +35,9 @@ export function ContactSection() {
   const language = useLocale() as InquiryLanguage
   const copy = inquiryCopy[language] ?? inquiryCopy.ko
   const [notice, setNotice] = useState<ContactNotice | null>(null)
+  const [settledNoticeRequest, setSettledNoticeRequest] = useState<string | null>(null)
   const [noticeAttempt, setNoticeAttempt] = useState(0)
+  const noticeLoading = settledNoticeRequest !== `${language}:${noticeAttempt}`
   const [receipt, setReceipt] = useState<InquiryReceipt | null>(null)
   const [failure, setFailure] = useState('')
   const errorRef = useRef<HTMLParagraphElement>(null)
@@ -63,7 +66,7 @@ export function ContactSection() {
         const current = response.ok ? readNotice(await response.json(), language) : null
         if (active) { setNotice(current); setValue('privacyConsent', false) }
       } catch { if (active) setNotice(null) }
-      finally { clearTimeout(timeout) }
+      finally { clearTimeout(timeout); if (active) setSettledNoticeRequest(`${language}:${noticeAttempt}`) }
     }
     void load()
     return () => { active = false; controller.abort(); clearTimeout(timeout) }
@@ -71,7 +74,7 @@ export function ContactSection() {
   useEffect(() => { if (failure) errorRef.current?.focus() }, [failure])
   const isSubmitting = form.formState.isSubmitting
   const hasConsented = useWatch({ control: form.control, name: 'privacyConsent' })
-  const currentNotice = notice?.language === language ? notice : null
+  const currentNotice = !noticeLoading && notice?.language === language ? notice : null
   async function onSubmit(values: z.infer<typeof contactFormSchema>) {
     if (!currentNotice || sendingRef.current) return
     sendingRef.current = true
@@ -93,7 +96,7 @@ export function ContactSection() {
       if (response.status === 409 && Array.isArray(result?.errors) && result.errors.some((error: { code?: string }) => error?.code === 'NOTICE_CHANGED')) {
         setValue('privacyConsent', false)
         setNotice(null)
-        setNoticeAttempt(value => value + 1)
+            setNoticeAttempt(value => value + 1)
         setFailure(copy.changed)
         return
       }
@@ -151,8 +154,15 @@ export function ContactSection() {
               </CardHeader>
               <CardContent>
                 <Form {...form}>
-                  <form noValidate onSubmit={event => { void form.handleSubmit(onSubmit)(event) }} className="space-y-6">
-                    {!currentNotice && <div role="status" className="rounded-lg border p-4"><p>{copy.unavailable}</p><Button type="button" variant="outline" className="mt-3 min-h-11" onClick={() => setNoticeAttempt(value => value + 1)}>{copy.retry}</Button></div>}
+                  <form noValidate aria-busy={noticeLoading || isSubmitting} onSubmit={event => { void form.handleSubmit(onSubmit)(event) }} className="space-y-6">
+                    {!currentNotice && <div role="status" className="rounded-lg border p-4">
+                      <p>{noticeLoading ? copy.loading : copy.unavailable}</p>
+                      {!noticeLoading && <div className="mt-3 flex flex-wrap gap-x-4 gap-y-2">
+                        <a className="break-all underline underline-offset-4" href={`mailto:${company.contact.email}`}>{company.contact.email}</a>
+                        <a className="break-all underline underline-offset-4" href={`mailto:${company.contact.emailKr}`}>{company.contact.emailKr}</a>
+                      </div>}
+                      <Button type="button" variant="outline" className="mt-3 min-h-11" disabled={noticeLoading} onClick={() => { setNoticeAttempt(value => value + 1) }}>{copy.retry}</Button>
+                    </div>}
                     {failure && <p ref={errorRef} role="alert" tabIndex={-1} className="rounded-lg border p-4">{failure}</p>}
                     {receipt && <p role="status" aria-live="polite" className="break-all rounded-lg border p-4">{contact.successTitle} · {copy.receipt}: {receipt.id}</p>}
                     <div className="grid gap-4 sm:grid-cols-2">
@@ -278,7 +288,7 @@ export function ContactSection() {
                                 <span className="block">{copy.refusal}: {currentNotice.refusalConsequence}</span>
                                 <span className="block">{copy.contact}: {currentNotice.privacyContact}</span>
                                 <span className="block">{copy.date}: {currentNotice.effectiveDate}</span>
-                              </> : copy.unavailable}
+                              </> : noticeLoading ? copy.loading : copy.unavailable}
                             </FormDescription>
                             <FormMessage />
                           </div>

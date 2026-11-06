@@ -25,6 +25,8 @@
 
 ### 설치 없이 정책 형식만 확인
 
+반복 가능한 저장소 도구는 `node tools/contact-policy-check.cjs --input $approvedPolicyFile`이다(저장소 루트 실행). [입출력과 실패 기준](POLICY-PREFLIGHT.md), 합성 회귀 검사 11개를 포함한다. 아래 인라인 명령과 같은 백엔드 순수 검증 함수를 사용한다.
+
 운영 담당자가 로컬의 승인 정책 파일 경로를 `$approvedPolicyFile`에 지정한 다음 `backend` 폴더에서 실행한다. 이 명령은 기존 순수 함수를 사용하고 서버·DB에 연결하지 않는다. 출력은 언어별 준비 여부·누락 필드명·공개 고지 해시뿐이며 정책 본문·승인자는 출력하지 않는다.
 
 ```powershell

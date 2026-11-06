@@ -17,9 +17,9 @@ const sizes = [
   { language: 'ko', width: 390, height: 844 },
 ];
 const labels = {
-  ko: { unavailable: '온라인 문의 접수 준비 중입니다.', changed: '동의 안내가 변경되었습니다.' },
-  en: { unavailable: 'Online inquiries are not available yet.', changed: 'The consent notice has changed.' },
-  vi: { unavailable: 'Chưa thể nhận yêu cầu trực tuyến.', changed: 'Thông báo đã thay đổi.' },
+  ko: { unavailable: '온라인 문의를 접수할 수 없습니다.', changed: '동의 안내가 변경되었습니다.' },
+  en: { unavailable: 'Online inquiries are unavailable.', changed: 'The consent notice has changed.' },
+  vi: { unavailable: 'Hiện chưa thể nhận yêu cầu trực tuyến.', changed: 'Thông báo đã thay đổi.' },
 };
 const fixtureText = {
   ko: { purpose: '합성 검수용 문의. 실제 회사 고지가 아닙니다.', retention: '브라우저 검수 종료 시 폐기하는 가상 데이터', refusal: '동의하지 않으면 합성 접수 검사를 진행하지 않습니다.', contact: '운영 연락처가 아닌 합성 검수 항목' },
