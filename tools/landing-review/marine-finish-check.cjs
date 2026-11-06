@@ -42,23 +42,38 @@ const digest = (value) => crypto.createHash('sha256').update(value).digest('hex'
         await page.waitForFunction(() => {
           const runtime = document.querySelector('#jsl-marine-native')?.marineRuntime;
           return runtime?.daylight?.status?.state === 'ready' && runtime?.model?.group?.userData?.photoVessel?.status?.state === 'ready';
-        }, null, { timeout: 20000 });
+        }, null, { timeout: 45000 }).catch(async (error) => {
+          console.error(JSON.stringify({width, progress, errors, runtime: await page.evaluate(() => {
+            const r = document.querySelector('#jsl-marine-native')?.marineRuntime;
+            return {daylight: r?.daylight?.status, photo: r?.model?.group?.userData?.photoVessel?.status, camera: document.querySelector('.uc-screen')?.dataset.nativeCamera};
+          })}));
+          throw error;
+        });
         const info = await page.evaluate(() => {
           const screen = document.querySelector('.uc-screen');
           const runtime = document.querySelector('#jsl-marine-native').marineRuntime;
           const water = runtime.scene.children.find((child) => child.material?.fragmentShader?.includes('void wave('));
           const containers = runtime.model.group.getObjectByName('Native ISO containers / coherent paint and metric grid');
           const colors = containers?.instanceColor?.array || [];
-          let orangeModelSlots = 0;
+          const instanceMatrix = containers.matrix.clone();
+          let orangeModelSlots = 0, inactiveOrangeSlots = 0;
           for (let i = 0; i < colors.length; i += 3) {
-            if (colors[i] > .4 && colors[i] > colors[i + 1] * 1.6 && colors[i + 1] > colors[i + 2] * 1.8) orangeModelSlots++;
+            if (colors[i] > .4 && colors[i] > colors[i + 1] * 1.6 && colors[i + 1] > colors[i + 2] * 1.8) {
+              containers.getMatrixAt(i / 3, instanceMatrix);
+              if (Math.abs(instanceMatrix.determinant()) > .001) orangeModelSlots++; else inactiveOrangeSlots++;
+            }
           }
+          const body = runtime.model.cargo.getObjectByName('JSL / continuous orange container body');
+          const identity = runtime.model.cargo.getObjectByName('JSL / legible original roof lettering');
+          if (body?.visible && body.scale.x > 12 && body.scale.y > 2 && body.scale.z > 2) orangeModelSlots++;
           return {
             progress: Number(screen.dataset.progress), fallback: screen.dataset.nativeFallback,
             camera: JSON.parse(screen.dataset.nativeCamera), photo: runtime.model.group.userData.photoVessel.status,
             daylight: runtime.daylight.status, waterShader: water?.material.fragmentShader,
             waterTime: water?.material.uniforms.seaTime.value, waterDrift: water?.material.uniforms.drift.value,
-            orangeModelSlots,
+            orangeModelSlots, inactiveOrangeSlots,
+            cargoBody: body ? {visible: body.visible, scale: body.scale.toArray(), position: body.position.toArray()} : null,
+            cargoIdentity: identity ? {visible: identity.visible, opacity: identity.material.opacity, privateUV: identity.material.map !== runtime.model.cargo.userData.roofTexture} : null,
             overflow: document.documentElement.scrollWidth - innerWidth,
           };
         });
@@ -66,6 +81,12 @@ const digest = (value) => crypto.createHash('sha256').update(value).digest('hex'
         assert.equal(info.fallback, 'false');
         assert.equal(info.overflow, 0);
         assert.equal(info.orangeModelSlots, 1, 'Native cargo grid must contain exactly one orange hero container');
+        if (!oldAsset) {
+          assert.equal(info.inactiveOrangeSlots, 1, 'Original batched body must be inactive');
+          assert(info.cargoBody?.visible, 'The full orange body must remain live');
+          assert(info.cargoIdentity?.privateUV, 'Branding must not alter the road roof UV');
+          if (progress === .65) assert.equal(info.cargoIdentity.opacity, 1, 'JSL roof lettering must remain at the photo hold');
+        }
         assert(info.waterShader, 'Live water shader missing');
         const waveletCalls = (info.waterShader.match(/wavelet\(m,/g) || []).length;
         assert.equal(waveletCalls, oldAsset ? 0 : 12, 'Wrong water version served by the local build');
@@ -80,6 +101,7 @@ const digest = (value) => crypto.createHash('sha256').update(value).digest('hex'
         const file = `${width}-${index === 5 ? 'reverse-' : ''}${Math.round(progress * 100)}.png`;
         await page.screenshot({ path: path.join(output, file) });
         results.push({ viewport: { width, height }, file, ...info, shaderHash, waveletCalls, vesselTextureSha256: expectedAssetHash, errors: [...errors] });
+        console.log(JSON.stringify({width, progress, file}));
       }
       await context.close();
     }

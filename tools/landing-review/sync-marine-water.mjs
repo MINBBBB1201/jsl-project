@@ -9,7 +9,7 @@ import { fileURLToPath } from 'node:url';
 const prototypeRoot = process.argv[2];
 const baseline = process.argv[3];
 const fragment = process.argv[4] || 'water';
-assert(prototypeRoot && /^[0-9a-f]{40}$/.test(baseline || '') && ['water', 'camera'].includes(fragment), 'Usage: node sync-marine-water.mjs PROTOTYPE_ROOT BASELINE_SHA [water|camera]');
+assert(prototypeRoot && /^[0-9a-f]{40}$/.test(baseline || '') && ['water', 'camera', 'photo-vessel'].includes(fragment), 'Usage: node sync-marine-water.mjs PROTOTYPE_ROOT BASELINE_SHA [water|camera|photo-vessel]');
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../..');
 const relative = `prototypes/multimodal-marine-native/marine-${fragment}.js`;
 const normalize = (source) => source.replace(/\r\n/g, '\n').trim();
