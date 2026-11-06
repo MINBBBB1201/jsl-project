@@ -1,0 +1,231 @@
+{
+  "generatedAtUtc": "2026-11-06T12:37:02.598Z",
+  "kind": "source-and-generated-shader-comparison",
+  "status": "passed",
+  "source": {
+    "beforeSha256": "eedb8f0870667c233d8b84273e647e6bbdba0aa7c14508709c048302c4138a91",
+    "afterSha256": "961a41d397f098e8a57797cb4212a80f6b6b3d250ed646e0cbc0c0924e58d1fb",
+    "relativePath": "prototypes/multimodal-marine-native/marine-water.js",
+    "beforeGitRef": "c9763d57bdbed14a057af9ce9016ee235d9d0460",
+    "snapshotHashNote": "Raw source snapshots; runtime GLSL hashes are checked separately."
+  },
+  "nodeSyntax": {
+    "passed": true,
+    "exitCode": 0
+  },
+  "nonselected": {
+    "water": {
+      "fragmentTokensIdentical": true,
+      "beforeNormalizedSha256": "9775f8098df700a5e6ab8252f333026bbf1e80798239449b56dda7daa10c30b7",
+      "afterNormalizedSha256": "9775f8098df700a5e6ab8252f333026bbf1e80798239449b56dda7daa10c30b7",
+      "vertexByteIdentical": true
+    },
+    "wake": {
+      "fragmentTokensIdentical": true,
+      "beforeNormalizedSha256": "bc9a06aa084d60841d4af59d414ec15a2dad7631dbbcb791938d614d7f17b053",
+      "afterNormalizedSha256": "bc9a06aa084d60841d4af59d414ec15a2dad7631dbbcb791938d614d7f17b053",
+      "vertexByteIdentical": true
+    }
+  },
+  "selectedWater": {
+    "beforeSha256": "70fb280491604912955a21b310e3c4225cbdc3f7e79bdfeba83353cf70a5466b",
+    "afterSha256": "053134cb7e0120b730f4475446b8a2c151f6f9ed9de40ec4a149cebc1d1dff21"
+  },
+  "selectedFoam": {
+    "byteIdentical": true,
+    "beforeSha256": "00719b34d4fad551c2ef470cf209d2437f0d3fb55d3fc677c4d993b72442699b",
+    "afterSha256": "00719b34d4fad551c2ef470cf209d2437f0d3fb55d3fc677c4d993b72442699b"
+  },
+  "selectedSwell": {
+    "callsIdentical": true,
+    "before": [
+      "wave(m,vec2(-0.60000,-0.80000),0.05560,0.73856,0.32372,0.70000,113.00000,fp,hs,gs,lost);",
+      "wave(m,vec2(-0.42005,-0.90750),0.07953,0.88331,0.17603,3.40000,79.00000,fp,hs,gs,lost);"
+    ],
+    "after": [
+      "wave(m,vec2(-0.60000,-0.80000),0.05560,0.73856,0.32372,0.70000,113.00000,fp,hs,gs,lost);",
+      "wave(m,vec2(-0.42005,-0.90750),0.07953,0.88331,0.17603,3.40000,79.00000,fp,hs,gs,lost);"
+    ]
+  },
+  "retainedBlocks": {
+    "sky": {
+      "byteIdentical": true,
+      "sha256": "d2e8cc5f992bda7cd2d3091bb009bff4f2d2df2b0cb5c7926927f8bff299dfda"
+    },
+    "kelvin": {
+      "byteIdentical": true,
+      "sha256": "c0b4680c7f24dbd0134d2b5aaeedd0eb29b1068d6a58d7cccf402c1cfad1de8c"
+    }
+  },
+  "clock": {
+    "progress": 0.65,
+    "before65": {
+      "phase": 0.65,
+      "seaTime": 15.600000000000001,
+      "drift": 112.32000000000001,
+      "wakeAmount": 1
+    },
+    "after65": {
+      "phase": 0.65,
+      "seaTime": 15.600000000000001,
+      "drift": 112.32000000000001,
+      "wakeAmount": 1
+    },
+    "reverse65": {
+      "phase": 0.65,
+      "seaTime": 15.600000000000001,
+      "drift": 112.32000000000001,
+      "wakeAmount": 1
+    },
+    "identical": true
+  },
+  "wavelets": {
+    "count": 12,
+    "emittedConstantSlopeRms": 0.11999999999977426,
+    "targetSlopeRms": 0.12,
+    "directAdvectedCoordinates": true,
+    "oldShortWaveCallsRemoved": true,
+    "unamplifiedOutsideExistingSternSlick": true,
+    "unresolvedVarianceUsesOneMinusFadeSquared": true,
+    "emitted": [
+      {
+        "direction": [
+          0.324365672648,
+          0.945931768368
+        ],
+        "k": 4.870424566009,
+        "omega": 6.912225762557,
+        "amplitude": 0.01005862922,
+        "phase": 2.581122311331,
+        "wavelength": 1.290069319835
+      },
+      {
+        "direction": [
+          0.610522068472,
+          0.791999244891
+        ],
+        "k": 4.52393064803,
+        "omega": 6.661813541159,
+        "amplitude": 0.010829033128,
+        "phase": 1.146801418658,
+        "wavelength": 1.388877459896
+      },
+      {
+        "direction": [
+          0.89699825921,
+          0.44203407445
+        ],
+        "k": 3.958624111578,
+        "omega": 6.231701415712,
+        "amplitude": 0.012375460128,
+        "phase": 5.448438834197,
+        "wavelength": 1.587214428569
+      },
+      {
+        "direction": [
+          0.40234696463,
+          0.915487258269
+        ],
+        "k": 3.419353537109,
+        "omega": 5.791705983476,
+        "amplitude": 0.01432720961,
+        "phase": 0.980360382741,
+        "wavelength": 1.837536025155
+      },
+      {
+        "direction": [
+          0.788263719349,
+          0.615337556759
+        ],
+        "k": 2.679952354759,
+        "omega": 5.127409930968,
+        "amplitude": 0.018280099185,
+        "phase": 3.853714091025,
+        "wavelength": 2.344513810487
+      },
+      {
+        "direction": [
+          0.902460955606,
+          0.430771660635
+        ],
+        "k": 2.419321260656,
+        "omega": 4.871708280166,
+        "amplitude": 0.020249396247,
+        "phase": 4.318020754456,
+        "wavelength": 2.597085971739
+      },
+      {
+        "direction": [
+          0.6628607881,
+          0.748742663136
+        ],
+        "k": 1.936681056468,
+        "omega": 4.358766013903,
+        "amplitude": 0.025295747429,
+        "phase": 3.447800845572,
+        "wavelength": 3.244305656935
+      },
+      {
+        "direction": [
+          0.999997565005,
+          -0.002206803915
+        ],
+        "k": 1.74803522009,
+        "omega": 4.141041597121,
+        "amplitude": 0.028025633747,
+        "phase": 0.329598384765,
+        "wavelength": 3.594427180281
+      },
+      {
+        "direction": [
+          0.681079156103,
+          0.732209794473
+        ],
+        "k": 1.378074168258,
+        "omega": 3.676806711075,
+        "amplitude": 0.035549461694,
+        "phase": 5.913685322775,
+        "wavelength": 4.559395605771
+      },
+      {
+        "direction": [
+          0.271136642589,
+          0.962540867208
+        ],
+        "k": 1.157639254955,
+        "omega": 3.36993191194,
+        "amplitude": 0.04231870563,
+        "phase": 5.623847320226,
+        "wavelength": 5.427584871786
+      },
+      {
+        "direction": [
+          0.236389507443,
+          0.971658376576
+        ],
+        "k": 1.046776343588,
+        "omega": 3.204508687865,
+        "amplitude": 0.046800632395,
+        "phase": 6.062966808907,
+        "wavelength": 6.00241431292
+      },
+      {
+        "direction": [
+          0.229485899111,
+          0.973311986009
+        ],
+        "k": 0.929392261221,
+        "omega": 3.019493017474,
+        "amplitude": 0.05271164491,
+        "phase": 3.564306614626,
+        "wavelength": 6.7605311227
+      }
+    ]
+  },
+  "limits": [
+    "Mock THREE objects generate source strings; no actual WebGL/GLSL GPU compile or visual review.",
+    "RMS is the sum-of-independent-wave variances of fully resolved wavelets, not the complete sea or a measured finite image.",
+    "The existing stern slick attenuates short-wave slope near the wake; pixel filtering attenuates unresolved wavelengths.",
+    "The native 24-second/7.2m-per-second clock is preserved; archived Cycles uses 30 seconds/9m-per-second, so 65% phases differ."
+  ]
+}

@@ -4,7 +4,7 @@ import { useEffect, useRef } from "react";
 import { JourneyHero } from "./journey-sections";
 import "./journey-hero-motion.css";
 
-/** A long scroll track keeps the hero fixed while its exit plays against scroll progress. */
+/** The exit follows scroll progress; small screens use a shorter track and later copy exit. */
 export function JourneyHeroMotion() {
   const ref = useRef<HTMLDivElement>(null);
 
@@ -17,7 +17,10 @@ export function JourneyHeroMotion() {
     Promise.all([import("gsap"), import("gsap/ScrollTrigger")]).then(([{ gsap }, { ScrollTrigger }]) => {
       if (cancelled) return;
       gsap.registerPlugin(ScrollTrigger);
-      context = gsap.context(() => {
+      const media = gsap.matchMedia();
+      context = media;
+      media.add({ compact: "(max-width: 600px)", regular: "(min-width: 600px)" }, (mediaContext) => {
+        const compact = Boolean(mediaContext.conditions?.compact);
         const hero = root.querySelector<HTMLElement>(".journey-hero");
         const orbit = root.querySelector<HTMLElement>(".journey-orbit");
         const copy = root.querySelector<HTMLElement>(".journey-hero-copy");
@@ -27,6 +30,7 @@ export function JourneyHeroMotion() {
         if (!hero || !orbit || !copy || !navigation || !stars || !horizon) return;
 
         gsap.set(horizon, { yPercent: 170 });
+        gsap.set(hero, { "--hero-wash-y": "110%" });
         const wash = { y: 110 };
         const timeline = gsap.timeline({
           defaults: { ease: "none" },
@@ -35,8 +39,8 @@ export function JourneyHeroMotion() {
         timeline
           .to(orbit, { xPercent: 17, yPercent: -11, scale: 1.18, duration: 0.65 }, 0)
           .to(stars, { opacity: 0.12, duration: 0.6 }, 0)
-          .to(copy, { yPercent: -16, clipPath: "inset(100% 0 0 0)", opacity: 0, duration: 0.34 }, 0.18)
-          .to(navigation, { yPercent: -60, opacity: 0, duration: 0.25 }, 0.16)
+          .to(copy, { yPercent: -16, clipPath: "inset(100% 0 0 0)", opacity: 0, duration: compact ? 0.30 : 0.34 }, compact ? 0.48 : 0.18)
+          .to(navigation, { yPercent: -60, opacity: 0, duration: compact ? 0.20 : 0.25 }, compact ? 0.40 : 0.16)
           .to(horizon, { yPercent: 0, duration: 0.56 }, 0.36)
           // CSS 변수 문자열을 GSAP 가 직접 트윈하면 시작값이 refresh 뒤 사라지거나 되감을 때
           // 0% 로 남아 위로 올려도 주황 막이 덮여 있었다. 숫자를 트윈하고 변수는 직접 쓴다.

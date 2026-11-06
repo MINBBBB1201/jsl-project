@@ -1,0 +1,17 @@
+{
+  "date": "2026-11-06",
+  "tool": "Built-in OpenAI image generation, edit mode",
+  "transparentBackground": true,
+  "input": "sea-vessel-photo.webp at 09eeb2c",
+  "inputSha256": "f4598de19675cc7b631d68c0fe3063ed0f1a59bcc7d29c3c76d1bbf4e536f612",
+  "generatedPngSha256": "4d61b996986af47de50e6981fbacfeb55be2f29347f5c26e9e7f4122a55bc233",
+  "output": "frontend/public/images/multimodal/sea-vessel-photo.webp",
+  "outputSha256": "35cc4c5d06b53d591d79801b624db0d391c7148ea9f3f0fd75350b79aaca7d60",
+  "outputDimensions": [
+    1962,
+    838
+  ],
+  "packaging": "Transparent alpha trim/resize/pad to original alpha bounds and WebP quality96; original generated PNG retained outside Git.",
+  "prompt": "Edit target: the supplied transparent aerial container-ship cutout, used as a precisely registered texture in a real scrolling WebGL logistics scene. Use case: precise-object-edit. Produce one high-resolution photorealistic replacement with genuine transparent alpha. Primary edit: make this the same ship freshly built or recently refurbished, with crisp clean paint and professional details, rather than the weathered, rusty, blurry old vessel. Keep EXACTLY the same overall silhouette, orthographic aerial camera, diagonal heading from stern at lower left to bow at upper right, canvas aspect ratio and framing, ship scale and position, outer alpha contour, container stack geometry and every container position. The middle orange container must remain at its exact original location and size because a live orange cargo mesh overlays it in the website; do not move, rotate or resize it. Preserve the current bow and stern outlines and cargo count. Rebuild detail on the white stern bridge, solar panels, railings, vents, windows, clean dark blue/teal hull and deck paint, capstans and mooring details, removing rust and mottled brown stains. Clean painted steel, subtle realistic material grain, soft natural daylight, restrained navy, white and muted blue containers with the one existing orange cargo. Real maritime editorial aerial photography, not a toy, not a boxy low-poly model, no plastic CG gloss, no artificial sharpen halos or overcooked HDR. No water, no sky, no wake, no external cast shadow, no extra objects, no text or new logos. Fully contained with the same transparent margins and no cropped ship parts. Return the cutout asset only.",
+  "limitations": "The prompt requests registration, but identical internal pixels are not guaranteed. Existing live cargo mesh/UV code is unchanged; actual 52/58/65/72 scene samples were viewed. Applicable terms, inherited input provenance and final visual selection remain open."
+}

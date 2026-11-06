@@ -30,7 +30,7 @@
 }
 .jsl-ac__media,
 .jsl-ac__shade { position: absolute; inset: 0; width: 100%; height: 100%; z-index: -2; }
-.jsl-ac__media { object-fit: cover; object-position: 50% 50%; filter: saturate(.78); }
+.jsl-ac__media { object-fit: cover; object-position: var(--jsl-ac-media-position, 50% 50%); filter: saturate(.78); }
 .jsl-ac__shade {
   z-index: -1;
   background: linear-gradient(180deg, rgba(4,13,19,.45), rgba(4,13,19,.46) 34%, rgba(4,13,19,.4) 48%, rgba(4,13,19,.16) 62%, rgba(4,13,19,.66));
@@ -82,6 +82,15 @@
 .jsl-ac__link { padding-bottom: 7px; border-bottom: 1px solid rgba(255,255,255,.6); font-size: 13px; white-space: nowrap; }
 .jsl-ac__link span { margin-left: 40px; font-size: 20px; }
 
+.jsl-ac__media-caption {
+  margin: 0;
+  padding: 18px max(6%, calc((100% - 1200px) / 2)) 0;
+  background: var(--jsl-ac-detail-bg);
+  color: var(--jsl-ac-detail-ink);
+  font-size: 12px;
+  line-height: 1.6;
+}
+
 .jsl-ac__detail {
   display: grid;
   grid-template-columns: 1.1fr 1fr;
@@ -121,7 +130,7 @@
 
 @media (max-width: 700px) {
   .jsl-ac__scene { min-height: 680px; }
-  .jsl-ac__media { object-position: 53% 50%; }
+  .jsl-ac__media { object-position: var(--jsl-ac-media-position-mobile, 53% 50%); }
   .jsl-ac__scene--media .jsl-ac__shade {
     background: linear-gradient(180deg, rgba(4,13,19,.47), rgba(4,13,19,.4) 34%, rgba(4,13,19,.38) 46%, rgba(4,13,19,.15) 60%, rgba(4,13,19,.77));
   }
@@ -134,6 +143,7 @@
   .jsl-ac__summary { font-size: 13px; }
   .jsl-ac__link { display: inline-block; margin-top: 23px; font-size: 12px; }
   .jsl-ac__link span { margin-left: 28px; font-size: 17px; }
+  .jsl-ac__media-caption { padding: 16px 7% 0; }
   .jsl-ac__detail { display: block; padding: 50px 7%; }
   .jsl-ac__values-title { margin-top: 36px; }
   .jsl-ac__values { display: block; }

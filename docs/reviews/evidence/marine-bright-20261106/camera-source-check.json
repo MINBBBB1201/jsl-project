@@ -1,0 +1,41 @@
+{
+  "results": [
+    {
+      "w": 1440,
+      "h": 900,
+      "macroIdenticalPoints": 5,
+      "holdAngle": 14,
+      "holdBounds": {
+        "left": 244.80000000000007,
+        "top": 169.9101707883696,
+        "width": 1123.2,
+        "height": 488.1796584232608
+      }
+    },
+    {
+      "w": 1280,
+      "h": 800,
+      "macroIdenticalPoints": 5,
+      "holdAngle": 14,
+      "holdBounds": {
+        "left": 217.60000000000014,
+        "top": 151.0312629229952,
+        "width": 998.3999999999999,
+        "height": 433.9374741540096
+      }
+    },
+    {
+      "w": 390,
+      "h": 844,
+      "macroIdenticalPoints": 5,
+      "holdAngle": 78,
+      "holdBounds": {
+        "left": 119.82712197659559,
+        "top": 219.43999999999997,
+        "width": 158.14575604680883,
+        "height": 405.12000000000006
+      }
+    }
+  ],
+  "note": "Pure camera equations/default bounds; actual runtime screenshots verify the integrated model."
+}

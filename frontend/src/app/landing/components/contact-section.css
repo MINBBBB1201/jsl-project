@@ -1,0 +1,18 @@
+/* The editorial .shadow-xs reset must not erase the consent control's state. */
+.journey #contact [data-slot="checkbox"] {
+  width: 20px;
+  height: 20px;
+  border: 1px solid #8e7865;
+  border-radius: 3px;
+  background: transparent;
+  box-shadow: none;
+}
+.journey #contact [data-slot="checkbox"][data-state="checked"] {
+  border-color: #ff7a22;
+  background: #ff7a22;
+  color: #23180f;
+}
+.journey #contact [data-slot="checkbox"]:focus-visible {
+  outline: 2px solid #ac440b;
+  outline-offset: 4px;
+}

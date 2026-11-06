@@ -1,0 +1,919 @@
+{
+  "scope": "Actual local Next app, Chromium emulated viewports, API requests blocked. Forward and reverse native rendering; no operational writes.",
+  "sourceLabel": "09eeb2c compiled module and original vessel asset",
+  "oldAssetOverride": true,
+  "results": [
+    {
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "file": "1440-46.png",
+      "progress": 0.46,
+      "fallback": "false",
+      "camera": {
+        "type": "orthographic",
+        "position": [
+          9.320000000000016,
+          467.2245365863878,
+          2.2825548926350105e-14
+        ],
+        "target": [
+          9.32,
+          12.157,
+          0
+        ],
+        "up": [
+          1,
+          -3.512142734218271e-17,
+          -6.123233995736766e-17
+        ],
+        "rightVector": [
+          6.123233995736766e-17,
+          -5.015859645267624e-17,
+          1
+        ],
+        "left": -1.109090909090909,
+        "right": 1.109090909090909,
+        "top": 0.7017269736842103,
+        "bottom": -0.7017269736842103,
+        "near": 0.1,
+        "far": 2213.513430897034,
+        "zoom": 1,
+        "fov": 0,
+        "spanX": 2.218181818181818,
+        "spanY": 1.4034539473684207,
+        "reveal": 0,
+        "departure": 0,
+        "elevation": 90,
+        "screenAngle": 90,
+        "cargoProjection": {
+          "x": 720,
+          "y": 450
+        },
+        "shipBounds": {
+          "left": -7070.163934426234,
+          "top": -40948.09467603995,
+          "width": 15580.327868852468,
+          "height": 93894.15280294744
+        },
+        "phase": "macro",
+        "triangles": 503764,
+        "calls": 167,
+        "containers": 130
+      },
+      "photo": {
+        "state": "ready",
+        "error": null
+      },
+      "daylight": {
+        "enabled": true,
+        "state": "ready",
+        "loads": 1,
+        "builds": 1,
+        "error": null
+      },
+      "waterTime": 11.040000000000001,
+      "waterDrift": 79.48800000000001,
+      "overflow": 0,
+      "shaderHash": "70fb280491604912955a21b310e3c4225cbdc3f7e79bdfeba83353cf70a5466b",
+      "errors": []
+    },
+    {
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "file": "1440-52.png",
+      "progress": 0.52,
+      "fallback": "false",
+      "camera": {
+        "type": "orthographic",
+        "position": [
+          7.670451038619127,
+          467.20237847241435,
+          5.341043687633535
+        ],
+        "target": [
+          4.031722155769853,
+          12.179063240895504,
+          0.1444002865173841
+        ],
+        "up": [
+          0.9993255629438685,
+          -0.007581063631271998,
+          -0.035929747023026516
+        ],
+        "rightVector": [
+          0.03583968358608309,
+          -0.01169909249167993,
+          0.9992890714479572
+        ],
+        "left": -14.325015427293577,
+        "right": 14.325015427293577,
+        "top": 8.976075105111535,
+        "bottom": -8.976075105111535,
+        "near": 0.1,
+        "far": 2213.513430897034,
+        "zoom": 1,
+        "fov": 0,
+        "spanX": 28.650030854587154,
+        "spanY": 17.95215021022307,
+        "reveal": 0.028527335554400495,
+        "departure": 0,
+        "elevation": 89.20123460447678,
+        "screenAngle": 87.94603184008317,
+        "cargoProjection": {
+          "x": 722.2864409127467,
+          "y": 184.79165279339435
+        },
+        "shipBounds": {
+          "left": -36.822505632733964,
+          "top": -3077.256518098506,
+          "width": 1487.727771381703,
+          "height": 7390.6796662661745
+        },
+        "phase": "reveal",
+        "triangles": 508268,
+        "calls": 178,
+        "containers": 130
+      },
+      "photo": {
+        "state": "ready",
+        "error": null
+      },
+      "daylight": {
+        "enabled": true,
+        "state": "ready",
+        "loads": 1,
+        "builds": 1,
+        "error": null
+      },
+      "waterTime": 12.48,
+      "waterDrift": 89.85600000000001,
+      "overflow": 0,
+      "shaderHash": "70fb280491604912955a21b310e3c4225cbdc3f7e79bdfeba83353cf70a5466b",
+      "errors": []
+    },
+    {
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "file": "1440-58.png",
+      "progress": 0.58,
+      "fallback": "false",
+      "camera": {
+        "type": "orthographic",
+        "position": [
+          78.58863172949646,
+          441.78360287362017,
+          129.04313609775824
+        ],
+        "target": [
+          -10.02479722370203,
+          13.743373471180789,
+          2.4900441676638607
+        ],
+        "up": [
+          0.6168381867972783,
+          0.10300856377109513,
+          -0.7803203746529129
+        ],
+        "rightVector": [
+          0.7626221088360571,
+          -0.3234896625324145,
+          0.5601445861106842
+        ],
+        "left": -94.29160641638315,
+        "right": 94.29160641638315,
+        "top": 58.93225401023946,
+        "bottom": -58.93225401023946,
+        "near": 0.1,
+        "far": 2213.513430897034,
+        "zoom": 1,
+        "fov": 0,
+        "spanX": 188.5832128327663,
+        "spanY": 117.86450802047892,
+        "reveal": 0.708787938366734,
+        "departure": 0,
+        "elevation": 70.15393772573145,
+        "screenAngle": 38.96726843759515,
+        "cargoProjection": {
+          "x": 825.9186081652011,
+          "y": 345.29495505643837
+        },
+        "shipBounds": {
+          "left": 260.3568693445628,
+          "top": -42.221734036668806,
+          "width": 1033.2202296073517,
+          "height": 857.4624582750637
+        },
+        "phase": "reveal",
+        "triangles": 534058,
+        "calls": 289,
+        "containers": 130
+      },
+      "photo": {
+        "state": "ready",
+        "error": null
+      },
+      "daylight": {
+        "enabled": true,
+        "state": "ready",
+        "loads": 1,
+        "builds": 1,
+        "error": null
+      },
+      "waterTime": 13.919999999999998,
+      "waterDrift": 100.22399999999999,
+      "overflow": 0,
+      "shaderHash": "70fb280491604912955a21b310e3c4225cbdc3f7e79bdfeba83353cf70a5466b",
+      "errors": []
+    },
+    {
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "file": "1440-65.png",
+      "progress": 0.65,
+      "fallback": "false",
+      "camera": {
+        "type": "orthographic",
+        "position": [
+          108.75432383281591,
+          416.0046684405276,
+          179.08847611956264
+        ],
+        "target": [
+          -13.785273079992644,
+          14.203882423334834,
+          4.0837950415529445
+        ],
+        "up": [
+          0.29760269094436753,
+          0.30348510649115157,
+          -0.9051681769045605
+        ],
+        "rightVector": [
+          0.9159269025385348,
+          -0.35819036615001404,
+          0.18104576991325755
+        ],
+        "left": -95.99622284973124,
+        "right": 95.99622284973124,
+        "top": 59.99763928108202,
+        "bottom": -59.99763928108202,
+        "near": 0.1,
+        "far": 2213.513430897034,
+        "zoom": 1,
+        "fov": 0,
+        "spanX": 191.99244569946248,
+        "spanY": 119.99527856216405,
+        "reveal": 1,
+        "departure": 0,
+        "elevation": 62,
+        "screenAngle": 18,
+        "cargoProjection": {
+          "x": 878.6804504699487,
+          "y": 375.3607050983784
+        },
+        "shipBounds": {
+          "left": 259.20000000000005,
+          "top": 115.21386943998294,
+          "width": 1123.1999999999998,
+          "height": 561.5722611200341
+        },
+        "phase": "hold",
+        "triangles": 18,
+        "calls": 9,
+        "containers": 130
+      },
+      "photo": {
+        "state": "ready",
+        "error": null
+      },
+      "daylight": {
+        "enabled": true,
+        "state": "ready",
+        "loads": 1,
+        "builds": 1,
+        "error": null
+      },
+      "waterTime": 15.600000000000001,
+      "waterDrift": 112.32000000000001,
+      "overflow": 0,
+      "shaderHash": "70fb280491604912955a21b310e3c4225cbdc3f7e79bdfeba83353cf70a5466b",
+      "errors": []
+    },
+    {
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "file": "1440-72.png",
+      "progress": 0.72,
+      "fallback": "false",
+      "camera": {
+        "type": "orthographic",
+        "position": [
+          108.11942527404332,
+          431.4832075866802,
+          181.05728348765734
+        ],
+        "target": [
+          -15.332597317310235,
+          14.30235266609248,
+          4.749523495533291
+        ],
+        "up": [
+          0.2981397646967281,
+          0.29537216457304993,
+          -0.9076717276097184
+        ],
+        "rightVector": [
+          0.917579845584424,
+          -0.35067678163720917,
+          0.18727792661665688
+        ],
+        "left": -100.2578451546666,
+        "right": 100.2578451546666,
+        "top": 62.66115322166662,
+        "bottom": -62.66115322166662,
+        "near": 0.1,
+        "far": 2227.876074239045,
+        "zoom": 1,
+        "fov": 0,
+        "spanX": 200.5156903093332,
+        "spanY": 125.32230644333325,
+        "reveal": 1,
+        "departure": 0.03549382716049392,
+        "elevation": 62.70987654320988,
+        "screenAngle": 18,
+        "cargoProjection": {
+          "x": 881.4653797888756,
+          "y": 370.8079906055621
+        },
+        "shipBounds": {
+          "left": 287.62792161418565,
+          "top": 122.13956543523295,
+          "width": 1076.566378993851,
+          "height": 536.859758018423
+        },
+        "phase": "departure",
+        "triangles": 18,
+        "calls": 9,
+        "containers": 130
+      },
+      "photo": {
+        "state": "ready",
+        "error": null
+      },
+      "daylight": {
+        "enabled": true,
+        "state": "ready",
+        "loads": 1,
+        "builds": 1,
+        "error": null
+      },
+      "waterTime": 17.28,
+      "waterDrift": 124.41600000000001,
+      "overflow": 0,
+      "shaderHash": "70fb280491604912955a21b310e3c4225cbdc3f7e79bdfeba83353cf70a5466b",
+      "errors": []
+    },
+    {
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "file": "1440-reverse-65.png",
+      "progress": 0.65,
+      "fallback": "false",
+      "camera": {
+        "type": "orthographic",
+        "position": [
+          108.75432383281591,
+          416.0046684405276,
+          179.08847611956264
+        ],
+        "target": [
+          -13.785273079992644,
+          14.203882423334834,
+          4.0837950415529445
+        ],
+        "up": [
+          0.29760269094436753,
+          0.30348510649115157,
+          -0.9051681769045605
+        ],
+        "rightVector": [
+          0.9159269025385348,
+          -0.35819036615001404,
+          0.18104576991325755
+        ],
+        "left": -95.99622284973124,
+        "right": 95.99622284973124,
+        "top": 59.99763928108202,
+        "bottom": -59.99763928108202,
+        "near": 0.1,
+        "far": 2213.513430897034,
+        "zoom": 1,
+        "fov": 0,
+        "spanX": 191.99244569946248,
+        "spanY": 119.99527856216405,
+        "reveal": 1,
+        "departure": 0,
+        "elevation": 62,
+        "screenAngle": 18,
+        "cargoProjection": {
+          "x": 878.6804504699487,
+          "y": 375.3607050983784
+        },
+        "shipBounds": {
+          "left": 259.20000000000005,
+          "top": 115.21386943998294,
+          "width": 1123.1999999999998,
+          "height": 561.5722611200341
+        },
+        "phase": "hold",
+        "triangles": 18,
+        "calls": 9,
+        "containers": 130
+      },
+      "photo": {
+        "state": "ready",
+        "error": null
+      },
+      "daylight": {
+        "enabled": true,
+        "state": "ready",
+        "loads": 1,
+        "builds": 1,
+        "error": null
+      },
+      "waterTime": 15.600000000000001,
+      "waterDrift": 112.32000000000001,
+      "overflow": 0,
+      "shaderHash": "70fb280491604912955a21b310e3c4225cbdc3f7e79bdfeba83353cf70a5466b",
+      "errors": []
+    },
+    {
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "file": "390-46.png",
+      "progress": 0.46,
+      "fallback": "false",
+      "camera": {
+        "type": "orthographic",
+        "position": [
+          9.320000000000016,
+          467.2245365863878,
+          2.2825548926350105e-14
+        ],
+        "target": [
+          9.32,
+          12.157,
+          0
+        ],
+        "up": [
+          1,
+          -3.512142734218271e-17,
+          -6.123233995736766e-17
+        ],
+        "rightVector": [
+          6.123233995736766e-17,
+          -5.015859645267624e-17,
+          1
+        ],
+        "left": -1.109090909090909,
+        "right": 1.109090909090909,
+        "top": 2.4297746288798914,
+        "bottom": -2.4297746288798914,
+        "near": 0.1,
+        "far": 2213.513430897034,
+        "zoom": 1,
+        "fov": 0,
+        "spanX": 2.218181818181818,
+        "spanY": 4.859549257759783,
+        "reveal": 0,
+        "departure": 0,
+        "elevation": 90,
+        "screenAngle": 90,
+        "cargoProjection": {
+          "x": 195,
+          "y": 422
+        },
+        "shipBounds": {
+          "left": -1914.8360655737715,
+          "top": -10789.983974760822,
+          "width": 4219.672131147543,
+          "height": 25429.6663841316
+        },
+        "phase": "macro",
+        "triangles": 503764,
+        "calls": 167,
+        "containers": 130
+      },
+      "photo": {
+        "state": "ready",
+        "error": null
+      },
+      "daylight": {
+        "enabled": true,
+        "state": "ready",
+        "loads": 1,
+        "builds": 1,
+        "error": null
+      },
+      "waterTime": 11.040000000000001,
+      "waterDrift": 79.48800000000001,
+      "overflow": 0,
+      "shaderHash": "70fb280491604912955a21b310e3c4225cbdc3f7e79bdfeba83353cf70a5466b",
+      "errors": []
+    },
+    {
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "file": "390-52.png",
+      "progress": 0.52,
+      "fallback": "false",
+      "camera": {
+        "type": "orthographic",
+        "position": [
+          4.9054026970975855,
+          467.2199662298774,
+          2.446817006081757
+        ],
+        "target": [
+          3.2159499302045544,
+          12.161962174003031,
+          0.03402840455852519
+        ],
+        "up": [
+          0.9999886463571326,
+          -0.003696623910002099,
+          -0.003007013218777709
+        ],
+        "rightVector": [
+          0.0029873505626661478,
+          -0.005313148532902858,
+          0.9999814229220876
+        ],
+        "left": -8.60375663623424,
+        "right": 8.60375663623424,
+        "top": 18.66711999630301,
+        "bottom": -18.66711999630301,
+        "near": 0.1,
+        "far": 2213.513430897034,
+        "zoom": 1,
+        "fov": 0,
+        "spanX": 17.20751327246848,
+        "spanY": 37.33423999260602,
+        "reveal": 0.028527335554400495,
+        "departure": 0,
+        "elevation": 89.62914463779279,
+        "screenAngle": 89.8288359866736,
+        "cargoProjection": {
+          "x": 194.6426605464039,
+          "y": 284.0070581026826
+        },
+        "shipBounds": {
+          "left": -84.69866638484652,
+          "top": -1177.5482827565925,
+          "width": 557.65108165,
+          "height": 3314.2407045308933
+        },
+        "phase": "reveal",
+        "triangles": 515268,
+        "calls": 192,
+        "containers": 130
+      },
+      "photo": {
+        "state": "ready",
+        "error": null
+      },
+      "daylight": {
+        "enabled": true,
+        "state": "ready",
+        "loads": 1,
+        "builds": 1,
+        "error": null
+      },
+      "waterTime": 12.48,
+      "waterDrift": 89.85600000000001,
+      "overflow": 0,
+      "shaderHash": "70fb280491604912955a21b310e3c4225cbdc3f7e79bdfeba83353cf70a5466b",
+      "errors": []
+    },
+    {
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "file": "390-58.png",
+      "progress": 0.58,
+      "fallback": "false",
+      "camera": {
+        "type": "orthographic",
+        "position": [
+          31.354159473370927,
+          462.2764046462817,
+          59.176293713307444
+        ],
+        "target": [
+          -10.441441350245718,
+          13.080836753890726,
+          -0.5140102935297381
+        ],
+        "up": [
+          0.9930316246031071,
+          -0.08102567067150426,
+          -0.08557472308074858
+        ],
+        "rightVector": [
+          0.07384253262454353,
+          -0.1381135797971958,
+          0.9876598197006887
+        ],
+        "left": -61.39719995948854,
+        "right": 61.39719995948854,
+        "top": 132.869837861047,
+        "bottom": -132.869837861047,
+        "near": 0.1,
+        "far": 2213.513430897034,
+        "zoom": 1,
+        "fov": 0,
+        "spanX": 122.79439991897708,
+        "spanY": 265.739675722094,
+        "reveal": 0.708787938366734,
+        "departure": 0,
+        "elevation": 80.78575680123245,
+        "screenAngle": 85.74727236979959,
+        "cargoProjection": {
+          "x": 201.6522062217954,
+          "y": 359.5761783439343
+        },
+        "shipBounds": {
+          "left": 138.14671898618434,
+          "top": 148.5019376396302,
+          "width": 123.46282480160964,
+          "height": 476.4307642467698
+        },
+        "phase": "reveal",
+        "triangles": 534058,
+        "calls": 289,
+        "containers": 130
+      },
+      "photo": {
+        "state": "ready",
+        "error": null
+      },
+      "daylight": {
+        "enabled": true,
+        "state": "ready",
+        "loads": 1,
+        "builds": 1,
+        "error": null
+      },
+      "waterTime": 13.919999999999998,
+      "waterDrift": 100.22399999999999,
+      "overflow": 0,
+      "shaderHash": "70fb280491604912955a21b310e3c4225cbdc3f7e79bdfeba83353cf70a5466b",
+      "errors": []
+    },
+    {
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "file": "390-65.png",
+      "progress": 0.65,
+      "fallback": "false",
+      "camera": {
+        "type": "orthographic",
+        "position": [
+          59.081826233263044,
+          455.5542335723407,
+          81.0249098080502
+        ],
+        "target": [
+          0.3659982482140407,
+          12.15004846700463,
+          -2.829982893010376
+        ],
+        "up": [
+          0.9862088159144327,
+          -0.10666117390920013,
+          -0.12655261906797519
+        ],
+        "rightVector": [
+          0.10365472340895474,
+          -0.19805648394013217,
+          0.974694479046786
+        ],
+        "left": -72.58640922481648,
+        "right": 72.58640922481648,
+        "top": 157.08443432242336,
+        "bottom": -157.08443432242336,
+        "near": 0.1,
+        "far": 2213.513430897034,
+        "zoom": 1,
+        "fov": 0,
+        "spanX": 145.17281844963296,
+        "spanY": 314.1688686448467,
+        "reveal": 1,
+        "departure": 0,
+        "elevation": 77,
+        "screenAngle": 84,
+        "cargoProjection": {
+          "x": 204.8998934009175,
+          "y": 399.24135539601207
+        },
+        "shipBounds": {
+          "left": 142.5989216325969,
+          "top": 219.44,
+          "width": 120.4021567348062,
+          "height": 405.12
+        },
+        "phase": "hold",
+        "triangles": 18,
+        "calls": 9,
+        "containers": 130
+      },
+      "photo": {
+        "state": "ready",
+        "error": null
+      },
+      "daylight": {
+        "enabled": true,
+        "state": "ready",
+        "loads": 1,
+        "builds": 1,
+        "error": null
+      },
+      "waterTime": 15.600000000000001,
+      "waterDrift": 112.32000000000001,
+      "overflow": 0,
+      "shaderHash": "70fb280491604912955a21b310e3c4225cbdc3f7e79bdfeba83353cf70a5466b",
+      "errors": []
+    },
+    {
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "file": "390-72.png",
+      "progress": 0.72,
+      "fallback": "false",
+      "camera": {
+        "type": "orthographic",
+        "position": [
+          57.18732081081174,
+          470.38689578840325,
+          81.72311326067242
+        ],
+        "target": [
+          -2.080743257531676,
+          12.470465771458315,
+          -2.9204543019961475
+        ],
+        "up": [
+          0.9868174230541779,
+          -0.10495210382632113,
+          -0.12319265180659528
+        ],
+        "rightVector": [
+          0.10124704558999302,
+          -0.19348806507110639,
+          0.9758644395787448
+        ],
+        "left": -75.80878455797794,
+        "right": 75.80878455797794,
+        "top": 164.05798504341894,
+        "bottom": -164.05798504341894,
+        "near": 0.1,
+        "far": 2227.876074239045,
+        "zoom": 1,
+        "fov": 0,
+        "spanX": 151.6175691159559,
+        "spanY": 328.1159700868379,
+        "reveal": 1,
+        "departure": 0.03549382716049392,
+        "elevation": 77.28395061728395,
+        "screenAngle": 84.14197530864197,
+        "cargoProjection": {
+          "x": 205.45601300117266,
+          "y": 393.9017176834176
+        },
+        "shipBounds": {
+          "left": 146.45265303131526,
+          "top": 221.81766923473026,
+          "width": 114.07895319662875,
+          "height": 387.7828096786876
+        },
+        "phase": "departure",
+        "triangles": 18,
+        "calls": 9,
+        "containers": 130
+      },
+      "photo": {
+        "state": "ready",
+        "error": null
+      },
+      "daylight": {
+        "enabled": true,
+        "state": "ready",
+        "loads": 1,
+        "builds": 1,
+        "error": null
+      },
+      "waterTime": 17.28,
+      "waterDrift": 124.41600000000001,
+      "overflow": 0,
+      "shaderHash": "70fb280491604912955a21b310e3c4225cbdc3f7e79bdfeba83353cf70a5466b",
+      "errors": []
+    },
+    {
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "file": "390-reverse-65.png",
+      "progress": 0.65,
+      "fallback": "false",
+      "camera": {
+        "type": "orthographic",
+        "position": [
+          59.081826233263044,
+          455.5542335723407,
+          81.0249098080502
+        ],
+        "target": [
+          0.3659982482140407,
+          12.15004846700463,
+          -2.829982893010376
+        ],
+        "up": [
+          0.9862088159144327,
+          -0.10666117390920013,
+          -0.12655261906797519
+        ],
+        "rightVector": [
+          0.10365472340895474,
+          -0.19805648394013217,
+          0.974694479046786
+        ],
+        "left": -72.58640922481648,
+        "right": 72.58640922481648,
+        "top": 157.08443432242336,
+        "bottom": -157.08443432242336,
+        "near": 0.1,
+        "far": 2213.513430897034,
+        "zoom": 1,
+        "fov": 0,
+        "spanX": 145.17281844963296,
+        "spanY": 314.1688686448467,
+        "reveal": 1,
+        "departure": 0,
+        "elevation": 77,
+        "screenAngle": 84,
+        "cargoProjection": {
+          "x": 204.8998934009175,
+          "y": 399.24135539601207
+        },
+        "shipBounds": {
+          "left": 142.5989216325969,
+          "top": 219.44,
+          "width": 120.4021567348062,
+          "height": 405.12
+        },
+        "phase": "hold",
+        "triangles": 18,
+        "calls": 9,
+        "containers": 130
+      },
+      "photo": {
+        "state": "ready",
+        "error": null
+      },
+      "daylight": {
+        "enabled": true,
+        "state": "ready",
+        "loads": 1,
+        "builds": 1,
+        "error": null
+      },
+      "waterTime": 15.600000000000001,
+      "waterDrift": 112.32000000000001,
+      "overflow": 0,
+      "shaderHash": "70fb280491604912955a21b310e3c4225cbdc3f7e79bdfeba83353cf70a5466b",
+      "errors": []
+    }
+  ]
+}

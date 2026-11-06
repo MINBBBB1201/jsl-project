@@ -1,51 +1,88 @@
 "use client"
 
-import { useEffect, useRef, useState } from "react"
+import { useEffect, useRef, useState, type CSSProperties } from "react"
+import { useLocale } from "next-intl"
 import { SiteLink } from "@/components/site-link"
 import { useContent } from "@/config/use-content"
 import "./approved-company.css"
+
+const conceptMediaCaptions: Record<string, string> = {
+  ko: "AI로 제작한 물류 현장 콘셉트 이미지. 실제 JSL 시설 사진이 아닙니다.",
+  en: "AI-generated logistics concept. Not a photograph of a JSL facility.",
+  zh: "AI 生成的物流场景示意图，非 JSL 实际设施照片。",
+  vi: "Hình ý tưởng logistics do AI tạo, không phải ảnh cơ sở thực tế của JSL.",
+}
+
+type CompanyMediaStyle = CSSProperties & {
+  "--jsl-ac-media-position"?: string
+  "--jsl-ac-media-position-mobile"?: string
+}
+
+type ApprovedCompanySectionProps = {
+  /** Generated concept media; the default caption explicitly identifies it. */
+  mediaSrc?: string
+  mediaCaption?: string
+  mediaPosition?: { desktop: string; mobile: string }
+  /** Compatibility with the isolated reference preview. Not for public media. */
+  previewMedia?: string
+}
 
 /**
  * 승인된 회사소개 장면 — 화면 대부분을 차지하는 현장 매체 위로 큰 제목이 가로지르는 구도.
  *
  * 원본: design-direction-20261024/connected-scroll/company-frame.html + trust-pilot/scene.css.
- * 브랜드 제목은 승인 초안 문구를 유지하고, 설명·가치·CTA는 about 번역 값을 쓴다. 매체는 previewMedia 가 있을 때만
+ * 브랜드 제목은 승인 초안 문구를 유지하고, 설명·가치·CTA는 about 번역 값을 쓴다. 매체는 mediaSrc 또는 previewMedia 가 있을 때만
  * 보여 주며, 없거나 불러오지 못해도 아래 상세 영역의 본문·가치·CTA 는 그대로 읽힌다.
  * 인증 정보는 바깥의 CertificationsBar 가 표시하므로 여기서 다시 그리지 않는다.
  */
-export function ApprovedCompanySection({ previewMedia }: { previewMedia?: string }) {
+export function ApprovedCompanySection({
+  mediaSrc,
+  mediaCaption,
+  mediaPosition,
+  previewMedia,
+}: ApprovedCompanySectionProps) {
   const { about } = useContent()
+  const locale = useLocale()
+  const source = mediaSrc ?? previewMedia
+  const caption = mediaCaption ?? (mediaSrc ? (conceptMediaCaptions[locale] ?? conceptMediaCaptions.en) : undefined)
   const [failedMedia, setFailedMedia] = useState<string | null>(null)
-  const showMedia = Boolean(previewMedia) && failedMedia !== previewMedia
+  const showMedia = Boolean(source) && failedMedia !== source
   const mediaRef = useRef<HTMLImageElement>(null)
+  const mediaStyle: CompanyMediaStyle | undefined = mediaPosition
+    ? {
+        "--jsl-ac-media-position": mediaPosition.desktop,
+        "--jsl-ac-media-position-mobile": mediaPosition.mobile,
+      }
+    : undefined
 
   // 서버가 그린 img 가 hydrate 전에 실패하면 onError 가 오지 않는다. decode 로 한 번 더 확인한다.
   useEffect(() => {
     const img = mediaRef.current
-    if (!img || !previewMedia) return
+    if (!img || !source) return
     let alive = true
     img.decode().catch(() => {
-      if (alive) setFailedMedia(previewMedia)
+      if (alive) setFailedMedia(source)
     })
     return () => {
       alive = false
     }
-  }, [previewMedia])
+  }, [source])
 
   return (
     <section id="about" className="jsl-ac" aria-labelledby="jsl-ac-title">
       <div className={showMedia ? "jsl-ac__scene jsl-ac__scene--media" : "jsl-ac__scene"}>
         {showMedia && (
-          // 외부 참고 매체는 URL prop 으로만 받는다. 크기를 알 수 없어 next/image 대신 img 를 쓴다.
+          // 장면 높이는 CSS로 고정되어 있다. 로컬 매체는 cover 크롭을 유지한다.
           // eslint-disable-next-line @next/next/no-img-element
           <img
             ref={mediaRef}
             className="jsl-ac__media"
-            src={previewMedia}
+            src={source}
+            style={mediaStyle}
             alt=""
             aria-hidden="true"
             decoding="async"
-            onError={() => setFailedMedia(previewMedia ?? null)}
+            onError={() => setFailedMedia(source ?? null)}
           />
         )}
         <div className="jsl-ac__shade" aria-hidden="true" />
@@ -66,6 +103,8 @@ export function ApprovedCompanySection({ previewMedia }: { previewMedia?: string
           </a>
         </div>
       </div>
+
+      {showMedia && caption && <p className="jsl-ac__media-caption">{caption}</p>}
 
       <div id="about-detail" className="jsl-ac__detail">
         <p className="jsl-ac__description">{about.description}</p>

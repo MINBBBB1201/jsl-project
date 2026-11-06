@@ -1,0 +1,30 @@
+{
+  "viewport": {
+    "width": 390,
+    "height": 844
+  },
+  "scrollY": 10304,
+  "buttonRect": {
+    "x": 326,
+    "y": 772,
+    "width": 48,
+    "height": 48
+  },
+  "before": {
+    "label": "180억원",
+    "x": 277.4375,
+    "y": 783.703125,
+    "width": 88.5625,
+    "height": 33,
+    "overlap": true
+  },
+  "after": {
+    "label": "180억원",
+    "x": 229.4375,
+    "y": 783.703125,
+    "width": 88.5625,
+    "height": 33,
+    "overlap": false
+  },
+  "method": "Two actual browser probes at the same observed scrollY; before and after the48px narrow-layout text-free edge."
+}

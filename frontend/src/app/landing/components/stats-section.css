@@ -1,0 +1,99 @@
+/* Scoped to selected composition B; the host controls adjacent scenes. */
+.jsl-stats {
+  --jsl-stats-surface: var(--jsl-night, #17100b);
+  --jsl-stats-ink: var(--jsl-paper, #f3efe7);
+  --jsl-stats-muted: #c3b5a6;
+  --jsl-stats-rule: #5f4b3d;
+  --jsl-stats-accent: var(--jsl-orange, #ff7a22);
+  color: var(--jsl-stats-ink);
+  background: var(--jsl-stats-surface);
+}
+.journey .jsl-stats { padding: 80px 4% 88px; }
+.jsl-stats__inner {
+  width: 100%; max-width: 1280px; margin: 0 auto;
+  display: grid;
+  grid-template-columns: minmax(0, 1.65fr) minmax(270px, .95fr);
+  gap: clamp(56px, 7vw, 112px);
+}
+.jsl-stats__transport, .jsl-stats__company { min-width: 0; }
+.jsl-stats__intro { margin-bottom: 32px; }
+/* Inherited editorial selectors otherwise force every h2 up to 65px. */
+.jsl-stats .jsl-stats__heading {
+  max-width: 17ch; margin: 0;
+  font-size: clamp(36px, 3.5vw, 48px) !important;
+  line-height: 1.08; font-weight: 600; letter-spacing: -.03em;
+  text-wrap: balance;
+}
+.jsl-stats__description {
+  max-width: 40ch; margin: 18px 0 0;
+  color: var(--jsl-stats-muted); font-size: 15px; line-height: 1.6;
+}
+.jsl-stats__volumes, .jsl-stats__company-figures, .jsl-stats dd { margin: 0; }
+.jsl-stats__volume {
+  display: grid;
+  grid-template-columns: minmax(72px, 1fr) minmax(0, 2.2fr);
+  align-items: center; min-height: 132px; gap: 24px;
+  border-top: 1px solid var(--jsl-stats-rule);
+}
+.jsl-stats__volume:last-child { border-bottom: 1px solid var(--jsl-stats-rule); }
+.jsl-stats__mode { color: var(--jsl-stats-accent); font-size: 16px; line-height: 1.3; font-weight: 600; }
+.jsl-stats__volume-value {
+  display: flex; flex-wrap: wrap; align-items: baseline; gap: 8px 16px;
+  font-size: clamp(52px, 5vw, 68px); line-height: 1.1; font-weight: 600;
+  font-variant-numeric: tabular-nums; letter-spacing: -.03em;
+}
+.jsl-stats__count { min-width: 2.7ch; }
+.jsl-stats__unit {
+  color: var(--jsl-stats-muted); font-size: 15px; line-height: 1.5;
+  font-weight: 400; letter-spacing: 0;
+}
+.jsl-stats__company { padding-left: 32px; border-left: 1px solid var(--jsl-stats-rule); }
+.jsl-stats__company-heading {
+  margin: 3px 0 28px; max-width: 20ch; font-size: 25px; line-height: 1.25;
+  font-weight: 600; letter-spacing: -.02em; text-wrap: balance;
+}
+.jsl-stats__company-row {
+  display: grid; grid-template-columns: max-content minmax(0, 1fr);
+  align-items: baseline; gap: 10px 14px; padding: 19px 0 22px;
+  border-top: 1px solid var(--jsl-stats-rule);
+}
+.jsl-stats__company-label {
+  grid-column: 2; grid-row: 1; color: var(--jsl-stats-ink);
+  font-size: 14px; line-height: 1.4; font-weight: 600;
+}
+.jsl-stats__company-value {
+  grid-column: 1; grid-row: 1; font-size: 28px; line-height: 1.15;
+  font-weight: 600; font-variant-numeric: tabular-nums; letter-spacing: -.02em;
+}
+.jsl-stats__company-detail {
+  grid-column: 1 / -1; max-width: 38ch; color: var(--jsl-stats-muted);
+  font-size: 14px; line-height: 1.6;
+}
+@media (max-width: 1050px) {
+  .jsl-stats__inner { column-gap: 42px; grid-template-columns: minmax(0, 1.45fr) minmax(240px, 1fr); }
+  .jsl-stats__volume-value { gap: 8px 10px; }
+  .jsl-stats__unit { font-size: 14px; }
+  .jsl-stats__company { padding-left: 24px; }
+}
+@media (max-width: 900px) {
+  /* Keep a text-free edge for the existing fixed theme control. */
+  .jsl-stats__inner { grid-template-columns: minmax(0, 1fr); gap: 44px; padding-inline-end: 48px; }
+  .jsl-stats__company { padding: 32px 0 0; border-left: 0; border-top: 1px solid var(--jsl-stats-rule); }
+  .jsl-stats__company-heading { max-width: none; margin: 0 0 20px; }
+  .jsl-stats__company-row { grid-template-columns: minmax(0, 1fr) auto; gap: 9px 20px; }
+  .jsl-stats__company-label { grid-column: 1; }
+  .jsl-stats__company-value { grid-column: 2; text-align: right; }
+}
+@media (max-width: 600px) {
+  .journey .jsl-stats { padding: 48px 24px 56px; }
+  .jsl-stats .jsl-stats__heading { font-size: 35px !important; max-width: 18ch; line-height: 1.12; }
+  .jsl-stats__description { margin-top: 15px; font-size: 14px; line-height: 1.6; }
+  .jsl-stats__intro { margin-bottom: 25px; }
+  .jsl-stats__volume { grid-template-columns: minmax(54px, .8fr) minmax(0, 2fr); gap: 20px; min-height: 108px; }
+  .jsl-stats__mode { font-size: 15px; }
+  .jsl-stats__volume-value { gap: 7px 12px; font-size: 48px; }
+  .jsl-stats__unit { font-size: 13px; }
+  .jsl-stats__company-heading { font-size: 23px; }
+  .jsl-stats__company-label { font-size: 14px; }
+  .jsl-stats__company-value { font-size: 27px; }
+}

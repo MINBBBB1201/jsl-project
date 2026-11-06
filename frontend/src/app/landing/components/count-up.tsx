@@ -128,7 +128,13 @@ export function CountUp({ value, className }: CountUpProps) {
   }, [])
 
   React.useEffect(() => {
-    if (!parsed || reduced || !inView) return
+    if (!parsed) return
+    if (reduced) {
+      // 화면 밖이나 재생 도중 설정을 바꿔도 최종 수치를 표시한다.
+      count.set(parsed.target)
+      return
+    }
+    if (!inView) return
 
     const controls = animate(count, parsed.target, {
       duration: COUNT_DURATION,

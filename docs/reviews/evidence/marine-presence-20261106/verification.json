@@ -1,0 +1,33 @@
+{
+  "cases": 12,
+  "scope": "Actual final local Next production build; API blocked; no operating writes",
+  "camerasAndReverse": [
+    {
+      "width": 1440,
+      "reversePngIdentical": true,
+      "holdPngSha256": "024e5466af55eb56ed76ccecc8bc583e99fc0241ac582e0afb5470825bed077e",
+      "fiveCamerasUnchanged": true
+    },
+    {
+      "width": 390,
+      "reversePngIdentical": true,
+      "holdPngSha256": "b047b099600df47802975479fb5bbc5c86bada849307c3171df5047686408aec",
+      "fiveCamerasUnchanged": true
+    }
+  ],
+  "shaderSha256": "24602599f6231daf96f39682e55e7947330a3d34ef9cd4092d6f13ed5d0ccad2",
+  "vesselTextureSha256": "ebd6ee5d0199a408e049554b696fa4d6fb2b480ac555c09b2adca9c4bd0476b8",
+  "orangeCargoCount": 1,
+  "tsc": "Next build TypeScript stage passed",
+  "build": "webpack 78 static pages passed",
+  "prototypeVerify": {
+    "sourceSyntaxChecks": 76,
+    "daylightContracts": 8,
+    "inlineBytes": 994030,
+    "archiveBytes": 20915190
+  },
+  "limits": [
+    "Safari, actual devices and GPU performance unverified",
+    "Same-company read review only; vendor review and production approval remain"
+  ]
+}

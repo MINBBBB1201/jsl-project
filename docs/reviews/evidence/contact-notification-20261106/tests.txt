@@ -1,0 +1,28 @@
+✔ HTTP to Mongo stores server consent, snapshot and a safe receipt (1694.8349ms)
+✔ 12 concurrent HTTP retries across two service instances create one Mongo record (107.6221ms)
+✔ a new router instance can replay the stored receipt (27.6562ms)
+✔ different content cannot reuse a stored key (24.7842ms)
+✔ missing consent, old notice and extra personal data cannot save (15.4783ms)
+✔ unapproved and fixture production policies are blocked (18.1977ms)
+✔ legacy inquiries keep unknown consent and are compatible with the partial index (10.1803ms)
+✔ HTTP parser rejects malformed, oversize, non-JSON and invalid email without values in errors (18.7947ms)
+✔ contact router keeps its own errors while the shared 404 and parser handlers stay in force (28.2571ms)
+✔ missing unique index blocks all persistence instead of using unsafe local dedupe (75.5041ms)
+✔ a journaled receipt and unique index survive a MongoDB process restart (965.3577ms)
+✔ language-specific notices cannot silently fall back to Korean (34.0258ms)
+✔ renewed consent after a lost response returns the original receipt (39.0751ms)
+✔ maximum-length Korean content fits the JSON intake limit (16.617ms)
+✔ operator notification failures do not undo a durable receipt (31.2192ms)
+✔ pending notifications do not delay a new receipt or its replay (27.3132ms)
+✔ a synchronous notification exception cannot replace a saved receipt (15.7026ms)
+✔ policy loader fails closed without disclosing file errors (3.6563ms)
+✔ real operator notifications deduplicate receipts without copying customer data (35.2388ms)
+✔ a notice with minimum fields rejects undisclosed optional data (21.2675ms)
+ℹ tests 20
+ℹ suites 0
+ℹ pass 20
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 9519.6212
