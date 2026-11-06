@@ -1,12 +1,12 @@
 # Multimodal journey assets
 
-Copied unchanged from `jsl-design-prototypes` (`build-app-module.mjs` output). Provenance follows that repository's `docs/TEMP-ASSETS.md` and `production/sea-render/ASSETS.md`.
+The base sequence comes from `jsl-design-prototypes` (`build-app-module.mjs` output). Later asset replacements are recorded below. Base provenance follows that repository's `docs/TEMP-ASSETS.md` and `production/sea-render/ASSETS.md`.
 
 | File | Provenance | Before public release |
 | --- | --- | --- |
 | `sea-environment.hdr` | Poly Haven "Kloofendal 48d Partly Cloudy" 1k, Greg Zaal, CC0 | None |
 | `sea-coating.jpg` | Packed luminance/roughness tile from Poly Haven "Metal Plate 02", Rob Tuytel, CC0 | None |
-| `sea-vessel-photo.webp` | 2026-11-06 brightness follow-up using the built-in OpenAI image tool: neutral photographic cargo removes the two baked orange containers; the separate live JSL cargo remains the only orange container. The small stern lifeboat remains orange. Transparent edit packed at1962×838 and the existing alpha bounds. Existing cargo mesh/UV retained. Prompts and hashes: `docs/reviews/evidence/marine-bright-20261106/asset-generation.json` | Confirm applicable generator terms and final visual approval; inherited input clearance is not independently established |
+| `sea-vessel-photo.webp` | 2026-11-07 built-in OpenAI precise-object edit: one existing off-white container is repainted orange with white JSL, within its photographic corners and perspective. No extra box is added. At the photo hold all native cargo meshes are hidden; the native cargo remains for the close-up and failure path. The small stern lifeboat stays unchanged. Transparent WebP normalized to the existing1962×838 canvas and alpha bounds. Prompt, conversion and hashes: `docs/reviews/evidence/marine-slot-20261107/asset-generation.json` | Confirm applicable generator terms and final visual approval; inherited input clearance is not independently established |
 | `roof-quality.avif` | JSL-painted roof render from the earlier cargo quality pass | Verify editable source and asset policy |
 | `truck-preview.avif` | Approved JSL industrial truck cutout | Confirm original source and rights |
 | `port.webp`, `warehouse.webp` | MagicPath visual candidates inherited by the base sequence | Confirm origin or replace with cleared JSL imagery |

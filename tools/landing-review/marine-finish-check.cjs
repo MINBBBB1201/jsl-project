@@ -29,7 +29,10 @@ const digest = (value) => crypto.createHash('sha256').update(value).digest('hex'
       await page.locator('#features').scrollIntoViewIfNeeded();
       await page.waitForSelector('.pin-spacer', { timeout: 25000 });
       await page.waitForSelector('.mm-native-canvas', { state: 'attached', timeout: 25000 });
-      for (const [index, progress] of [.46, .52, .58, .65, .72, .65].entries()) {
+      // Probe just after the fade endpoint, beyond scroll-position rounding.
+      const points = [.46, .52, .56, .58, .60, .625, .65, .72, .65];
+      for (const [index, progress] of points.entries()) {
+        if (width === 1440 && progress < Number(process.env.REVIEW_PC_MIN_PROGRESS || 0)) continue;
         for (let retry = 0; retry < 12; retry++) {
           await page.evaluate((value) => {
             const section = document.querySelector('#features');
@@ -65,15 +68,17 @@ const digest = (value) => crypto.createHash('sha256').update(value).digest('hex'
           }
           const body = runtime.model.cargo.getObjectByName('JSL / continuous orange container body');
           const identity = runtime.model.cargo.getObjectByName('JSL / legible original roof lettering');
-          if (body?.visible && body.scale.x > 12 && body.scale.y > 2 && body.scale.z > 2) orangeModelSlots++;
+          const photoMesh = runtime.model.group.getObjectByName('JSL / photo vessel');
+          let visibleCargoMeshes = 0;
+          runtime.model.cargo.traverse(mesh => {if (mesh.isMesh && mesh.visible) visibleCargoMeshes++;});
           return {
             progress: Number(screen.dataset.progress), fallback: screen.dataset.nativeFallback,
             camera: JSON.parse(screen.dataset.nativeCamera), photo: runtime.model.group.userData.photoVessel.status,
             daylight: runtime.daylight.status, waterShader: water?.material.fragmentShader,
             waterTime: water?.material.uniforms.seaTime.value, waterDrift: water?.material.uniforms.drift.value,
             orangeModelSlots, inactiveOrangeSlots,
-            cargoBody: body ? {visible: body.visible, scale: body.scale.toArray(), position: body.position.toArray()} : null,
-            cargoIdentity: identity ? {visible: identity.visible, opacity: identity.material.opacity, privateUV: identity.material.map !== runtime.model.cargo.userData.roofTexture} : null,
+            extraCargoBody: !!body, extraCargoIdentity: !!identity,
+            visibleCargoMeshes, nativeBatchVisible: containers.visible, photoOpacity: photoMesh.material.opacity,
             overflow: document.documentElement.scrollWidth - innerWidth,
           };
         });
@@ -82,10 +87,16 @@ const digest = (value) => crypto.createHash('sha256').update(value).digest('hex'
         assert.equal(info.overflow, 0);
         assert.equal(info.orangeModelSlots, 1, 'Native cargo grid must contain exactly one orange hero container');
         if (!oldAsset) {
-          assert.equal(info.inactiveOrangeSlots, 1, 'Original batched body must be inactive');
-          assert(info.cargoBody?.visible, 'The full orange body must remain live');
-          assert(info.cargoIdentity?.privateUV, 'Branding must not alter the road roof UV');
-          if (progress === .65) assert.equal(info.cargoIdentity.opacity, 1, 'JSL roof lettering must remain at the photo hold');
+          assert.equal(info.inactiveOrangeSlots, 0, 'Original native cargo grid must remain intact');
+          assert.equal(info.extraCargoBody, false, 'No extra box may float over the photographic stack');
+          assert.equal(info.extraCargoIdentity, false, 'No live branding plane may cover the photographic stack');
+          if (progress >= .625) {
+            assert.equal(info.visibleCargoMeshes, 0, 'Every native cargo mesh must be hidden behind the registered photograph');
+            assert.equal(info.nativeBatchVisible, false, 'Native stack must not double the photograph');
+            assert.equal(info.photoOpacity, 1);
+          } else if (progress <= .56) {
+            assert(info.visibleCargoMeshes > 0 && info.nativeBatchVisible, 'Native close-up must retain its existing cargo');
+          }
         }
         assert(info.waterShader, 'Live water shader missing');
         const waveletCalls = (info.waterShader.match(/wavelet\(m,/g) || []).length;
@@ -98,7 +109,7 @@ const digest = (value) => crypto.createHash('sha256').update(value).digest('hex'
         assert.deepEqual(errors, []);
         const shaderHash = digest(info.waterShader);
         delete info.waterShader;
-        const file = `${width}-${index === 5 ? 'reverse-' : ''}${Math.round(progress * 100)}.png`;
+        const file = `${width}-${index === points.length - 1 ? 'reverse-' : ''}${Math.round(progress * 100)}.png`;
         await page.screenshot({ path: path.join(output, file) });
         results.push({ viewport: { width, height }, file, ...info, shaderHash, waveletCalls, vesselTextureSha256: expectedAssetHash, errors: [...errors] });
         console.log(JSON.stringify({width, progress, file}));
