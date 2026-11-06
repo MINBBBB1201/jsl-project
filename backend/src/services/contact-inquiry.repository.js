@@ -6,9 +6,13 @@ function createContactInquiryRepository(ContactModel) {
       (item) => item.name === "contact_inquiry_request_unique",
     );
     if (
-      !index?.unique ||
+      index?.unique !== true ||
       index.key?.inquiryRequestKey !== 1 ||
-      index.partialFilterExpression?.inquiryRequestKey?.$type !== "string"
+      Object.keys(index.key ?? {}).length !== 1 ||
+      index.partialFilterExpression?.inquiryRequestKey?.$type !== "string" ||
+      Object.keys(index.partialFilterExpression ?? {}).length !== 1 ||
+      Object.keys(index.partialFilterExpression?.inquiryRequestKey ?? {})
+        .length !== 1
     ) {
       throw new Error("Contact inquiry unique index is not ready");
     }
