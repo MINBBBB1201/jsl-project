@@ -26,4 +26,3 @@ const variant = process.argv[2] || 'before';
     }
   } finally {await browser.close();fs.writeFileSync(`${out}/${variant}.json`,JSON.stringify(results,null,2));}
 })().catch(e=>{console.error(e);process.exitCode=1});
-

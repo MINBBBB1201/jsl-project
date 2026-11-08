@@ -20,4 +20,3 @@ const {chromium}=require(process.env.JSL_PLAYWRIGHT_MODULE || 'playwright');
  }finally{await b.close();fs.writeFileSync(`${__dirname}/responsive.json`,JSON.stringify(results,null,2));}
  if(results.some(r=>!r.pass||r.errors.length))process.exitCode=1;
 })().catch(e=>{console.error(e);process.exitCode=1});
-

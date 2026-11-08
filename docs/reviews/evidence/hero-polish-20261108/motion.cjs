@@ -17,4 +17,3 @@ const phase=process.argv[2]||'before';
   }
  }finally{await b.close();fs.writeFileSync(`${__dirname}/${phase}-motion.json`,JSON.stringify(results,null,2));}
 })().catch(e=>{console.error(e);process.exitCode=1});
-
