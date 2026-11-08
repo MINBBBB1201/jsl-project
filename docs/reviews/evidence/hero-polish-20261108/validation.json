@@ -1,0 +1,15 @@
+{
+  "sourceBase": "c9baefeb3277d8f005db8512a3deb6a8bafb1b1f",
+  "lint": "eslint changed TSX passed",
+  "motion": "Six before and six after observations. Reduction starts/stops timeline across runtime preference changes after patch.",
+  "sourceUncommittedAtExecution": true,
+  "limits": "No Safari, physical devices, production deployment or paid upscale. Unit/backend suites not rerun for this CSS and hero lifecycle change. Internal OpenAI agent review is not another-company review.",
+  "build": "next build --webpack passed, including TypeScript and 78 static pages",
+  "browser": "Chromium local production build. Four locales x four viewports, 16 passed; 0 page errors and horizontal overflow.",
+  "unchangedScope": "Company/about and contact screenshots match exact PNG SHA256 before and after at captured PC/mobile sizes. No ship/water/aircraft/cloud assets modified.",
+  "sourceHashes": {
+    "frontend/src/app/landing/components/journey-hero-motion.tsx": "8029081eb1d45743a0b1d654754ba1de9af80682e08de49d2563820504250156",
+    "frontend/src/app/landing/journey.css": "1cfdca683586887087039b4f52f2160eb8a6df6449bcb560769ff245758194e3",
+    "frontend/src/app/landing/components/journey-hero-motion.css": "744787875c98f55f81f206bca44274f1651600409acab14ed1a61891a8186503"
+  }
+}

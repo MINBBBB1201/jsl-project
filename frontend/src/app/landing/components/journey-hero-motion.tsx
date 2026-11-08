@@ -10,7 +10,7 @@ export function JourneyHeroMotion() {
 
   useEffect(() => {
     const root = ref.current;
-    if (!root || window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+    if (!root) return;
 
     let cancelled = false;
     let context: { revert: () => void } | undefined;
@@ -19,7 +19,8 @@ export function JourneyHeroMotion() {
       gsap.registerPlugin(ScrollTrigger);
       const media = gsap.matchMedia();
       context = media;
-      media.add({ compact: "(max-width: 600px)", regular: "(min-width: 600px)" }, (mediaContext) => {
+      media.add({ compact: "(max-width: 600px)", regular: "(min-width: 601px)", motion: "(prefers-reduced-motion: no-preference)" }, (mediaContext) => {
+        if (!mediaContext.conditions?.motion) return;
         const compact = Boolean(mediaContext.conditions?.compact);
         const hero = root.querySelector<HTMLElement>(".journey-hero");
         const orbit = root.querySelector<HTMLElement>(".journey-orbit");

@@ -125,11 +125,11 @@
 .journey-track-form{display:flex;align-items:flex-end;gap:18px;padding-bottom:10px;border-bottom:1px solid #ffffff4d;transition:border-color .2s}
 .journey-track-form:focus-within{border-color:#ec761e}
 .journey-track-form label{display:flex;flex-direction:column;gap:8px;flex:1}
-.journey-track-form small{font:500 10px/1 var(--font-general-sans),sans-serif;letter-spacing:.14em;text-transform:uppercase;color:#ffffff73}
+.journey-track-form small{font:500 10px/1 var(--font-general-sans),sans-serif;letter-spacing:.14em;text-transform:uppercase;color:#b6a99c}
 .journey-track-form input{background:transparent;border:0;outline:0;padding:0;color:#fff;font:400 18px/1.2 var(--font-general-sans),sans-serif;letter-spacing:-.01em}
-.journey-track-form input::placeholder{color:#ffffff59}
+.journey-track-form input::placeholder{color:#b6a99c}
 .journey-track-form button{display:grid;place-items:center;min-width:44px;min-height:32px;color:#ec761e;cursor:pointer}
 .journey-track-form button:focus-visible{outline:2px solid #ec761e;outline-offset:2px}
-.journey-track-clocks{display:flex;gap:22px;min-height:10px;margin-top:14px;font:400 10px/1 var(--font-general-sans),sans-serif;letter-spacing:.08em;text-transform:uppercase;color:#ffffff4d}
+.journey-track-clocks{display:flex;gap:22px;min-height:10px;margin-top:14px;font:400 10px/1 var(--font-general-sans),sans-serif;letter-spacing:.08em;text-transform:uppercase;color:#b6a99c}
 .journey-hero .journey-actions{margin-top:22px}
 @media(max-width:900px){.journey-orbit{width:130vw;right:-15%;top:auto;bottom:-78vw}.journey-hero-copy{margin:100px 6% 0;width:88%}.journey-hero h1{font-size:40px}.journey-hero-navigation{left:auto;right:64px;transform:none;top:30px}}
