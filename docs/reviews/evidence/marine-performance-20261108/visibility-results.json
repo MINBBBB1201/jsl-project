@@ -1,0 +1,32 @@
+{
+  "road": {
+    "gpuContexts": 0
+  },
+  "above": {
+    "gpuContexts": 0,
+    "sectionTop": 3231.25
+  },
+  "visible": {
+    "calls": 6,
+    "source": "photo",
+    "fallback": "false"
+  },
+  "hidden": {
+    "renderDelta": 0
+  },
+  "restored": {
+    "renderDelta": 1
+  },
+  "below": {
+    "renderDelta": 0,
+    "sectionBottom": -10557.75
+  },
+  "teardown": {
+    "connected": false,
+    "renderRetained": false,
+    "contextLost": true
+  },
+  "errors": [],
+  "pass": true,
+  "scope": "Local final production build. Visibility state was synthetically overridden to exercise hidden/restore event branches; not an actual browser backgrounding/device test."
+}
