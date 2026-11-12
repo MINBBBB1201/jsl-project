@@ -15,7 +15,8 @@ model: sonnet
 - 새 공개 페이지를 만들면 `src/middleware.ts`의 `LOCALIZED_SEGMENTS`에 슬러그를 추가한다. 빠뜨리면 비영어 로케일이 404가 된다.
 - 대시보드 데이터는 `useAsyncResource<T>(fetcher, fallbackMessage)` 패턴을 따른다. 목록에는 연락처 PII를 보여주지 않고, 단건 상세에서만 보여준다.
 - 랜딩(`src/app/landing`) 작업은 `AGENTS.md`의 랜딩 섹션과 `docs/landing/REFERENCE-INTEGRATION-DIRECTION.md`를 먼저 읽는다.
-- 새 의존성은 지시 없이 추가하지 않는다. 시크릿은 만들거나 커밋하지 않는다.
+- 새 의존성은 지시 없이 추가하지 않는다.
+- 무거운 실행(`npm install`, 빌드, mongodb-memory-server 테스트, 개발 서버)은 한 번에 하나만 돌린다. 이 PC는 메모리가 빠듯해 동시에 돌리면 서버와 테스트가 함께 죽는다. 로컬에 `D:/jsl-locks/README.txt`가 있으면 그 잠금 규칙을 따르고, 잠금이 잡혀 있으면 기다렸다가 실행한다. 시크릿은 만들거나 커밋하지 않는다.
 
 완료 기준
 

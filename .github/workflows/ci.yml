@@ -53,7 +53,9 @@ jobs:
           cache: npm
           cache-dependency-path: frontend/package-lock.json
       # TODO: 프런트 package-lock.json 이 package.json 과 맞지 않아 npm ci 가 실패한다
-      # (next-intl 아래 @swc/helpers 항목 누락). 락 파일을 재생성하면 npm ci 로 바꾼다.
+      # (next-intl 아래 @swc/helpers 항목 누락). Windows 에서 --package-lock-only 로 다시 만들면
+      # @next/swc 플랫폼 바이너리(win32·darwin·linux-arm64 등)가 빠져 다른 OS 의 npm ci 가 깨진다.
+      # Linux 에서 node_modules 와 락 파일을 지우고 npm install 로 새로 만든 뒤 npm ci 로 바꾼다.
       - run: npm install --no-audit --no-fund
       - run: npm run lint
       # next-env.d.ts 는 gitignore 대상이라 typegen 으로 만들어야 이미지 import 타입이 잡힌다.
