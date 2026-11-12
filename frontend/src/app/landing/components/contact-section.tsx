@@ -23,7 +23,7 @@ import { Loader2, Mail } from 'lucide-react'
 import { useEffect, useRef, useState } from 'react'
 import { useLocale } from 'next-intl'
 import { inquiryCopy } from '@/lib/contact-inquiry-copy'
-import { inquiryPayload, readNotice, readReceipt, retryIdentity, type ContactNotice, type InquiryReceipt, type InquiryLanguage } from '@/lib/contact-inquiry'
+import { inquiryPayload, readInputRejection, readNotice, readReceipt, retryIdentity, type ContactNotice, type InquiryReceipt, type InquiryLanguage } from '@/lib/contact-inquiry'
 import { acquireInquiryRetry, completeInquiryRetry, inquiryRetryStorage, type InquiryRetry } from '@/lib/contact-inquiry-retry'
 import { useContent } from '@/config/use-content'
 import { API_BASE_URL } from '@/lib/api'
@@ -94,6 +94,13 @@ export function ContactSection() {
         setNotice(null)
         setNoticeAttempt(value => value + 1)
         setFailure(copy.changed)
+        return
+      }
+      const rejected = readInputRejection(response.status, result)
+      if (rejected) {
+        const formField = { companyName: 'company', contactName: 'name', email: 'email', subject: 'subject', message: 'message' } as const
+        rejected.forEach(field => form.setError(formField[field], { message: copy.invalid }))
+        setFailure(copy.invalid)
         return
       }
       const confirmed = response.ok ? readReceipt(result) : null
