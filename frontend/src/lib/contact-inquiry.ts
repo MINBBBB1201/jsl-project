@@ -39,6 +39,16 @@ export function retryIdentity(values: InquiryValues, language: InquiryLanguage) 
     subject: values.subject.trim(), message: values.message.trim(), language })
 }
 
+// 서버가 입력을 거부한 400은 접수 여부가 불명확한 실패가 아니다. 같은 내용 재시도를 권하지 않도록
+// 입력 오류로 구분하고, 서버가 지목한 입력 필드만 돌려준다.
+export function readInputRejection(status: number, value: unknown): InquiryField[] | null {
+  if (status !== 400 || !value || typeof value !== "object") return null
+  const row = value as Record<string, unknown>
+  if (row.code !== "VALIDATION_FAILED") return null
+  const named = Array.isArray(row.errors) ? row.errors.map(error => (error as { field?: unknown } | null)?.field) : []
+  return fields.filter(field => named.includes(field))
+}
+
 export function readReceipt(value: unknown): InquiryReceipt | null {
   if (!value || typeof value !== "object") return null
   const row = value as Record<string, unknown>; const data = row.data as Record<string, unknown> | undefined

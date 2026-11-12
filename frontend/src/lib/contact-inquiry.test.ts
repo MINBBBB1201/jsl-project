@@ -1,6 +1,6 @@
 import { test } from 'node:test'
 import assert from 'node:assert/strict'
-import { inquiryPayload, readNotice, readReceipt, retryIdentity, type ContactNotice } from './contact-inquiry'
+import { inquiryPayload, readInputRejection, readNotice, readReceipt, retryIdentity, type ContactNotice } from './contact-inquiry'
 const notice: ContactNotice = { noticeId: 'synthetic-v1', noticeHash: 'a'.repeat(64), language: 'en', effectiveDate: '2026-10-13', purpose: 'Synthetic test', items: ['contactName', 'email', 'message'], retentionDescription: 'Synthetic only', refusalConsequence: 'No synthetic request', privacyContact: 'Test only' }
 const values = { company: 'Undisclosed company', name: ' Test ', email: ' PERSON@EXAMPLE.TEST ', subject: 'Undisclosed subject', message: ' Test cargo ', privacyConsent: true }
 test('the public notice must match the requested language and known unique fields', () => {
@@ -24,6 +24,17 @@ test('receipt confirmation requires success, valid metadata and omits personal d
   assert.deepEqual(Object.keys(readReceipt(result)!).sort(), ['createdAt', 'id', 'replayed', 'status'])
   assert.equal(readReceipt({ ...result, success: false }), null)
   assert.equal(readReceipt({ ...result, data: { ...result.data, createdAt: 'invalid' } }), null)
+})
+test('a server 400 input rejection is an input error, not an unconfirmed receipt', () => {
+  // 프런트 형식 검사를 통과했지만 서버 isEmail()이 거부한 경우(예: 65자 이상 로컬 부분)
+  const rejected = { success: false, code: 'VALIDATION_FAILED', errors: [{ field: 'email', code: 'INVALID_EMAIL' }] }
+  assert.deepEqual(readInputRejection(400, rejected), ['email'])
+  assert.deepEqual(readInputRejection(400, { ...rejected, errors: [{ field: 'consent', code: 'CONSENT_REQUIRED' }] }), [])
+  assert.deepEqual(readInputRejection(400, { ...rejected, errors: [{ field: 'contactName' }, { field: 'unknown' }, null] }), ['contactName'])
+  assert.equal(readInputRejection(409, rejected), null)
+  assert.equal(readInputRejection(400, { success: false, code: 'INVALID_JSON' }), null)
+  assert.equal(readInputRejection(400, { success: false, code: 'INVALID_REQUEST_KEY' }), null)
+  assert.equal(readInputRejection(400, null), null)
 })
 test('retry identity normalizes data but separates changed content and language', () => {
   assert.equal(retryIdentity(values, 'en'), retryIdentity({ ...values, name: 'Test', email: 'person@example.test' }, 'en'))
