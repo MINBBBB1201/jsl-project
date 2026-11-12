@@ -29,7 +29,7 @@ import {
 import { useAuth } from "@/contexts/auth-context"
 
 const loginFormSchema = z.object({
-  email: z.email("올바른 이메일 주소를 입력해 주세요."),
+  email: z.string().trim().min(1, "아이디 또는 이메일을 입력해 주세요.").max(254),
   password: z.string().min(1, "비밀번호를 입력해 주세요."),
 })
 
@@ -95,12 +95,12 @@ export function LoginForm1({
                     name="email"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>이메일</FormLabel>
+                        <FormLabel>아이디 또는 이메일</FormLabel>
                         <FormControl>
                           <Input
-                            type="email"
+                            type="text"
                             autoComplete="username"
-                            placeholder="name@jsl-logis.com"
+                            placeholder="아이디 또는 name@jsl-logis.com"
                             {...field}
                           />
                         </FormControl>

@@ -5,9 +5,6 @@ import {
   LayoutDashboard,
   MessageCircle,
   ScanSearch,
-  Shield,
-  AlertTriangle,
-  Settings,
   LayoutTemplate,
   FileText,
   Megaphone,
@@ -30,20 +27,20 @@ import {
 const data = {
   navGroups: [
     {
-      label: "Dashboards",
+      label: "운영",
       items: [
         {
-          title: "Dashboard",
+          title: "대시보드",
           url: "/dashboard",
           icon: LayoutDashboard,
         },
       ],
     },
     {
-      label: "Apps",
+      label: "업무 도구",
       items: [
         {
-          title: "Chat",
+          title: "AI 업무 지원",
           url: "/chat",
           icon: MessageCircle,
         },
@@ -65,90 +62,13 @@ const data = {
       ],
     },
     {
-      label: "Pages",
+      label: "외부 사이트",
       items: [
         {
-          title: "Landing",
+          title: "JSL 홈페이지",
           url: "/landing",
           target: "_blank",
           icon: LayoutTemplate,
-        },
-        {
-          title: "Auth Pages",
-          url: "#",
-          icon: Shield,
-          items: [
-            {
-              title: "Sign In",
-              url: "/sign-in",
-            },
-            {
-              title: "Sign Up",
-              url: "/sign-up",
-            },
-            {
-              title: "Forgot Password",
-              url: "/forgot-password",
-            },
-          ],
-        },
-        {
-          title: "Errors",
-          url: "#",
-          icon: AlertTriangle,
-          items: [
-            {
-              title: "Unauthorized",
-              url: "/errors/unauthorized",
-            },
-            {
-              title: "Forbidden",
-              url: "/errors/forbidden",
-            },
-            {
-              title: "Not Found",
-              url: "/errors/not-found",
-            },
-            {
-              title: "Internal Server Error",
-              url: "/errors/internal-server-error",
-            },
-            {
-              title: "Under Maintenance",
-              url: "/errors/under-maintenance",
-            },
-          ],
-        },
-        {
-          title: "Settings",
-          url: "#",
-          icon: Settings,
-          items: [
-            {
-              title: "User Settings",
-              url: "/settings/user",
-            },
-            {
-              title: "Account Settings",
-              url: "/settings/account",
-            },
-            {
-              title: "Plans & Billing",
-              url: "/settings/billing",
-            },
-            {
-              title: "Appearance",
-              url: "/settings/appearance",
-            },
-            {
-              title: "Notifications",
-              url: "/settings/notifications",
-            },
-            {
-              title: "Connections",
-              url: "/settings/connections",
-            },
-          ],
         },
       ],
     },
