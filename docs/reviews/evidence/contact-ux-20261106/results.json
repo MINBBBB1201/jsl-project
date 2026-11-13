@@ -1,0 +1,70 @@
+{
+  "fixture": true,
+  "description": "Actual Next browser UI; delayed synthetic notice GET then503; no inquiry submitted",
+  "results": [
+    {
+      "locale": "en",
+      "width": 1440,
+      "loading": {
+        "busy": "true",
+        "retryDisabled": true
+      },
+      "mails": [
+        "mailto:hq@jsl-logis.com",
+        "mailto:kr@jsl-logis.com"
+      ],
+      "submitDisabled": true,
+      "focused": "mailto:hq@jsl-logis.com",
+      "errors": [],
+      "overflow": false
+    },
+    {
+      "locale": "ko",
+      "width": 390,
+      "loading": {
+        "busy": "true",
+        "retryDisabled": true
+      },
+      "mails": [
+        "mailto:hq@jsl-logis.com",
+        "mailto:kr@jsl-logis.com"
+      ],
+      "submitDisabled": true,
+      "focused": "mailto:hq@jsl-logis.com",
+      "errors": [],
+      "overflow": false
+    },
+    {
+      "locale": "zh",
+      "width": 390,
+      "loading": {
+        "busy": "true",
+        "retryDisabled": true
+      },
+      "mails": [
+        "mailto:hq@jsl-logis.com",
+        "mailto:kr@jsl-logis.com"
+      ],
+      "submitDisabled": true,
+      "focused": "mailto:hq@jsl-logis.com",
+      "errors": [],
+      "overflow": false
+    },
+    {
+      "locale": "vi",
+      "width": 390,
+      "loading": {
+        "busy": "true",
+        "retryDisabled": true
+      },
+      "mails": [
+        "mailto:hq@jsl-logis.com",
+        "mailto:kr@jsl-logis.com"
+      ],
+      "submitDisabled": true,
+      "focused": "mailto:hq@jsl-logis.com",
+      "errors": [],
+      "overflow": false
+    }
+  ]
+}

@@ -1,0 +1,51 @@
+{
+  "sourceBase": "c9baefeb3277d8f005db8512a3deb6a8bafb1b1f",
+  "lint": "eslint changed TSX passed",
+  "motion": "Six before and six after observations. Reduction starts/stops timeline across runtime preference changes after patch.",
+  "sourceUncommittedAtExecution": true,
+  "limits": "No Safari, physical devices, production deployment or paid upscale. Unit/backend suites not rerun for this CSS and hero lifecycle change. Internal OpenAI agent review is not another-company review.",
+  "build": "next build --webpack passed, including TypeScript and 78 static pages",
+  "browser": "Chromium local production build. Four locales x four viewports, 16 passed; 0 page errors and horizontal overflow.",
+  "unchangedScope": "Company/about and contact screenshots match exact PNG SHA256 before and after at captured PC/mobile sizes. No ship/water/aircraft/cloud assets modified.",
+  "sourceHashes": {
+    "frontend/src/app/landing/components/journey-hero-motion.tsx": "e389164c1080483f04578565845f92c9a53ec21faba45dacdc53722838ea3c33",
+    "frontend/src/app/landing/journey.css": "2fab6636943a7f78462724961da65e4c5e551a4a6cb5b5398d9919e975209e4b",
+    "frontend/src/app/landing/components/journey-hero-motion.css": "3257f77c8e0343213521660ac845fd6ce0986d57c18ff1ec642ff45ccc134ef7"
+  },
+  "sourceHashNormalization": "UTF-8, LF line endings, no BOM",
+  "renderedCodeCommit": "ab671c337f041b81293db1730c9d95ab65a4d0fe",
+  "darkCheck": {
+    "locale": "en",
+    "viewport": "390x844",
+    "themeClass": "dark",
+    "overflow": 0,
+    "bothActionsVisible": true,
+    "capture": "after-en-390-dark-hero.png"
+  },
+  "preservedCaptureHashes": [
+    {
+      "width": 1440,
+      "section": "about",
+      "before": "c2060c743c2cdd385a346f681655118acfcc413bb500713d8db1062722318a02",
+      "after": "c2060c743c2cdd385a346f681655118acfcc413bb500713d8db1062722318a02"
+    },
+    {
+      "width": 1440,
+      "section": "contact",
+      "before": "b7834766181d0c72e185032c8a5eb525daf7c395984599f325f1d57f05002436",
+      "after": "b7834766181d0c72e185032c8a5eb525daf7c395984599f325f1d57f05002436"
+    },
+    {
+      "width": 390,
+      "section": "about",
+      "before": "b21357ad9500034131c6fc4635d2b8578d3dadb8ea3dec412f30b6cf172a512d",
+      "after": "b21357ad9500034131c6fc4635d2b8578d3dadb8ea3dec412f30b6cf172a512d"
+    },
+    {
+      "width": 390,
+      "section": "contact",
+      "before": "d28049b1044100dbca2699da31c41121da590a774805c313fe4eb8c68b25900a",
+      "after": "d28049b1044100dbca2699da31c41121da590a774805c313fe4eb8c68b25900a"
+    }
+  ]
+}

@@ -1,0 +1,63 @@
+[
+  {
+    "locale": "en",
+    "w": 1440,
+    "company": {
+      "decoded": true,
+      "caption": "AI-generated logistics concept. Not a photograph of a JSL facility.",
+      "position": "50% 58%"
+    }
+  },
+  {
+    "locale": "en",
+    "w": 1440,
+    "heroReturn": {
+      "copyOpacity": "1",
+      "wash": "110%",
+      "overflow": 0
+    },
+    "errors": []
+  },
+  {
+    "locale": "ko",
+    "w": 390,
+    "company": {
+      "decoded": true,
+      "caption": "AI로 제작한 물류 현장 콘셉트 이미지. 실제 JSL 시설 사진이 아닙니다.",
+      "position": "65% 58%"
+    }
+  },
+  {
+    "fallback": true,
+    "retainedTitle": "Every move. One JSL."
+  },
+  {
+    "locale": "ko",
+    "w": 390,
+    "heroReturn": {
+      "copyOpacity": "1",
+      "wash": "110%",
+      "overflow": 0
+    },
+    "errors": []
+  },
+  {
+    "locale": "vi",
+    "w": 320,
+    "company": {
+      "decoded": true,
+      "caption": "Hình ý tưởng logistics do AI tạo, không phải ảnh cơ sở thực tế của JSL.",
+      "position": "65% 58%"
+    }
+  },
+  {
+    "locale": "vi",
+    "w": 320,
+    "heroReturn": {
+      "copyOpacity": "1",
+      "wash": "110%",
+      "overflow": 0
+    },
+    "errors": []
+  }
+]

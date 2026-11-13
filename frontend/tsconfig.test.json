@@ -32,6 +32,7 @@
   "include": [
     "src/lib/api-error.ts",
     "src/lib/__tests__/api-error.test.ts",
+    "src/lib/contact-inquiry*.ts",
     "src/lib/container-planner/**/*.ts",
     "src/lib/trade-documents/**/*.ts"
   ],

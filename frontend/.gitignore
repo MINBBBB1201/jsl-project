@@ -42,3 +42,6 @@ next-env.d.ts
 
 # lib/ 유닛 테스트 빌드 산출물 (npm run test:units)
 /.test-build
+
+# Local-only reference composition assets; not deployment media.
+/public/assembly-review/

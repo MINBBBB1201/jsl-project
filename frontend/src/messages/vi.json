@@ -609,6 +609,7 @@
     "emptyPrompt": "Nhập số vận đơn rồi nhấn Tra cứu.",
     "demoNotice": "Hiện chỉ có dữ liệu demo. Hãy thử với các số dưới đây.",
     "notFoundTitle": "Không tìm thấy kết quả",
+    "notFoundDescription": "Vui lòng kiểm tra lại số vận đơn.",
     "shippedAt": "Ngày lấy hàng",
     "estimatedArrival": "Ngày dự kiến đến",
     "elapsedRatio": "Tỷ lệ thời gian đã trôi qua",
@@ -637,6 +638,7 @@
     "title": "Thông báo",
     "subtitle": "Cập nhật tin tức và thông báo mới nhất từ JSL Logistics.",
     "empty": "Chưa có thông báo nào được đăng.",
+    "errorLoad": "Không tải được thông báo. Vui lòng thử lại sau.",
     "categories": {
       "general": "Chung",
       "update": "Cập nhật",

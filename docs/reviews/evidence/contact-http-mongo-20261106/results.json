@@ -1,0 +1,230 @@
+{
+  "scope": "Real local Next build -> HTTP Express actual inquiry router -> disposable Mongo7.0.24, synthetic policy and data only. Not full backend server or production CORS/DB/notification verification.",
+  "uncommittedSourceAtExecution": true,
+  "checks": [
+    {
+      "case": "real503-blocks-intake",
+      "pass": true
+    },
+    {
+      "case": "real201-mongo-save",
+      "locale": "ko",
+      "width": 1440,
+      "pass": true
+    },
+    {
+      "case": "real201-mongo-save",
+      "locale": "en",
+      "width": 1440,
+      "pass": true
+    },
+    {
+      "case": "real201-mongo-save",
+      "locale": "zh",
+      "width": 390,
+      "pass": true
+    },
+    {
+      "case": "real201-mongo-save",
+      "locale": "vi",
+      "width": 390,
+      "pass": true
+    },
+    {
+      "case": "lost-response-reload-real200-same-record",
+      "pass": true
+    },
+    {
+      "case": "real409-refreshes-notice-and-consent",
+      "pass": true
+    },
+    {
+      "case": "unapproved-public-privacy-hidden",
+      "locale": "ko",
+      "pass": true
+    },
+    {
+      "case": "unapproved-public-privacy-hidden",
+      "locale": "en",
+      "pass": true
+    },
+    {
+      "case": "unapproved-public-privacy-hidden",
+      "locale": "zh",
+      "pass": true
+    },
+    {
+      "case": "unapproved-public-privacy-hidden",
+      "locale": "vi",
+      "pass": true
+    },
+    {
+      "case": "real-browser-cors-preflight",
+      "count": 5,
+      "pass": true
+    }
+  ],
+  "requests": [
+    {
+      "method": "GET",
+      "path": "/api/shipments/public-summary",
+      "status": 404
+    },
+    {
+      "method": "GET",
+      "path": "/api/contact/notice",
+      "status": 503
+    },
+    {
+      "method": "GET",
+      "path": "/api/shipments/public-summary",
+      "status": 404
+    },
+    {
+      "method": "GET",
+      "path": "/api/contact/notice",
+      "status": 200
+    },
+    {
+      "method": "OPTIONS",
+      "path": "/api/contact",
+      "status": 204
+    },
+    {
+      "method": "POST",
+      "path": "/api/contact",
+      "status": 201
+    },
+    {
+      "method": "GET",
+      "path": "/api/shipments/public-summary",
+      "status": 404
+    },
+    {
+      "method": "GET",
+      "path": "/api/contact/notice",
+      "status": 200
+    },
+    {
+      "method": "OPTIONS",
+      "path": "/api/contact",
+      "status": 204
+    },
+    {
+      "method": "POST",
+      "path": "/api/contact",
+      "status": 201
+    },
+    {
+      "method": "GET",
+      "path": "/api/shipments/public-summary",
+      "status": 404
+    },
+    {
+      "method": "GET",
+      "path": "/api/contact/notice",
+      "status": 200
+    },
+    {
+      "method": "OPTIONS",
+      "path": "/api/contact",
+      "status": 204
+    },
+    {
+      "method": "POST",
+      "path": "/api/contact",
+      "status": 201
+    },
+    {
+      "method": "GET",
+      "path": "/api/shipments/public-summary",
+      "status": 404
+    },
+    {
+      "method": "GET",
+      "path": "/api/contact/notice",
+      "status": 200
+    },
+    {
+      "method": "OPTIONS",
+      "path": "/api/contact",
+      "status": 204
+    },
+    {
+      "method": "POST",
+      "path": "/api/contact",
+      "status": 201
+    },
+    {
+      "method": "GET",
+      "path": "/api/shipments/public-summary",
+      "status": 404
+    },
+    {
+      "method": "GET",
+      "path": "/api/contact/notice",
+      "status": 200
+    },
+    {
+      "method": "OPTIONS",
+      "path": "/api/contact",
+      "status": 204
+    },
+    {
+      "method": "POST",
+      "path": "/api/contact"
+    },
+    {
+      "event": "stored-response-lost",
+      "id": "6aed7725ecdf5a11df79bc99"
+    },
+    {
+      "method": "POST",
+      "path": "/api/contact"
+    },
+    {
+      "event": "stored-response-lost",
+      "id": "6aed7725ecdf5a11df79bc99"
+    },
+    {
+      "method": "POST",
+      "path": "/api/contact"
+    },
+    {
+      "event": "stored-response-lost",
+      "id": "6aed7725ecdf5a11df79bc99"
+    },
+    {
+      "method": "GET",
+      "path": "/api/shipments/public-summary",
+      "status": 404
+    },
+    {
+      "method": "GET",
+      "path": "/api/contact/notice",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/api/contact",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/api/contact",
+      "status": 409
+    },
+    {
+      "method": "GET",
+      "path": "/api/contact/notice",
+      "status": 200
+    }
+  ],
+  "sourceHashes": {
+    "frontend/src/config/legal-content.ts": "18b08462db61ca2c36815f913bdedc1dff6138924b25e6a068cd84cbfd5202c4",
+    "frontend/src/app/landing/components/cta-section.tsx": "966268da746ef00a07fb9ef858deac289f8554925619fe486f2a09acd47ddf74",
+    "frontend/src/app/landing/components/contact-section.tsx": "14b4e79e8e5a1c757c827eae5ff75208468520856b57f6f0c09d54bc18b74d5f",
+    "backend/src/routes/contact-inquiry.router.js": "a19b74d8a16ea5a9bec6766e87904c318555da5373b12afac021fb87147ab4e7",
+    "backend/src/services/contact-inquiry.repository.js": "4c9f9c9cf2ea8996a09991982ea85825fbb5d2d760581a41dc9ed044583bcd0e"
+  }
+}

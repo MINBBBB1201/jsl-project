@@ -278,8 +278,61 @@ const vi = (): { privacy: LegalDocument; terms: LegalDocument } => ({
 
 const BUILDERS = { ko, en, zh, vi } as const
 
-export const getLegalDocuments = (locale: Locale) =>
-  (BUILDERS[locale] ?? BUILDERS.ko)()
+// Company privacy values and translated wording are not approved yet (#40).
+// Keep the draft above for review; never publish it as an effective policy.
+const pendingPrivacyCopy = {
+  ko: {
+    description: "개인정보처리방침을 확인하고 있습니다.",
+    heading: "회사 확인 후 안내합니다",
+    message: "개인정보 보유·파기 기준, 문의 담당 창구, 처리업체·국가와 시행일을 확인하고 있습니다. 확정된 방침은 아직 게시되지 않았습니다.",
+    contactHeading: "일반 문의",
+    contactMessage: "물류 서비스에 관한 문의는 아래 이메일로 보내 주세요. 개인정보 전용 문의 창구는 확정 후 안내합니다.",
+    effectiveNote: "시행일 미정",
+  },
+  en: {
+    description: "The privacy policy is being reviewed.",
+    heading: "Pending company confirmation",
+    message: "Data retention and deletion, the privacy contact, service providers and countries, and the effective date are being confirmed. A final policy has not yet been published.",
+    contactHeading: "General enquiries",
+    contactMessage: "For logistics enquiries, use the email addresses below. The designated privacy contact will be published after confirmation.",
+    effectiveNote: "Effective date not yet confirmed",
+  },
+  zh: {
+    description: "隐私政策正在确认中。",
+    heading: "待公司确认后公布",
+    message: "个人信息保存与删除规则、隐私联系窗口、服务提供商及所在国家和生效日期正在确认中。正式政策尚未公布。",
+    contactHeading: "一般咨询",
+    contactMessage: "如需咨询物流服务，请通过以下邮箱联系。专门的隐私联系窗口将在确认后公布。",
+    effectiveNote: "生效日期尚未确定",
+  },
+  vi: {
+    description: "Chính sách bảo mật đang được rà soát.",
+    heading: "Đang chờ công ty xác nhận",
+    message: "Thời hạn lưu trữ và xóa dữ liệu, đầu mối liên hệ về quyền riêng tư, nhà cung cấp dịch vụ và quốc gia xử lý, cùng ngày hiệu lực đang được xác nhận. Chính sách chính thức chưa được công bố.",
+    contactHeading: "Liên hệ chung",
+    contactMessage: "Để hỏi về dịch vụ logistics, vui lòng gửi email đến các địa chỉ bên dưới. Đầu mối chuyên trách về quyền riêng tư sẽ được công bố sau khi xác nhận.",
+    effectiveNote: "Ngày hiệu lực chưa được xác nhận",
+  },
+} as const
+
+export const getLegalDocuments = (locale: Locale) => {
+  const documents = (BUILDERS[locale] ?? BUILDERS.ko)()
+  const copy = pendingPrivacyCopy[locale] ?? pendingPrivacyCopy.ko
+  return {
+    ...documents,
+    privacy: {
+      slug: "privacy",
+      title: documents.privacy.title,
+      description: copy.description,
+      sections: [
+        { heading: copy.heading, paragraphs: [copy.message] },
+        { heading: copy.contactHeading, paragraphs: [copy.contactMessage], bullets: [company.contact.email, company.contact.emailKr] },
+      ],
+      effectiveNote: copy.effectiveNote,
+      precedenceNotice: null,
+    } satisfies LegalDocument,
+  }
+}
 
 export const getPrivacyPolicy = (locale: Locale) => getLegalDocuments(locale).privacy
 export const getTermsOfService = (locale: Locale) => getLegalDocuments(locale).terms

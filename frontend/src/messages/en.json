@@ -609,6 +609,7 @@
     "emptyPrompt": "Enter a tracking number and press Track.",
     "demoNotice": "Only demo data is currently registered. Try one of the numbers below.",
     "notFoundTitle": "No results found",
+    "notFoundDescription": "Please check the tracking number and try again.",
     "shippedAt": "Pickup date",
     "estimatedArrival": "Estimated arrival",
     "elapsedRatio": "Elapsed ratio",
@@ -637,6 +638,7 @@
     "title": "Notices",
     "subtitle": "Stay up to date with the latest news and announcements from JSL Logistics.",
     "empty": "No notices have been posted yet.",
+    "errorLoad": "Couldn't load notices. Please try again shortly.",
     "categories": {
       "general": "General",
       "update": "Update",

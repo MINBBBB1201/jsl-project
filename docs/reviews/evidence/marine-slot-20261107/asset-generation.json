@@ -1,0 +1,40 @@
+{
+  "tool": "built-in image_gen",
+  "intent": "precise-object-edit",
+  "prompt": "Use case: precise-object-edit. Edit target is the supplied transparent aerial container-ship cutout (1962×838). Correct one existing cargo container, DO NOT add or place a new box on top. Repaint exactly ONE existing off-white container roof in the central fourth bay (counting stern to bow), the UPPER of the TWO adjacent off-white containers in the middle of the cargo block. Its existing roof quadrilateral in the supplied 1962×838 image has approximate corners (959,337), (1116,289), (1123,321), (967,369), centre (1042,329). Change only this existing container's paint to a clean but realistic JSL burnt orange (#d8662c approximately), keeping its precise corrugated roof surface, existing dimensions, natural perspective, edge seams, corner castings, level and contact with the adjacent containers. Put white painted lettering 'JSL' centered on THIS roof, aligned parallel with the container's long axis and following its perspective; readable left-to-right when the ship bow points right. The mark should occupy about 40% of the roof length and fit well within that one roof. Preserve the fine corrugation through the ink; no raised lettering, no panel, no sticker border, no extra shadow. This is a flush, physically seated member of the existing row, not a stacked extra container, not a floating block, not laid diagonally across two containers. All other cargo must remain the existing muted blue/gray/off-white. The orange stern safety lifeboat stays unchanged and is not cargo. Preserve EXACTLY the full vessel camera, silhouette, bridge, railings, every other container, deck, hull, daylight exposure and all transparent margins. Do not redesign or move any physical object. No ocean, clouds, new shadows or background. Keep the original full cutout composition and genuine transparent alpha. Return the full ship, not a crop or a comparison.",
+  "inputCommit": "6c42f76478ab20fadca78b15695c388c3ff81da5",
+  "inputSha256": "ebd6ee5d0199a408e049554b696fa4d6fb2b480ac555c09b2adca9c4bd0476b8",
+  "generatedArtifact": "exec-979fba17-7f0e-4761-bfcf-f70c275e5299.png",
+  "generatedDimensions": [
+    1919,
+    820
+  ],
+  "output": "frontend/public/images/multimodal/sea-vessel-photo.webp",
+  "outputDimensions": [
+    1962,
+    838
+  ],
+  "outputBytes": 178112,
+  "outputSha256": "dadcb214734b373af5722e097b5584321c591f9f7c1288204972aebce404f445",
+  "conversion": "WebP quality86, alpha100; match existing alpha bounds with4px padding; no manual painted content",
+  "targetRoofApproximateInputQuad": [
+    [
+      959,
+      337
+    ],
+    [
+      1116,
+      289
+    ],
+    [
+      1123,
+      321
+    ],
+    [
+      967,
+      369
+    ]
+  ],
+  "request": "Repaint exactly the existing upper off-white container in the central fourth bay burnt orange, add white painted JSL aligned with that roof. Preserve its corrugation, precise corners, perspective, contact and stack level. No added/stacked/floating box or new shadow. Keep all other cargo neutral, stern lifeboat unchanged, vessel camera, hull, bridge, silhouette and transparent margins unchanged. Return a full transparent ship cutout.",
+  "rights": "Generated edit does not independently establish clearance of inherited input or applicable generator terms."
+}

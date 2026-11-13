@@ -1,0 +1,319 @@
+"use client"
+
+import { useEffect, useRef, useState } from "react"
+import { createPortal } from "react-dom"
+import { Link } from "@/i18n/navigation"
+import { useContent } from "@/config/use-content"
+import { usePrefersReducedMotion } from "@/hooks/use-prefers-reduced-motion"
+import { IndustrialJourney } from "./industrial-journey"
+import "./multimodal-journey.css"
+
+type Guest = HTMLElement & {
+  ucRender?: () => void
+  ucDispose?: () => void
+  marineRuntime?: { dispose(): void; renderer: { forceContextLoss(): void } }
+}
+
+// Mode order of the guest's service buttons (`data-mode`).
+const GUEST_MODES = ["AIR", "SEA", "TRUCK", "RAIL", "EXPRESS"]
+// The guest's road, operations and process frames finish at 31% of its range.
+const SERVICE_PHASE_END = 0.31
+// Review copy inside the generated markup; the landing exposes English labels.
+const LABELS: [string, string, string][] = [
+  [".uc-screen", "aria-label", "JSL transport journey: road, ocean and air"],
+  [".uc-service-nav", "aria-label", "Transport modes"],
+  [".uc-process-nav", "aria-label", "Cargo process"],
+  [".mm-mode-nav", "aria-label", "Journey scenes"],
+  [".uc-truck", "alt", ""],
+  [".uc-field-photo", "alt", ""],
+]
+const started = new WeakSet<Element>()
+
+/** Move keyboard focus without scrolling, making a plain section focusable for the moment. */
+function focusQuietly(target: Element | null) {
+  if (!(target instanceof HTMLElement)) return
+  if (!target.hasAttribute("tabindex")) target.setAttribute("tabindex", "-1")
+  target.focus({ preventScroll: true })
+}
+
+/** Slot 03: the reviewed road → cargo → sea → cloud → air sequence, driven by page scroll. */
+export function MultimodalJourney() {
+  const { services } = useContent()
+  const reduced = usePrefersReducedMotion()
+  const root = useRef<HTMLElement>(null)
+  const host = useRef<HTMLDivElement>(null)
+  const exit = useRef<() => void>(() => {})
+  const action = useRef<HTMLAnchorElement>(null)
+  const skip = useRef<HTMLButtonElement>(null)
+  const [copy, setCopy] = useState<HTMLElement | null>(null)
+  const [header, setHeader] = useState<HTMLElement | null>(null)
+  const [selected, setSelected] = useState(-1)
+  const [servicePhase, setServicePhase] = useState(true)
+  const [loadFailed, setLoadFailed] = useState(false)
+
+  // Reduced motion has no journey engine, but same-page Next links still need target focus.
+  useEffect(() => {
+    if (!reduced) return
+    let frame = 0
+    const onReducedAnchorClick = (event: MouseEvent) => {
+      if (event.defaultPrevented || event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return
+      if (!(event.target instanceof Element)) return
+      const link = event.target.closest<HTMLAnchorElement>("a[href]")
+      // Sheet navigation waits for its actual close/unlock lifecycle in LandingNavbar.
+      if (!link || link.closest('[data-slot="sheet-content"]') || link.origin !== location.origin || link.pathname !== location.pathname || link.search !== location.search || !link.hash) return
+      if (link.hasAttribute("download") || (link.target && link.target.toLowerCase() !== "_self")) return
+      let target: HTMLElement | null
+      try { target = document.getElementById(decodeURIComponent(link.hash.slice(1))) } catch { return }
+      if (!target) return
+      event.preventDefault()
+      cancelAnimationFrame(frame)
+      if (location.hash !== link.hash) history.pushState(null, "", link.hash)
+      // Let the menu selection event finish before moving focus outside the menu.
+      frame = requestAnimationFrame(() => {
+        frame = requestAnimationFrame(() => {
+          if (!target.isConnected) return
+          target.scrollIntoView({ behavior: "instant", block: "start" })
+          focusQuietly(target)
+        })
+      })
+    }
+    document.addEventListener("click", onReducedAnchorClick, true)
+    return () => {
+      cancelAnimationFrame(frame)
+      document.removeEventListener("click", onReducedAnchorClick, true)
+    }
+  }, [reduced])
+
+  useEffect(() => {
+    const element = root.current
+    const container = host.current
+    if (!element || !container || reduced) return
+    let cancelled = false
+    let navigationVersion = 0
+    let pendingSkip = false
+    let skippedY = 0
+    const teardown: (() => void)[] = []
+    // Until GSAP is ready, or if it never loads, skipping still lands on the next section.
+    const jumpPast = () => {
+      pendingSkip = true
+      navigationVersion++
+      element.nextElementSibling?.scrollIntoView({ behavior: "instant" })
+      skippedY = window.scrollY
+      focusQuietly(element.nextElementSibling)
+    }
+    // Pin setup and refresh must not move content that an early skip already reached.
+    const preserveSkippedView = () => {
+      const next = element.nextElementSibling
+      if (!pendingSkip || window.scrollY < skippedY - 1 || !next) {
+        pendingSkip = false
+        return
+      }
+      const top = next.getBoundingClientRect().top
+      return () => {
+        if (!pendingSkip || !next.isConnected) return
+        window.scrollBy({ top: next.getBoundingClientRect().top - top, behavior: "instant" })
+        skippedY = window.scrollY
+      }
+    }
+    exit.current = jumpPast
+
+    // The engine, Three.js and GSAP load only as the section approaches, never for the first view.
+    const start = async () => {
+      const { css, markup, runJslMultimodal } = await import("../multimodal/jsl-multimodal.mjs")
+      if (cancelled) return
+      // React never renders into this container, so it cannot replace the DOM the engine binds to.
+      if (!container.querySelector("#jsl-marine-native")) container.innerHTML = `<style>${css}</style>${markup}`
+      setLoadFailed(false)
+      const guest = container.querySelector<Guest>("#jsl-marine-native")!
+      const range = guest.querySelector<HTMLInputElement>("input[type=range]")!
+      const modes = guest.querySelector<HTMLElement>(".uc-service-nav")!
+      if (!started.has(guest)) {
+        started.add(guest)
+        for (const [selector, name, value] of LABELS) guest.querySelector(selector)?.setAttribute(name, value)
+        runJslMultimodal()
+      }
+      setCopy(guest.querySelector<HTMLElement>(".uc-main-copy"))
+      setHeader(guest.querySelector<HTMLElement>(".uc-header"))
+      const readMode = () => setSelected(Number(modes.querySelector<HTMLElement>("[aria-pressed=true]")?.dataset.mode ?? -1))
+      const observer = new MutationObserver(readMode)
+      observer.observe(modes, { subtree: true, attributes: true, attributeFilter: ["aria-pressed"] })
+      readMode()
+      teardown.push(() => {
+        observer.disconnect()
+        // Strict Mode remounts the same node; release the GPU only once the guest has left the page.
+        setTimeout(() => {
+          if (guest.isConnected) return
+          guest.ucDispose?.()
+          guest.marineRuntime?.dispose()
+          guest.marineRuntime?.renderer.forceContextLoss()
+        }, 0)
+      })
+
+      void import("three").then(THREE => {
+        if (cancelled) return
+        Object.assign(window, { JslMarineThree: THREE })
+        window.dispatchEvent(new Event("jsl-marine-ready"))
+      }).catch(() => {}) // without Three.js the engine keeps its static fallback
+      const [{ gsap }, { ScrollTrigger }] = await Promise.all([import("gsap"), import("gsap/ScrollTrigger")])
+      if (cancelled) return
+      gsap.registerPlugin(ScrollTrigger)
+      const restoreAfterPin = preserveSkippedView()
+      const context = gsap.context(() => {
+        const stage = element.querySelector<HTMLElement>(".multimodal-stage")!
+        const driver = { progress: 0 }
+        const draw = () => {
+          const focusedAction = action.current && document.activeElement === action.current ? action.current : null
+          range.value = (driver.progress * 100).toFixed(2)
+          guest.ucRender?.()
+          const inServicePhase = driver.progress < SERVICE_PHASE_END
+          // The engine can make the link inert before React removes it. Capture focus before rendering.
+          if (focusedAction && (!inServicePhase || !focusedAction.isConnected || focusedAction.closest("[inert]"))) skip.current?.focus({ preventScroll: true })
+          setServicePhase(inServicePhase)
+        }
+        draw()
+        const tween = gsap.to(driver, {
+          progress: 1, ease: "none", onUpdate: draw,
+          scrollTrigger: {
+            id: "jsl-multimodal", trigger: element, pin: stage,
+            start: "top top", end: () => `+=${window.innerHeight * 14}`,
+            scrub: 0.35, invalidateOnRefresh: true, onRefresh: draw,
+          },
+        })
+        const trigger = tween.scrollTrigger!
+        let scrollTween: ReturnType<typeof gsap.to> | undefined
+        const move = (y: number, done?: () => void) => {
+          scrollTween?.kill()
+          const position = { y: window.scrollY }
+          scrollTween = gsap.to(position, { y, duration: 0.8, ease: "power2.inOut", onUpdate: () => window.scrollTo({ top: position.y, behavior: "instant" }), onComplete: done })
+        }
+        // Guest buttons jump the range themselves. Return to the scrolled frame and let
+        // the page scroll there, so scroll position and scene stay one value.
+        const follow = (event: MouseEvent) => {
+          if (!(event.target as Element).closest("button")) return
+          const target = Number(range.value) / 100
+          if (Math.abs(target - driver.progress) < 0.0005) return
+          draw()
+          move(trigger.start + target * (trigger.end - trigger.start))
+        }
+        guest.addEventListener("click", follow)
+        exit.current = () => {
+          pendingSkip = false
+          navigationVersion++
+          move(trigger.end + window.innerHeight, () => focusQuietly(element.nextElementSibling))
+        }
+        return () => { scrollTween?.kill(); guest.removeEventListener("click", follow); exit.current = jumpPast }
+      }, element)
+      restoreAfterPin?.()
+      teardown.push(() => context.revert())
+      // Refresh restores the scroll position it measured, so callers scroll only after it.
+      await document.fonts.ready
+      if (!cancelled) {
+        const restoreAfterRefresh = preserveSkippedView()
+        ScrollTrigger.refresh()
+        restoreAfterRefresh?.()
+      }
+    }
+
+    // A failed chunk leaves the section on its fallback skip instead of breaking the page.
+    let loading: Promise<void> | null = null
+    const ensure = () => (loading ??= start().catch(() => {
+      if (!cancelled && !container.querySelector("#jsl-marine-native")) setLoadFailed(true)
+    }))
+    const near = new IntersectionObserver(entries => {
+      if (!entries.some(entry => entry.isIntersecting)) return
+      near.disconnect()
+      void ensure()
+    }, { rootMargin: "150% 0px" })
+    near.observe(element)
+
+    // Resolve downstream anchors before loading, then measure again after the pin spacer exists.
+    // Otherwise a late engine load changes page height halfway through native smooth scrolling.
+    const anchors = new Set(["#features", "#cargo-journey"])
+    const anchorTarget = (hash: string): HTMLElement | null => {
+      if (anchors.has(hash)) return element
+      if (!hash || hash === "#") return null
+      let target: HTMLElement | null
+      try { target = document.getElementById(decodeURIComponent(hash.slice(1))) }
+      catch { return null }
+      if (!target || element.contains(target)) return null
+      return element.compareDocumentPosition(target) & Node.DOCUMENT_POSITION_FOLLOWING ? target : null
+    }
+    // Shares navigationVersion with jumpPast, so a newer skip or anchor cancels an older one.
+    const goHere = (hash: string, sheet?: Element | null, behavior: ScrollBehavior = "smooth") => {
+      pendingSkip = false
+      const request = ++navigationVersion
+      void ensure().then(async () => {
+        // Radix keeps the closing sheet and its scroll lock mounted through its exit animation.
+        // Wait for actual removal, not a guessed timeout, then let focus/lock cleanup finish.
+        while (sheet?.isConnected) {
+          if (cancelled || request !== navigationVersion) return
+          await new Promise<void>(resolve => requestAnimationFrame(() => resolve()))
+        }
+        if (sheet) {
+          await new Promise<void>(resolve => requestAnimationFrame(() => requestAnimationFrame(() => resolve())))
+        }
+        if (cancelled || request !== navigationVersion) return
+        const target = anchorTarget(hash)
+        if (!target?.isConnected) return
+        window.scrollTo({ top: target.getBoundingClientRect().top + window.scrollY, behavior })
+        focusQuietly(target)
+        // A smooth run crosses the pinned journey and can stop short (slow devices, a late image
+        // above). When it ends, land exactly on the target once.
+        if (behavior === "smooth") {
+          window.addEventListener("scrollend", () => {
+            if (cancelled || request !== navigationVersion || !target.isConnected) return
+            const off = target.getBoundingClientRect().top
+            if (Math.abs(off) > 2) window.scrollTo({ top: off + window.scrollY, behavior: "instant" })
+          }, { once: true })
+        }
+      })
+    }
+    const onAnchorClick = (event: MouseEvent) => {
+      if (event.defaultPrevented || event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return
+      if (!(event.target instanceof Element)) return
+      const link = event.target.closest<HTMLAnchorElement>("a[href]")
+      if (!link || link.origin !== window.location.origin || link.pathname !== window.location.pathname || link.search !== window.location.search) return
+      if (link.hasAttribute("download") || (link.target && link.target.toLowerCase() !== "_self")) return
+      // A newer native anchor navigation must also cancel an older pending engine navigation.
+      ++navigationVersion
+      if (!anchorTarget(link.hash)) return
+      event.preventDefault()
+      if (window.location.hash !== link.hash) history.pushState(null, "", link.hash)
+      goHere(link.hash, link.closest('[data-slot="sheet-content"]'))
+    }
+    // Capture before React/Next Link consumes same-document anchor navigation.
+    document.addEventListener("click", onAnchorClick, true)
+    // Arriving with a hash: jump, do not animate through ~14 screens of pinned journey.
+    if (anchorTarget(window.location.hash)) goHere(window.location.hash, null, "instant")
+    return () => {
+      cancelled = true
+      near.disconnect()
+      document.removeEventListener("click", onAnchorClick, true)
+      for (const run of teardown.splice(0)) run()
+    }
+  }, [reduced])
+
+  // The reduced-motion journey already lists every mode with its service link.
+  if (reduced) return <IndustrialJourney />
+
+  const service = services.modes.find(item => item.code === GUEST_MODES[selected])
+  return <section id="features" className="multimodal-journey" ref={root} lang="en" aria-label="JSL transport services and shipment journey">
+    <div id="cargo-journey" className="multimodal-cargo-anchor" aria-hidden="true" />
+    <div className="multimodal-stage">
+      <div className="multimodal-guest" ref={host} />
+      {loadFailed && <div className="multimodal-load-fallback" role="status">
+        <p>Unable to load the transport journey.</p>
+        <button type="button" onClick={() => exit.current()}>Skip journey <span aria-hidden="true">↓</span></button>
+      </div>}
+      {copy && servicePhase && createPortal(
+        <Link ref={action} href={service?.href ?? "#contact"} className="multimodal-action"><span>{service ? "VIEW SERVICE" : "EXPLORE SERVICES"}</span><span aria-hidden="true">↗</span></Link>,
+        copy,
+      )}
+      {/* The guest header keeps the logo and counter clear of the scene and its bottom navigation. */}
+      {header && createPortal(
+        <button ref={skip} className="multimodal-skip" type="button" onClick={() => exit.current()}>Skip journey <span aria-hidden="true">↓</span></button>,
+        header,
+      )}
+    </div>
+  </section>
+}

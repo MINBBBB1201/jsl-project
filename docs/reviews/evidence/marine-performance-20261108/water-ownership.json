@@ -1,0 +1,22 @@
+{
+  "sourcePreservedExceptShadowGate": true,
+  "waveSpectrumColorAndWakeMathUnchanged": true,
+  "observations": [
+    {
+      "visible": true,
+      "water": 1,
+      "wake": 1
+    },
+    {
+      "visible": false,
+      "water": 0,
+      "wake": 0
+    },
+    {
+      "visible": true,
+      "water": 1,
+      "wake": 1
+    }
+  ],
+  "scope": "Pure Three objects; no GPU rendering or FPS claim."
+}

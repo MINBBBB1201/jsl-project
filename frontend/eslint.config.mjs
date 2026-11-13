@@ -48,6 +48,8 @@ const eslintConfig = [
       "next-env.d.ts",
       // container-planner 테스트 빌드 산출물 — 원본(.ts)만 린트하면 된다
       ".test-build/**",
+      // jsl-design-prototypes 에서 생성한 장면 엔진 — 원본 저장소에서 검사한다
+      "src/app/landing/multimodal/jsl-multimodal.mjs",
     ],
   },
   ...nextCoreWebVitals,

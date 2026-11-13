@@ -1,0 +1,8 @@
+{
+  "background": "#17100b",
+  "placeholderBeforeNominal": 3.18,
+  "labelBeforeNominal": 4.55,
+  "clockBeforeNominal": 2.68,
+  "afterNominal": 8.2,
+  "limit": "Flat hero background only; not a measurement over every animated globe pixel."
+}

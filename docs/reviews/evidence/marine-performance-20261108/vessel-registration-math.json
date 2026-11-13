@@ -1,0 +1,264 @@
+{
+  "scope": "Pure Three.js geometry test with native roof dimensions/UV fixture; no browser or visual approval",
+  "sourceSha256LF": "8c7bdde8ad4f63f886d9a18ba6635a9ec5f151f119bb0ff18d6fd6d0791dd478",
+  "results": [
+    {
+      "transformedParentAndGroup": false,
+      "registration": {
+        "state": "registered",
+        "sourceXZ": [
+          [
+            2.2052618572480043,
+            -1.1092677627275052
+          ],
+          [
+            14.510286098675522,
+            -0.9000135837407299
+          ],
+          [
+            14.552513612934305,
+            1.6714926935597632
+          ],
+          [
+            2.3213303596429995,
+            1.4865162076770915
+          ]
+        ],
+        "targetXZ": [
+          [
+            3.22500020980835,
+            -1.2200000286102295
+          ],
+          [
+            15.41499979019165,
+            -1.2200000286102295
+          ],
+          [
+            15.41499979019165,
+            1.2200000286102295
+          ],
+          [
+            3.22500020980835,
+            1.2200000286102295
+          ]
+        ],
+        "cornerErrors": [
+          0,
+          0,
+          0.07531121671702147,
+          4.965068306494546e-16
+        ],
+        "fourthCornerError": 0.07531121671702147,
+        "areaScale": 0.9319076288056548,
+        "xScale": 0.9915351326406564,
+        "zScale": 0.9417450279496377,
+        "coefficients": [
+          0.99140607705851,
+          -0.044329967339902604,
+          -0.015997175756351255,
+          0.9407010958128553,
+          0.9895163993344248,
+          -0.1412326671434172
+        ]
+      },
+      "paintErrors": [
+        3.938868132912011e-14,
+        4.3025954369216625e-14,
+        4.268747870298749e-14,
+        3.757018337023752e-14
+      ],
+      "shadow": {
+        "maximumOpacity": 0.12,
+        "heightDifference": 0.06,
+        "xzOffset": 0
+      },
+      "handoff": [
+        {
+          "progress": 0.52,
+          "source": "native",
+          "photoOpacity": 0,
+          "nativeVisible": true
+        },
+        {
+          "progress": 0.57499,
+          "source": "native",
+          "photoOpacity": 0,
+          "nativeVisible": true
+        },
+        {
+          "progress": 0.575,
+          "source": "photo",
+          "photoOpacity": 1,
+          "nativeVisible": false
+        },
+        {
+          "progress": 0.58,
+          "source": "photo",
+          "photoOpacity": 1,
+          "nativeVisible": false
+        },
+        {
+          "progress": 0.65,
+          "source": "photo",
+          "photoOpacity": 1,
+          "nativeVisible": false
+        },
+        {
+          "progress": 0.58,
+          "source": "photo",
+          "photoOpacity": 1,
+          "nativeVisible": false
+        },
+        {
+          "progress": 0.575,
+          "source": "photo",
+          "photoOpacity": 1,
+          "nativeVisible": false
+        },
+        {
+          "progress": 0.57499,
+          "source": "native",
+          "photoOpacity": 0,
+          "nativeVisible": true
+        },
+        {
+          "progress": 0.52,
+          "source": "native",
+          "photoOpacity": 0,
+          "nativeVisible": true
+        }
+      ],
+      "nativeRoofY": 12.157,
+      "photoPlaneY": 12.100000381469727
+    },
+    {
+      "transformedParentAndGroup": true,
+      "registration": {
+        "state": "registered",
+        "sourceXZ": [
+          [
+            2.2052618572480043,
+            -1.1092677627275052
+          ],
+          [
+            14.510286098675522,
+            -0.9000135837407299
+          ],
+          [
+            14.552513612934305,
+            1.6714926935597632
+          ],
+          [
+            2.3213303596429995,
+            1.4865162076770915
+          ]
+        ],
+        "targetXZ": [
+          [
+            3.22500020980835,
+            -1.2200000286102297
+          ],
+          [
+            15.414999790191654,
+            -1.2200000286102297
+          ],
+          [
+            15.414999790191654,
+            1.2200000286102297
+          ],
+          [
+            3.22500020980835,
+            1.2200000286102297
+          ]
+        ],
+        "cornerErrors": [
+          0,
+          0,
+          0.07531121671702154,
+          4.440892098500626e-16
+        ],
+        "fourthCornerError": 0.07531121671702154,
+        "areaScale": 0.9319076288056551,
+        "xScale": 0.9915351326406566,
+        "zScale": 0.9417450279496378,
+        "coefficients": [
+          0.9914060770585102,
+          -0.04432996733990262,
+          -0.01599717575635126,
+          0.9407010958128554,
+          0.9895163993344244,
+          -0.1412326671434172
+        ]
+      },
+      "paintErrors": [
+        3.938868132912011e-14,
+        4.3025954369216625e-14,
+        4.268747870298749e-14,
+        3.757018337023752e-14
+      ],
+      "shadow": {
+        "maximumOpacity": 0.12,
+        "heightDifference": 0.06,
+        "xzOffset": 0
+      },
+      "handoff": [
+        {
+          "progress": 0.52,
+          "source": "native",
+          "photoOpacity": 0,
+          "nativeVisible": true
+        },
+        {
+          "progress": 0.57499,
+          "source": "native",
+          "photoOpacity": 0,
+          "nativeVisible": true
+        },
+        {
+          "progress": 0.575,
+          "source": "photo",
+          "photoOpacity": 1,
+          "nativeVisible": false
+        },
+        {
+          "progress": 0.58,
+          "source": "photo",
+          "photoOpacity": 1,
+          "nativeVisible": false
+        },
+        {
+          "progress": 0.65,
+          "source": "photo",
+          "photoOpacity": 1,
+          "nativeVisible": false
+        },
+        {
+          "progress": 0.58,
+          "source": "photo",
+          "photoOpacity": 1,
+          "nativeVisible": false
+        },
+        {
+          "progress": 0.575,
+          "source": "photo",
+          "photoOpacity": 1,
+          "nativeVisible": false
+        },
+        {
+          "progress": 0.57499,
+          "source": "native",
+          "photoOpacity": 0,
+          "nativeVisible": true
+        },
+        {
+          "progress": 0.52,
+          "source": "native",
+          "photoOpacity": 0,
+          "nativeVisible": true
+        }
+      ],
+      "nativeRoofY": 12.157,
+      "photoPlaneY": 12.100000381469727
+    }
+  ]
+}

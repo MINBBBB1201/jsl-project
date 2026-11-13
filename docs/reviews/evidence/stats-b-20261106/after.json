@@ -1,0 +1,255 @@
+{
+  "scope": "Actual local app. Summary API503 andsuccess are synthetic fixtures; no operational claims.",
+  "results": [
+    {
+      "locale": "en",
+      "w": 1440,
+      "h": 1000,
+      "motion": "reduce",
+      "summary": "503-collapsed",
+      "errors": [],
+      "overflow": 0,
+      "wrapTop": "0px",
+      "backgroundImage": "none",
+      "columns": "748.328px 430.875px",
+      "headingSize": "48px",
+      "values": [
+        {
+          "label": "200",
+          "shown": "200"
+        },
+        {
+          "label": "100",
+          "shown": "100"
+        },
+        {
+          "label": "350",
+          "shown": "350"
+        },
+        {
+          "label": "KRW 18B",
+          "shown": "KRW 18B"
+        },
+        {
+          "label": "5",
+          "shown": "5"
+        },
+        {
+          "label": "30+",
+          "shown": "30+"
+        },
+        {
+          "label": "50+",
+          "shown": "50+"
+        }
+      ],
+      "text": "Monthly handling volume\n\nMonthly average across air, ocean and road.\n\nAIR\n200\ntons / month\nSEA\n100\nTEU / month\nTRUCK\n350\ntrucks / month\nJSL, in numbers\nAnnual revenue\nKRW 18B\nFY2025\nGlobal locations\n5\nSeoul HQ + 4 wholly owned overseas entities\nClients\n30+\nLG, Samsung and others · Manufacturing / E-commerce / Distribution\nPartners\n50+\nGlobal partner network",
+      "height": 741.65625
+    },
+    {
+      "locale": "ko",
+      "w": 390,
+      "h": 844,
+      "motion": "reduce",
+      "summary": "503-collapsed",
+      "errors": [],
+      "overflow": 0,
+      "wrapTop": "0px",
+      "backgroundImage": "none",
+      "columns": "294px",
+      "headingSize": "35px",
+      "values": [
+        {
+          "label": "200",
+          "shown": "200"
+        },
+        {
+          "label": "100",
+          "shown": "100"
+        },
+        {
+          "label": "350",
+          "shown": "350"
+        },
+        {
+          "label": "180억원",
+          "shown": "180억원"
+        },
+        {
+          "label": "5개",
+          "shown": "5개"
+        },
+        {
+          "label": "30개사+",
+          "shown": "30개사+"
+        },
+        {
+          "label": "50개사+",
+          "shown": "50개사+"
+        }
+      ],
+      "text": "월간 처리 물동량\n\n항공·해상·육상 3개 모드 기준 월 평균 처리량입니다.\n\nAIR\n200\n톤 / 월\nSEA\n100\nTEU / 월\nTRUCK\n350\n대 / 월\n숫자로 보는 JSL\n연간 매출\n180억원\n2025 회계연도 기준\n글로벌 거점\n5개\n서울 본사 + 해외법인 4개 직영\n고객사\n30개사+\nLG · 삼성 외 다수 · 제조 / 이커머스 / 유통\n파트너사\n50개사+\n글로벌 협력 네트워크",
+      "height": 1077.078125
+    },
+    {
+      "locale": "zh",
+      "w": 390,
+      "h": 844,
+      "motion": "reduce",
+      "summary": "503-collapsed",
+      "errors": [],
+      "overflow": 0,
+      "wrapTop": "0px",
+      "backgroundImage": "none",
+      "columns": "294px",
+      "headingSize": "35px",
+      "values": [
+        {
+          "label": "200",
+          "shown": "200"
+        },
+        {
+          "label": "100",
+          "shown": "100"
+        },
+        {
+          "label": "350",
+          "shown": "350"
+        },
+        {
+          "label": "180亿韩元",
+          "shown": "180亿韩元"
+        },
+        {
+          "label": "5个",
+          "shown": "5个"
+        },
+        {
+          "label": "30家以上",
+          "shown": "30家以上"
+        },
+        {
+          "label": "50家以上",
+          "shown": "50家以上"
+        }
+      ],
+      "text": "月处理货量\n\n空运、海运、陆运3种模式的月平均处理量。\n\nAIR\n200\n吨 / 月\nSEA\n100\nTEU / 月\nTRUCK\n350\n车 / 月\nJSL 数据概览\n年营业额\n180亿韩元\n2025财年基准\n全球据点\n5个\n首尔总部 + 4家海外全资法人\n客户\n30家以上\nLG · 三星等多家 · 制造 / 电商 / 流通\n合作伙伴\n50家以上\n全球合作网络",
+      "height": 1077.078125
+    },
+    {
+      "locale": "vi",
+      "w": 320,
+      "h": 640,
+      "motion": "reduce",
+      "summary": "503-collapsed",
+      "errors": [],
+      "overflow": 0,
+      "wrapTop": "0px",
+      "backgroundImage": "none",
+      "columns": "224px",
+      "headingSize": "35px",
+      "values": [
+        {
+          "label": "200",
+          "shown": "200"
+        },
+        {
+          "label": "100",
+          "shown": "100"
+        },
+        {
+          "label": "350",
+          "shown": "350"
+        },
+        {
+          "label": "18 tỷ KRW",
+          "shown": "18 tỷ KRW"
+        },
+        {
+          "label": "5",
+          "shown": "5"
+        },
+        {
+          "label": "30+",
+          "shown": "30+"
+        },
+        {
+          "label": "50+",
+          "shown": "50+"
+        }
+      ],
+      "text": "Sản lượng xử lý hàng tháng\n\nSản lượng trung bình tháng của 3 phương thức: hàng không, đường biển, đường bộ.\n\nAIR\n200\ntấn / tháng\nSEA\n100\nTEU / tháng\nTRUCK\n350\nxe / tháng\nJSL qua những con số\nDoanh thu năm\n18 tỷ KRW\nNăm tài chính 2025\nCơ sở toàn cầu\n5\nTrụ sở Seoul + 4 pháp nhân nước ngoài trực thuộc\nKhách hàng\n30+\nLG, Samsung và nhiều khách hàng khác · Sản xuất / TMĐT / Phân phối\nĐối tác\n50+\nMạng lưới đối tác toàn cầu",
+      "height": 1252.71875
+    },
+    {
+      "locale": "en",
+      "w": 1440,
+      "motion": "normal",
+      "before": "0",
+      "after": "200",
+      "samples": [
+        "0",
+        "2",
+        "7",
+        "13",
+        "22",
+        "35",
+        "45",
+        "56",
+        "66",
+        "76",
+        "85",
+        "94",
+        "102",
+        "110",
+        "118",
+        "124",
+        "131",
+        "137",
+        "142",
+        "149",
+        "152",
+        "156",
+        "160",
+        "165",
+        "167",
+        "170",
+        "173",
+        "175",
+        "178",
+        "180",
+        "182",
+        "183",
+        "185",
+        "186",
+        "188",
+        "189",
+        "190",
+        "191",
+        "192",
+        "193",
+        "194",
+        "195",
+        "196",
+        "197",
+        "198",
+        "199",
+        "200"
+      ],
+      "errors": []
+    },
+    {
+      "summary": "synthetic-success",
+      "panelPreserved": true,
+      "children": 2,
+      "errors": []
+    }
+  ],
+  "sourceHashes": {
+    "frontend/src/app/landing/components/stats-section.tsx": "bd984699af4c2aebd3636cb5e5bb0e96681935c306b7987f6e215f3d914bff07",
+    "frontend/src/app/landing/components/stats-section.css": "7c5f0b4e9673d177250c637266fdb1b84376b101e9ae17c586b3dc80dddcc0bf",
+    "frontend/src/app/landing/journey.css": "2003b068e6a2c9745029751fe132d18d5da4405df02330bedc032b75ccbbb82f",
+    "frontend/src/app/landing/components/count-up.tsx": "6fd6a74e7381acd594429075ceb9fedf2b5c1c2b0a78b0a93550c83e7e14226f"
+  },
+  "uncommittedSourceAtExecution": true
+}

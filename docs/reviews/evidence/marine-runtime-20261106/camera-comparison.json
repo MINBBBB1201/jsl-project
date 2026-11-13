@@ -1,0 +1,149 @@
+{
+  "comparison": "Current app bcaba55 vs Cycles48 wavelet65 receipt",
+  "viewport": [
+    1440,
+    900
+  ],
+  "keys": {
+    "type": {
+      "equal": true,
+      "current": "orthographic",
+      "archive": "orthographic"
+    },
+    "position": {
+      "equal": true,
+      "current": [
+        108.75432383281591,
+        416.0046684405276,
+        179.08847611956264
+      ],
+      "archive": [
+        108.75432383281591,
+        416.0046684405276,
+        179.08847611956264
+      ]
+    },
+    "target": {
+      "equal": true,
+      "current": [
+        -13.785273079992644,
+        14.203882423334834,
+        4.0837950415529445
+      ],
+      "archive": [
+        -13.785273079992644,
+        14.203882423334834,
+        4.0837950415529445
+      ]
+    },
+    "up": {
+      "equal": true,
+      "current": [
+        0.29760269094436753,
+        0.30348510649115157,
+        -0.9051681769045605
+      ],
+      "archive": [
+        0.29760269094436753,
+        0.30348510649115157,
+        -0.9051681769045605
+      ]
+    },
+    "rightVector": {
+      "equal": true,
+      "current": [
+        0.9159269025385348,
+        -0.35819036615001404,
+        0.18104576991325755
+      ],
+      "archive": [
+        0.9159269025385348,
+        -0.35819036615001404,
+        0.18104576991325755
+      ]
+    },
+    "left": {
+      "equal": true,
+      "current": -95.99622284973124,
+      "archive": -95.99622284973124
+    },
+    "right": {
+      "equal": true,
+      "current": 95.99622284973124,
+      "archive": 95.99622284973124
+    },
+    "top": {
+      "equal": true,
+      "current": 59.99763928108202,
+      "archive": 59.99763928108202
+    },
+    "bottom": {
+      "equal": true,
+      "current": -59.99763928108202,
+      "archive": -59.99763928108202
+    },
+    "near": {
+      "equal": true,
+      "current": 0.1,
+      "archive": 0.1
+    },
+    "far": {
+      "equal": true,
+      "current": 2213.513430897034,
+      "archive": 2213.513430897034
+    },
+    "zoom": {
+      "equal": true,
+      "current": 1,
+      "archive": 1
+    },
+    "fov": {
+      "equal": true,
+      "current": 0,
+      "archive": 0
+    },
+    "spanX": {
+      "equal": true,
+      "current": 191.99244569946248,
+      "archive": 191.99244569946248
+    },
+    "spanY": {
+      "equal": true,
+      "current": 119.99527856216405,
+      "archive": 119.99527856216405
+    },
+    "cargoProjection": {
+      "equal": true,
+      "current": {
+        "x": 878.6804504699487,
+        "y": 375.3607050983784
+      },
+      "archive": {
+        "x": 878.6804504699487,
+        "y": 375.3607050983784
+      }
+    },
+    "shipBounds": {
+      "equal": true,
+      "current": {
+        "left": 259.20000000000005,
+        "top": 115.21386943998294,
+        "width": 1123.1999999999998,
+        "height": 561.5722611200341
+      },
+      "archive": {
+        "left": 259.20000000000005,
+        "top": 115.21386943998294,
+        "width": 1123.1999999999998,
+        "height": 561.5722611200341
+      }
+    },
+    "phase": {
+      "equal": true,
+      "current": "hold",
+      "archive": "hold"
+    }
+  },
+  "allEqual": true,
+  "renderingDifference": "Current9calls18triangles usesphotographicvessel; archive109calls228384triangles usedmodelrender. Equalcamera doesnotmeanidenticalgeometry/materials."
+}
