@@ -295,9 +295,8 @@ describe("GET /api/shipments/nearby", () => {
     expect(keys(res.body)).toEqual(["data", "success"]);
     expect(res.body.data).toHaveLength(1);
     expect(res.body.data[0].trackingNumber).toBe("JSL-NEAR-1");
-    // ⚠️ 현재 동작: 목록형인데도 customer 가 그대로 나간다 (PII_EXCLUDED_FIELDS 미적용).
-    //    리팩터링은 동작을 바꾸지 않으므로 그대로 고정한다. 고치는 건 별도 작업.
-    expect(res.body.data[0]).toHaveProperty("customer");
+    // 목록형이라 getAllShipments 와 같이 연락처를 뺀다.
+    expect(res.body.data[0]).not.toHaveProperty("customer");
   });
 
   test("좌표가 없으면 400", async () => {
@@ -331,9 +330,8 @@ describe("PATCH /api/shipments/:trackingNumber/status", () => {
     const last = res.body.data.history[res.body.data.history.length - 1];
     expect(last.status).toBe("out_for_delivery");
     expect(last.description).toBe("출고");
-    // ⚠️ 현재 동작: 위치 갱신(PATCH location)과 달리 stripPii 를 거치지 않아
-    //    쓰기 응답에 customer 가 포함된다. 동작 보존을 위해 그대로 고정한다.
-    expect(res.body.data).toHaveProperty("customer");
+    // 위치 갱신(PATCH location)과 같이 쓰기 응답에서는 연락처를 뺀다.
+    expect(res.body.data).not.toHaveProperty("customer");
   });
 
   test("status 가 없으면 400 (컨트롤러 검증)", async () => {
@@ -515,8 +513,7 @@ describe("PATCH /api/shipments/:trackingNumber/location/manual", () => {
     expect(keys(res.body)).toEqual(["data", "message", "success"]);
     expect(res.body.data.currentLocation.address).toBe("Daejeon hub");
     expect(res.body.data.status).toBe("out_for_delivery");
-    // ⚠️ 현재 동작: stripPii 를 거치지 않아 customer 가 포함된다.
-    expect(res.body.data).toHaveProperty("customer");
+    expect(res.body.data).not.toHaveProperty("customer");
   });
 
   test("검증 실패는 400, 없는 번호는 404, 권한 없음은 403", async () => {
@@ -557,6 +554,7 @@ describe("체크포인트 — POST/PATCH/DELETE /:trackingNumber/checkpoints", (
     expect(res.body.data.checkpoints).toHaveLength(1);
     expect(res.body.data.checkpoints[0].name).toBe("Busan hub");
     expect(res.body.data.checkpoints[0].reached).toBe(false);
+    expect(res.body.data).not.toHaveProperty("customer");
   });
 
   test("추가: 검증 실패 400, 없는 번호 404, 토큰 없음 403, sales 403", async () => {
@@ -608,9 +606,7 @@ describe("체크포인트 — POST/PATCH/DELETE /:trackingNumber/checkpoints", (
     expect(res.body.data.checkpoints[0].notes).toBe("메모");
   });
 
-  test("수정: reached=true 로 보내면 현재 동작상 이력이 쌓이지 않는다", async () => {
-    // ⚠️ 현재 동작: reached 를 먼저 대입한 뒤 `reached && !checkpoint.reached`
-    //    를 검사하므로 history 추가 분기는 도달하지 않는다. 동작 보존을 위해 고정.
+  test("수정: 처음 reached=true 가 되면 이력이 한 건 쌓이고, 다시 보내도 늘지 않는다", async () => {
     const { token } = await createUser({ role: "operations" });
     await createShipment({ trackingNumber: "JSL-CP-4" });
     const added = await request(app)
@@ -627,7 +623,15 @@ describe("체크포인트 — POST/PATCH/DELETE /:trackingNumber/checkpoints", (
 
     expect(res.status).toBe(200);
     expect(res.body.data.checkpoints[0].reached).toBe(true);
-    expect(res.body.data.history).toHaveLength(before);
+    expect(res.body.data.history).toHaveLength(before + 1);
+    expect(res.body.data.history[before].description).toBe("Checkpoint reached: Busan hub");
+    expect(res.body.data).not.toHaveProperty("customer");
+
+    const again = await request(app)
+      .patch(`/api/shipments/JSL-CP-4/checkpoints/${checkpointId}`)
+      .set(auth(token))
+      .send({ reached: true });
+    expect(again.body.data.history).toHaveLength(before + 1);
   });
 
   test("수정: 없는 체크포인트 404, 없는 화물 404, 권한 없음 403", async () => {
@@ -678,8 +682,7 @@ describe("체크포인트 — POST/PATCH/DELETE /:trackingNumber/checkpoints", (
     expect(anon.status).toBe(403);
   });
 
-  test("삭제: 존재하는 체크포인트의 현재 동작을 기록한다", async () => {
-    // 이 테스트는 현재 응답을 그대로 기록한다. 기대값은 아래 첫 실행 결과로 확정했다.
+  test("삭제: 존재하는 체크포인트가 지워지고 200", async () => {
     const { token } = await createUser({ role: "operations" });
     await createShipment({ trackingNumber: "JSL-CP-7" });
     const added = await request(app)
@@ -692,9 +695,10 @@ describe("체크포인트 — POST/PATCH/DELETE /:trackingNumber/checkpoints", (
       .delete(`/api/shipments/JSL-CP-7/checkpoints/${checkpointId}`)
       .set(auth(token));
 
-    expect(res.status).toBe(500);
-    expect(res.body.success).toBe(false);
-    expect(res.body.error).toBe("Failed to delete checkpoint");
+    expect(res.status).toBe(200);
+    expect(res.body.success).toBe(true);
+    expect(res.body.data.checkpoints).toHaveLength(0);
+    expect(res.body.data).not.toHaveProperty("customer");
   });
 });
 

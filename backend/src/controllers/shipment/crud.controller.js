@@ -445,7 +445,7 @@ exports.updateShipmentStatus = async (req, res) => {
 
     res.status(200).json({
       success: true,
-      data: shipment,
+      data: stripPii(shipment),
       message: "Shipment status updated successfully",
     });
   } catch (error) {
@@ -523,7 +523,7 @@ exports.updateShipmentLocationManually = async (req, res) => {
 
     res.status(200).json({
       success: true,
-      data: shipment,
+      data: stripPii(shipment),
       message: "Shipment location updated successfully",
     });
   } catch (error) {
