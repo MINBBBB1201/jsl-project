@@ -406,7 +406,7 @@ export function LandingThemeCustomizer({ open, onOpenChange }: LandingThemeCusto
   화면 아래에 붙어 있어, 좁은 폭에서는 04 · AIR 탭이 버튼 밑에 깔린다. 낮은 화면(320×640)에서는
   첫 화면의 히어로 화물조회 칸도 같은 자리에 온다. 엔진 마크업은 생성 파일이라 바꾸지 않고 위치만 읽는다.
 */
-const TRIGGER_AVOID_SELECTORS = ["#jsl-marine-native .mm-mode-nav", ".journey-track-form"]
+const TRIGGER_AVOID_SELECTORS = ["#jsl-marine-native .mm-mode-nav", "#jsl-marine-native .uc-service-nav", "#jsl-marine-native .uc-information", ".journey-track-form"]
 // 테마 패널이 닫힐 때 포커스를 돌려줄 버튼 표시
 const TRIGGER_ATTRIBUTE = "data-landing-theme-trigger"
 // 아래 className 의 bottom-6 · right-4 · h-12 w-12 와 같은 값
@@ -422,15 +422,21 @@ function measureTriggerLift() {
   const left = viewportWidth - TRIGGER_RIGHT - TRIGGER_SIZE
   const top = viewportHeight - TRIGGER_BOTTOM - TRIGGER_SIZE
   let lift = 0
+  const obstacles: DOMRect[] = []
   for (const selector of TRIGGER_AVOID_SELECTORS) {
     for (const element of document.querySelectorAll<HTMLElement>(selector)) {
+      // 엔진의 세로 배치는 767px까지다. PC 정보 영역에는 넓은 빈 여백도 포함된다.
+      if (selector.endsWith(".uc-information") && viewportWidth > 767) continue
       const rect = element.getBoundingClientRect()
       if (!rect.width || !rect.height || getComputedStyle(element).visibility === "hidden") continue
-      const overlaps =
-        rect.left < left + TRIGGER_SIZE + TRIGGER_GAP && rect.right > left - TRIGGER_GAP &&
-        rect.top < top + TRIGGER_SIZE + TRIGGER_GAP && rect.bottom > top - TRIGGER_GAP
-      // 조작부 윗변에서 간격만큼 띄운 자리로 버튼 아랫변을 올린다.
-      if (overlaps) lift = Math.max(lift, viewportHeight - TRIGGER_BOTTOM - rect.top + TRIGGER_GAP)
+      if (rect.left < left + TRIGGER_SIZE + TRIGGER_GAP && rect.right > left - TRIGGER_GAP) obstacles.push(rect)
+    }
+  }
+  // 아래부터 확인해야 첫 조작부를 피한 위치에서 다른 메뉴나 설명문을 덮지 않는다.
+  // 중간 폭·가로 모드에서도 이동한 위치를 실제 좌표로 다시 확인한다.
+  for (const rect of obstacles.sort((a, b) => b.bottom - a.bottom)) {
+    if (rect.top < top - lift + TRIGGER_SIZE + TRIGGER_GAP && rect.bottom > top - lift - TRIGGER_GAP) {
+      lift = viewportHeight - TRIGGER_BOTTOM - rect.top + TRIGGER_GAP
     }
   }
   return Math.round(lift)
@@ -441,26 +447,60 @@ export function LandingThemeCustomizerTrigger({ onClick }: { onClick: () => void
   const t = useTranslations("common")
   const [lift, setLift] = React.useState(0)
 
-  // 스크롤(양방향)·리사이즈마다 한 프레임에 한 번 다시 재서, 조작부가 있을 때만 비켜 선다.
+  // Measure at most once per frame, plus once after scrolling settles.
+  // Target observers handle the engine appearing or changing visibility while idle.
   React.useEffect(() => {
     let frame = 0
     let settle = 0
+    let targets: HTMLElement[] = []
     const update = () => {
       frame = 0
       setLift(measureTriggerLift())
     }
-    const schedule = () => {
+    const scheduleFrame = () => {
       if (!frame) frame = requestAnimationFrame(update)
-      // 엔진은 스크롤이 멈춘 뒤에도 탭을 보이거나 숨길 수 있어, 멈춘 뒤 한 번 더 잰다.
-      window.clearTimeout(settle)
-      settle = window.setTimeout(schedule, 450)
     }
+    const schedule = () => {
+      scheduleFrame()
+      window.clearTimeout(settle)
+      settle = window.setTimeout(scheduleFrame, 450)
+    }
+    const targetChanges = new MutationObserver(scheduleFrame)
+    const targetSizes = new ResizeObserver(scheduleFrame)
+    const watchTargets = () => {
+      const next = TRIGGER_AVOID_SELECTORS.flatMap(selector => Array.from(document.querySelectorAll<HTMLElement>(selector)))
+      if (next.length === targets.length && next.every((item, index) => item === targets[index])) return
+      targetChanges.disconnect()
+      targetSizes.disconnect()
+      targets = next
+      for (const target of targets) {
+        targetChanges.observe(target, { attributes: true, attributeFilter: ["style", "class", "hidden"] })
+        targetSizes.observe(target)
+      }
+      scheduleFrame()
+    }
+    // The transport markup loads later and can be replaced when reduced motion changes.
+    const structure = new MutationObserver(records => {
+      // Ignore the engine's routine text updates; only rebind when a target or its container changes.
+      const relevant = ".journey-track-form, .multimodal-guest, #jsl-marine-native, .mm-mode-nav, .uc-service-nav, .uc-information"
+      if (records.some(record => [...record.addedNodes, ...record.removedNodes].some(node =>
+        node instanceof Element && (node.matches(relevant) || !!node.querySelector(relevant))
+      ))) watchTargets()
+    })
+    const journey = document.querySelector(".journey")
+    if (journey) structure.observe(journey, { childList: true, subtree: true })
+    watchTargets()
     schedule()
     window.addEventListener("scroll", schedule, { passive: true })
     window.addEventListener("resize", schedule)
+    document.fonts.addEventListener("loadingdone", scheduleFrame)
     return () => {
       cancelAnimationFrame(frame)
       window.clearTimeout(settle)
+      targetChanges.disconnect()
+      targetSizes.disconnect()
+      structure.disconnect()
+      document.fonts.removeEventListener("loadingdone", scheduleFrame)
       window.removeEventListener("scroll", schedule)
       window.removeEventListener("resize", schedule)
     }
@@ -469,7 +509,7 @@ export function LandingThemeCustomizerTrigger({ onClick }: { onClick: () => void
   return (
     <Button
       onClick={onClick}
-      style={lift ? { transform: `translateY(-${lift}px)` } : undefined}
+      style={{ transform: lift ? `translateY(-${lift}px)` : undefined, transition: "none" }}
       size="icon"
       /*
         아이콘만 있고 글자가 없는 버튼이라 aria-label 이 없으면 스크린리더가
