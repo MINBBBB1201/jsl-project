@@ -90,7 +90,7 @@ function HeroTrack() {
   const clocks = network.items.filter((office) => OFFICE_ZONES[office.cityEn]);
   return <div className="journey-track">
     <form onSubmit={submit} className="journey-track-form">
-      <label><small>{t("title")}</small><input value={no} onChange={(event) => setNo(event.target.value)} placeholder={t("inputPlaceholder")} aria-label={t("inputLabel")} /></label>
+      <label><input value={no} onChange={(event) => setNo(event.target.value)} placeholder={t("inputPlaceholder")} aria-label={t("inputLabel")} /></label>
       <button type="submit" aria-label={t("search")}><ArrowUpRight size={18} /></button>
     </form>
     <p className="journey-track-clocks" aria-hidden="true">{now && clocks.map((office) => <span key={office.cityEn}>{office.city} {now.toLocaleTimeString("en-GB", { hour: "2-digit", minute: "2-digit", timeZone: OFFICE_ZONES[office.cityEn] })}</span>)}</p>
@@ -106,7 +106,7 @@ export function JourneyHero() {
     <div className="journey-stars" aria-hidden="true" />
     <div className="journey-orbit" aria-hidden="true"><div className="journey-sphere" /><ApprovedHeroGlobe /><div className="journey-rim" /><div className="journey-orbit-line" /></div>
     <div className="journey-hero-navigation"><nav aria-label={navigation.items[0].name}>{navigation.items.filter((item) => !item.megaMenu).map((item) => <SiteLink key={item.href} href={item.href}>{item.name}</SiteLink>)}</nav><LanguageSwitcher /></div>
-    <div className="journey-hero-copy"><p className="journey-eyebrow">{hero.eyebrow}</p><h1><span>{hero.headline1}</span><span>{hero.headline2}</span></h1><p className="journey-hero-description">{hero.subheadline}</p><HeroTrack /><div className="journey-actions"><SiteLink href={hero.primaryCta.href} className="journey-pill">{hero.primaryCta.label}<ArrowUpRight size={15} /></SiteLink><SiteLink href={hero.secondaryCta.href} className="journey-pill journey-pill-outline">{hero.secondaryCta.label}</SiteLink></div></div>
+    <div className="journey-hero-copy"><h1><span>{hero.headline1}</span><span>{hero.headline2}</span></h1><p className="journey-hero-description">{hero.subheadline}</p><HeroTrack /><div className="journey-actions"><SiteLink href={hero.primaryCta.href} className="journey-pill">{hero.primaryCta.label}<ArrowUpRight size={15} /></SiteLink><SiteLink href={hero.secondaryCta.href} className="journey-pill journey-pill-outline">{hero.secondaryCta.label}</SiteLink></div></div>
     <a href="#what-we-do" className="journey-scroll" aria-label={hero.secondaryCta.label}><ArrowDown size={18} /><span>01 — 05</span></a>
     <div className="journey-hero-index" aria-hidden="true"><span>37.5665° N</span><span>126.9780° E</span></div><div className="journey-horizon" aria-hidden="true" />
   </section>;

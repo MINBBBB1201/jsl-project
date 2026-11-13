@@ -239,7 +239,7 @@ export function MultimodalJourney() {
       return element.compareDocumentPosition(target) & Node.DOCUMENT_POSITION_FOLLOWING ? target : null
     }
     // Shares navigationVersion with jumpPast, so a newer skip or anchor cancels an older one.
-    const goHere = (hash: string, sheet?: Element | null) => {
+    const goHere = (hash: string, sheet?: Element | null, behavior: ScrollBehavior = "smooth") => {
       pendingSkip = false
       const request = ++navigationVersion
       void ensure().then(async () => {
@@ -255,8 +255,17 @@ export function MultimodalJourney() {
         if (cancelled || request !== navigationVersion) return
         const target = anchorTarget(hash)
         if (!target?.isConnected) return
-        window.scrollTo({ top: target.getBoundingClientRect().top + window.scrollY, behavior: "smooth" })
+        window.scrollTo({ top: target.getBoundingClientRect().top + window.scrollY, behavior })
         focusQuietly(target)
+        // A smooth run crosses the pinned journey and can stop short (slow devices, a late image
+        // above). When it ends, land exactly on the target once.
+        if (behavior === "smooth") {
+          window.addEventListener("scrollend", () => {
+            if (cancelled || request !== navigationVersion || !target.isConnected) return
+            const off = target.getBoundingClientRect().top
+            if (Math.abs(off) > 2) window.scrollTo({ top: off + window.scrollY, behavior: "instant" })
+          }, { once: true })
+        }
       })
     }
     const onAnchorClick = (event: MouseEvent) => {
@@ -274,7 +283,8 @@ export function MultimodalJourney() {
     }
     // Capture before React/Next Link consumes same-document anchor navigation.
     document.addEventListener("click", onAnchorClick, true)
-    if (anchorTarget(window.location.hash)) goHere(window.location.hash)
+    // Arriving with a hash: jump, do not animate through ~14 screens of pinned journey.
+    if (anchorTarget(window.location.hash)) goHere(window.location.hash, null, "instant")
     return () => {
       cancelled = true
       near.disconnect()

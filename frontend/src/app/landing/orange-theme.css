@@ -97,3 +97,16 @@
 [data-jsl-landing-menu="orange"] .jsl-menu-wordmark[src*="wordmark-light"] {display:none}
 [data-jsl-landing-menu="orange"] .jsl-menu-wordmark[src*="wordmark-dark"] {display:block}
 
+/* 2026-11-13 점검 반영: 거점 목록을 선 없이 큰 글씨로, 본문은 진한 잉크로. */
+.journey--orange .jsl-an--info .jsl-an__copy{color:var(--jsl-ink);font-size:17px;line-height:1.6}
+.journey--orange .jsl-an--info .jsl-an__row{border:0;padding:30px 0;gap:8px 48px;grid-template-columns:minmax(180px,1fr) 2fr}
+.journey--orange .jsl-an--info .jsl-an__row h3{font-size:clamp(30px,3.2vw,44px);font-weight:500;letter-spacing:-.035em;line-height:1.05}
+.journey--orange .jsl-an--info .jsl-an__row small{margin-top:10px;font-size:14px;color:var(--jsl-muted)}
+.journey--orange .jsl-an--info .jsl-an__row p{font-size:17px;line-height:1.55;color:var(--jsl-ink)}
+@media(max-width:700px){
+ .journey--orange .jsl-an--info .jsl-an__copy{font-size:16px}
+ .journey--orange .jsl-an--info .jsl-an__row{grid-template-columns:1fr;padding:24px 0}
+ .journey--orange .jsl-an--info .jsl-an__row p{font-size:16px}
+}
+:lang(ko) .journey--orange .jsl-an--info :is(.jsl-an__title,.jsl-an__copy,.jsl-an__row p){word-break:keep-all}
+.journey--orange .jsl-an--info .jsl-an__info-head{padding-bottom:24px}

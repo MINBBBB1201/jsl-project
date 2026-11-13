@@ -133,3 +133,9 @@
 .journey-track-clocks{display:flex;gap:22px;min-height:10px;margin-top:14px;font:400 10px/1 var(--font-general-sans),sans-serif;letter-spacing:.08em;text-transform:uppercase;color:#b6a99c}
 .journey-hero .journey-actions{margin-top:22px}
 @media(max-width:900px){.journey-orbit{width:130vw;right:-15%;top:auto;bottom:-78vw}.journey-hero-copy{margin:100px 6% 0;width:88%}.journey-hero h1{font-size:40px}.journey-hero-navigation{left:auto;right:64px;transform:none;top:30px}}
+/* 2026-11-13 점검 반영: 제목은 어느 폰 폭에서도 두 줄, 읽히는 크기의 부제·시각, 작은 대문자 라벨 없음. */
+.journey-hero h1 span{text-wrap:balance}
+.journey-hero-description{font-size:15px;line-height:1.55}
+.journey-track-clocks{font:400 13px/1.2 var(--font-general-sans),sans-serif;letter-spacing:0;text-transform:none;color:#cbbfb2}
+.journey-track-form input::placeholder{color:#cbbfb2}
+@media(max-width:600px){.journey-hero h1{font-size:min(40px,8.2vw);line-height:1.12}.journey-hero-description{font-size:15px;max-width:none}}
