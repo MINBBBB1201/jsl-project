@@ -1,0 +1,577 @@
+[
+  {
+    "width": 600,
+    "height": 900,
+    "phase": 0.08,
+    "trigger": {
+      "x": 536,
+      "y": 236,
+      "width": 48,
+      "height": 48
+    },
+    "progress": "0.0800",
+    "visible": true,
+    "hits": [],
+    "errors": []
+  },
+  {
+    "width": 600,
+    "height": 900,
+    "phase": 0.15,
+    "trigger": {
+      "x": 536,
+      "y": 777,
+      "width": 48,
+      "height": 48
+    },
+    "progress": "0.1500",
+    "visible": true,
+    "hits": [],
+    "errors": []
+  },
+  {
+    "width": 600,
+    "height": 900,
+    "phase": 0.22,
+    "trigger": {
+      "x": 536,
+      "y": 236,
+      "width": 48,
+      "height": 48
+    },
+    "progress": "0.2200",
+    "visible": true,
+    "hits": [],
+    "errors": []
+  },
+  {
+    "width": 600,
+    "height": 900,
+    "phase": 0.3,
+    "trigger": {
+      "x": 536,
+      "y": 828,
+      "width": 48,
+      "height": 48
+    },
+    "progress": "0.3000",
+    "visible": true,
+    "hits": [],
+    "errors": []
+  },
+  {
+    "width": 600,
+    "height": 900,
+    "phase": 0.5,
+    "trigger": {
+      "x": 536,
+      "y": 828,
+      "width": 48,
+      "height": 48
+    },
+    "progress": "0.5000",
+    "visible": true,
+    "hits": [],
+    "errors": []
+  },
+  {
+    "width": 600,
+    "height": 900,
+    "phase": 0.08,
+    "trigger": {
+      "x": 536,
+      "y": 236,
+      "width": 48,
+      "height": 48
+    },
+    "progress": "0.0800",
+    "visible": true,
+    "hits": [],
+    "errors": []
+  },
+  {
+    "width": 600,
+    "height": 900,
+    "focusRestored": true
+  },
+  {
+    "width": 600,
+    "height": 900,
+    "darkClass": "generalsans_ff907754-module__o_Q0ea__variable poppins_f51500cf-module__nNHlga__variable be_vietnam_pro_4845d37a-module__SuiaQW__variable antialiased dark"
+  },
+  {
+    "width": 740,
+    "height": 360,
+    "phase": 0.08,
+    "trigger": {
+      "x": 676,
+      "y": 218,
+      "width": 48,
+      "height": 48
+    },
+    "progress": "0.0800",
+    "visible": true,
+    "hits": [],
+    "errors": []
+  },
+  {
+    "width": 740,
+    "height": 360,
+    "phase": 0.15,
+    "trigger": {
+      "x": 676,
+      "y": 288,
+      "width": 48,
+      "height": 48
+    },
+    "progress": "0.1500",
+    "visible": true,
+    "hits": [],
+    "errors": []
+  },
+  {
+    "width": 740,
+    "height": 360,
+    "phase": 0.22,
+    "trigger": {
+      "x": 676,
+      "y": 218,
+      "width": 48,
+      "height": 48
+    },
+    "progress": "0.2200",
+    "visible": true,
+    "hits": [],
+    "errors": []
+  },
+  {
+    "width": 740,
+    "height": 360,
+    "phase": 0.3,
+    "trigger": {
+      "x": 676,
+      "y": 218,
+      "width": 48,
+      "height": 48
+    },
+    "progress": "0.3000",
+    "visible": true,
+    "hits": [],
+    "errors": []
+  },
+  {
+    "width": 740,
+    "height": 360,
+    "phase": 0.5,
+    "trigger": {
+      "x": 676,
+      "y": 288,
+      "width": 48,
+      "height": 48
+    },
+    "progress": "0.5000",
+    "visible": true,
+    "hits": [],
+    "errors": []
+  },
+  {
+    "width": 740,
+    "height": 360,
+    "phase": 0.08,
+    "trigger": {
+      "x": 676,
+      "y": 218,
+      "width": 48,
+      "height": 48
+    },
+    "progress": "0.0800",
+    "visible": true,
+    "hits": [],
+    "errors": []
+  },
+  {
+    "width": 740,
+    "height": 360,
+    "focusRestored": true
+  },
+  {
+    "width": 320,
+    "height": 640,
+    "phase": 0.08,
+    "trigger": {
+      "x": 256,
+      "y": 218,
+      "width": 48,
+      "height": 48
+    },
+    "progress": "0.0800",
+    "visible": true,
+    "hits": [],
+    "errors": []
+  },
+  {
+    "width": 320,
+    "height": 640,
+    "phase": 0.15,
+    "trigger": {
+      "x": 256,
+      "y": 568,
+      "width": 48,
+      "height": 48
+    },
+    "progress": "0.1500",
+    "visible": true,
+    "hits": [],
+    "errors": []
+  },
+  {
+    "width": 320,
+    "height": 640,
+    "phase": 0.22,
+    "trigger": {
+      "x": 256,
+      "y": 218,
+      "width": 48,
+      "height": 48
+    },
+    "progress": "0.2200",
+    "visible": true,
+    "hits": [],
+    "errors": []
+  },
+  {
+    "width": 320,
+    "height": 640,
+    "phase": 0.3,
+    "trigger": {
+      "x": 256,
+      "y": 218,
+      "width": 48,
+      "height": 48
+    },
+    "progress": "0.3000",
+    "visible": true,
+    "hits": [],
+    "errors": []
+  },
+  {
+    "width": 320,
+    "height": 640,
+    "phase": 0.5,
+    "trigger": {
+      "x": 256,
+      "y": 568,
+      "width": 48,
+      "height": 48
+    },
+    "progress": "0.4999",
+    "visible": true,
+    "hits": [],
+    "errors": []
+  },
+  {
+    "width": 320,
+    "height": 640,
+    "phase": 0.08,
+    "trigger": {
+      "x": 256,
+      "y": 218,
+      "width": 48,
+      "height": 48
+    },
+    "progress": "0.0800",
+    "visible": true,
+    "hits": [],
+    "errors": []
+  },
+  {
+    "width": 320,
+    "height": 640,
+    "focusRestored": true
+  },
+  {
+    "width": 390,
+    "height": 844,
+    "phase": 0.08,
+    "trigger": {
+      "x": 326,
+      "y": 218,
+      "width": 48,
+      "height": 48
+    },
+    "progress": "0.0800",
+    "visible": true,
+    "hits": [],
+    "errors": []
+  },
+  {
+    "width": 390,
+    "height": 844,
+    "phase": 0.15,
+    "trigger": {
+      "x": 326,
+      "y": 723,
+      "width": 48,
+      "height": 48
+    },
+    "progress": "0.1500",
+    "visible": true,
+    "hits": [],
+    "errors": []
+  },
+  {
+    "width": 390,
+    "height": 844,
+    "phase": 0.22,
+    "trigger": {
+      "x": 326,
+      "y": 218,
+      "width": 48,
+      "height": 48
+    },
+    "progress": "0.2200",
+    "visible": true,
+    "hits": [],
+    "errors": []
+  },
+  {
+    "width": 390,
+    "height": 844,
+    "phase": 0.3,
+    "trigger": {
+      "x": 326,
+      "y": 772,
+      "width": 48,
+      "height": 48
+    },
+    "progress": "0.3000",
+    "visible": true,
+    "hits": [],
+    "errors": []
+  },
+  {
+    "width": 390,
+    "height": 844,
+    "phase": 0.5,
+    "trigger": {
+      "x": 326,
+      "y": 772,
+      "width": 48,
+      "height": 48
+    },
+    "progress": "0.4999",
+    "visible": true,
+    "hits": [],
+    "errors": []
+  },
+  {
+    "width": 390,
+    "height": 844,
+    "phase": 0.08,
+    "trigger": {
+      "x": 326,
+      "y": 218,
+      "width": 48,
+      "height": 48
+    },
+    "progress": "0.0800",
+    "visible": true,
+    "hits": [],
+    "errors": []
+  },
+  {
+    "width": 390,
+    "height": 844,
+    "focusRestored": true
+  },
+  {
+    "width": 768,
+    "height": 1024,
+    "phase": 0.08,
+    "trigger": {
+      "x": 704,
+      "y": 881,
+      "width": 48,
+      "height": 48
+    },
+    "progress": "0.0800",
+    "visible": true,
+    "hits": [],
+    "errors": []
+  },
+  {
+    "width": 768,
+    "height": 1024,
+    "phase": 0.15,
+    "trigger": {
+      "x": 704,
+      "y": 881,
+      "width": 48,
+      "height": 48
+    },
+    "progress": "0.1500",
+    "visible": true,
+    "hits": [],
+    "errors": []
+  },
+  {
+    "width": 768,
+    "height": 1024,
+    "phase": 0.22,
+    "trigger": {
+      "x": 704,
+      "y": 881,
+      "width": 48,
+      "height": 48
+    },
+    "progress": "0.2200",
+    "visible": true,
+    "hits": [],
+    "errors": []
+  },
+  {
+    "width": 768,
+    "height": 1024,
+    "phase": 0.3,
+    "trigger": {
+      "x": 704,
+      "y": 952,
+      "width": 48,
+      "height": 48
+    },
+    "progress": "0.3000",
+    "visible": true,
+    "hits": [],
+    "errors": []
+  },
+  {
+    "width": 768,
+    "height": 1024,
+    "phase": 0.5,
+    "trigger": {
+      "x": 704,
+      "y": 952,
+      "width": 48,
+      "height": 48
+    },
+    "progress": "0.5000",
+    "visible": true,
+    "hits": [],
+    "errors": []
+  },
+  {
+    "width": 768,
+    "height": 1024,
+    "phase": 0.08,
+    "trigger": {
+      "x": 704,
+      "y": 881,
+      "width": 48,
+      "height": 48
+    },
+    "progress": "0.0800",
+    "visible": true,
+    "hits": [],
+    "errors": []
+  },
+  {
+    "width": 768,
+    "height": 1024,
+    "focusRestored": true
+  },
+  {
+    "width": 1440,
+    "height": 900,
+    "phase": 0.08,
+    "trigger": {
+      "x": 1376,
+      "y": 762,
+      "width": 48,
+      "height": 48
+    },
+    "progress": "0.0800",
+    "visible": true,
+    "hits": [],
+    "errors": []
+  },
+  {
+    "width": 1440,
+    "height": 900,
+    "phase": 0.15,
+    "trigger": {
+      "x": 1376,
+      "y": 762,
+      "width": 48,
+      "height": 48
+    },
+    "progress": "0.1500",
+    "visible": true,
+    "hits": [],
+    "errors": []
+  },
+  {
+    "width": 1440,
+    "height": 900,
+    "phase": 0.22,
+    "trigger": {
+      "x": 1376,
+      "y": 762,
+      "width": 48,
+      "height": 48
+    },
+    "progress": "0.2200",
+    "visible": true,
+    "hits": [],
+    "errors": []
+  },
+  {
+    "width": 1440,
+    "height": 900,
+    "phase": 0.3,
+    "trigger": {
+      "x": 1376,
+      "y": 828,
+      "width": 48,
+      "height": 48
+    },
+    "progress": "0.3000",
+    "visible": true,
+    "hits": [],
+    "errors": []
+  },
+  {
+    "width": 1440,
+    "height": 900,
+    "phase": 0.5,
+    "trigger": {
+      "x": 1376,
+      "y": 828,
+      "width": 48,
+      "height": 48
+    },
+    "progress": "0.4999",
+    "visible": true,
+    "hits": [],
+    "errors": []
+  },
+  {
+    "width": 1440,
+    "height": 900,
+    "phase": 0.08,
+    "trigger": {
+      "x": 1376,
+      "y": 762,
+      "width": 48,
+      "height": 48
+    },
+    "progress": "0.0800",
+    "visible": true,
+    "hits": [],
+    "errors": []
+  },
+  {
+    "width": 1440,
+    "height": 900,
+    "focusRestored": true
+  }
+]

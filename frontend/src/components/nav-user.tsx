@@ -2,11 +2,8 @@
 
 import * as React from "react"
 import {
-  CreditCard,
   EllipsisVertical,
   LogOut,
-  BellDot,
-  CircleUser,
   UserPlus,
 } from "lucide-react"
 import Link from "next/link"
@@ -95,35 +92,17 @@ export function NavUser() {
               </div>
             </DropdownMenuLabel>
             <DropdownMenuSeparator />
-            <DropdownMenuGroup>
-              <DropdownMenuItem asChild className="cursor-pointer">
-                <Link href="/settings/account">
-                  <CircleUser />
-                  Account
-                </Link>
-              </DropdownMenuItem>
-              <DropdownMenuItem asChild className="cursor-pointer">
-                <Link href="/settings/billing">
-                  <CreditCard />
-                  Billing
-                </Link>
-              </DropdownMenuItem>
-              <DropdownMenuItem asChild className="cursor-pointer">
-                <Link href="/settings/notifications">
-                  <BellDot />
-                  Notifications
-                </Link>
-              </DropdownMenuItem>
-              {user?.role === "admin" && (
+            {user?.role === "admin" && (
+              <DropdownMenuGroup>
                 <DropdownMenuItem asChild className="cursor-pointer">
                   <Link href="/sign-up">
                     <UserPlus />
                     직원 계정 발급
                   </Link>
                 </DropdownMenuItem>
-              )}
-            </DropdownMenuGroup>
-            <DropdownMenuSeparator />
+              </DropdownMenuGroup>
+            )}
+            {user?.role === "admin" && <DropdownMenuSeparator />}
             <DropdownMenuItem onSelect={handleLogout} className="cursor-pointer">
               <LogOut />
               로그아웃

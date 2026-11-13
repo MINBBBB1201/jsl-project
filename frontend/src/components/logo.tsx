@@ -63,6 +63,12 @@ export function LogoFull({ height = 48, className, priority }: LogoFullProps) {
 interface LogoWordmarkProps {
   className?: string
   priority?: boolean
+  /**
+   * 로고가 놓이는 바탕.
+   * - "theme" (기본): 사이트 테마를 따라 light/dark 파일을 바꿔 끼운다.
+   * - "light": 테마와 무관하게 늘 밝은 바탕 위에 놓이는 자리. 밝은 바탕용 파일만 쓴다.
+   */
+  surface?: "theme" | "light"
 }
 
 /**
@@ -78,12 +84,30 @@ interface LogoWordmarkProps {
 const WORDMARK_WIDTH = 311
 const WORDMARK_HEIGHT = 240
 
-export function LogoWordmark({ className, priority }: LogoWordmarkProps) {
+export function LogoWordmark({ className, priority, surface = "theme" }: LogoWordmarkProps) {
   // 테마 분기를 JS 로 하면 첫 페인트에 로고가 깜빡이고 hydration 도 어긋난다.
   // 다크 모드가 .dark 클래스 기반이라 두 장을 CSS 로만 바꿔 끼운다.
   // 숨는 쪽은 display:none 이라 접근성 트리에서도 빠지므로, 어느 테마에서든
   // 링크가 이름을 잃지 않도록 alt 는 양쪽에 똑같이 둔다.
   const shared = "h-10 w-auto object-contain"
+
+  /*
+    랜딩(journey.css)처럼 섹션이 자기 색을 직접 고정한 곳은 .dark 가 붙어도 바탕이
+    밝은 채로 남는다. 거기서 dark: 로 바꿔 끼우면 흰 글자 로고가 밝은 바탕에 올라가
+    거의 보이지 않았다. 그런 자리는 surface="light" 로 밝은 바탕용 한 장만 쓴다.
+  */
+  if (surface === "light") {
+    return (
+      <Image
+        src="/logo-wordmark-light.png"
+        alt="JSL LOGISTICS CO., LTD"
+        width={WORDMARK_WIDTH}
+        height={WORDMARK_HEIGHT}
+        priority={priority}
+        className={cn(shared, className)}
+      />
+    )
+  }
 
   return (
     <>

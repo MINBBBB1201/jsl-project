@@ -3,10 +3,10 @@
 import { useState } from "react"
 import { LandingNavbar } from "./components/navbar"
 import { FeaturesSection } from "./components/features-section"
-import { AboutSection } from "./components/about-section"
+import { ApprovedCompanySection } from "./components/approved-company-section"
 import { CertificationsBar } from "./components/certifications-bar"
 import { ConsultingSection } from "./components/consulting-section"
-import { NetworkSection } from "./components/network-section"
+import { ApprovedNetworkInfo } from "./components/approved-network-section"
 import { PricingSection } from "./components/pricing-section"
 import { OpsStatusSection } from "./components/ops-status-section"
 import { StatsSection } from "./components/stats-section"
@@ -15,28 +15,29 @@ import { CTASection } from "./components/cta-section"
 import { ContactSection } from "./components/contact-section"
 import { LandingFooter } from "./components/footer"
 import { LandingThemeCustomizer, LandingThemeCustomizerTrigger } from "./components/landing-theme-customizer"
-import { JourneyIntro, JourneyYard, JourneyOcean, JourneyPartners, JourneyCta, JourneyPlane, JourneyProgressRail, useJourneyMotion } from "./components/journey-sections"
+import { JourneyIntro, JourneyPartners, JourneyCta, JourneyProgressRail, useJourneyMotion } from "./components/journey-sections"
 import { MultimodalJourney } from "./components/multimodal-journey"
 import { JourneyHeroMotion } from "./components/journey-hero-motion"
 import "./journey.css"
+import "./orange-theme.css"
 
 /** Visual composition only. API clients, translations, forms and internal layouts stay independent. */
 export function LandingPageContent() {
   const [customizerOpen, setCustomizerOpen] = useState(false)
   const ref = useJourneyMotion()
-  return <div className="journey" ref={ref}>
-    <LandingNavbar />
+  return <div className="journey journey--orange" ref={ref}>
+    <LandingNavbar orangeTheme />
     <JourneyProgressRail />
     <main>
       <JourneyHeroMotion />
-      <JourneyIntro />
-      <JourneyYard />
+      <JourneyIntro index={1} total={11} />
+      {/* 리치스태커·컨테이너 장비 장면(JourneyYard)은 2026-10-30 사용자 요청으로 이번 흐름에서 건너뛴다. 소스는 다른 장면 자리로 보관한다. */}
       <MultimodalJourney />
       <div className="journey-services journey-dark"><FeaturesSection onlyValueAdded /></div>
-      <JourneyOcean />
-      <div className="journey-network journey-editorial"><NetworkSection /></div>
-      <JourneyPlane />
-      <div className="journey-about journey-editorial"><AboutSection /><CertificationsBar /></div>
+      {/* 별도 해상(JourneyOcean)·항공(JourneyPlane) 장면은 운송 시퀀스와 겹쳐 2026-11-02 사용자 승인(#51)으로 건너뛴다. 소스는 journey-sections.tsx 에 보관하고, 해상 장면의 수치는 거점 정보로 옮겼다. */}
+      <ApprovedNetworkInfo />
+      <ApprovedCompanySection mediaSrc="/images/company/logistics-dock-concept.png" mediaPosition={{ desktop: "50% 58%", mobile: "65% 58%" }} />
+      <div className="journey-about journey-editorial"><CertificationsBar /></div>
       <JourneyPartners />
       <div className="journey-consulting journey-editorial"><ConsultingSection /></div>
       <div className="journey-operations journey-dark journey-editorial"><OpsStatusSection /><StatsSection /></div>
@@ -45,7 +46,7 @@ export function LandingPageContent() {
       <JourneyCta />
       <div className="journey-contact journey-editorial"><CTASection /><ContactSection /></div>
     </main>
-    <div className="journey-footer"><LandingFooter /><div className="journey-wordmark" aria-hidden="true">JSL LOGISTICS</div></div>
+    <div className="journey-footer"><LandingFooter logoSurface="light" /><div className="journey-wordmark" aria-hidden="true">JSL LOGISTICS</div></div>
     <LandingThemeCustomizerTrigger onClick={() => setCustomizerOpen(true)} />
     <LandingThemeCustomizer open={customizerOpen} onOpenChange={setCustomizerOpen}/>
   </div>

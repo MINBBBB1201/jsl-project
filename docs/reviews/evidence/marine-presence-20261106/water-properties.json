@@ -1,0 +1,26 @@
+{
+  "status": "passed",
+  "kind": "CPU-scalar-height-gradient-and-syntax-only",
+  "candidateSha256": "f73af2a3c911ce4210d953ea1b773ead0716ebc6719403ae691a2d1741e81c83",
+  "baselineSha256": "8d56980eca43ee8fd0e853c074b3294c4cac304136398d726fa79d6ba216c1d6",
+  "frequencyBands": 12,
+  "baseTableUnchanged": true,
+  "carrierEvaluations": 48,
+  "maxProductChainRuleGradientError": 5.164886275610403e-9,
+  "gradientComparisonPoints": 144,
+  "centralDifferenceStepMetres": 0.00001,
+  "boundaryPairs": 24,
+  "boundaryStepEachSideMetres": 1e-7,
+  "maxBoundaryHeightDifferenceMetres": 9.069631139863032e-9,
+  "maxBoundaryGradientDifference": 3.0524485833925696e-8,
+  "nodeSyntaxExitCode": 0,
+  "fixedSeed": 1729,
+  "gpuExecuted": false,
+  "appearanceApproved": false,
+  "limits": [
+    "CPU double arithmetic cannot establish GPU precision or visual quality.",
+    "Each of 12 bands evaluates two or four compact carriers; GPU cost needs parent measurement.",
+    "Energy is intentionally spatially variable; original global RMS .12 is not preserved.",
+    "Numerical derivative uses fully resolved waves; the existing pixel-footprint filter remains separate."
+  ]
+}

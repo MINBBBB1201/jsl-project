@@ -1,0 +1,22 @@
+{
+  "date": "2026-11-06",
+  "tool": "Built-in OpenAI image generation, two edits, transparent background",
+  "inputSha256": "35cc4c5d06b53d591d79801b624db0d391c7148ea9f3f0fd75350b79aaca7d60",
+  "editPrompts": [
+    "Edit target: this transparent aerial container ship cutout used as a precisely registered WebGL texture. Change only cargo paint colors and overall daylight brightness. CRITICAL: repaint BOTH orange cargo containers in the middle to the same pale blue-gray/off-white as their neighboring containers. Every cargo container in this bitmap must be neutral light blue, silver-gray, pale sage-gray or off-white. ZERO orange cargo containers, ZERO red cargo containers, no JSL logo in the bitmap: the website draws its single orange hero cargo separately on top. The small orange safety lifeboat at the stern may stay orange because it is not cargo. Brighten the overall ship a modest amount, about one-third stop: lighter clean slate-blue hull, pale cool-gray decks, crisp white bridge, softer daylight and brighter muted-blue container paint. Keep convincing maritime photography detail and material contrast; no glowing whites, plastic CG gloss or cartoon outlines. Preserve EXACTLY the source orthographic aerial view, camera angle, diagonal stern-lower-left/bow-upper-right direction, ship geometry and outer silhouette, original canvas aspect, transparent padding, every container location and dimensions, bridge, railing, antenna, solar-panel, lifeboat and bow positions. No new objects, no changed stacks, no water, no sky, no wake, no external shadow, no new text. Genuine transparent background. Return the clean cutout only.",
+    "Image1 is the edit target: keep its brighter clean ship and ALL NEUTRAL cargo paint exactly as they are. Image2 is an ALPHA-CONTOUR reference only; do not copy its orange cargo colors. Precise background extraction fix only: remove the gray fog, speckled blue/gray matte residue, and any translucent cloud/haze outside the actual physical ship outline in image1. The outside must be perfectly transparent alpha, not black paint, not a checkerboard or gray glow. Preserve thin genuine railings, antennas and a clean naturally antialiased hull contour. Match image2's clean tight transparent silhouette and margins while keeping image1's brighter materials, unchanged ship scale and perspective, unchanged container locations, and white bridge. All cargo containers must remain off-white/gray/muted blue: no orange or red cargo. The single small orange stern lifeboat may remain. No added shadows, water, wake, sky, text or objects. Do not change the vessel design or reframe it. Return just the tightly isolated brighter ship with genuine transparency."
+  ],
+  "firstOutputSha256": "1b42863cd2b2cdacaad05c67caa9bcedd9d11d4c5965794ccc67e0d13586a43b",
+  "firstOutputDecision": "Not used: outer gray matte residue. Follow-up extracts a clean alpha edge.",
+  "selectedPngSha256": "16fb2c94cad2e122e4882877c43728589ba427ea6f89fe1f482842857c16fce9",
+  "output": "frontend/public/images/multimodal/sea-vessel-photo.webp",
+  "outputSha256": "ebd6ee5d0199a408e049554b696fa4d6fb2b480ac555c09b2adca9c4bd0476b8",
+  "dimensions": [
+    1962,
+    838
+  ],
+  "bytes": 308874,
+  "packaging": "Alpha-bounds trim/resize/pad and WebP quality96; generated alpha preserved. No manual paint.",
+  "cargoDecision": "Photographic containers are neutral. Native JSL hero cargo remains orange. The small stern lifeboat is not a container.",
+  "terms": "Applicable generator terms, inherited inputs and final visual selection remain separate release conditions."
+}

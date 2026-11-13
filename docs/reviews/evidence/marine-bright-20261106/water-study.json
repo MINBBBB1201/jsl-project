@@ -1,0 +1,134 @@
+{
+  "generatedAtUtc": "2026-11-06T13:02:58.013100+00:00",
+  "scope": "Original-image review and one water-only brightness candidate. No browser, GPU or render run.",
+  "images": [
+    {
+      "file": "01-current-native-wavelet-65.png",
+      "kind": "native-webgl-capture",
+      "samples": null,
+      "note": "현재 실시간 wavelet. 작은 물결의 방향과 크기가 자연스럽고 과거 세포 윤곽이 줄었다. 여전히 짙은 남색이다.",
+      "decision": "실시간 기본 후보 유지",
+      "progress": 65,
+      "viewport": [
+        1440,
+        900
+      ],
+      "viewedOriginal": true,
+      "sha256": "a8960303f816e851b2d1888f5244e284674df660b0fe83017dc11aada8c5b313"
+    },
+    {
+      "file": "02-native-selected-20261021-65.png",
+      "kind": "native-webgl-capture",
+      "samples": null,
+      "note": "10월21일 선택안. 전체 색은 현재와 가깝지만 비슷한 크기의 폐곡선과 반사 얼룩이 반복된다.10월22일 반사 보완 전 캡처다.",
+      "decision": "이전 버전으로 복귀할 근거 없음",
+      "progress": 65,
+      "viewport": [
+        1440,
+        900
+      ],
+      "viewedOriginal": true,
+      "sha256": "c7d8a557b6e058bb4d7742759de0e69d1e14045ad8d64a0011377bba42c4b5a7"
+    },
+    {
+      "file": "03-native-older-baseline-65.jpg",
+      "kind": "native-webgl-baseline-capture",
+      "samples": null,
+      "note": "이전 실시간 기준. 세로로 늘어진 큰 수면 무늬와 폭넓고 매끈한 흰 항적이 눈에 띈다.",
+      "decision": "현재보다 나은 물결로 판단하지 않음",
+      "progress": 65,
+      "viewport": [
+        1440,
+        900
+      ],
+      "viewedOriginal": true,
+      "sha256": "281a04afe00b17c5a8b8abe18741c418b50adf6adc29a947da766c3fe9a8432e"
+    },
+    {
+      "file": "04-cycles-wavelet48-65.jpg",
+      "kind": "cycles-still-raw",
+      "samples": 48,
+      "note": "가장 설득력 있는 기존 정지 수면 목표. 큰 흐름 위에 짧은 파형이 겹친다. 현재 실시간 구현이 가져온12개 파형의 출처다. UI 없는 원시 렌더다.",
+      "decision": "시각 목표 유지. 실시간 완성안으로 교체하지 않음",
+      "progress": 65,
+      "viewport": [
+        1440,
+        900
+      ],
+      "viewedOriginal": true,
+      "sha256": "b8848addc3ffd494416b3d4d957b6cb987bb7e1d3b458d2d371bd5301cdf89d7"
+    },
+    {
+      "file": "05-cycles-water-sun-rake48-65.jpg",
+      "kind": "cycles-still-ui-composite",
+      "samples": 48,
+      "note": "날카로운 흰 반사점을 줄였지만 넓고 흐릿한 대각선 무늬가 남는다. 현재보다 잔물결이 적다.",
+      "decision": "더 좋은 기존 수면으로 선택하지 않음",
+      "progress": 65,
+      "viewport": [
+        1440,
+        900
+      ],
+      "viewedOriginal": true,
+      "sha256": "c1548e9515d15c83e23a659e5bd53dce01dee2ec04e317419e68cf9fe01c8f17"
+    },
+    {
+      "file": "06-cycles-photographic48-65.jpg",
+      "kind": "cycles-still-ui-composite",
+      "samples": 48,
+      "note": "짙은 바다 위 흰 반사점이 산재하며 넓고 흐린 무늬가 남는다. 밝기를 높이는 참고로 쓰기에는 반사 자국이 강하다.",
+      "decision": "이전 수면으로 복귀할 근거 없음",
+      "progress": 65,
+      "viewport": [
+        1440,
+        900
+      ],
+      "viewedOriginal": true,
+      "sha256": "02e92d24e01f99a497cb1ea51120a4fc05e961594bc7080b9de28626bfab69fa"
+    }
+  ],
+  "recommendationKo": "확인한 기존 실시간 안 중 현재 wavelet보다 나은 수면은 찾지 못했다. 현재 물결은 유지하고 selected 물 명도만 약간 올려 실제 화면에서 비교한다.",
+  "unadoptedEvidence": [
+    {
+      "source": "evidence/sea-water-micro-study.json",
+      "reason": "micro-x2와 broad-half 계수 변경은 큰 흐린 무늬를 해결하지 못했다. denoise 해제는 잡점만 늘고 큰 패턴이 남았다."
+    },
+    {
+      "source": "evidence/sea-water-wavelets.json",
+      "reason": "Cycles48샘플65% 한 장은 모션·모바일·실사 승인 없이 후속 검토 후보로 보존됐다."
+    },
+    {
+      "source": "docs/reviews/SEA-FINISH-STILL-REVIEW.md",
+      "reason": "산재한 강한 흰 반사점이 있는 첫 photographic 원래 크기 후보는 채택하지 않았다."
+    },
+    {
+      "source": "docs/reviews/SEA-WATER-DIRECTION-REVIEW.md",
+      "reason": "SUN 방향 후보는 흰 자국을 줄였으나 흐린 수면과CG 인상이 남았고 최종 채택·모션 검수는 미완료다."
+    },
+    {
+      "source": "docs/reviews/SEA-MOTION-RESUME.md:10-21",
+      "reason": "10월22일 반사 변주로 얼룩을 줄였지만 기존 실금 무늬는 남았다."
+    }
+  ],
+  "colorCandidate": {
+    "status": "source-check-passed-awaiting-parent-gpu-capture",
+    "file": "prototypes/multimodal-marine-native/marine-water.js",
+    "gainSceneLinear": 1.189207,
+    "exposureEvApprox": 0.25,
+    "placement": "selected main water color only, before existing distance haze",
+    "huePreservedBeforeHaze": true,
+    "nonselectedUnchanged": true,
+    "wavesClockFoamWakeHdrFilterUnchanged": true,
+    "exactSingleInsertionCheck": true,
+    "nodeSyntaxExitCode": 0,
+    "beforeSha256": "961a41d397f098e8a57797cb4212a80f6b6b3d250ed646e0cbc0c0924e58d1fb",
+    "afterSha256": "8d56980eca43ee8fd0e853c074b3294c4cac304136398d726fa79d6ba216c1d6"
+  },
+  "limits": [
+    "현재 wavelet65%의 선박은 다른 후보와 다르므로 이번 평가는 물 표현에 한정한다.",
+    "뷰포트와 진행률은 같지만UI 합성·광원·시간시계·색관리 차이가 있어 사진 전체 밝기를 화질 점수로 취급하지 않는다.",
+    "모든 원본 이미지를 그대로 복사했다. 보정·리사이즈·합성한 비교 이미지를 만들지 않았다.",
+    "밝기 후보의 실제GPU·글자대비·모바일 외관은 부모의 캡처로 확인해야 한다."
+  ],
+  "parentRuntimeVerification": "runtime-identity-check.json;12 actual Chromium states passed after the source-only study"
+}

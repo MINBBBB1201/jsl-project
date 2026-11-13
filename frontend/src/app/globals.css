@@ -25,7 +25,7 @@
        죽는다. 이 프로젝트에서 두 번 그렇게 짜서 두 번 한글이 폴백으로 떨어졌다.
 
     ⚠️ var(--font-general-sans) 는 <html> 의 className 으로 정의된다
-       (app/layout.tsx 의 generalSans.variable). 빠지면 var() 가 비어 스택이
+       (components/layout/root-document.tsx 의 generalSans.variable). 빠지면 var() 가 비어 스택이
        조용히 무너진다.
 
     ⚠️ Pretendard 만 var() 가 아니라 문자열인 것은 오타가 아니다. 이 이름은
@@ -50,7 +50,7 @@
        (자세한 사정은 lib/fonts.ts 의 poppins 주석).
 
     ⚠️ var(--font-poppins-latin) 은 next/font 가 <html> className 으로 정의한다
-       (app/layout.tsx 의 poppins.variable). 이름이 --font-poppins 와 다른 이유도
+       (components/layout/root-document.tsx 의 poppins.variable). 이름이 --font-poppins 와 다른 이유도
        lib/fonts.ts 에 적어 뒀다 — 같으면 이 테마 값이 덮인다.
   */
   --font-poppins:

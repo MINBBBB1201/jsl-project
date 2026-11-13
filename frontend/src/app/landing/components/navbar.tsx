@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from 'react'
+import { useRef, useState } from 'react'
 /*
   eslint-disable-next-line no-restricted-imports --
   공개 페이지 규칙의 의도적 예외다. 이 파일에서 next/link 로 남는 링크는
@@ -46,21 +46,9 @@ import { LanguageSwitcher } from '@/components/language-switcher'
 type MobileMenuEntry = { title: string; name?: undefined; href?: undefined }
   | { title?: undefined; name: string; href: string }
 
-// Smooth scroll function
-const smoothScrollTo = (targetId: string) => {
-  if (targetId.startsWith('#')) {
-    const element = document.querySelector(targetId)
-    if (element) {
-      element.scrollIntoView({
-        behavior: 'smooth',
-        block: 'start',
-      })
-    }
-  }
-}
-
-export function LandingNavbar() {
+export function LandingNavbar({ orangeTheme = false }: { orangeTheme?: boolean }) {
   const [isOpen, setIsOpen] = useState(false)
+  const pendingAnchor = useRef<HTMLElement | null>(null)
   // 화주/포워더 드롭다운을 각각 접었다 펼 수 있게 세그먼트별로 상태를 둔다
   const [openMenus, setOpenMenus] = useState<Record<string, boolean>>({})
   const { setTheme, theme } = useTheme()
@@ -137,12 +125,7 @@ export function LandingNavbar() {
                     <SiteLink
                       href={item.href}
                       className="group inline-flex h-10 w-max items-center justify-center whitespace-nowrap px-2.5 py-2 text-sm font-medium transition-colors hover:text-primary focus:text-primary focus:outline-none cursor-pointer"
-                      onClick={(e: React.MouseEvent) => {
-                        if (item.href.startsWith('#')) {
-                          e.preventDefault()
-                          smoothScrollTo(item.href)
-                        }
-                      }}
+
                     >
                       {item.name}
                     </SiteLink>
@@ -177,7 +160,8 @@ export function LandingNavbar() {
         <div className="hidden shrink-0 items-center space-x-1 3xl:flex">
           <LanguageSwitcher />
           <ModeToggle variant="ghost" />
-          <Button variant="outline" asChild className="h-10 cursor-pointer">
+          {/* 랜딩 헤더는 어두운 바탕 위 흰 글자라 outline 의 흰 바탕을 지운다. 지우지 않으면 글자가 보이지 않는다. */}
+          <Button variant="outline" asChild className="h-10 cursor-pointer bg-transparent">
             <Link href="/dashboard" target="_blank" rel="noopener noreferrer">
               <LayoutDashboard className="h-4 w-4 mr-2" />
               {navigation.dashboard}
@@ -199,14 +183,49 @@ export function LandingNavbar() {
               <span className="sr-only">Toggle menu</span>
             </Button>
           </SheetTrigger>
-          <SheetContent side="right" className="w-full sm:w-[400px] p-0 gap-0 [&>button]:hidden overflow-hidden flex flex-col">
+          <SheetContent
+            data-jsl-landing-menu={orangeTheme ? "orange" : undefined}
+            onClickCapture={(event) => {
+              // The journey capture handler already owns its downstream anchors when motion is on.
+              // This fallback also serves reduced motion and upstream anchors, after Sheet unlocks.
+              if (event.defaultPrevented || event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return
+              if (!(event.target instanceof Element)) return
+              const link = event.target.closest<HTMLAnchorElement>('a[href]')
+              if (!link || link.origin !== location.origin || link.pathname !== location.pathname || link.search !== location.search || !link.hash) return
+              if (link.hasAttribute('download') || (link.target && link.target.toLowerCase() !== '_self')) return
+              let target: HTMLElement | null
+              try { target = document.getElementById(decodeURIComponent(link.hash.slice(1))) } catch { return }
+              if (!target) return
+              event.preventDefault()
+              event.stopPropagation()
+              pendingAnchor.current = target
+              if (location.hash !== link.hash) history.pushState(null, '', link.hash)
+              setIsOpen(false)
+            }}
+            onCloseAutoFocus={(event) => {
+              const target = pendingAnchor.current
+              pendingAnchor.current = null
+              if (!target) return
+              event.preventDefault()
+              requestAnimationFrame(() => requestAnimationFrame(() => {
+                if (!target.isConnected) return
+                target.scrollIntoView({ behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'instant' : 'smooth', block: 'start' })
+                if (!target.hasAttribute('tabindex')) target.setAttribute('tabindex', '-1')
+                target.focus({ preventScroll: true })
+              }))
+            }}
+            side="right" className="w-full sm:w-[400px] p-0 gap-0 [&>button]:hidden overflow-hidden flex flex-col">
             <div className="flex flex-col h-full">
               {/* Header */}
               <SheetHeader className="space-y-0 p-4 pb-2 border-b">
                 <div className="flex items-center gap-2">
-                  <div className="p-2 bg-primary/10 rounded-lg">
-                    <Logo size={16} />
-                  </div>
+                  {orangeTheme ? (
+                    <LogoWordmark className="jsl-menu-wordmark" />
+                  ) : (
+                    <div className="p-2 bg-primary/10 rounded-lg">
+                      <Logo size={16} />
+                    </div>
+                  )}
                   <SheetTitle className="text-lg font-semibold">{company.name}</SheetTitle>
                   <div className="ml-auto flex items-center gap-1">
                     {/* 데스크톱 네비가 3xl 부터라, 그 아래 폭에서는 여기가 유일한 언어 전환 지점이다 */}
@@ -269,13 +288,7 @@ export function LandingNavbar() {
                                   key={solution.name}
                                   href={solution.href}
                                   className="flex items-center px-4 py-2 text-sm rounded-lg transition-colors hover:bg-accent hover:text-accent-foreground cursor-pointer"
-                                  onClick={(e) => {
-                                    setIsOpen(false)
-                                    if (solution.href.startsWith('#')) {
-                                      e.preventDefault()
-                                      setTimeout(() => smoothScrollTo(solution.href), 100)
-                                    }
-                                  }}
+                                  onClick={() => setIsOpen(false)}
                                 >
                                   {solution.name}
                                 </SiteLink>
@@ -294,13 +307,7 @@ export function LandingNavbar() {
                         <SiteLink
                           href={item.href}
                           className="flex items-center px-4 py-3 text-base font-medium rounded-lg transition-colors hover:bg-accent hover:text-accent-foreground cursor-pointer"
-                          onClick={(e) => {
-                            setIsOpen(false)
-                            if (item.href.startsWith('#')) {
-                              e.preventDefault()
-                              setTimeout(() => smoothScrollTo(item.href), 100)
-                            }
-                          }}
+                          onClick={() => setIsOpen(false)}
                         >
                           {item.name}
                         </SiteLink>
@@ -327,7 +334,7 @@ export function LandingNavbar() {
                       <Link href="/sign-in">{navigation.signIn}</Link>
                     </Button>
                     <Button variant="brand" asChild size="lg" className="cursor-pointer" >
-                      <SiteLink href="#contact" onClick={() => setIsOpen(false)}>견적 문의</SiteLink>
+                      <SiteLink href="#contact" onClick={() => setIsOpen(false)}>{navigation.quoteCta}</SiteLink>
                     </Button>
                   </div>
                 </div>

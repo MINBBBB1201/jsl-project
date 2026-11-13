@@ -130,6 +130,13 @@ export function LandingThemeCustomizer({ open, onOpenChange }: LandingThemeCusto
         <SheetContent
           side="right"
           className="w-[400px] p-0 gap-0 pointer-events-auto [&>button]:hidden overflow-hidden flex flex-col"
+          // SheetTrigger 없이 여는 패널이라 Radix 가 포커스를 돌려줄 곳을 모른다. 여는 버튼으로 돌려준다.
+          onCloseAutoFocus={(e) => {
+            const trigger = document.querySelector<HTMLElement>(`[${TRIGGER_ATTRIBUTE}]`)
+            if (!trigger) return
+            e.preventDefault()
+            trigger.focus({ preventScroll: true })
+          }}
           onInteractOutside={(e) => {
             // Prevent the sheet from closing when dialog is open
             if (importModalOpen) {
@@ -394,13 +401,115 @@ export function LandingThemeCustomizer({ open, onOpenChange }: LandingThemeCusto
   )
 }
 
+/*
+  떠 있는 버튼이 비켜야 하는 조작부. 운송 시퀀스의 모드 탭(01 ROAD~04 AIR)은 고정 구간 내내
+  화면 아래에 붙어 있어, 좁은 폭에서는 04 · AIR 탭이 버튼 밑에 깔린다. 낮은 화면(320×640)에서는
+  첫 화면의 히어로 화물조회 칸도 같은 자리에 온다. 엔진 마크업은 생성 파일이라 바꾸지 않고 위치만 읽는다.
+*/
+const TRIGGER_AVOID_SELECTORS = ["#jsl-marine-native .mm-mode-nav", "#jsl-marine-native .uc-service-nav", "#jsl-marine-native .uc-information", ".journey-track-form"]
+// 테마 패널이 닫힐 때 포커스를 돌려줄 버튼 표시
+const TRIGGER_ATTRIBUTE = "data-landing-theme-trigger"
+// 아래 className 의 bottom-6 · right-4 · h-12 w-12 와 같은 값
+const TRIGGER_BOTTOM = 24
+const TRIGGER_RIGHT = 16
+const TRIGGER_SIZE = 48
+const TRIGGER_GAP = 12
+
+/** 기본 자리에서 조작부와 겹치면 그 위로 올릴 거리(px), 아니면 0 */
+function measureTriggerLift() {
+  const viewportWidth = document.documentElement.clientWidth
+  const viewportHeight = document.documentElement.clientHeight
+  const left = viewportWidth - TRIGGER_RIGHT - TRIGGER_SIZE
+  const top = viewportHeight - TRIGGER_BOTTOM - TRIGGER_SIZE
+  let lift = 0
+  const obstacles: DOMRect[] = []
+  for (const selector of TRIGGER_AVOID_SELECTORS) {
+    for (const element of document.querySelectorAll<HTMLElement>(selector)) {
+      // 엔진의 세로 배치는 767px까지다. PC 정보 영역에는 넓은 빈 여백도 포함된다.
+      if (selector.endsWith(".uc-information") && viewportWidth > 767) continue
+      const rect = element.getBoundingClientRect()
+      if (!rect.width || !rect.height || getComputedStyle(element).visibility === "hidden") continue
+      if (rect.left < left + TRIGGER_SIZE + TRIGGER_GAP && rect.right > left - TRIGGER_GAP) obstacles.push(rect)
+    }
+  }
+  // 아래부터 확인해야 첫 조작부를 피한 위치에서 다른 메뉴나 설명문을 덮지 않는다.
+  // 중간 폭·가로 모드에서도 이동한 위치를 실제 좌표로 다시 확인한다.
+  for (const rect of obstacles.sort((a, b) => b.bottom - a.bottom)) {
+    if (rect.top < top - lift + TRIGGER_SIZE + TRIGGER_GAP && rect.bottom > top - lift - TRIGGER_GAP) {
+      lift = viewportHeight - TRIGGER_BOTTOM - rect.top + TRIGGER_GAP
+    }
+  }
+  return Math.round(lift)
+}
+
 // Floating trigger button for landing page
 export function LandingThemeCustomizerTrigger({ onClick }: { onClick: () => void }) {
   const t = useTranslations("common")
+  const [lift, setLift] = React.useState(0)
+
+  // Measure at most once per frame, plus once after scrolling settles.
+  // Target observers handle the engine appearing or changing visibility while idle.
+  React.useEffect(() => {
+    let frame = 0
+    let settle = 0
+    let targets: HTMLElement[] = []
+    const update = () => {
+      frame = 0
+      setLift(measureTriggerLift())
+    }
+    const scheduleFrame = () => {
+      if (!frame) frame = requestAnimationFrame(update)
+    }
+    const schedule = () => {
+      scheduleFrame()
+      window.clearTimeout(settle)
+      settle = window.setTimeout(scheduleFrame, 450)
+    }
+    const targetChanges = new MutationObserver(scheduleFrame)
+    const targetSizes = new ResizeObserver(scheduleFrame)
+    const watchTargets = () => {
+      const next = TRIGGER_AVOID_SELECTORS.flatMap(selector => Array.from(document.querySelectorAll<HTMLElement>(selector)))
+      if (next.length === targets.length && next.every((item, index) => item === targets[index])) return
+      targetChanges.disconnect()
+      targetSizes.disconnect()
+      targets = next
+      for (const target of targets) {
+        targetChanges.observe(target, { attributes: true, attributeFilter: ["style", "class", "hidden"] })
+        targetSizes.observe(target)
+      }
+      scheduleFrame()
+    }
+    // The transport markup loads later and can be replaced when reduced motion changes.
+    const structure = new MutationObserver(records => {
+      // Ignore the engine's routine text updates; only rebind when a target or its container changes.
+      const relevant = ".journey-track-form, .multimodal-guest, #jsl-marine-native, .mm-mode-nav, .uc-service-nav, .uc-information"
+      if (records.some(record => [...record.addedNodes, ...record.removedNodes].some(node =>
+        node instanceof Element && (node.matches(relevant) || !!node.querySelector(relevant))
+      ))) watchTargets()
+    })
+    const journey = document.querySelector(".journey")
+    if (journey) structure.observe(journey, { childList: true, subtree: true })
+    watchTargets()
+    schedule()
+    window.addEventListener("scroll", schedule, { passive: true })
+    window.addEventListener("resize", schedule)
+    document.fonts.addEventListener("loadingdone", scheduleFrame)
+    return () => {
+      cancelAnimationFrame(frame)
+      window.clearTimeout(settle)
+      targetChanges.disconnect()
+      targetSizes.disconnect()
+      structure.disconnect()
+      document.fonts.removeEventListener("loadingdone", scheduleFrame)
+      window.removeEventListener("scroll", schedule)
+      window.removeEventListener("resize", schedule)
+    }
+  }, [])
 
   return (
     <Button
       onClick={onClick}
+      style={{ transform: lift ? `translateY(-${lift}px)` : undefined, transition: "none" }}
       size="icon"
       /*
         아이콘만 있고 글자가 없는 버튼이라 aria-label 이 없으면 스크린리더가
@@ -408,8 +517,10 @@ export function LandingThemeCustomizerTrigger({ onClick }: { onClick: () => void
         장식이므로 이름은 이 라벨에서만 나온다.
       */
       aria-label={t("themeSettingsLabel")}
+      {...{ [TRIGGER_ATTRIBUTE]: "" }}
+      // 세로 가운데에 두면 모바일 히어로 화물조회 칸과 데스크톱 진행 막대를 가려 오른쪽 아래로 둔다.
       className={cn(
-        "fixed top-1/2 -translate-y-1/2 h-12 w-12 rounded-full shadow-lg z-50 bg-primary hover:bg-primary/90 text-primary-foreground cursor-pointer right-4"
+        "fixed bottom-6 h-12 w-12 rounded-full shadow-lg z-50 bg-primary hover:bg-primary/90 text-primary-foreground cursor-pointer right-4 motion-reduce:transition-none"
       )}
     >
       <Settings className="h-5 w-5" aria-hidden="true" />

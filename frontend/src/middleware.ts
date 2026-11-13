@@ -37,7 +37,14 @@ const LOCALIZED_SEGMENTS = [
  * 빈 대시보드를 보고 혼란스러워하지 않도록 로그인 화면으로 안내하는 용도다.
  * 죽은 토큰이 쿠키에 남아 있는 경우는 RequireAuth 가 걸러낸다.
  */
-const PROTECTED_SEGMENTS = ['dashboard', 'chat', 'damage-inspection', 'settings']
+const PROTECTED_SEGMENTS = [
+  'dashboard',
+  'chat',
+  'damage-inspection',
+  'trade-documents',
+  'announcements',
+  'settings',
+]
 
 export function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl

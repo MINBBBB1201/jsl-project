@@ -22,6 +22,10 @@
 .multimodal-skip:focus-visible,.multimodal-stage a.multimodal-action:focus-visible{outline:2px solid #ec761e;outline-offset:3px}
 @media (max-width:767px){
   .multimodal-stage{min-height:560px}
+  /* Keep the ship clear until the air transition starts. One cloud bank avoids
+     the mirrored seam when the two desktop banks overlap in a portrait frame. */
+  .multimodal-stage #jsl-marine-native .uc-screen[data-phase="sea"] .mm-cloud-veil{visibility:hidden}
+  .multimodal-stage #jsl-marine-native .mm-cloud-left{display:none}
 }
 /* The pin starts at "top top"; the landing-wide 90px anchor margin would stop short of it. */
 .journey section.multimodal-journey[id]{scroll-margin-top:0}

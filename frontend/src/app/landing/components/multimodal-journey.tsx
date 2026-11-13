@@ -10,6 +10,7 @@ import "./multimodal-journey.css"
 
 type Guest = HTMLElement & {
   ucRender?: () => void
+  ucDispose?: () => void
   marineRuntime?: { dispose(): void; renderer: { forceContextLoss(): void } }
 }
 
@@ -49,6 +50,39 @@ export function MultimodalJourney() {
   const [selected, setSelected] = useState(-1)
   const [servicePhase, setServicePhase] = useState(true)
   const [loadFailed, setLoadFailed] = useState(false)
+
+  // Reduced motion has no journey engine, but same-page Next links still need target focus.
+  useEffect(() => {
+    if (!reduced) return
+    let frame = 0
+    const onReducedAnchorClick = (event: MouseEvent) => {
+      if (event.defaultPrevented || event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return
+      if (!(event.target instanceof Element)) return
+      const link = event.target.closest<HTMLAnchorElement>("a[href]")
+      // Sheet navigation waits for its actual close/unlock lifecycle in LandingNavbar.
+      if (!link || link.closest('[data-slot="sheet-content"]') || link.origin !== location.origin || link.pathname !== location.pathname || link.search !== location.search || !link.hash) return
+      if (link.hasAttribute("download") || (link.target && link.target.toLowerCase() !== "_self")) return
+      let target: HTMLElement | null
+      try { target = document.getElementById(decodeURIComponent(link.hash.slice(1))) } catch { return }
+      if (!target) return
+      event.preventDefault()
+      cancelAnimationFrame(frame)
+      if (location.hash !== link.hash) history.pushState(null, "", link.hash)
+      // Let the menu selection event finish before moving focus outside the menu.
+      frame = requestAnimationFrame(() => {
+        frame = requestAnimationFrame(() => {
+          if (!target.isConnected) return
+          target.scrollIntoView({ behavior: "instant", block: "start" })
+          focusQuietly(target)
+        })
+      })
+    }
+    document.addEventListener("click", onReducedAnchorClick, true)
+    return () => {
+      cancelAnimationFrame(frame)
+      document.removeEventListener("click", onReducedAnchorClick, true)
+    }
+  }, [reduced])
 
   useEffect(() => {
     const element = root.current
@@ -109,6 +143,7 @@ export function MultimodalJourney() {
         // Strict Mode remounts the same node; release the GPU only once the guest has left the page.
         setTimeout(() => {
           if (guest.isConnected) return
+          guest.ucDispose?.()
           guest.marineRuntime?.dispose()
           guest.marineRuntime?.renderer.forceContextLoss()
         }, 0)
@@ -191,32 +226,69 @@ export function MultimodalJourney() {
     }, { rootMargin: "150% 0px" })
     near.observe(element)
 
-    // Loading mid-scroll inserts the pin spacer and cuts a smooth anchor scroll short, so anchors
-    // to this section load first and scroll once the layout has settled.
+    // Resolve downstream anchors before loading, then measure again after the pin spacer exists.
+    // Otherwise a late engine load changes page height halfway through native smooth scrolling.
     const anchors = new Set(["#features", "#cargo-journey"])
-    const goHere = () => {
+    const anchorTarget = (hash: string): HTMLElement | null => {
+      if (anchors.has(hash)) return element
+      if (!hash || hash === "#") return null
+      let target: HTMLElement | null
+      try { target = document.getElementById(decodeURIComponent(hash.slice(1))) }
+      catch { return null }
+      if (!target || element.contains(target)) return null
+      return element.compareDocumentPosition(target) & Node.DOCUMENT_POSITION_FOLLOWING ? target : null
+    }
+    // Shares navigationVersion with jumpPast, so a newer skip or anchor cancels an older one.
+    const goHere = (hash: string, sheet?: Element | null, behavior: ScrollBehavior = "smooth") => {
       pendingSkip = false
-      const version = ++navigationVersion
-      void ensure().then(() => {
-        if (cancelled || version !== navigationVersion) return
-        window.scrollTo({ top: element.getBoundingClientRect().top + window.scrollY, behavior: "smooth" })
-        // Keyboard and screen-reader position follow the scroll instead of staying on the link.
-        focusQuietly(element)
+      const request = ++navigationVersion
+      void ensure().then(async () => {
+        // Radix keeps the closing sheet and its scroll lock mounted through its exit animation.
+        // Wait for actual removal, not a guessed timeout, then let focus/lock cleanup finish.
+        while (sheet?.isConnected) {
+          if (cancelled || request !== navigationVersion) return
+          await new Promise<void>(resolve => requestAnimationFrame(() => resolve()))
+        }
+        if (sheet) {
+          await new Promise<void>(resolve => requestAnimationFrame(() => requestAnimationFrame(() => resolve())))
+        }
+        if (cancelled || request !== navigationVersion) return
+        const target = anchorTarget(hash)
+        if (!target?.isConnected) return
+        window.scrollTo({ top: target.getBoundingClientRect().top + window.scrollY, behavior })
+        focusQuietly(target)
+        // A smooth run crosses the pinned journey and can stop short (slow devices, a late image
+        // above). When it ends, land exactly on the target once.
+        if (behavior === "smooth") {
+          window.addEventListener("scrollend", () => {
+            if (cancelled || request !== navigationVersion || !target.isConnected) return
+            const off = target.getBoundingClientRect().top
+            if (Math.abs(off) > 2) window.scrollTo({ top: off + window.scrollY, behavior: "instant" })
+          }, { once: true })
+        }
       })
     }
     const onAnchorClick = (event: MouseEvent) => {
-      const link = (event.target as Element).closest<HTMLAnchorElement>("a[href]")
-      if (!link || link.origin !== window.location.origin || link.pathname !== window.location.pathname || !anchors.has(link.hash)) return
+      if (event.defaultPrevented || event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return
+      if (!(event.target instanceof Element)) return
+      const link = event.target.closest<HTMLAnchorElement>("a[href]")
+      if (!link || link.origin !== window.location.origin || link.pathname !== window.location.pathname || link.search !== window.location.search) return
+      if (link.hasAttribute("download") || (link.target && link.target.toLowerCase() !== "_self")) return
+      // A newer native anchor navigation must also cancel an older pending engine navigation.
+      ++navigationVersion
+      if (!anchorTarget(link.hash)) return
       event.preventDefault()
-      history.pushState(null, "", link.hash)
-      goHere()
+      if (window.location.hash !== link.hash) history.pushState(null, "", link.hash)
+      goHere(link.hash, link.closest('[data-slot="sheet-content"]'))
     }
-    document.addEventListener("click", onAnchorClick)
-    if (anchors.has(window.location.hash)) goHere()
+    // Capture before React/Next Link consumes same-document anchor navigation.
+    document.addEventListener("click", onAnchorClick, true)
+    // Arriving with a hash: jump, do not animate through ~14 screens of pinned journey.
+    if (anchorTarget(window.location.hash)) goHere(window.location.hash, null, "instant")
     return () => {
       cancelled = true
       near.disconnect()
-      document.removeEventListener("click", onAnchorClick)
+      document.removeEventListener("click", onAnchorClick, true)
       for (const run of teardown.splice(0)) run()
     }
   }, [reduced])

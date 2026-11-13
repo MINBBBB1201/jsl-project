@@ -1,0 +1,188 @@
+{
+  "sha": "11d8aeae0e4550ef05b74571f6f9ac30b68f1218",
+  "deployment": "https://jsl-logistics-frontend-4c7df8z4n-minbbbb1201s-projects.vercel.app",
+  "reducedMotion": true,
+  "fixture": false,
+  "pages": [
+    {
+      "locale": "en",
+      "width": 1440,
+      "height": 1000,
+      "status": 200,
+      "lang": "en",
+      "media": [
+        {
+          "path": "/images/company/logistics-dock-concept.png",
+          "complete": true,
+          "width": 1672,
+          "height": 941
+        }
+      ],
+      "notices": [
+        {
+          "url": "https://jsl-logistics-backend.onrender.com/api/contact/notice?language=en",
+          "status": 404
+        }
+      ],
+      "contact": {
+        "text": "Contact\nNeed to move cargo?\n\nLeave us your lane and cargo details and our team will follow up with a quotation and schedule.\n\nQuotation enquiry\n\nShare your origin, destination and cargo details and we will propose a transport plan with estimated costs.\n\nShipment tracking\n\nFor the status of a shipment in progress, contact us with your booking number.\n\nEmail enquiry\n\nGeneral enquiries hq@jsl-logis.com · Korea office kr@jsl-logis.com · Weekdays 09:00 - 18:00 (KST)\n\nSend an enquiry\n\nOnline inquiries are not available yet. Please use the contact details below.\n\nReload consent notice\nCompany (Optional)\n\nOptional\n\nContact name (Required)\n\nRequired\n\nEmail (Required)\n\nRequired\n\nSubject (Optional)\n\nOptional\n\nMessage (Required)\n\nRequired\n\nI agree to the collection and use of my personal data. (Required)\nRead the full privacy policy\n\nOnline inquiries are not available yet. Please use the contact details below.\n\nSend enquiry",
+        "inputs": [
+          {
+            "tag": "INPUT",
+            "type": "text",
+            "disabled": true
+          },
+          {
+            "tag": "INPUT",
+            "type": "text",
+            "disabled": true
+          },
+          {
+            "tag": "INPUT",
+            "type": "email",
+            "disabled": true
+          },
+          {
+            "tag": "INPUT",
+            "type": "text",
+            "disabled": true
+          },
+          {
+            "tag": "TEXTAREA",
+            "type": "textarea",
+            "disabled": true
+          },
+          {
+            "tag": "INPUT",
+            "type": "checkbox",
+            "disabled": true
+          }
+        ],
+        "buttons": [
+          {
+            "text": "Reload consent notice",
+            "disabled": false
+          },
+          {
+            "text": "",
+            "disabled": true
+          },
+          {
+            "text": "Send enquiry",
+            "disabled": true
+          }
+        ],
+        "links": [
+          {
+            "text": "Read the full privacy policy",
+            "href": "/en/privacy"
+          }
+        ]
+      },
+      "errors": [],
+      "overflow": false
+    },
+    {
+      "locale": "ko",
+      "width": 390,
+      "height": 844,
+      "status": 200,
+      "lang": "ko",
+      "media": [
+        {
+          "path": "/images/company/logistics-dock-concept.png",
+          "complete": true,
+          "width": 1672,
+          "height": 941
+        }
+      ],
+      "notices": [
+        {
+          "url": "https://jsl-logistics-backend.onrender.com/api/contact/notice?language=ko",
+          "status": 404
+        }
+      ],
+      "contact": {
+        "text": "문의하기\n화물 운송이 필요하신가요?\n\n노선과 화물 정보를 남겨주시면 담당자가 확인 후 견적과 스케줄을 안내해 드립니다.\n\n견적 문의\n\n출발지·도착지와 화물 정보를 알려주시면 운송 방안과 예상 비용을 안내해 드립니다.\n\n화물 추적\n\n진행 중인 건의 운송 현황이 궁금하시면 예약 번호와 함께 문의해 주세요.\n\n이메일 문의\n\n일반 문의 hq@jsl-logis.com · 한국지사 kr@jsl-logis.com · 평일 09:00 - 18:00\n\n문의 남기기\n\n온라인 문의 접수 준비 중입니다. 아래 연락처를 이용해 주세요.\n\n동의 안내 다시 확인\n회사명 (선택)\n\n선택\n\n담당자명 (필수)\n\n필수\n\n이메일 (필수)\n\n필수\n\n제목 (선택)\n\n선택\n\n문의 내용 (필수)\n\n필수\n\n개인정보 수집·이용에 동의합니다. (필수)\n개인정보처리방침 전문 보기\n\n온라인 문의 접수 준비 중입니다. 아래 연락처를 이용해 주세요.\n\n문의 보내기",
+        "inputs": [
+          {
+            "tag": "INPUT",
+            "type": "text",
+            "disabled": true
+          },
+          {
+            "tag": "INPUT",
+            "type": "text",
+            "disabled": true
+          },
+          {
+            "tag": "INPUT",
+            "type": "email",
+            "disabled": true
+          },
+          {
+            "tag": "INPUT",
+            "type": "text",
+            "disabled": true
+          },
+          {
+            "tag": "TEXTAREA",
+            "type": "textarea",
+            "disabled": true
+          },
+          {
+            "tag": "INPUT",
+            "type": "checkbox",
+            "disabled": true
+          }
+        ],
+        "buttons": [
+          {
+            "text": "동의 안내 다시 확인",
+            "disabled": false
+          },
+          {
+            "text": "",
+            "disabled": true
+          },
+          {
+            "text": "문의 보내기",
+            "disabled": true
+          }
+        ],
+        "links": [
+          {
+            "text": "개인정보처리방침 전문 보기",
+            "href": "/privacy"
+          }
+        ]
+      },
+      "errors": [],
+      "overflow": false
+    }
+  ],
+  "links": [
+    {
+      "route": "/en/notices",
+      "status": 200,
+      "finalPath": "/en/notices"
+    },
+    {
+      "route": "/en/tracking",
+      "status": 200,
+      "finalPath": "/en/tracking"
+    },
+    {
+      "route": "/sign-in",
+      "status": 200,
+      "finalPath": "/sign-in"
+    }
+  ],
+  "blockedWrites": [],
+  "noticeHttp": {
+    "status": 404,
+    "contentType": "application/json; charset=utf-8",
+    "allowOrigin": "https://jsl-logistics-frontend-4c7df8z4n-minbbbb1201s-projects.vercel.app",
+    "body": "{\"status\":\"fail\",\"message\":\"Route not found.\"}"
+  }
+}

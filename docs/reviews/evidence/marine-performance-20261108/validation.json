@@ -1,0 +1,76 @@
+{
+  "sourceBase": "d5b5f8874679f593e22ab8f13e9b931cd76944e2",
+  "sourceHashes": {
+    "frontend/src/app/landing/components/multimodal-journey.tsx": "11dce35596334b6ab99b64020b6b60216a7383da2f1025ae76a5c86e1de67291",
+    "frontend/src/app/landing/multimodal/jsl-multimodal.mjs": "5db58faedb9e3b0f7c3579d6ccd1e90275275e6fd754b0d2475c7af65595cc6e"
+  },
+  "hashNormalization": "UTF-8 LF",
+  "sourceUncommittedAtExecution": true,
+  "reverse": [
+    {
+      "width": 1440,
+      "forward": "8b13e68fcb4cda16d3e05218526cafda8f673b9c6a95bb05c4796887f3e24624",
+      "backward": "8b13e68fcb4cda16d3e05218526cafda8f673b9c6a95bb05c4796887f3e24624"
+    },
+    {
+      "width": 390,
+      "forward": "b6f0b0f65cb99c340b89427f7678ae10a8df98c9bef7da6ddcc8323df75b41d3",
+      "backward": "b6f0b0f65cb99c340b89427f7678ae10a8df98c9bef7da6ddcc8323df75b41d3"
+    }
+  ],
+  "framesPassed": 6,
+  "teardown": {
+    "width": 390,
+    "kind": "reduce-teardown",
+    "connected": false,
+    "renderRetained": false,
+    "contextLost": true
+  },
+  "legacyMobileDpr2Calculated": {
+    "width": 682,
+    "height": 1477,
+    "pixels": 1007314
+  },
+  "newMobileDpr2Measured": {
+    "width": 487,
+    "height": 1055,
+    "pixels": 513785
+  },
+  "pixelReductionCalculated": 0.4899455383326351,
+  "scope": "Local Chromium production build. Canvas workload counts, not a user-device FPS or INP benchmark.",
+  "remaining": "Single photographic plane depth limitation and precise visual continuity at57.5% cut. Safari, devices, cross-company review, latest preview and production unverified.",
+  "prototypeCommit": "25b17f26a5442a9c151551551829c8be8651bbb1",
+  "finalVisibilityBuild": {
+    "road": {
+      "gpuContexts": 0
+    },
+    "above": {
+      "gpuContexts": 0,
+      "sectionTop": 3231.25
+    },
+    "visible": {
+      "calls": 6,
+      "source": "photo",
+      "fallback": "false"
+    },
+    "hidden": {
+      "renderDelta": 0
+    },
+    "restored": {
+      "renderDelta": 1
+    },
+    "below": {
+      "renderDelta": 0,
+      "sectionBottom": -10557.75
+    },
+    "teardown": {
+      "connected": false,
+      "renderRetained": false,
+      "contextLost": true
+    },
+    "errors": [],
+    "pass": true,
+    "scope": "Local final production build. Visibility state was synthetically overridden to exercise hidden/restore event branches; not an actual browser backgrounding/device test."
+  },
+  "note": "Final build after viewport/tab guards passed and visible/offscreen/hidden/restore/disposal paths passed. Primary appearance captures precede those guards; same camera, shader and geometry. Later source-header change is provenance comments only, verified fragment hash unchanged."
+}
