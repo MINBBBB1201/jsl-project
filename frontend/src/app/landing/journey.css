@@ -119,6 +119,8 @@
 .journey-hero h1{font-size:clamp(40px,4.4vw,84px);margin:16px 0 20px}
 .journey-hero .journey-eyebrow{color:#ff7a33}
 .journey-scroll{display:none}
+/* 한국어 부제가 "통 / 합"처럼 단어 중간에서 끊기지 않게 한다. 중국어는 keep-all 이면 줄바꿈 자리가 없어 넘치므로 한국어에만 둔다. */
+:lang(ko) .journey-hero-description{word-break:keep-all}
 .journey-track{max-width:400px;margin-top:34px}
 .journey-track-form{display:flex;align-items:flex-end;gap:18px;padding-bottom:10px;border-bottom:1px solid #ffffff4d;transition:border-color .2s}
 .journey-track-form:focus-within{border-color:#ec761e}

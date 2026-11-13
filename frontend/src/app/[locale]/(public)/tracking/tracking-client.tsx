@@ -143,6 +143,12 @@ export function TrackingClient() {
   const submit = (next?: string) => {
     const target = next ?? value
     if (next) setValue(next)
+    // 주소의 ?no= 를 마지막 조회 번호로 맞춘다. 남겨 두면 새로고침 때 처음 번호를 다시 조회한다.
+    const url = new URL(window.location.href)
+    const trimmed = target.trim()
+    if (trimmed) url.searchParams.set("no", trimmed)
+    else url.searchParams.delete("no")
+    window.history.replaceState(null, "", url)
     track(target)
   }
 
