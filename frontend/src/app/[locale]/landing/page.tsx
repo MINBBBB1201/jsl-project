@@ -16,7 +16,7 @@ export async function generateMetadata({
   const { locale } = await params
   const t = await getTranslations({ locale, namespace: 'hero' })
 
-  const title = `JSL Logistics — ${t('headlineHighlight')}`
+  const title = 'JSL Logistics'
   return {
     title,
     description: t('subheadline'),
