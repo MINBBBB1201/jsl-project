@@ -15,7 +15,7 @@ import { CTASection } from "./components/cta-section"
 import { ContactSection } from "./components/contact-section"
 import { LandingFooter } from "./components/footer"
 import { LandingThemeCustomizer, LandingThemeCustomizerTrigger } from "./components/landing-theme-customizer"
-import { JourneyIntro, JourneyOcean, JourneyPartners, JourneyCta, JourneyPlane, JourneyProgressRail, useJourneyMotion } from "./components/journey-sections"
+import { JourneyIntro, JourneyPartners, JourneyCta, JourneyProgressRail, useJourneyMotion } from "./components/journey-sections"
 import { MultimodalJourney } from "./components/multimodal-journey"
 import { JourneyHeroMotion } from "./components/journey-hero-motion"
 import "./journey.css"
@@ -34,9 +34,8 @@ export function LandingPageContent() {
       {/* 리치스태커·컨테이너 장비 장면(JourneyYard)은 2026-10-30 사용자 요청으로 이번 흐름에서 건너뛴다. 소스는 다른 장면 자리로 보관한다. */}
       <MultimodalJourney />
       <div className="journey-services journey-dark"><FeaturesSection onlyValueAdded /></div>
-      <JourneyOcean />
+      {/* 별도 해상(JourneyOcean)·항공(JourneyPlane) 장면은 운송 시퀀스와 겹쳐 2026-11-02 사용자 승인(#51)으로 건너뛴다. 소스는 journey-sections.tsx 에 보관하고, 해상 장면의 수치는 거점 정보로 옮겼다. */}
       <ApprovedNetworkInfo />
-      <JourneyPlane />
       <ApprovedCompanySection previewMedia={process.env.NODE_ENV === "development" ? "/assembly-review/connected-scroll/media/company-reference-9s.jpg" : undefined} />
       {process.env.NODE_ENV === "development" && <p className="px-6 py-3 text-sm">회사소개 이미지는 구도 확인용 외부 참고 매체이며, JSL 현장 또는 운영 배포용 자산이 아닙니다.</p>}
       <div className="journey-about journey-editorial"><CertificationsBar /></div>
