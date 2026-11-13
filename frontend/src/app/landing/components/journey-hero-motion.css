@@ -5,5 +5,21 @@
 .journey-hero-motion .journey-orbit{will-change:transform}
 .journey-hero-motion .journey-horizon{transform:translateY(170%);will-change:transform}
 @media(max-width:900px){.journey-hero-motion{height:220svh}.journey-hero-motion .journey-hero{height:100svh;min-height:0}}
-@media(max-width:600px){.journey-hero-motion{height:190svh}.journey-hero-motion .journey-hero{min-height:0;height:100svh}}
-@media(prefers-reduced-motion:reduce){.journey-hero-motion{height:auto}.journey-hero-motion .journey-hero{position:relative;min-height:900px;height:100svh}.journey-hero-motion .journey-hero::after{display:none}.journey-hero-motion .journey-hero-copy{clip-path:none!important;opacity:1!important;transform:none!important}.journey-hero-motion .journey-horizon{transform:none}}
+@media(max-width:600px){
+  /* Keep the same globe movement, without a second almost-empty viewport after the copy exits. */
+  .journey-hero-motion{height:145svh}
+  .journey-hero-motion .journey-hero{min-height:0;height:100svh}
+  /* Fade the clipped globe edge into its own surface before the orange-to-paper wash arrives. */
+  .journey-hero-motion .journey-hero::before{content:"";position:absolute;inset:auto 0 0;height:56px;z-index:1;pointer-events:none;background:linear-gradient(transparent,#17100b)}
+  /* The moving wash used to cover the globe with a straight horizontal edge. */
+  .journey-hero-motion .journey-hero::after{mask-image:linear-gradient(to bottom,transparent,#000 64px)}
+}
+@media(max-width:600px) and (max-height:740px){
+  /* Short phones still show the tracking field and both actions before the globe. */
+  .journey-hero-motion .journey-hero{padding-top:80px}
+  .journey-hero-motion .journey-hero-copy{margin-top:40px}
+  .journey-hero-motion .journey-hero h1{font-size:clamp(32px,10vw,40px)}
+  .journey-hero-motion .journey-track{margin-top:24px}
+  .journey-hero-motion .journey-orbit{bottom:-104vw}
+}
+@media(prefers-reduced-motion:reduce){.journey-hero-motion{height:auto}.journey-hero-motion .journey-hero{position:relative;min-height:900px;height:100svh}.journey-hero-motion .journey-hero::before,.journey-hero-motion .journey-hero::after{display:none}.journey-hero-motion .journey-hero-copy{clip-path:none!important;opacity:1!important;transform:none!important}.journey-hero-motion .journey-horizon{transform:none}}

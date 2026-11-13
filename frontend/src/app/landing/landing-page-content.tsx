@@ -36,8 +36,7 @@ export function LandingPageContent() {
       <div className="journey-services journey-dark"><FeaturesSection onlyValueAdded /></div>
       {/* 별도 해상(JourneyOcean)·항공(JourneyPlane) 장면은 운송 시퀀스와 겹쳐 2026-11-02 사용자 승인(#51)으로 건너뛴다. 소스는 journey-sections.tsx 에 보관하고, 해상 장면의 수치는 거점 정보로 옮겼다. */}
       <ApprovedNetworkInfo />
-      <ApprovedCompanySection previewMedia={process.env.NODE_ENV === "development" ? "/assembly-review/connected-scroll/media/company-reference-9s.jpg" : undefined} />
-      {process.env.NODE_ENV === "development" && <p className="px-6 py-3 text-sm">회사소개 이미지는 구도 확인용 외부 참고 매체이며, JSL 현장 또는 운영 배포용 자산이 아닙니다.</p>}
+      <ApprovedCompanySection mediaSrc="/images/company/logistics-dock-concept.png" mediaPosition={{ desktop: "50% 58%", mobile: "65% 58%" }} />
       <div className="journey-about journey-editorial"><CertificationsBar /></div>
       <JourneyPartners />
       <div className="journey-consulting journey-editorial"><ConsultingSection /></div>

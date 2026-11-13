@@ -1,0 +1,14 @@
+{
+  "road": {
+    "gpuContexts": 1,
+    "pathReadsFor20SameFrame": 60,
+    "progress": "0.0000",
+    "disposeAvailable": false
+  },
+  "leave": {
+    "connected": false,
+    "renderRetained": true,
+    "disposeRetained": false
+  },
+  "errors": []
+}

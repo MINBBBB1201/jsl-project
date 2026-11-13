@@ -1,0 +1,48 @@
+{
+  "old": {
+    "width": 1962,
+    "height": 838,
+    "box": {
+      "left": 24,
+      "top": 24,
+      "width": 1913,
+      "height": 790
+    },
+    "orange": {
+      "x": 1057.1681948424068,
+      "y": 329.25931232091693,
+      "pixels": 6980
+    }
+  },
+  "generated": {
+    "width": 1918,
+    "height": 820,
+    "box": {
+      "left": 25,
+      "top": 17,
+      "width": 1885,
+      "height": 787
+    },
+    "orange": {
+      "x": 1034.3762928320891,
+      "y": 334.54123572263694,
+      "pixels": 11119
+    }
+  },
+  "candidate": {
+    "width": 1962,
+    "height": 838,
+    "box": {
+      "left": 24,
+      "top": 24,
+      "width": 1913,
+      "height": 790
+    },
+    "orange": {
+      "x": 1049.0637147048037,
+      "y": 343.3721122112211,
+      "pixels": 10908
+    }
+  },
+  "note": "Only transparent cutout trim/resize/pad and WebP packaging. No paint or synthetic detail added during packaging."
+}

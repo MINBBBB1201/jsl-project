@@ -1,0 +1,30 @@
+[
+  {
+    "locale": "en",
+    "w": 1440,
+    "keyboardTarget": "contact",
+    "top": 89.703125,
+    "pass": true
+  },
+  {
+    "locale": "en",
+    "w": 1440,
+    "keyboardTarget": "features",
+    "top": 0.25,
+    "pass": true
+  },
+  {
+    "locale": "vi",
+    "w": 390,
+    "keyboardTarget": "contact",
+    "top": 88.8125,
+    "pass": true
+  },
+  {
+    "locale": "vi",
+    "w": 390,
+    "keyboardTarget": "features",
+    "top": -0.5,
+    "pass": true
+  }
+]

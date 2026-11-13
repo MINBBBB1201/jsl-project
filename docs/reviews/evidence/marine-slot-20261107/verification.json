@@ -1,0 +1,46 @@
+{
+  "cases": 18,
+  "baselineCommit": "6c42f76478ab20fadca78b15695c388c3ff81da5",
+  "proof": [
+    {
+      "width": 1440,
+      "reversePngIdentical": true,
+      "holdPngSha256": "608a9da3257400296d5353d0923ab9f3c295bf6b1486cdc9a2ead0478908e2f4",
+      "macro46PngIdentical": true,
+      "matchedCameraAndClockCases": 4,
+      "waterShaderUnchanged": true,
+      "differentSamples": [
+        {
+          "file": "1440-58.png",
+          "current": 0.5799,
+          "previous": 0.58,
+          "reason": "Different actual scroll sample; exact camera and clock comparison not claimed"
+        }
+      ]
+    },
+    {
+      "width": 390,
+      "reversePngIdentical": true,
+      "holdPngSha256": "417e2f4a7661f4b5c76ed1f1d9b5a7e00e1ed0ab331b8e0d9f7d1969d1d182e9",
+      "macro46PngIdentical": true,
+      "matchedCameraAndClockCases": 5,
+      "waterShaderUnchanged": true,
+      "differentSamples": []
+    }
+  ],
+  "extraLiveBox": false,
+  "extraLiveBrandingPlane": false,
+  "photographicCargo": "one existing grid cell, visually inspected; not inferred from native color slot count",
+  "build": "webpack compile, TypeScript and78 static pages passed",
+  "prototypeVerify": {
+    "sourceSyntaxChecks": 76,
+    "daylightContracts": 8,
+    "inlineBytes": 990561,
+    "archiveBytes": 20780514
+  },
+  "limits": [
+    "Local Chromium emulated viewports, not Safari or real-device testing",
+    "Generated edit preserves the photographic layout visually; not a pixel-identical edit",
+    "Internal read review is not cross-company approval; final user visual approval remains"
+  ]
+}

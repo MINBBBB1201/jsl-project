@@ -1,0 +1,28 @@
+{
+  "runtimeCases": 12,
+  "expectedShaderSha256": "41c286eb66367b699bad970c78822faf9f9d7f815ee058d68aced93fb142a436",
+  "brightnessGainInExpectedShader": true,
+  "allRuntimeShaderHashesMatch": true,
+  "allServedTextureHashesMatch": true,
+  "assetSha256": "ebd6ee5d0199a408e049554b696fa4d6fb2b480ac555c09b2adca9c4bd0476b8",
+  "orangeModelSlotsEach": 1,
+  "holdAngles": {
+    "desktop": 14,
+    "mobile": 78
+  },
+  "actualMacroCamerasIdentical": 2,
+  "waterClocksAndDriftUnchanged": 12,
+  "reverse": [
+    {
+      "width": 1440,
+      "pixelIdentical": true,
+      "sha256": "d1994e2e2855a59c74e98436ff88acf9fb3c6eec6efdc00096acaea687192a6a"
+    },
+    {
+      "width": 390,
+      "pixelIdentical": true,
+      "sha256": "16e6b4dc944d48c66f9c4676e0cc0d845220710f2ed1069be8e50768aea75dec"
+    }
+  ],
+  "note": "Orange grid count is a model contract; the neutral photographic cargo was also inspected visually and checked in its central image region."
+}

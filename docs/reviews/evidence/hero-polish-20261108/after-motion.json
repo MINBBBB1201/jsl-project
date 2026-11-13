@@ -1,0 +1,56 @@
+[
+  {
+    "initial": "reduce",
+    "mode": "reduce",
+    "scrollY": 20,
+    "orbitInline": "",
+    "copyInline": "",
+    "track": 900,
+    "viewport": 844
+  },
+  {
+    "initial": "reduce",
+    "mode": "no-preference",
+    "scrollY": 133,
+    "orbitInline": "translate(9.1538%, -5.9231%) translate3d(0px, 50px, 0px) scale(1.0969, 1.0969)",
+    "copyInline": "",
+    "track": 1224,
+    "viewport": 844
+  },
+  {
+    "initial": "reduce",
+    "mode": "reduce",
+    "scrollY": 20,
+    "orbitInline": "",
+    "copyInline": "",
+    "track": 900,
+    "viewport": 844
+  },
+  {
+    "initial": "no-preference",
+    "mode": "no-preference",
+    "scrollY": 133,
+    "orbitInline": "translate(9.1538%, -5.9231%) translate3d(0px, 50px, 0px) scale(1.0969, 1.0969)",
+    "copyInline": "",
+    "track": 1224,
+    "viewport": 844
+  },
+  {
+    "initial": "no-preference",
+    "mode": "reduce",
+    "scrollY": 20,
+    "orbitInline": "",
+    "copyInline": "",
+    "track": 900,
+    "viewport": 844
+  },
+  {
+    "initial": "no-preference",
+    "mode": "no-preference",
+    "scrollY": 133,
+    "orbitInline": "translate(9.1538%, -5.9231%) translate3d(0px, 50px, 0px) scale(1.0969, 1.0969)",
+    "copyInline": "",
+    "track": 1224,
+    "viewport": 844
+  }
+]

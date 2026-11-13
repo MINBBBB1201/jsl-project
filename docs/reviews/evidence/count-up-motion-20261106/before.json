@@ -1,0 +1,369 @@
+{
+  "scope": "Actual local app in Chromium. Viewports and motion preferences are emulated; summary API503 is synthetic.",
+  "sourceSha256": "6fd6a74e7381acd594429075ceb9fedf2b5c1c2b0a78b0a93550c83e7e14226f",
+  "results": [
+    {
+      "name": "outside-then-reduce-en",
+      "locale": "en",
+      "viewport": {
+        "width": 1440,
+        "height": 1000
+      },
+      "javaScriptEnabled": true,
+      "errors": [],
+      "initialValues": [
+        {
+          "label": "200",
+          "shown": "0"
+        },
+        {
+          "label": "100",
+          "shown": "0"
+        },
+        {
+          "label": "350",
+          "shown": "0"
+        },
+        {
+          "label": "KRW 18B",
+          "shown": "KRW 0B"
+        },
+        {
+          "label": "5",
+          "shown": "0"
+        },
+        {
+          "label": "30+",
+          "shown": "0+"
+        },
+        {
+          "label": "50+",
+          "shown": "0+"
+        }
+      ],
+      "transition": "offscreen normal to reduced",
+      "values": [
+        {
+          "label": "200",
+          "shown": "0"
+        },
+        {
+          "label": "100",
+          "shown": "0"
+        },
+        {
+          "label": "350",
+          "shown": "0"
+        },
+        {
+          "label": "KRW 18B",
+          "shown": "KRW 0B"
+        },
+        {
+          "label": "5",
+          "shown": "0"
+        },
+        {
+          "label": "30+",
+          "shown": "0+"
+        },
+        {
+          "label": "50+",
+          "shown": "0+"
+        }
+      ],
+      "pass": false,
+      "error": "outside-then-reduce-en: 200\n\n'0' !== '200'\n"
+    },
+    {
+      "name": "outside-then-reduce-ko",
+      "locale": "ko",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "javaScriptEnabled": true,
+      "errors": [],
+      "initialValues": [
+        {
+          "label": "200",
+          "shown": "0"
+        },
+        {
+          "label": "100",
+          "shown": "0"
+        },
+        {
+          "label": "350",
+          "shown": "0"
+        },
+        {
+          "label": "180억원",
+          "shown": "0억원"
+        },
+        {
+          "label": "5개",
+          "shown": "0개"
+        },
+        {
+          "label": "30개사+",
+          "shown": "0개사+"
+        },
+        {
+          "label": "50개사+",
+          "shown": "0개사+"
+        }
+      ],
+      "transition": "offscreen normal to reduced",
+      "values": [
+        {
+          "label": "200",
+          "shown": "0"
+        },
+        {
+          "label": "100",
+          "shown": "0"
+        },
+        {
+          "label": "350",
+          "shown": "0"
+        },
+        {
+          "label": "180억원",
+          "shown": "0억원"
+        },
+        {
+          "label": "5개",
+          "shown": "0개"
+        },
+        {
+          "label": "30개사+",
+          "shown": "0개사+"
+        },
+        {
+          "label": "50개사+",
+          "shown": "0개사+"
+        }
+      ],
+      "pass": false,
+      "error": "outside-then-reduce-ko: 200\n\n'0' !== '200'\n"
+    },
+    {
+      "name": "during-animation-en",
+      "locale": "en",
+      "viewport": {
+        "width": 1440,
+        "height": 1000
+      },
+      "javaScriptEnabled": true,
+      "errors": [],
+      "observedIntermediate": 20,
+      "transition": "running normal to reduced",
+      "values": [
+        {
+          "label": "200",
+          "shown": "37"
+        },
+        {
+          "label": "100",
+          "shown": "18"
+        },
+        {
+          "label": "350",
+          "shown": "65"
+        },
+        {
+          "label": "KRW 18B",
+          "shown": "KRW 3B"
+        },
+        {
+          "label": "5",
+          "shown": "1"
+        },
+        {
+          "label": "30+",
+          "shown": "6+"
+        },
+        {
+          "label": "50+",
+          "shown": "9+"
+        }
+      ],
+      "pass": false,
+      "error": "during-animation-en: 200\n\n'37' !== '200'\n"
+    },
+    {
+      "name": "initial-reduce-ko",
+      "locale": "ko",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "javaScriptEnabled": true,
+      "errors": [],
+      "transition": "reduced from first load",
+      "values": [
+        {
+          "label": "200",
+          "shown": "200"
+        },
+        {
+          "label": "100",
+          "shown": "100"
+        },
+        {
+          "label": "350",
+          "shown": "350"
+        },
+        {
+          "label": "180억원",
+          "shown": "180억원"
+        },
+        {
+          "label": "5개",
+          "shown": "5개"
+        },
+        {
+          "label": "30개사+",
+          "shown": "30개사+"
+        },
+        {
+          "label": "50개사+",
+          "shown": "50개사+"
+        }
+      ],
+      "pass": true
+    },
+    {
+      "name": "normal-animation-en",
+      "locale": "en",
+      "viewport": {
+        "width": 1440,
+        "height": 1000
+      },
+      "javaScriptEnabled": true,
+      "errors": [],
+      "samples": [
+        "0",
+        "10",
+        "24",
+        "29",
+        "38",
+        "50",
+        "60",
+        "71",
+        "80",
+        "89",
+        "97",
+        "107",
+        "114",
+        "121",
+        "127",
+        "133",
+        "139",
+        "144",
+        "149",
+        "153",
+        "158",
+        "162",
+        "165",
+        "168",
+        "171",
+        "174",
+        "176",
+        "178",
+        "180",
+        "182",
+        "184",
+        "186",
+        "187",
+        "188",
+        "189",
+        "191",
+        "192",
+        "193",
+        "194",
+        "195",
+        "196",
+        "197",
+        "198",
+        "199",
+        "200"
+      ],
+      "transition": "unchanged normal CountUp",
+      "values": [
+        {
+          "label": "200",
+          "shown": "200"
+        },
+        {
+          "label": "100",
+          "shown": "100"
+        },
+        {
+          "label": "350",
+          "shown": "350"
+        },
+        {
+          "label": "KRW 18B",
+          "shown": "KRW 18B"
+        },
+        {
+          "label": "5",
+          "shown": "5"
+        },
+        {
+          "label": "30+",
+          "shown": "30+"
+        },
+        {
+          "label": "50+",
+          "shown": "50+"
+        }
+      ],
+      "pass": true
+    },
+    {
+      "name": "no-javascript-en",
+      "locale": "en",
+      "viewport": {
+        "width": 1440,
+        "height": 1000
+      },
+      "javaScriptEnabled": false,
+      "errors": [],
+      "transition": "server HTML values without JavaScript; section visibility is not asserted",
+      "values": [
+        {
+          "label": "200",
+          "shown": "200"
+        },
+        {
+          "label": "100",
+          "shown": "100"
+        },
+        {
+          "label": "350",
+          "shown": "350"
+        },
+        {
+          "label": "KRW 18B",
+          "shown": "KRW 18B"
+        },
+        {
+          "label": "5",
+          "shown": "5"
+        },
+        {
+          "label": "30+",
+          "shown": "30+"
+        },
+        {
+          "label": "50+",
+          "shown": "50+"
+        }
+      ],
+      "pass": true
+    }
+  ]
+}

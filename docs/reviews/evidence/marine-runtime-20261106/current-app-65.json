@@ -1,0 +1,56 @@
+{
+  "sourceHead": "bcaba556466753a3435ddcee42bd46139c90b15a",
+  "nativeReady": "true",
+  "nativeFallback": "false",
+  "nativeCamera": "{\"type\":\"orthographic\",\"position\":[108.75432383281591,416.0046684405276,179.08847611956264],\"target\":[-13.785273079992644,14.203882423334834,4.0837950415529445],\"up\":[0.29760269094436753,0.30348510649115157,-0.9051681769045605],\"rightVector\":[0.9159269025385348,-0.35819036615001404,0.18104576991325755],\"left\":-95.99622284973124,\"right\":95.99622284973124,\"top\":59.99763928108202,\"bottom\":-59.99763928108202,\"near\":0.1,\"far\":2213.513430897034,\"zoom\":1,\"fov\":0,\"spanX\":191.99244569946248,\"spanY\":119.99527856216405,\"reveal\":1,\"departure\":0,\"elevation\":62,\"screenAngle\":18,\"cargoProjection\":{\"x\":878.6804504699487,\"y\":375.3607050983784},\"shipBounds\":{\"left\":259.20000000000005,\"top\":115.21386943998294,\"width\":1123.1999999999998,\"height\":561.5722611200341},\"phase\":\"hold\",\"triangles\":18,\"calls\":9,\"containers\":130}",
+  "daylight": {
+    "enabled": true,
+    "state": "ready",
+    "loads": 1,
+    "builds": 1,
+    "error": null
+  },
+  "photoVessel": {
+    "state": "ready",
+    "error": null
+  },
+  "rendererInfo": {
+    "calls": 9,
+    "triangles": 18
+  },
+  "progress": "0.6500",
+  "phase": "sea",
+  "viewport": {
+    "w": 1440,
+    "h": 900,
+    "dpr": 1
+  },
+  "canvas": {
+    "w": 1440,
+    "h": 900,
+    "clientW": 1440,
+    "clientH": 900,
+    "hidden": false
+  },
+  "stills": [
+    {
+      "src": "/images/multimodal/vessel-hold-photographic.jpg",
+      "w": 1440,
+      "h": 900,
+      "display": "block",
+      "opacity": "1",
+      "hidden": false
+    },
+    {
+      "src": null,
+      "w": 0,
+      "h": 0,
+      "display": "none",
+      "opacity": "0",
+      "hidden": true
+    }
+  ],
+  "overflow": 0,
+  "errors": [],
+  "caveat": "Camera projection, position, target, up, bounds and cargo projection independently match archived65 receipt across18 fields. Rendering geometry/materials differ."
+}

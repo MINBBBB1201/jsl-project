@@ -1,0 +1,40 @@
+[
+  {
+    "locale": "en",
+    "width": 1440,
+    "theme": "light",
+    "errors": [],
+    "overflow": 0,
+    "ctaText": "Complex international logistics,\nsolved in one place\n\nTell us your lane and cargo details, and our team will put together the best transport plan and an estimated cost.\n\nAir · Ocean · Road · Rail · Express\nLogistics consulting\nWholly owned local entities\nRequest a quote\nExplore services\n5 directly operated locations\n5+1 full line-up\nReal-time cargo visibility"
+  },
+  {
+    "locale": "vi",
+    "width": 390,
+    "theme": "light",
+    "errors": [],
+    "overflow": 0,
+    "ctaText": "Logistics quốc tế phức tạp,\ngiải quyết tại một nơi\n\nChỉ cần cho biết tuyến và điều kiện hàng hóa, bộ phận phụ trách sẽ tổng hợp phương án vận chuyển tối ưu cùng chi phí dự kiến.\n\nHàng không · Đường biển · Đường bộ · Đường sắt · Chuyển phát nhanh\nTư vấn logistics\nPháp nhân địa phương trực thuộc\nYêu cầu báo giá\nTìm hiểu dịch vụ\n5 cơ sở trực tiếp vận hành\nTrọn bộ 5+1\nTheo dõi hàng hóa thời gian thực"
+  },
+  {
+    "locale": "ko",
+    "width": 390,
+    "theme": "dark",
+    "errors": [],
+    "overflow": 0,
+    "ctaText": "복잡한 국제물류,\n한 곳에서\n해결하세요\n\n노선과 화물 조건만 알려주시면 담당자가 최적의 운송 방안과 예상 비용을 정리해 드립니다.\n\n항공 · 해상 · 육상 · 철도 · 특송\n물류 컨설팅\n현지법인 직영\n견적 문의하기\n서비스 알아보기\n5개 거점 직영 운영\n5+1 풀라인업\n실시간 화물 가시성"
+  },
+  {
+    "page": "privacy",
+    "locale": "en",
+    "width": 1440,
+    "text": "Privacy PolicyThe privacy policy is being reviewed.Effective date not yet confirmedPending company confirmationData retention and deletion, the privacy contact, service providers and countries, and the effective date are being confirmed. A final policy has not yet been published.General enquiriesFor logistics enquiries, use the email addresses below. The designated privacy contact will be published after confirmation.·hq@jsl-logis.com·kr@jsl-logis.comTerms of Service →",
+    "overflow": 0
+  },
+  {
+    "page": "privacy",
+    "locale": "ko",
+    "width": 390,
+    "text": "개인정보처리방침개인정보처리방침을 확인하고 있습니다.시행일 미정회사 확인 후 안내합니다개인정보 보유·파기 기준, 문의 담당 창구, 처리업체·국가와 시행일을 확인하고 있습니다. 확정된 방침은 아직 게시되지 않았습니다.일반 문의물류 서비스에 관한 문의는 아래 이메일로 보내 주세요. 개인정보 전용 문의 창구는 확정 후 안내합니다.·hq@jsl-logis.com·kr@jsl-logis.com이용약관 →",
+    "overflow": 0
+  }
+]

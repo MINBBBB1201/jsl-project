@@ -1,16 +1,8 @@
 "use client"
 
-import React from 'react'
-import { ArrowRight, TrendingUp, Package } from 'lucide-react'
+import { ArrowRight, Package } from 'lucide-react'
 import { Button } from '@/components/ui/button'
-import { Badge } from '@/components/ui/badge'
-import { Separator } from '@/components/ui/separator'
 import { useContent } from '@/config/use-content'
-const indicatorDotColors = [
-  'bg-green-600 dark:bg-green-400',
-  'bg-blue-600 dark:bg-blue-400',
-  'bg-purple-600 dark:bg-purple-400',
-]
 
 export function CTASection() {
   const { cta } = useContent()
@@ -20,26 +12,6 @@ export function CTASection() {
         <div className='mx-auto max-w-4xl'>
           <div className='text-center'>
             <div className='space-y-8'>
-              {/* Badge and Highlights */}
-              <div className='flex flex-col items-center gap-4'>
-                <Badge variant='outline' className='flex items-center gap-2'>
-                  <TrendingUp className='size-3' />
-                  {cta.badge}
-                </Badge>
-
-                <div className='text-muted-foreground flex flex-wrap items-center justify-center gap-4 text-sm'>
-                  {cta.highlights.map((highlight, index) => (
-                    <React.Fragment key={highlight}>
-                      {index > 0 && <Separator orientation='vertical' className='!h-4' />}
-                      <span className='flex items-center gap-1'>
-                        {index === 0 && <div className='size-2 rounded-full bg-green-500' />}
-                        {highlight}
-                      </span>
-                    </React.Fragment>
-                  ))}
-                </div>
-              </div>
-
               {/* Main Content */}
               <div className='space-y-6'>
                 <h2 className='text-4xl font-bold tracking-tight text-balance sm:text-5xl lg:text-6xl'>
@@ -64,6 +36,14 @@ export function CTASection() {
                 <p className='text-muted-foreground mx-auto max-w-2xl text-balance lg:text-xl'>
                   {cta.description}
                 </p>
+
+                <ul role='list' className='text-muted-foreground flex flex-col items-center justify-center gap-y-2 text-sm leading-relaxed sm:flex-row sm:flex-wrap'>
+                  {cta.highlights.map((highlight, index) => (
+                    <li key={highlight} className={`px-4 ${index > 0 ? 'sm:border-s sm:border-border' : ''}`}>
+                      {highlight}
+                    </li>
+                  ))}
+                </ul>
               </div>
 
               {/* CTA Buttons */}
@@ -82,19 +62,14 @@ export function CTASection() {
                 </Button>
               </div>
 
-              {/* Trust Indicators */}
-              <div className='text-muted-foreground flex flex-wrap items-center justify-center gap-6 text-sm'>
+              {/* Supporting facts use the same typography as the service details. */}
+              <ul role='list' className='text-muted-foreground flex flex-col items-center justify-center gap-y-2 text-sm leading-relaxed sm:flex-row sm:flex-wrap'>
                 {cta.trustIndicators.map((indicator, index) => (
-                  <div key={indicator} className='flex items-center gap-2'>
-                    <div
-                      className={`size-2 rounded-full me-1 ${
-                        indicatorDotColors[index % indicatorDotColors.length]
-                      }`}
-                    />
-                    <span>{indicator}</span>
-                  </div>
+                  <li key={indicator} className={`px-4 ${index > 0 ? 'sm:border-s sm:border-border' : ''}`}>
+                    {indicator}
+                  </li>
                 ))}
-              </div>
+              </ul>
             </div>
           </div>
         </div>

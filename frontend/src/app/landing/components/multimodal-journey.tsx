@@ -10,6 +10,7 @@ import "./multimodal-journey.css"
 
 type Guest = HTMLElement & {
   ucRender?: () => void
+  ucDispose?: () => void
   marineRuntime?: { dispose(): void; renderer: { forceContextLoss(): void } }
 }
 
@@ -142,6 +143,7 @@ export function MultimodalJourney() {
         // Strict Mode remounts the same node; release the GPU only once the guest has left the page.
         setTimeout(() => {
           if (guest.isConnected) return
+          guest.ucDispose?.()
           guest.marineRuntime?.dispose()
           guest.marineRuntime?.renderer.forceContextLoss()
         }, 0)
