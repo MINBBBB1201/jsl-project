@@ -43,6 +43,7 @@ Claude Code, Codex, opencode, kilo가 함께 읽는 공통 지침이다. Claude 
 7. 서브에이전트는 부를 때마다 맥락을 처음부터 다시 읽는다. 한 파일을 이어서 고치는 일은 워커 한 명에게 끝까지 맡기고, 잘게 나눠 여러 번 부르지 않는다.
 8. 무거운 실행(`npm install`, 빌드, mongodb-memory-server 테스트, 개발 서버)은 동시에 하나만 돌린다. 로컬 잠금 규칙(`D:/jsl-locks/README.txt`)이 있으면 따른다.
 9. `reviewer` 서브에이전트는 1차 점검이다. 병합 전 최종 교차 리뷰는 작성자와 다른 회사 모델(Codex, DeepSeek 등)에 맡긴다.
+10. 2026-11-13부터 코드·문서·PR 작성은 Claude Code 메인 세션 한 곳이 단독으로 맡는다. Codex가 열어 둔 PR·브랜치·조사 자료도 이 세션이 이어받는다. Codex·opencode·kilo는 요청받았을 때 읽기 전용 리뷰만 하고, 파일 수정·커밋·푸시·PR 생성은 하지 않는다.
 
 ## 자주 쓰는 관례
 
