@@ -2,7 +2,7 @@ const Shipment = require("../../models/shipment.model");
 const logger = require("../../utils/logger");
 const TRANSIT_TIMES = require("../../config/transit-times");
 const { calculateDelayRisk, RISK_LEVELS } = require("../../utils/delay-risk");
-const { withFreshRisk, calculateDistance } = require("./shared");
+const { PII_EXCLUDED_FIELDS, withFreshRisk, calculateDistance } = require("./shared");
 
 /**
  * GET /api/shipments/:trackingNumber — 내부 상세 조회
@@ -309,7 +309,8 @@ exports.getNearbyShipments = async (req, res) => {
           $maxDistance: parseInt(maxDistance),
         },
       },
-    });
+      // 여러 건을 돌려주는 목록이라 getAllShipments 와 같이 연락처를 뺀다.
+    }).select(PII_EXCLUDED_FIELDS);
 
     res.status(200).json({
       success: true,
