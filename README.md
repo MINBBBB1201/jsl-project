@@ -42,6 +42,7 @@ npm run dev       # http://localhost:5000
 ## 알아둘 점
 
 - **node_modules는 포함하지 않았습니다.** 각 폴더에서 `npm install`을 먼저 실행하세요.
+- **배포할 때는 프런트 빌드 환경에 `NEXT_PUBLIC_API_URL`을 꼭 넣으세요.** 값은 공개 백엔드 주소(예: Render 서비스 URL)입니다. 이 값이 없으면 `frontend/src/lib/api.ts`가 `http://localhost:5000`으로 떨어져, 배포된 공개 페이지에서 API 호출이 `ERR_CONNECTION_REFUSED`로 실패합니다. `NEXT_PUBLIC_` 값은 빌드 시점에 번들에 들어가므로, 값을 바꾼 뒤에는 다시 빌드·배포해야 반영됩니다. 백엔드의 `ALLOWED_ORIGINS`(`backend/env.example`)에도 프런트 배포 주소가 있어야 합니다.
 - **frontend TypeScript 체크는 통과합니다** (`npx tsc --noEmit`), 다만 템플릿 자체의 `src/components/ui/chart.tsx`(recharts 래퍼)에서 타입 버전 불일치로 인한 경고가 8개 남아있습니다. 개발에는 영향 없고, 나중에 recharts 버전을 맞추면 해결됩니다.
 - **이 환경(샌드박스)에서는 `next build` 프로덕션 빌드가 메모리 부족(Bus error)으로 실패했습니다.** 로컬 개발 환경에서는 문제없이 빌드될 가능성이 높습니다 — 리소스 제약 없는 로컬/Claude Code 환경에서 다시 시도해보세요.
 
