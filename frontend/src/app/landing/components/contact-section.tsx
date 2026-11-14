@@ -72,6 +72,11 @@ export function ContactSection() {
     return () => { active = false; controller.abort(); clearTimeout(timeout) }
   }, [language, noticeAttempt, setValue])
   useEffect(() => { if (failure) errorRef.current?.focus() }, [failure])
+  // 입력 오류 안내는 이용자가 값을 고치기 시작하면 내린다. 접수 실패·고지 변경 안내는 유지한다.
+  useEffect(() => {
+    const subscription = form.watch(() => setFailure(current => current === copy.invalid || current === copy.consent ? '' : current))
+    return () => subscription.unsubscribe()
+  }, [form, copy])
   const isSubmitting = form.formState.isSubmitting
   const hasConsented = useWatch({ control: form.control, name: 'privacyConsent' })
   const currentNotice = !noticeLoading && notice?.language === language ? notice : null
@@ -96,15 +101,16 @@ export function ContactSection() {
       if (response.status === 409 && Array.isArray(result?.errors) && result.errors.some((error: { code?: string }) => error?.code === 'NOTICE_CHANGED')) {
         setValue('privacyConsent', false)
         setNotice(null)
-            setNoticeAttempt(value => value + 1)
+        setNoticeAttempt(value => value + 1)
         setFailure(copy.changed)
         return
       }
       const rejected = readInputRejection(response.status, result)
       if (rejected) {
-        const formField = { companyName: 'company', contactName: 'name', email: 'email', subject: 'subject', message: 'message' } as const
-        rejected.forEach(field => form.setError(formField[field], { message: copy.invalid }))
-        setFailure(copy.invalid)
+        const formField = { companyName: 'company', contactName: 'name', email: 'email', subject: 'subject', message: 'message', consent: 'privacyConsent' } as const
+        rejected.forEach(field => form.setError(formField[field], { message: field === 'consent' ? copy.consent : copy.invalid }))
+        // 동의만 거부됐으면 동의 안내를, 그 밖에는 입력 확인 안내를 보여준다.
+        setFailure(rejected.length > 0 && rejected.every(field => field === 'consent') ? copy.consent : copy.invalid)
         return
       }
       const confirmed = response.ok ? readReceipt(result) : null
