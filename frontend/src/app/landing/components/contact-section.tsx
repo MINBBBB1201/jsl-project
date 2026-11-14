@@ -74,6 +74,9 @@ export function ContactSection() {
   useEffect(() => { if (failure) errorRef.current?.focus() }, [failure])
   // 입력 오류 안내는 이용자가 값을 고치기 시작하면 내린다. 접수 실패·고지 변경 안내는 유지한다.
   useEffect(() => {
+    // react-hooks/incompatible-library: React Compiler 를 쓰지 않으므로(next.config 에 reactCompiler 없음) 해당 없음.
+    // watch(callback) 은 값이 바뀐 알림에만 불리고 setError·handleSubmit 상태 변경에는 불리지 않아(RHF 7.85) 이 용도에 맞다.
+    // eslint-disable-next-line react-hooks/incompatible-library
     const subscription = form.watch(() => setFailure(current => current === copy.invalid || current === copy.consent ? '' : current))
     return () => subscription.unsubscribe()
   }, [form, copy])
