@@ -39,7 +39,16 @@ const nextConfig: NextConfig = {
 
   // Headers for better security and performance
   async headers() {
+    // public/ 의 정적 파일은 이름에 해시가 없어 교체될 수 있다. 1년 고정 대신 하루 캐시와
+    // 일주일 백그라운드 갱신을 걸어, 재방문 때 매번 다시 받지 않으면서 교체도 하루 안에 반영되게 한다.
+    const publicAssetCache = {
+      key: 'Cache-Control',
+      value: 'public, max-age=86400, stale-while-revalidate=604800',
+    }
     return [
+      { source: '/images/:path*', headers: [publicAssetCache] },
+      { source: '/fonts/:path*', headers: [publicAssetCache] },
+      { source: '/logos/:path*', headers: [publicAssetCache] },
       {
         source: '/(.*)',
         headers: [

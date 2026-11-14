@@ -28,18 +28,28 @@ export function useJourneyMotion() {
     const reduced = matchMedia("(prefers-reduced-motion: reduce)");
     const sections = Array.from(root.querySelectorAll<HTMLElement>("[data-scene]"));
     const progressOutput = root.querySelector<HTMLOutputElement>("[data-journey-progress]");
+    // Only the rail track reads --page-progress. Writing it on the page root invalidated the style
+    // of every element on each scroll frame, which is what made the long sections stutter.
+    const progressTrack = root.querySelector<HTMLElement>(".journey-progress-track span");
+    const lastProgress = new Map<HTMLElement, string>();
     let frame = 0;
     const paint = () => {
       frame = 0;
       const scrollRange = Math.max(1, document.documentElement.scrollHeight - innerHeight);
       const pageProgress = Math.max(0, Math.min(1, scrollY / scrollRange));
-      root.style.setProperty("--page-progress", String(pageProgress));
+      progressTrack?.style.setProperty("--page-progress", String(pageProgress));
       if (progressOutput) progressOutput.value = String(Math.round(pageProgress * 100)).padStart(2, "0");
-      for (const section of sections) {
+      // Read every scene position before writing any, so the loop does not force a layout per scene.
+      const values = sections.map(section => {
         const rect = section.getBoundingClientRect();
         const p = Math.max(0, Math.min(1, (innerHeight - rect.top) / (innerHeight + rect.height)));
-        section.style.setProperty("--progress", String(reduced.matches ? 0.5 : p));
-      }
+        return (reduced.matches ? 0.5 : p).toFixed(4);
+      });
+      sections.forEach((section, i) => {
+        if (lastProgress.get(section) === values[i]) return;
+        lastProgress.set(section, values[i]);
+        section.style.setProperty("--progress", values[i]);
+      });
     };
     const schedule = () => { if (!frame) frame = requestAnimationFrame(paint); };
     const reveal = new IntersectionObserver((entries) => {
