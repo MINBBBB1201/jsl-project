@@ -21,6 +21,8 @@ type CompanyMediaStyle = CSSProperties & {
 type ApprovedCompanySectionProps = {
   /** Generated concept media; the default caption explicitly identifies it. */
   mediaSrc?: string
+  /** 폭별 후보(srcset). 큰 원본 하나만 내려보내지 않도록 모바일용 축소본을 함께 준다. */
+  mediaSrcSet?: string
   mediaCaption?: string
   mediaPosition?: { desktop: string; mobile: string }
   /** Compatibility with the isolated reference preview. Not for public media. */
@@ -37,6 +39,7 @@ type ApprovedCompanySectionProps = {
  */
 export function ApprovedCompanySection({
   mediaSrc,
+  mediaSrcSet,
   mediaCaption,
   mediaPosition,
   previewMedia,
@@ -78,6 +81,8 @@ export function ApprovedCompanySection({
             ref={mediaRef}
             className="jsl-ac__media"
             src={source}
+            srcSet={mediaSrc ? mediaSrcSet : undefined}
+            sizes="100vw"
             style={mediaStyle}
             alt=""
             aria-hidden="true"
