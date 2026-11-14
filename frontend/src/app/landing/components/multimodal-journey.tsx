@@ -129,6 +129,9 @@ export function MultimodalJourney() {
       const modes = guest.querySelector<HTMLElement>(".uc-service-nav")!
       if (!started.has(guest)) {
         started.add(guest)
+        // The prototype opens at65%; the embedded journey starts at the page's road frame.
+        // Set it before the engine's first render, not after its fallback has downloaded.
+        range.value = "0"
         for (const [selector, name, value] of LABELS) guest.querySelector(selector)?.setAttribute(name, value)
         runJslMultimodal()
       }
