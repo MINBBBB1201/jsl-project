@@ -29,7 +29,8 @@ test('a server 400 input rejection is an input error, not an unconfirmed receipt
   // 프런트 형식 검사를 통과했지만 서버 isEmail()이 거부한 경우(예: 65자 이상 로컬 부분)
   const rejected = { success: false, code: 'VALIDATION_FAILED', errors: [{ field: 'email', code: 'INVALID_EMAIL' }] }
   assert.deepEqual(readInputRejection(400, rejected), ['email'])
-  assert.deepEqual(readInputRejection(400, { ...rejected, errors: [{ field: 'consent', code: 'CONSENT_REQUIRED' }] }), [])
+  assert.deepEqual(readInputRejection(400, { ...rejected, errors: [{ field: 'consent', code: 'CONSENT_REQUIRED' }] }), ['consent'])
+  assert.deepEqual(readInputRejection(400, { ...rejected, errors: [{ field: 'form', code: 'UNEXPECTED_FIELD' }] }), [])
   assert.deepEqual(readInputRejection(400, { ...rejected, errors: [{ field: 'contactName' }, { field: 'unknown' }, null] }), ['contactName'])
   assert.equal(readInputRejection(409, rejected), null)
   assert.equal(readInputRejection(400, { success: false, code: 'INVALID_JSON' }), null)
