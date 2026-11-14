@@ -50,13 +50,6 @@ const create = async ({ type, message, shipment, dedupeKey }) => {
   }
 };
 
-/** 신규 문의 접수 */
-exports.notifyNewContact = (contact) =>
-  create({
-    type: NOTIFICATION_TYPES.CONTACT,
-    message: `신규 문의: ${contact.companyName || contact.contactName || "이름 미기재"}`,
-  });
-
 // A retry of the same receipt must not duplicate the operator notification.
 exports.notifyContactReceipt = (id) =>
   create({
