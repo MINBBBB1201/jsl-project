@@ -1,10 +1,9 @@
 import { Be_Vietnam_Pro, Poppins } from 'next/font/google'
-import localFont from 'next/font/local'
 
 /**
  * 타이포그래피
  *
- * 라틴·숫자는 General Sans, 한글은 Pretendard. 둘 다 self-host 한다.
+ * 라틴·숫자는 General Sans(Fontshare CDN), 한글은 Pretendard(self-host).
  * 여기에 Poppins 를 하나 더 두는데, 전체 스택이 아니라 로케일과 무관하게 늘
  * 영문인 마이크로카피(eyebrow 라벨·통계 숫자·배지)에만 부분 적용한다.
  * 자세한 것은 파일 아래 poppins 선언의 주석에.
@@ -15,7 +14,7 @@ import localFont from 'next/font/local'
  * 설계된 서체라 둘을 섞어도 자소의 결이 어긋나지 않는다. 위계는 두 서체
  * 모두에서 크기·굵기·자간으로만 만든다.
  *
- * ── 왜 CDN 링크가 아니라 self-host 인가 ────────────────────────────────
+ * ── (2026-11-14 이전 기록) 왜 self-host 였나 — 지금 General Sans 는 CDN, 아래 generalSans 주석 참고 ──
  * CDN 을 <link> 로 부르면 렌더 경로에 외부 요청이 하나 더 붙고, 폰트가 늦게
  * 오면 글자가 늦게 그려진다(FOUT). 두 서체 모두 파일을 받아 같은 도메인에서
  * 서빙한다 — General Sans 는 아래 next/font 로, Pretendard 는 public/fonts 에
@@ -63,51 +62,16 @@ import localFont from 'next/font/local'
  *    서는 것은 한글과 라틴뿐이다.
  */
 
-export const generalSans = localFont({
-  src: [
-    { path: '../fonts/GeneralSans-400.woff2', weight: '400', style: 'normal' },
-    { path: '../fonts/GeneralSans-500.woff2', weight: '500', style: 'normal' },
-    { path: '../fonts/GeneralSans-600.woff2', weight: '600', style: 'normal' },
-    { path: '../fonts/GeneralSans-700.woff2', weight: '700', style: 'normal' },
-  ],
-  display: 'swap',
-  variable: '--font-general-sans',
-  /*
-    preload 를 끈다.
-    굵기 4종을 전부 preload 하면 첫 화면에서 히어로 헤드라인이 그려지기 전에
-    폰트 4개가 대역폭을 가져간다 (실측 LCP 4.3s → 5.1s). preload 를 끄면
-    브라우저가 CSS 를 해석한 뒤에 필요한 굵기만 받아 오고, display: swap +
-    아래 폴백 덕에 글자는 곧바로 그려진다.
-  */
-  preload: false,
-  /*
-    ⚠️ adjustFontFallback 을 끈다. 켜 두면 next/font 가 'generalSans Fallback'
-       (local Arial + size-adjust) 페이스를 만들어 --font-general-sans 안에
-       끼워 넣는데, 이 페이스에는 unicode-range 가 없어서(U+0–10FFFF) 스택
-       두 번째 자리에서 Arial 이 그릴 수 있는 글자를 전부 삼킨다.
-
-       실제로 그 때문에 베트남어 성조 글자가 Pretendard 와 Be Vietnam Pro 에
-       닿지도 못하고 Arial 로 떨어지고 있었다 (실측: /vi 랜딩 한 장에 Arial
-       988 글리프, Be Vietnam Pro 는 아홉 페이스 전부 unloaded 였다).
-       한글이 멀쩡했던 건 Arial 에 한글이 없어 그냥 통과했기 때문이다.
-
-       제네릭이 아니어도 unicode-range 가 없으면 글리프 탐색은 거기서 끝난다 —
-       아래 fallback 경고와 같은 함정이고, 원인만 다르다.
-  */
-  adjustFontFallback: false,
-  /*
-    ⚠️ fallback 을 일부러 비워 뒀다. 채우지 말 것.
-
-       전체 폰트 스택은 globals.css 의 --font-sans 한 곳에서만 조립한다.
-       여기 fallback 에 무언가를 넣으면 그것이 --font-general-sans 안에 들어가
-       --font-sans 의 앞쪽에 끼어드는데, 특히 'sans-serif' 같은 제네릭을 넣으면
-       그 뒤에 이어 붙인 한글 폰트가 전부 죽은 값이 된다 — 브라우저는 제네릭
-       패밀리를 만나면 거기서 글리프 탐색을 끝낸다.
-
-       이 프로젝트에서 이미 두 번 그렇게 짜서 두 번 한글이 폴백으로 떨어졌다.
-       그래서 "폴백은 fonts.ts 가 아니라 globals.css 에서" 로 규칙을 고정했다.
-  */
-})
+/*
+ * General Sans 는 2026-11-14 부터 Fontshare 공식 CDN 에서 불러온다 (#36).
+ * 저장소가 공개라 폰트 파일을 저장소에 두면 누구나 내려받을 수 있는데, ITF Free Font
+ * License 의 재배포 조건이 확인되지 않았다. 렌더 경로의 외부 요청은 root-document 의
+ * preconnect 로 줄이고, display=swap 이라 글자는 폴백으로 먼저 그려진다.
+ * 변수 이름(--font-general-sans)과 스택 조립 위치(globals.css)는 그대로다.
+ * 아래 className 이 <html> 에 붙어 변수를 정의한다(globals.css 의 .font-general-sans-cdn).
+ */
+export const generalSans = { variable: 'font-general-sans-cdn' }
+export const GENERAL_SANS_CSS = 'https://api.fontshare.com/v2/css?f[]=general-sans@400,500,600,700&display=swap'
 
 /**
  * 영문 마이크로카피 — Poppins 500 / 600 / 700

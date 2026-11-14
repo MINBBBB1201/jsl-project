@@ -4,7 +4,7 @@ import "@/app/globals.css";
 import { ThemeProvider } from "@/components/theme-provider";
 import { SidebarConfigProvider } from "@/contexts/sidebar-context";
 import { Toaster } from "@/components/ui/sonner";
-import { beVietnamPro, generalSans, poppins } from "@/lib/fonts";
+import { beVietnamPro, generalSans, GENERAL_SANS_CSS, poppins } from "@/lib/fonts";
 
 /**
  * 루트 레이아웃이 여러 개라서 <html> 문서 껍데기를 여기 한 곳에 둔다.
@@ -56,6 +56,12 @@ export function RootDocument({
       className={`${generalSans.variable} ${poppins.variable} ${beVietnamPro.variable} antialiased`}
       suppressHydrationWarning
     >
+      <head>
+        {/* General Sans 는 Fontshare 공식 CDN (lib/fonts.ts 참고). 연결을 미리 열어 첫 글자 지연을 줄인다. */}
+        <link rel="preconnect" href="https://api.fontshare.com" />
+        <link rel="preconnect" href="https://cdn.fontshare.com" crossOrigin="anonymous" />
+        <link rel="stylesheet" href={GENERAL_SANS_CSS} />
+      </head>
       <body>
         <ThemeProvider defaultTheme="system" storageKey="nextjs-ui-theme">
           <SidebarConfigProvider>
