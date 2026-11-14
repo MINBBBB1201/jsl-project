@@ -2019,6 +2019,10 @@ function prepareRoof(){coloredRoof.width=cargoPhoto.naturalWidth;coloredRoof.hei
 cargoPhoto.addEventListener('load',prepareRoof,{once:true});
 root.querySelector('.mm-top-chassis').src=assets.topTruck;root.querySelector('.mm-top-roof').src=assets.topContainer;if(seaPlateEnabled){nativeStill.src=assets.vesselHold;if(nativeStill.complete&&nativeStill.naturalWidth)prepareSeaPlate();}
 shipPhoto.src=assets.ship;cargoPhoto.src=assets.topContainer;plane.src=assets.plane;water.src=assets.water;cloudLeft.src=assets.cloudLeft;cloudRight.src=assets.cloudRight;
+// Decode the later-stage photos while the page is idle. AVIF clouds and the plane otherwise
+// decode on the frame they first appear (sea -> air), which stalled scrolling for ~250 ms.
+{const pending=[cloudLeft,cloudRight,plane,cargoPhoto];const idle=window.requestIdleCallback||(cb=>setTimeout(cb,200));
+ const next=()=>{const img=pending.shift();if(!img)return;img.decode().catch(()=>{}).finally(()=>idle(next));};idle(next);}
 root.querySelector('.mm-road-copy p').textContent=services.modes.TRUCK.summary;
 root.querySelector('.mm-sea-copy-left p').textContent=services.modes.SEA.summary;
 root.querySelector('.mm-sea-copy-right p').textContent=network.description;
@@ -2037,6 +2041,9 @@ function seaLayoutAt(W,H,mobile){
 // A font can change headline fit without changing the stage dimensions.
 document.fonts.ready.then(onMarineReady);
 document.fonts.addEventListener('loadingdone',onMarineReady);
+const headerCenters={key:'',list:[]};
+// Only touch attributes that CSS selects on when the value really changes.
+const setStageData=(key,value)=>{if(screen.dataset[key]!==value)screen.dataset[key]=value;};
 function updateMultimodal(raw,W,H,mobile){
  const progress=reduced.matches?(raw<.31?.09:raw<.49?.38:raw<.82?.65:.91):raw;
  // Scrub easing can pass through sea progress after an anchor jumps below it.
@@ -2046,7 +2053,8 @@ function updateMultimodal(raw,W,H,mobile){
  const overhead=progress>=.31&&progress<.49,seaActive=progress>=.43&&(progress<.82||!seaAir.whiteComplete),airActive=progress>=.745;
  roadView.hidden=!overhead;sea.hidden=!seaActive;air.hidden=!airActive;plane.hidden=!airActive;cloud.hidden=seaAir.cloudHidden;
  truck.hidden=progress>=.31;info.hidden=progress>=.31;if(word.parentElement)word.parentElement.hidden=progress>=.31;root.querySelector('.uc-ground').hidden=progress>=.31;
- screen.dataset.phase=progress<.31?'road':progress<.49?'overhead':progress<.74?'sea':progress<.84?'cloud':'air';
+ // phase and sea-layout are written once at the end of the frame; CSS selectors read them, so an
+ // early write that is overwritten in the same frame only invalidated the whole stage's styles twice.
  const roadT=clamp((progress-.31)/.14),centre=W*.5,lane=mobile?W*.20:W*.14,roadY=mobile?H*.38:H*.30,radius=mobile?W*.28:W*.18;
  const roadPath=`M ${-W*.30} ${roadY} L ${centre-radius} ${roadY} Q ${centre} ${roadY} ${centre} ${roadY+radius} L ${centre} ${H*1.3}`;
  if(!roadMetrics||roadMetrics.width!==W||roadMetrics.height!==H){
@@ -2066,7 +2074,6 @@ function updateMultimodal(raw,W,H,mobile){
  const seaWidth=mix(W*(mobile?.62:.29),W*(mobile?.15:.064),pullback),departSea=seaAir.shipDeparture;
  const baseShipWidth=mix(seaWidth,W*(mobile?.065:.027),departSea),baseShipY=mix(H*.62,H*(mobile?.445:.63),pullback);
  const vesselPose=computeVesselPose(progress,mobile),seaLayout=seaLayoutAt(W,H,mobile);
- screen.dataset.seaLayout=seaLayout.mode;
  const composition=computeSeaComposition(progress,{width:baseShipWidth,x:W/2,y:baseShipY},vesselPose,seaLayout);
  screen.dataset.seaFitWeight=String(composition.weight);
  screen.dataset.seaHoldWidth=String(seaLayout.hold.width);
@@ -2075,7 +2082,7 @@ function updateMultimodal(raw,W,H,mobile){
  const cargoRoad=!reduced.matches&&cargoFrame.side==='road',cargoSea=progress>=.455;
  sea.style.transform='none';roadView.style.transform=cargoRoad?`translate(${cargoFrame.roadX}px,${cargoFrame.roadY}px) scale(${cargoFrame.roadScale})`:'none';
  roadView.hidden=!(progress>=.31&&progress<.455);sea.hidden=!(cargoSea&&(progress<.82||!seaAir.whiteComplete));
- screen.dataset.phase=progress<.31?'road':progress<.455?'overhead':progress<.74?'sea':progress<.84?'cloud':'air';
+ setStageData('phase',progress<.31?'road':progress<.455?'overhead':progress<.74?'sea':progress<.84?'cloud':'air');
  ship.hidden=progress>=.455;water.hidden=progress>=.455;deckCanvas.hidden=true;
  cargo.hidden=progress<cargoFrame.start||progress>=.455;
  roof.style.visibility=cargoRoad?'hidden':'visible';
@@ -2124,7 +2131,7 @@ function updateMultimodal(raw,W,H,mobile){
  }
  nativePoster.hidden=!nativeUnavailable;nativeCanvas.style.display=nativeUnavailable?'none':'';
  screen.dataset.nativeFallback=String(nativeUnavailable);
- screen.dataset.seaLayout='native';
+ setStageData('seaLayout','native');
  sea.style.setProperty('--native-shade',String(between(progress,.50,.58)));
  root.querySelector('.uc-header').style.opacity=String(progress<.445?1-between(progress,cargoFrame.start,mobile?.415:.425):between(progress,.55,.59));
  if(progress>=.70)root.querySelector('.uc-header').style.opacity='1';
@@ -2141,11 +2148,17 @@ function updateMultimodal(raw,W,H,mobile){
  const feather=mobile?34:70;air.style.maskImage=`linear-gradient(to right,#000 ${seaAir.whiteEdge-feather}px,transparent ${seaAir.whiteEdge+feather}px)`;
  if(seaAir.whiteComplete)air.style.maskImage='none';
  // Each header label follows the actual reveal under it, including reverse scrubbing.
- const screenLeft=screen.getBoundingClientRect().left;
- for(const el of root.querySelectorAll('.uc-logo,.uc-header-label,.uc-counter')){
-  if(progress>=.70&&progress<.885){const box=el.getBoundingClientRect();el.style.color=seaAir.whiteComplete||seaAir.whiteEdge>(box.left-screenLeft+box.width/2+feather)?'#111':'#fff';}
-  else el.style.color='';
+ // Header positions only change with the stage size, so measure them once per size instead of
+ // forcing a layout on every scroll frame of the sea-to-air reveal.
+ const headerEls=root.querySelectorAll('.uc-logo,.uc-header-label,.uc-counter');
+ if(progress>=.70&&progress<.885&&headerCenters.key!==W+'x'+H){
+  const screenLeft=screen.getBoundingClientRect().left;
+  headerCenters.key=W+'x'+H;headerCenters.list=[...headerEls].map(el=>{const box=el.getBoundingClientRect();return box.left-screenLeft+box.width/2;});
  }
+ headerEls.forEach((el,i)=>{
+  if(progress>=.70&&progress<.885)el.style.color=seaAir.whiteComplete||seaAir.whiteEdge>(headerCenters.list[i]+feather)?'#111':'#fff';
+  else el.style.color='';
+ });
  const airInfo=seaAir.airInfo;airCopy.style.transform=`translateY(${(1-airInfo)*H*.55}px)`;airSecondary.style.transform=airCopy.style.transform;root.querySelector('.mm-air-ground').style.top=mix(H,H*(mobile?.48:W<1200?.46:.52),airInfo)+'px';
  root.querySelector('[data-transition-play]').disabled=reduced.matches;
  root.querySelector('[data-cargo-play]').disabled=reduced.matches;
