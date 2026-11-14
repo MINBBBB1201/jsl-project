@@ -4,6 +4,7 @@ import "@/app/globals.css";
 import { ThemeProvider } from "@/components/theme-provider";
 import { SidebarConfigProvider } from "@/contexts/sidebar-context";
 import { Toaster } from "@/components/ui/sonner";
+import { preconnect } from "react-dom";
 import { beVietnamPro, generalSans, GENERAL_SANS_CSS, poppins } from "@/lib/fonts";
 
 /**
@@ -50,19 +51,18 @@ export function RootDocument({
     ⚠️ 실제 불일치를 덮어 버릴 수 있으므로 테마·로케일이 붙는 최상위 태그 밖으로
        퍼뜨리지 말 것.
   */
+  // 폰트 CDN 연결을 미리 열어 첫 글자 지연을 줄인다.
+  preconnect("https://api.fontshare.com");
+  preconnect("https://cdn.fontshare.com", { crossOrigin: "anonymous" });
   return (
     <html
       lang={lang}
       className={`${generalSans.variable} ${poppins.variable} ${beVietnamPro.variable} antialiased`}
       suppressHydrationWarning
     >
-      <head>
-        {/* General Sans 는 Fontshare 공식 CDN (lib/fonts.ts 참고). 연결을 미리 열어 첫 글자 지연을 줄인다. */}
-        <link rel="preconnect" href="https://api.fontshare.com" />
-        <link rel="preconnect" href="https://cdn.fontshare.com" crossOrigin="anonymous" />
-        <link rel="stylesheet" href={GENERAL_SANS_CSS} />
-      </head>
       <body>
+        {/* General Sans 는 Fontshare 공식 CDN (lib/fonts.ts). precedence 를 주면 React 가 <head> 로 올린다. */}
+        <link rel="stylesheet" href={GENERAL_SANS_CSS} precedence="default" />
         <ThemeProvider defaultTheme="system" storageKey="nextjs-ui-theme">
           <SidebarConfigProvider>
             {children}
