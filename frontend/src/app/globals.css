@@ -479,3 +479,6 @@ html {
   background-clip: text;
   color: transparent;
 }
+
+/* General Sans 는 Fontshare CDN 의 'General Sans' 페이스다 (lib/fonts.ts). <html> 의 클래스가 변수를 정의한다. */
+.font-general-sans-cdn { --font-general-sans: 'General Sans'; }
