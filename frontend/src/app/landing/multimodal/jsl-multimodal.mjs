@@ -991,7 +991,7 @@ function computeSeaAirFrame(progress,W,H,mobile){
  if(p<.70||p>=.885){
   const cloudT=between(p,.70,.78);
   return {shipDeparture:between(p,.70,.745),seaExit:between(p,.70,.74),cloudLeft:mix(-1.58*W,-.42*W,cloudT),cloudRight:mix(W*1.02,-.10*W,cloudT),
-   planeWidth:basePlaneW,planeLeft:basePlaneX,planeTop:basePlaneY-basePlaneW*ratio/2,whiteEdge:baseEdge,whiteComplete:p>=.825,airInfo:between(p,.825,.885),cloudHidden:p<.70||p>=.84};
+   planeWidth:basePlaneW,planeLeft:basePlaneX,planeTop:basePlaneY-basePlaneW*ratio/2,whiteEdge:baseEdge,whiteComplete:p>=.825,airInfo:between(p,.825,.885),cloudHidden:p<.70||p>=.86};
  }
  // Text clears first; the veil starts a beat later and still closes at .78.
  const cloudT=between(p,.71,.78);
@@ -1009,7 +1009,7 @@ function computeSeaAirFrame(progress,W,H,mobile){
   if(whiteComplete)whiteEdge=W+feather;
  }
  return {shipDeparture:between(p,.70,.745),seaExit:between(p,.70,.735),cloudLeft:mix(-1.58*W,-.42*W,cloudT),cloudRight:mix(W*1.02,-.10*W,cloudT),
-  planeWidth:planeW,planeLeft:planeX,planeTop:planeY-planeW*ratio/2,whiteEdge,whiteComplete,airInfo:between(p,.84,.885),cloudHidden:p>=.84||whiteComplete};
+  planeWidth:planeW,planeLeft:planeX,planeTop:planeY-planeW*ratio/2,whiteEdge,whiteComplete,airInfo:between(p,.84,.885),cloudHidden:p>=.86};
 }
 
 // Road → sea cargo match-cut. One photographic orange roof is the camera anchor: push in on the truck roof,
@@ -2143,9 +2143,19 @@ function updateMultimodal(raw,W,H,mobile){
  seaTitle.style.clipPath=`inset(${Math.max(0,H*.11-H*(mobile?.11:.12)-titleShift)}px 0px 0px 0px)`;
  seaCopies.forEach(el=>{el.style.transform=`translateY(${(1-between(progress,.59,.65))*H*.72+seaAir.seaExit*H*.72}px)`;el.style.visibility=progress<.59||progress>=.74?'hidden':'visible';});
  // Photographic clouds cover the viewpoint before the aircraft reveals the next white stage.
- cloudLeft.style.left=seaAir.cloudLeft+'px';cloudRight.style.left=seaAir.cloudRight+'px';
+ // The two cloud banks part as the aircraft breaks through and grow slightly as the camera descends,
+ // so they read as depth rather than two mirrored cut-outs sliding together. During the crossing they sit
+ // above the white air stage (still under the aircraft), which hides its reveal edge inside cloud instead of
+ // a hard vertical seam, then fade out instead of vanishing when the stage completes.
+ const cloudPart=between(progress,.775,.85),cloudGrow=1+.18*between(progress,.72,.85);
+ cloudLeft.style.left=(seaAir.cloudLeft-W*.55*cloudPart)+'px';cloudRight.style.left=(seaAir.cloudRight+W*.55*cloudPart)+'px';
+ cloudLeft.style.transform=`scale(${cloudGrow})`;cloudRight.style.transform=`scale(${cloudGrow},${-cloudGrow})`;
+ cloud.style.zIndex=progress>=.74?'10':'';cloud.style.opacity=String(1-between(progress,.79,.83));
+ // Taller banks during the crossing so no strip of sea shows above the cloud next to the reveal edge.
+ const cloudTall=between(progress,.72,.78);cloudLeft.style.height=cloudRight.style.height=(110+40*cloudTall)+'%';
+ cloudLeft.style.top=cloudRight.style.top=(-5-20*cloudTall)+'%';
  plane.style.width=seaAir.planeWidth+'px';plane.style.left=seaAir.planeLeft+'px';plane.style.top=seaAir.planeTop+'px';
- const feather=mobile?34:70;air.style.maskImage=`linear-gradient(to right,#000 ${seaAir.whiteEdge-feather}px,transparent ${seaAir.whiteEdge+feather}px)`;
+ const feather=(mobile?34:70)*(1+2.2*between(progress,.745,.80)*(1-between(progress,.80,.825)));air.style.maskImage=`linear-gradient(to right,#000 ${seaAir.whiteEdge-feather}px,transparent ${seaAir.whiteEdge+feather}px)`;
  if(seaAir.whiteComplete)air.style.maskImage='none';
  // Each header label follows the actual reveal under it, including reverse scrubbing.
  // Header positions only change with the stage size, so measure them once per size instead of
@@ -2156,7 +2166,7 @@ function updateMultimodal(raw,W,H,mobile){
   headerCenters.key=W+'x'+H;headerCenters.list=[...headerEls].map(el=>{const box=el.getBoundingClientRect();return box.left-screenLeft+box.width/2;});
  }
  headerEls.forEach((el,i)=>{
-  if(progress>=.70&&progress<.885)el.style.color=seaAir.whiteComplete||seaAir.whiteEdge>(headerCenters.list[i]+feather)?'#111':'#fff';
+  if(progress>=.70&&progress<.885)el.style.color=seaAir.whiteComplete||progress>=.765||seaAir.whiteEdge>(headerCenters.list[i]+feather)?'#111':'#fff';
   else el.style.color='';
  });
  const airInfo=seaAir.airInfo;airCopy.style.transform=`translateY(${(1-airInfo)*H*.55}px)`;airSecondary.style.transform=airCopy.style.transform;root.querySelector('.mm-air-ground').style.top=mix(H,H*(mobile?.48:W<1200?.46:.52),airInfo)+'px';
