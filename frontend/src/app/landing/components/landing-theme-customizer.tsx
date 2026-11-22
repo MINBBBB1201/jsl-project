@@ -519,8 +519,9 @@ export function LandingThemeCustomizerTrigger({ onClick }: { onClick: () => void
       aria-label={t("themeSettingsLabel")}
       {...{ [TRIGGER_ATTRIBUTE]: "" }}
       // 세로 가운데에 두면 모바일 히어로 화물조회 칸과 데스크톱 진행 막대를 가려 오른쪽 아래로 둔다.
+      // 폰에서는 이 위치도 제목·본문·버튼을 계속 가려서 숨긴다(md 이상에서만 표시).
       className={cn(
-        "fixed bottom-6 h-12 w-12 rounded-full shadow-lg z-50 bg-primary hover:bg-primary/90 text-primary-foreground cursor-pointer right-4 motion-reduce:transition-none"
+        "fixed bottom-6 h-12 w-12 rounded-full shadow-lg z-50 bg-primary hover:bg-primary/90 text-primary-foreground cursor-pointer right-4 motion-reduce:transition-none max-md:hidden"
       )}
     >
       <Settings className="h-5 w-5" aria-hidden="true" />

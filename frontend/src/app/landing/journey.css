@@ -121,6 +121,9 @@
 .journey-scroll{display:none}
 /* 한국어 부제가 "통 / 합"처럼 단어 중간에서 끊기지 않게 한다. 중국어는 keep-all 이면 줄바꿈 자리가 없어 넘치므로 한국어에만 둔다. */
 :lang(ko) .journey-hero-description{word-break:keep-all}
+/* 한국어 제목·본문 전체도 단어 중간("파 / 트너", "산 / 출합니다")에서 끊기지 않게 하고, 제목은 줄 길이를 고르게 맞춰 한 글자짜리 마지막 줄을 없앤다. */
+:lang(ko) .journey :is(h1,h2,h3,h4,p,li,dt,dd){word-break:keep-all;overflow-wrap:break-word}
+.journey :is(h2,h3){text-wrap:balance}
 .journey-track{max-width:400px;margin-top:34px}
 .journey-track-form{display:flex;align-items:flex-end;gap:18px;padding-bottom:10px;border-bottom:1px solid #ffffff4d;transition:border-color .2s}
 .journey-track-form:focus-within{border-color:#ec761e}
