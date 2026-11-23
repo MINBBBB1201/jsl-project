@@ -14,6 +14,10 @@ export function JourneyHeroMotion() {
 
     let cancelled = false;
     let context: { revert: () => void } | undefined;
+    // The star field drifts with an infinite background-position animation, which restyles and repaints
+    // every frame. Pause it while the hero is off screen; nothing visible changes.
+    const offscreen = new IntersectionObserver(([entry]) => root.classList.toggle("is-offscreen", !entry.isIntersecting));
+    offscreen.observe(root);
     Promise.all([import("gsap"), import("gsap/ScrollTrigger")]).then(([{ gsap }, { ScrollTrigger }]) => {
       if (cancelled) return;
       gsap.registerPlugin(ScrollTrigger);
@@ -50,7 +54,7 @@ export function JourneyHeroMotion() {
       ScrollTrigger.refresh();
     });
 
-    return () => { cancelled = true; context?.revert(); };
+    return () => { cancelled = true; offscreen.disconnect(); context?.revert(); };
   }, []);
 
   return <div ref={ref} className="journey-hero-motion"><JourneyHero /></div>;
