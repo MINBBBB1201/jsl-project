@@ -1715,16 +1715,47 @@ function initMarineWater(THREE,scene){
  const f=v=>(+v).toFixed(5);
  const waves=(group,at='m')=>SPECTRUM.filter(w=>w[0]===group).map(([,L,a,s,ph])=>{const k=2*Math.PI/L;
   return `wave(${at},vec2(${f(Math.cos(a))},${f(Math.sin(a))}),${f(k)},${f(Math.sqrt(G*k))},${f(s/k)},${f(ph)},${f(L)},fp,h${group},g${group},lost);`;}).join('\n');
- const wavelets=()=>SELECTED_WAVELETS.map(([L,a,A,ph,w],index)=>{
-  const precise=v=>(+v).toFixed(12),k=2*Math.PI/L;
-  return `wavelet(m,vec2(${precise(Math.cos(a))},${precise(Math.sin(a))}),${precise(k)},${precise(w)},${precise(A)},${precise(ph)},${precise(L)},${precise(1729+index*19)},fp,hc,gc,shortLost);`;
- }).join('\n');
  const k0=G/(SHIP_SPEED*SHIP_SPEED); // transverse Kelvin wavenumber; divergent crests near 55 deg
  const uniforms={
   seaEnvironment:{value:null},seaEnvironmentReady:{value:0},
   phase:{value:0},seaTime:{value:0},drift:{value:0},wakeAmount:{value:1},nativeHullAmount:{value:1},
   sunDirection:{value:new THREE.Vector3(-.25,.78,.58).normalize()}
  };
+ // Evaluating the 12 packets (four windowed carriers each) at every water pixel took about 8 ms a frame
+ // on integrated graphics. They are drawn once per frame into a periodic 64 m tile instead, and the water
+ // samples the tile once. Each packet becomes four plane waves around its wavenumber and heading (+-12%,
+ // +-0.18 rad: the spread of its 4L x 3L window); their beats form the same groups, deep-water dispersion
+ // (w = sqrt(gk)) keeps them travelling, and the amplitudes keep the packets' mean slope variance
+ // (window power .6140 x amplitude spread 1.0208). Wavevectors sit on the tile lattice so it wraps without
+ // a seam, and the fixed seed keeps the sea a pure function of scroll progress.
+ const WAVE_TILE=64,WAVE_TEXELS=512,lattice=2*Math.PI/WAVE_TILE,exact=v=>(+v).toFixed(7);
+ let waveSeed=1729;const waveRandom=()=>(waveSeed=waveSeed*16807%2147483647)/2147483647;
+ const waveTerms=SELECTED_WAVELETS.flatMap(([L,a,A,ph])=>{
+  const k=2*Math.PI/L,amplitude=A*Math.sqrt(.6267409/4);
+  return [[-.12,-.18],[-.12,.18],[.12,-.18],[.12,.18]].map(([dk,da])=>{
+   const kk=k*(1+dk+(waveRandom()-.5)*.06),heading=a+da+(waveRandom()-.5)*.08;
+   const kx=Math.round(kk*Math.cos(heading)/lattice)*lattice,ky=Math.round(kk*Math.sin(heading)/lattice)*lattice;
+   return `q=${exact(kx)}*x.x+${exact(ky)}*x.y-${exact(Math.sqrt(G*Math.hypot(kx,ky)))}*seaTime+${exact(ph+2*Math.PI*waveRandom())};`+
+    `h+=${exact(amplitude)}*sin(q);g+=${exact(amplitude)}*cos(q)*vec2(${exact(kx)},${exact(ky)});`;
+  });
+ });
+ const waveTarget=selected?new THREE.WebGLRenderTarget(WAVE_TEXELS,WAVE_TEXELS,{type:THREE.HalfFloatType,
+  wrapS:THREE.RepeatWrapping,wrapT:THREE.RepeatWrapping,minFilter:THREE.LinearMipmapLinearFilter,magFilter:THREE.LinearFilter,
+  generateMipmaps:true,depthBuffer:false}):null;
+ const waveScene=new THREE.Scene(),waveCamera=new THREE.OrthographicCamera(-1,1,1,-1,0,1);
+ if(waveTarget){
+  uniforms.shortWaves={value:waveTarget.texture};
+  // RG slope, B height, A squared slope: each mip level then holds the mean slope and its variance.
+  const tile=new THREE.Mesh(new THREE.PlaneGeometry(2,2),new THREE.ShaderMaterial({
+   name:'JSL / sea wave tile',uniforms:{seaTime:uniforms.seaTime},depthTest:false,depthWrite:false,
+   vertexShader:'varying vec2 vUv;void main(){vUv=uv;gl_Position=vec4(position.xy,0.,1.);}',
+   fragmentShader:`uniform float seaTime;varying vec2 vUv;
+    void main(){vec2 x=vUv*${exact(WAVE_TILE)},g=vec2(0);float h=0.,q;
+    ${waveTerms.join('\n    ')}
+    gl_FragColor=vec4(g,h,dot(g,g));}`
+  }));
+  tile.frustumCulled=false;waveScene.add(tile);
+ }
  const vertexShader=`varying vec3 world;void main(){vec4 p=modelMatrix*vec4(position,1.);world=p.xyz;gl_Position=projectionMatrix*viewMatrix*p;}`;
  const common=`
   uniform float seaTime,drift,wakeAmount,seaEnvironmentReady,nativeHullAmount;uniform sampler2D seaEnvironment;uniform vec3 sunDirection;varying vec3 world;
@@ -1777,39 +1808,7 @@ function initMarineWater(THREE,scene){
     float fade=smoothstep(3.,8.,L/fp),x=k*dot(d,m)-w*seaTime+ph,e=exp(sin(x)-1.);
     h+=a*e*fade;g+=d*(a*k*e*cos(x)*fade);lost+=(1.-fade)*.5*a*a*k*k;
    }
-   ${selected?`// Compact wave packets replace globally coherent ribbons. Each carrier
-   // keeps its archived wavelength/frequency; four C2 windows blend independent
-   // local phases, headings and amplitudes on a fixed, advected coordinate grid.
-   // A node's support ends one cell away. The quintic window and its first two
-   // derivatives vanish there, so crossing a cell boundary cannot pop a packet.
-   void wavelet(vec2 m,vec2 d,float k,float w,float a,float ph,float L,float packetSeed,float fp,inout float h,inout vec2 g,inout float lost){
-    float fade=smoothstep(3.,8.,L/fp);
-    vec2 side=vec2(-d.y,d.x),span=vec2(4.*L,3.*L);
-    vec2 u=vec2(dot(m,d),dot(m,side))/span+vec2(packetSeed*.37,packetSeed*.61);
-    vec2 cell=floor(u),t=fract(u);
-    vec2 blend=t*t*t*(t*(t*6.-15.)+10.);
-    vec2 blendDerivative=30.*t*t*(t-1.)*(t-1.);
-    for(int i=0;i<2;i++)for(int j=0;j<2;j++){
-     vec2 corner=vec2(float(i),float(j)),node=cell+corner;
-     vec2 weights=mix(vec2(1.)-blend,blend,corner);
-     vec2 weightDerivative=blendDerivative*(corner*2.-1.);
-     float envelope=weights.x*weights.y;
-     vec2 envelopeGradient=d*(weightDerivative.x*weights.y/span.x)
-                          +side*(weights.x*weightDerivative.y/span.y);
-     vec2 key=node+vec2(packetSeed,packetSeed*.61803398875);
-     vec2 localDirection=normalize(vec2(1.,(hash12(key+vec2(17.7,9.2))-.5)*.7));
-     vec2 packetDirection=d*localDirection.x+side*localDirection.y;
-     float amplitude=a*(.75+.5*hash12(key+vec2(5.3,31.1)));
-     float phase=k*dot(localDirection,(u-node)*span)-w*seaTime+ph+2.*PI*hash12(key);
-     float s=sin(phase),c=cos(phase);
-     h+=amplitude*envelope*s*fade;
-     // Product rule in world metres: grad(E sin(P)) = grad(E) sin(P)
-     // + E cos(P) grad(P). The rotated/scaled envelope uses the chain rule.
-     g+=amplitude*(envelopeGradient*s+envelope*k*packetDirection*c)*fade;
-     float variance=.5*amplitude*amplitude*(envelope*envelope*k*k+dot(envelopeGradient,envelopeGradient));
-     lost+=(1.-fade*fade)*variance;
-    }
-   }`:''}
+   ${selected?'uniform sampler2D shortWaves; // short wind waves, baked per frame (see waveTerms)':''}
    // Kelvin wake slope: transverse crests inside the 19.47 deg wedge, divergent crests at the cusps.
    vec2 kelvin(vec2 p,float fp){
     float db=BOW-p.x;if(db<2.)return vec2(0);
@@ -1847,8 +1846,10 @@ function initMarineWater(THREE,scene){
     float hs=0.,hw=0.,hc=0.,hr=0.,lost=0.;vec2 gs=vec2(0),gw=vec2(0),gc=vec2(0),gr=vec2(0);
     ${waves('s')}
     ${waves('w')}
-     ${selected?`float shortLost=0.;
-     ${wavelets()}`:
+     ${selected?`// One mip-biased tile sample stands in for the packets' pixel-footprint fade; the slope the
+     // mips average away (mean squared slope minus squared mean slope) widens the sun lobe instead.
+     vec4 shortWave=texture2D(shortWaves,m*${(1/WAVE_TILE).toFixed(6)},1.);
+     gc=shortWave.rg;hc=shortWave.b;float shortLost=max(shortWave.a-dot(gc,gc),0.);`:
      `vec2 mc=m+(vec2(vnoise(m*.031),vnoise(m*.031+9.2))-.5)*15.;vec2 mr=mc;
      ${waves('c','mc')}
      ${waves('r','mr')}`}
@@ -1931,7 +1932,12 @@ function initMarineWater(THREE,scene){
     #include <colorspace_fragment>
    }`
  }));wake.rotation.x=-Math.PI/2;wake.position.set(-262.5,-.02,0);wake.renderOrder=1;scene.add(wake);
- return {water,wake,setEnvironment(texture){
+ return {water,wake,drawWaves(renderer){
+  if(!waveTarget)return;
+  const previous=renderer.getRenderTarget();renderer.setRenderTarget(waveTarget);renderer.render(waveScene,waveCamera);renderer.setRenderTarget(previous);
+ },compileWaves(renderer){return waveTarget?renderer.compileAsync(waveScene,waveCamera):Promise.resolve();},dispose(){
+  waveTarget?.dispose();waveScene.traverse(o=>{if(o.isMesh){o.geometry.dispose();o.material.dispose();}});
+ },setEnvironment(texture){
   if(selected&&texture&&!texture.userData.jslSeaMips){texture.generateMipmaps=true;texture.minFilter=THREE.LinearMipmapLinearFilter;texture.needsUpdate=true;texture.userData.jslSeaMips=true;}
   uniforms.seaEnvironment.value=texture;uniforms.seaEnvironmentReady.value=texture?1:0;
  },setNativeHullVisible(visible){uniforms.nativeHullAmount.value=visible?1:0;},update(p){
@@ -1971,8 +1977,8 @@ function initMarineRuntime(THREE,canvas,roofImage){
  canvas.addEventListener('webglcontextlost',releaseSurfaceGPU);
  let previousSize='',shadowKey='',warmed='';
  const shadowCache={updates:0};
- // The per-pixel wave shader is most of the frame on integrated graphics (about 40 ms at full HD on an
- // AMD APU), and the vessel, containers and photograph are what the eye reads. Draw the water alone
+ // The per-pixel water shader is still a full-screen pass on integrated graphics, and the vessel,
+ // containers and photograph are what the eye reads. Draw the water alone
  // (layer 1) into a half-resolution linear buffer and lay it under a sharp pass of everything else. The
  // quad applies the same tone mapping and colour conversion the water applied when it drew straight to
  // the canvas. Lights sit on both layers so every program keeps the cache key it was precompiled with.
@@ -1995,6 +2001,7 @@ function initMarineRuntime(THREE,canvas,roofImage){
  const markOccluders=()=>model.group.traverse(o=>{if(!o.isMesh)return;const list=Array.isArray(o.material)?o.material:[o.material];if(list.every(m=>m&&!m.transparent))o.layers.enable(2);else o.layers.disable(2);});
  markOccluders();
  function drawFrame(){
+  sea.drawWaves(renderer);
   renderer.setRenderTarget(waterTarget);
   camera.layers.set(2);scene.overrideMaterial=depthOnly;renderer.render(scene,camera);scene.overrideMaterial=null;
   renderer.autoClear=false;camera.layers.set(1);renderer.render(scene,camera);renderer.autoClear=true;
@@ -2017,7 +2024,7 @@ function initMarineRuntime(THREE,canvas,roofImage){
    scene.traverse(o=>{for(const m of Array.isArray(o.material)?o.material:o.material?[o.material]:[])for(const v of Object.values(m))if(v?.isTexture&&v.image)renderer.initTexture(v);});
    // Then one small hidden draw, also in a pause, builds what compile() cannot reach: the shadow-pass
    // depth programs. The first visible frame redraws the shadow map for its own pose.
-   renderer.compileAsync(scene,camera).then(()=>marineWhenQuiet(()=>{
+   Promise.all([renderer.compileAsync(scene,camera),sea.compileWaves(renderer)]).then(()=>marineWhenQuiet(()=>{
     if(renderer.getContext().isContextLost())return;
     renderer.shadowMap.needsUpdate=true;sun.shadow.needsUpdate=true;drawFrame();shadowKey='';
    })).catch(()=>{});
@@ -2025,7 +2032,7 @@ function initMarineRuntime(THREE,canvas,roofImage){
  }
  function render(progress,W,H,mobile,cargoFrame,settled=false){
   // HTML copy stays at device resolution. Bound the decorative WebGL surface:
-  // a retina screen otherwise multiplies every 48-carrier water evaluation.
+  // a retina screen otherwise multiplies every water pixel.
   const full=Math.min(mobile?1.25:1,window.devicePixelRatio||1,Math.sqrt(1600000/(W*H)));
   const native=progress<PHOTO_HANDOFF,ratio=full*(native&&!settled?NATIVE_MOTION_SCALE:1);
   clearTimeout(settleTimer);lastFrame=null;
@@ -2063,7 +2070,7 @@ function initMarineRuntime(THREE,canvas,roofImage){
   sea.setEnvironment(daylight.sourceTexture);sea.update(progress);drawFrame();
   return {...frame,triangles:renderer.info.render.triangles,calls:renderer.info.render.calls,containers:model.bounds.containerCount};
  }
- return {render,warm,model,scene,camera,renderer,daylight,shadowCache,invalidateShadows,dispose(){clearTimeout(settleTimer);lastFrame=null;waterTarget.dispose();waterQuad.geometry.dispose();waterQuad.material.dispose();canvas.removeEventListener('webglcontextlost',releaseSurfaceGPU);canvas.removeEventListener('webglcontextrestored',invalidateShadows);daylight.dispose();model.group.userData.photographicMaterials?.dispose();model.group.userData.fabrication?.dispose();model.group.userData.selectedSurfaces?.dispose();model.group.userData.photoVessel?.dispose();renderer.dispose();}};
+ return {render,warm,model,scene,camera,renderer,daylight,shadowCache,invalidateShadows,dispose(){clearTimeout(settleTimer);lastFrame=null;sea.dispose();waterTarget.dispose();waterQuad.geometry.dispose();waterQuad.material.dispose();canvas.removeEventListener('webglcontextlost',releaseSurfaceGPU);canvas.removeEventListener('webglcontextrestored',invalidateShadows);daylight.dispose();model.group.userData.photographicMaterials?.dispose();model.group.userData.fabrication?.dispose();model.group.userData.selectedSurfaces?.dispose();model.group.userData.photoVessel?.dispose();renderer.dispose();}};
 }
 
 const path=root.querySelector('.mm-road-line'),dashes=root.querySelector('.mm-road-dashes'),roadSvg=root.querySelector('.mm-road-svg'),topTruck=root.querySelector('.mm-top-truck'),roadView=root.querySelector('.mm-road-view');
