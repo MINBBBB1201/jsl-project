@@ -11,6 +11,23 @@ export function runJslMultimodal(){
 (()=>{
  const root=document.getElementById('jsl-marine-native'),screen=root.querySelector('.uc-screen'),range=root.querySelector('input[type=range]'),play=root.querySelector('[data-play]');
  let disposed=false;
+ // One-off GPU work for the sea (scene build, HDR daylight, shader programs, texture uploads) waits for a pause
+ // in scrolling, so it never lands on a moving frame. Anything still pending when the sea must draw runs then.
+ let marineLastScroll=0;const noteMarineScroll=()=>{marineLastScroll=performance.now();};
+ addEventListener('scroll',noteMarineScroll,{passive:true});
+ const marinePending=new Set();
+ function marineWhenQuiet(task){
+  marinePending.add(task);
+  const idle=window.requestIdleCallback?cb=>requestIdleCallback(cb,{timeout:500}):cb=>setTimeout(cb,50);
+  const attempt=()=>{
+   if(disposed||!marinePending.has(task))return;
+   if(performance.now()-marineLastScroll<350){setTimeout(()=>idle(attempt),180);return;}
+   marinePending.delete(task);task();
+  };
+  idle(attempt);
+ }
+ function flushMarinePending(){for(const task of [...marinePending]){marinePending.delete(task);task();}}
+ function runOneMarineTask(){const task=marinePending.values().next().value;if(task){marinePending.delete(task);task();}}
  const truck=root.querySelector('.uc-truck'),info=root.querySelector('.uc-information'),title=root.querySelector('.uc-title'),copy=root.querySelector('.uc-description'),label=root.querySelector('.uc-section-label'),word=root.querySelector('.uc-stage-word');
  const photo=root.querySelector('.uc-field-photo'),modes=root.querySelector('.uc-service-nav'),steps=root.querySelector('.uc-process-nav'),mobileStep=root.querySelector('.uc-mobile-step');
  const assets={port:'/images/multimodal/port.webp',warehouse:'/images/multimodal/warehouse.webp',truck:'/images/multimodal/truck-preview.avif',topTruck:'/images/multimodal/truck-top.webp',topContainer:'/images/multimodal/roof-quality.avif',ship:'',shipBow:'',plane:'/images/multimodal/plane.avif',water:'',cloudLeft:'/images/multimodal/cloud-left.avif',cloudRight:'/images/multimodal/cloud-right.avif',vesselHold:'/images/multimodal/vessel-hold-photographic.jpg'};const network={"description":"We wholly operate our Seoul headquarters and four overseas entities in Shanghai, Weihai, Guangzhou and Hanoi. Without intermediary agents, we respond to local conditions immediately."};
@@ -690,7 +707,8 @@ function initMarineDaylight(THREE,scene,renderer,canvas,lights,onReady){
    const Loader=createMarineRGBELoader(THREE),loader=new Loader();status.loads++;
    loader.load("/images/multimodal/sea-environment.hdr",texture=>{
     if(disposed){texture.dispose();return;}
-    source=texture;source.mapping=THREE.EquirectangularReflectionMapping;build();
+    // PMREM compiles and renders synchronously (about a second on integrated graphics): do it in a pause.
+    source=texture;source.mapping=THREE.EquirectangularReflectionMapping;marineWhenQuiet(build);
    },undefined,fail);
   }catch(error){fail(error);}
  }
@@ -1928,7 +1946,9 @@ function initMarineRuntime(THREE,canvas,roofImage){
  renderer.debug.onShaderError=(gl,program,vertex,fragment)=>{throw new Error('Marine shader: '+JSON.stringify({program:gl.getProgramInfoLog(program),vertex:gl.getShaderInfoLog(vertex),fragment:gl.getShaderInfoLog(fragment),lost:gl.isContextLost()}));};
  renderer.outputColorSpace=THREE.SRGBColorSpace;
  renderer.toneMapping=THREE.ACESFilmicToneMapping;renderer.toneMappingExposure=1.02;
- renderer.shadowMap.enabled=true;renderer.shadowMap.type=THREE.PCFSoftShadowMap;
+ // three r185 replaces PCFSoftShadowMap with PCFShadowMap at the first shadow render. Ask for PCF directly:
+ // the image is the same, and programs compiled ahead of time keep their cache key instead of being rebuilt.
+ renderer.shadowMap.enabled=true;renderer.shadowMap.type=THREE.PCFShadowMap;
  // The main camera moves, but the vessel/light remain fixed in world space.
  renderer.shadowMap.autoUpdate=false;
  const scene=new THREE.Scene();scene.background=new THREE.Color(0x12384b);
@@ -1949,14 +1969,43 @@ function initMarineRuntime(THREE,canvas,roofImage){
  const daylight=initMarineDaylight(THREE,scene,renderer,canvas,{ambient,sun,fill},()=>document.getElementById('jsl-marine-native')?.ucRender?.());
  const releaseSurfaceGPU=()=>{model.group.userData.photographicMaterials?.releaseGPU();model.group.userData.fabrication?.releaseGPU();model.group.userData.selectedSurfaces?.releaseGPU();model.group.userData.photoVessel?.releaseGPU();};
  canvas.addEventListener('webglcontextlost',releaseSurfaceGPU);
- let previousSize='',shadowKey='';
+ let previousSize='',shadowKey='',warmed='',settleTimer=0,lastFrame=null;
  const shadowCache={updates:0};
  function invalidateShadows(){shadowKey='';renderer.shadowMap.needsUpdate=true;sun.shadow.needsUpdate=true;}
  canvas.addEventListener('webglcontextrestored',invalidateShadows);
- function render(progress,W,H,mobile,cargoFrame){
+ // Compile every program the sea will use and upload its large textures before the first visible frame.
+ // compileAsync uses KHR_parallel_shader_compile, so the driver builds the programs off the page's thread;
+ // a synchronous first-frame compile of the water shader stalled the page for seconds on integrated GPUs.
+ // Runs again once the HDR daylight or the vessel photograph changes the materials.
+ function warm(){
+  const vessel=model.group.userData.photoVessel;
+  if(daylight.status.state==='loading'||vessel?.status.state==='loading')return;
+  const key=daylight.status.state+'/'+(vessel?.status.state||'none');
+  if(key===warmed)return;warmed=key;
+  marineWhenQuiet(()=>{
+   if(renderer.getContext().isContextLost())return;
+   scene.traverse(o=>{for(const m of Array.isArray(o.material)?o.material:o.material?[o.material]:[])for(const v of Object.values(m))if(v?.isTexture&&v.image)renderer.initTexture(v);});
+   // Then one small hidden draw, also in a pause, builds what compile() cannot reach: the shadow-pass
+   // depth programs. The first visible frame redraws the shadow map for its own pose.
+   renderer.compileAsync(scene,camera).then(()=>marineWhenQuiet(()=>{
+    if(renderer.getContext().isContextLost())return;
+    renderer.shadowMap.needsUpdate=true;sun.shadow.needsUpdate=true;renderer.render(scene,camera);shadowKey='';
+   })).catch(()=>{});
+  });
+ }
+ // While the page scrolls, the per-pixel water shader dominates the frame on integrated graphics. Draw the
+ // moving sea at a lighter resolution and redraw the same frame at full resolution once scrolling pauses.
+ const MOTION_SCALE=.6;
+ function render(progress,W,H,mobile,cargoFrame,settled=false){
   // HTML copy stays at device resolution. Bound the decorative WebGL surface:
   // a retina screen otherwise multiplies every 48-carrier water evaluation.
-  const ratio=Math.min(mobile?1.25:1,window.devicePixelRatio||1,Math.sqrt(1600000/(W*H)));
+  const full=Math.min(mobile?1.25:1,window.devicePixelRatio||1,Math.sqrt(1600000/(W*H)));
+  const ratio=settled?full:full*MOTION_SCALE;
+  if(!settled){
+   lastFrame=[progress,W,H,mobile,cargoFrame];clearTimeout(settleTimer);
+   // Skip the refinement once the sea has left the screen (hidden canvas or sea view).
+   settleTimer=setTimeout(()=>{settleTimer=0;if(lastFrame&&canvas.offsetParent&&!renderer.getContext().isContextLost())render(...lastFrame,true);},180);
+  }
   const size=W+'x'+H+'@'+ratio;if(size!==previousSize){renderer.setPixelRatio(ratio);renderer.setSize(W,H,false);previousSize=size;}
   const frame=computeMarineCamera(progress,W,H,mobile,cargoFrame,model.bounds);
   // Match the road PHOTO extent as well as the container rectangle. The old
@@ -1983,7 +2032,7 @@ function initMarineRuntime(THREE,canvas,roofImage){
   sea.setEnvironment(daylight.sourceTexture);sea.update(progress);renderer.render(scene,camera);
   return {...frame,triangles:renderer.info.render.triangles,calls:renderer.info.render.calls,containers:model.bounds.containerCount};
  }
- return {render,model,scene,camera,renderer,daylight,shadowCache,invalidateShadows,dispose(){canvas.removeEventListener('webglcontextlost',releaseSurfaceGPU);canvas.removeEventListener('webglcontextrestored',invalidateShadows);daylight.dispose();model.group.userData.photographicMaterials?.dispose();model.group.userData.fabrication?.dispose();model.group.userData.selectedSurfaces?.dispose();model.group.userData.photoVessel?.dispose();renderer.dispose();}};
+ return {render,warm,model,scene,camera,renderer,daylight,shadowCache,invalidateShadows,dispose(){clearTimeout(settleTimer);lastFrame=null;canvas.removeEventListener('webglcontextlost',releaseSurfaceGPU);canvas.removeEventListener('webglcontextrestored',invalidateShadows);daylight.dispose();model.group.userData.photographicMaterials?.dispose();model.group.userData.fabrication?.dispose();model.group.userData.selectedSurfaces?.dispose();model.group.userData.photoVessel?.dispose();renderer.dispose();}};
 }
 
 const path=root.querySelector('.mm-road-line'),dashes=root.querySelector('.mm-road-dashes'),roadSvg=root.querySelector('.mm-road-svg'),topTruck=root.querySelector('.mm-top-truck'),roadView=root.querySelector('.mm-road-view');
@@ -1993,7 +2042,12 @@ const cloud=root.querySelector('.mm-cloud-veil'),cloudLeft=root.querySelector('.
 const airCopy=root.querySelector('.mm-air-copy'),airSecondary=root.querySelector('.mm-air-secondary'),modeNav=root.querySelector('.mm-mode-nav');
 const cargo=root.querySelector('.mm-cargo-anchor'),cargoPhoto=cargo.querySelector('img'),roof=root.querySelector('.mm-top-roof'),shipPhoto=root.querySelector('.mm-ship-main'),identity=root.querySelector('.mm-cargo-identity');
 const nativeCanvas=root.querySelector('.mm-native-canvas'),nativeStill=root.querySelector('.mm-native-still');let nativeMarine=null;
-const nativePoster=root.querySelector('.mm-native-poster');let nativeFailed=false,nativeContextLost=false;
+const nativePoster=root.querySelector('.mm-native-poster');let nativeFailed=false,nativeContextLost=false,marineBuildQueued=false;
+function buildMarine(){
+ if(disposed||nativeMarine||nativeFailed)return;
+ try{nativeMarine=initMarineRuntime(window.JslMarineThree,nativeCanvas,cargoPhoto);root.marineRuntime=nativeMarine;nativeMarine.warm();}
+ catch(error){nativeFailed=true;screen.dataset.nativeError=error.message;console.warn('Marine rendering unavailable:',error.message);}
+}
 // The failure poster is not downloaded on every healthy journey load.
 nativeCanvas.addEventListener('webglcontextlost',()=>{nativeContextLost=true;screen.dataset.nativeContext='lost';root.ucRender?.();});
 nativeCanvas.addEventListener('webglcontextrestored',()=>{nativeContextLost=false;screen.dataset.nativeContext='ready';requestAnimationFrame(()=>root.ucRender?.());});
@@ -2118,12 +2172,22 @@ function updateMultimodal(raw,W,H,mobile){
   between(progress,.63,.645)*(1-between(progress,.685,.70)):0;
  nativeStill.hidden=stillOpacity<=.001;nativeStill.style.opacity=String(stillOpacity);
  nativeCanvas.style.visibility=stillOpacity>=.999?'hidden':'visible';
- // Prewarm shortly before the covered road-to-sea handoff, not during the road scene.
- if(marineVisible&&progress>=.43&&progress<.84&&!nativeFailed&&!nativeContextLost&&window.JslMarineThree&&cargoPhoto.complete&&cargoPhoto.naturalWidth){
-  try{nativeMarine??=initMarineRuntime(window.JslMarineThree,nativeCanvas,cargoPhoto);root.marineRuntime=nativeMarine;
-   if(progress>=.455&&progress<.84){const cameraFrame=nativeMarine.render(progress,W,H,mobile,cargoFrame);
-    screen.dataset.nativeCamera=JSON.stringify(cameraFrame);screen.dataset.nativeReady='true';root.marineRuntime=nativeMarine;}
-  }catch(error){nativeFailed=true;screen.dataset.nativeError=error.message;console.warn('Marine rendering unavailable:',error.message);}
+ // Build the sea in the first pause after the journey loads (1.5 screens before it), well ahead of the
+ // covered road-to-sea handoff. A reader who scrolls straight through without pausing meets the build at
+ // the handoff, as before. Nothing is drawn off screen.
+ const marineAvailable=!nativeFailed&&!nativeContextLost&&!!window.JslMarineThree&&cargoPhoto.complete&&!!cargoPhoto.naturalWidth;
+ if(marineAvailable&&!nativeMarine&&!marineBuildQueued&&progress<.84){marineBuildQueued=true;marineWhenQuiet(buildMarine);}
+ nativeMarine?.warm();
+ // A reader who never pauses still gets the setup well before the handoff: from a quarter of the way along
+ // the road, one pending step per frame. Shader compilation itself stays off the page's thread.
+ if(progress>=.25&&progress<.84&&marinePending.size)runOneMarineTask();
+ if(marineVisible&&progress>=.43&&progress<.84&&marineAvailable){
+  if(!nativeMarine){marinePending.delete(buildMarine);buildMarine();}
+  if(nativeMarine&&progress>=.455&&progress<.84){
+   try{flushMarinePending();const cameraFrame=nativeMarine.render(progress,W,H,mobile,cargoFrame);
+    screen.dataset.nativeCamera=JSON.stringify(cameraFrame);screen.dataset.nativeReady='true';root.marineRuntime=nativeMarine;
+   }catch(error){nativeFailed=true;screen.dataset.nativeError=error.message;console.warn('Marine rendering unavailable:',error.message);}
+  }
  }
  const nativeUnavailable=progress>=.455&&progress<.84&&(!nativeMarine||nativeFailed||nativeContextLost);
  if(marineVisible&&nativeUnavailable&&!nativePoster.querySelector('img').getAttribute('src')){
@@ -2239,6 +2303,7 @@ function updateMultimodal(raw,W,H,mobile){
  reduced.addEventListener('change',onReducedChange);resizeObserver.observe(screen);truck.addEventListener('load',render);
  root.ucDispose=()=>{
   if(disposed)return;disposed=true;stop();resizeObserver.disconnect();
+  removeEventListener('scroll',noteMarineScroll);marinePending.clear();
   window.removeEventListener('jsl-marine-ready',onMarineReady);
   document.removeEventListener('visibilitychange',onMarineReady);
   document.fonts.removeEventListener('loadingdone',onMarineReady);
