@@ -1969,8 +1969,37 @@ function initMarineRuntime(THREE,canvas,roofImage){
  const daylight=initMarineDaylight(THREE,scene,renderer,canvas,{ambient,sun,fill},()=>document.getElementById('jsl-marine-native')?.ucRender?.());
  const releaseSurfaceGPU=()=>{model.group.userData.photographicMaterials?.releaseGPU();model.group.userData.fabrication?.releaseGPU();model.group.userData.selectedSurfaces?.releaseGPU();model.group.userData.photoVessel?.releaseGPU();};
  canvas.addEventListener('webglcontextlost',releaseSurfaceGPU);
- let previousSize='',shadowKey='',warmed='',settleTimer=0,lastFrame=null;
+ let previousSize='',shadowKey='',warmed='';
  const shadowCache={updates:0};
+ // The per-pixel wave shader is most of the frame on integrated graphics (about 40 ms at full HD on an
+ // AMD APU), and the vessel, containers and photograph are what the eye reads. Draw the water alone
+ // (layer 1) into a half-resolution linear buffer and lay it under a sharp pass of everything else. The
+ // quad applies the same tone mapping and colour conversion the water applied when it drew straight to
+ // the canvas. Lights sit on both layers so every program keeps the cache key it was precompiled with.
+ const WATER_SCALE=.5;
+ // The native close-up before the photo handoff fills the screen with physically shaded containers. While
+ // it moves it draws at 60%, and the same frame is redrawn at full resolution once scrolling pauses. From
+ // the handoff (.575, a match-cut) the vessel is a photograph and everything but the water stays sharp.
+ const NATIVE_MOTION_SCALE=.6,PHOTO_HANDOFF=.575;let settleTimer=0,lastFrame=null;
+ sea.water.layers.set(1);for(const light of [ambient,sun,fill])light.layers.enable(1);
+ const waterTarget=new THREE.WebGLRenderTarget(1,1,{type:THREE.HalfFloatType,depthBuffer:true});
+ const waterQuad=new THREE.Mesh(new THREE.PlaneGeometry(2,2),new THREE.ShaderMaterial({
+  name:'JSL / sea water composite',uniforms:{map:{value:waterTarget.texture}},depthTest:false,depthWrite:false,
+  vertexShader:'varying vec2 vUv;void main(){vUv=uv;gl_Position=vec4(position.xy,1.,1.);}',
+  fragmentShader:'uniform sampler2D map;varying vec2 vUv;void main(){gl_FragColor=texture2D(map,vUv);\n#include <tonemapping_fragment>\n#include <colorspace_fragment>\n}'
+ }));
+ waterQuad.frustumCulled=false;waterQuad.renderOrder=-1000;scene.add(waterQuad);
+ // Depth of the opaque native vessel goes into the water buffer first, so the water shader skips every
+ // pixel the hull and containers cover (one pass used to get this from early depth rejection).
+ const depthOnly=new THREE.MeshBasicMaterial({colorWrite:false});
+ const markOccluders=()=>model.group.traverse(o=>{if(!o.isMesh)return;const list=Array.isArray(o.material)?o.material:[o.material];if(list.every(m=>m&&!m.transparent))o.layers.enable(2);else o.layers.disable(2);});
+ markOccluders();
+ function drawFrame(){
+  renderer.setRenderTarget(waterTarget);
+  camera.layers.set(2);scene.overrideMaterial=depthOnly;renderer.render(scene,camera);scene.overrideMaterial=null;
+  renderer.autoClear=false;camera.layers.set(1);renderer.render(scene,camera);renderer.autoClear=true;
+  camera.layers.set(0);renderer.setRenderTarget(null);renderer.render(scene,camera);
+ }
  function invalidateShadows(){shadowKey='';renderer.shadowMap.needsUpdate=true;sun.shadow.needsUpdate=true;}
  canvas.addEventListener('webglcontextrestored',invalidateShadows);
  // Compile every program the sea will use and upload its large textures before the first visible frame.
@@ -1984,29 +2013,31 @@ function initMarineRuntime(THREE,canvas,roofImage){
   if(key===warmed)return;warmed=key;
   marineWhenQuiet(()=>{
    if(renderer.getContext().isContextLost())return;
+   markOccluders();
    scene.traverse(o=>{for(const m of Array.isArray(o.material)?o.material:o.material?[o.material]:[])for(const v of Object.values(m))if(v?.isTexture&&v.image)renderer.initTexture(v);});
    // Then one small hidden draw, also in a pause, builds what compile() cannot reach: the shadow-pass
    // depth programs. The first visible frame redraws the shadow map for its own pose.
    renderer.compileAsync(scene,camera).then(()=>marineWhenQuiet(()=>{
     if(renderer.getContext().isContextLost())return;
-    renderer.shadowMap.needsUpdate=true;sun.shadow.needsUpdate=true;renderer.render(scene,camera);shadowKey='';
+    renderer.shadowMap.needsUpdate=true;sun.shadow.needsUpdate=true;drawFrame();shadowKey='';
    })).catch(()=>{});
   });
  }
- // While the page scrolls, the per-pixel water shader dominates the frame on integrated graphics. Draw the
- // moving sea at a lighter resolution and redraw the same frame at full resolution once scrolling pauses.
- const MOTION_SCALE=.6;
  function render(progress,W,H,mobile,cargoFrame,settled=false){
   // HTML copy stays at device resolution. Bound the decorative WebGL surface:
   // a retina screen otherwise multiplies every 48-carrier water evaluation.
   const full=Math.min(mobile?1.25:1,window.devicePixelRatio||1,Math.sqrt(1600000/(W*H)));
-  const ratio=settled?full:full*MOTION_SCALE;
-  if(!settled){
-   lastFrame=[progress,W,H,mobile,cargoFrame];clearTimeout(settleTimer);
+  const native=progress<PHOTO_HANDOFF,ratio=full*(native&&!settled?NATIVE_MOTION_SCALE:1);
+  clearTimeout(settleTimer);lastFrame=null;
+  if(native&&!settled){
    // Skip the refinement once the sea has left the screen (hidden canvas or sea view).
+   lastFrame=[progress,W,H,mobile,cargoFrame];
    settleTimer=setTimeout(()=>{settleTimer=0;if(lastFrame&&canvas.offsetParent&&!renderer.getContext().isContextLost())render(...lastFrame,true);},180);
   }
-  const size=W+'x'+H+'@'+ratio;if(size!==previousSize){renderer.setPixelRatio(ratio);renderer.setSize(W,H,false);previousSize=size;}
+  const size=W+'x'+H+'@'+ratio;if(size!==previousSize){
+   renderer.setPixelRatio(ratio);renderer.setSize(W,H,false);previousSize=size;
+   waterTarget.setSize(Math.max(1,Math.round(W*full*WATER_SCALE)),Math.max(1,Math.round(H*full*WATER_SCALE)));
+  }
   const frame=computeMarineCamera(progress,W,H,mobile,cargoFrame,model.bounds);
   // Match the road PHOTO extent as well as the container rectangle. The old
   // crop changes while the frame is fully covered, from 45.5 to 47 percent.
@@ -2029,10 +2060,10 @@ function initMarineRuntime(THREE,canvas,roofImage){
    ...model.group.position.toArray(),...model.group.quaternion.toArray(),...model.group.scale.toArray()].join(',');
   if(nextShadowKey!==shadowKey){invalidateShadows();shadowKey=nextShadowKey;shadowCache.updates++;}
   sea.setNativeHullVisible(model.group.userData.photoVessel?.status.renderSource!=='photo');
-  sea.setEnvironment(daylight.sourceTexture);sea.update(progress);renderer.render(scene,camera);
+  sea.setEnvironment(daylight.sourceTexture);sea.update(progress);drawFrame();
   return {...frame,triangles:renderer.info.render.triangles,calls:renderer.info.render.calls,containers:model.bounds.containerCount};
  }
- return {render,warm,model,scene,camera,renderer,daylight,shadowCache,invalidateShadows,dispose(){clearTimeout(settleTimer);lastFrame=null;canvas.removeEventListener('webglcontextlost',releaseSurfaceGPU);canvas.removeEventListener('webglcontextrestored',invalidateShadows);daylight.dispose();model.group.userData.photographicMaterials?.dispose();model.group.userData.fabrication?.dispose();model.group.userData.selectedSurfaces?.dispose();model.group.userData.photoVessel?.dispose();renderer.dispose();}};
+ return {render,warm,model,scene,camera,renderer,daylight,shadowCache,invalidateShadows,dispose(){clearTimeout(settleTimer);lastFrame=null;waterTarget.dispose();waterQuad.geometry.dispose();waterQuad.material.dispose();canvas.removeEventListener('webglcontextlost',releaseSurfaceGPU);canvas.removeEventListener('webglcontextrestored',invalidateShadows);daylight.dispose();model.group.userData.photographicMaterials?.dispose();model.group.userData.fabrication?.dispose();model.group.userData.selectedSurfaces?.dispose();model.group.userData.photoVessel?.dispose();renderer.dispose();}};
 }
 
 const path=root.querySelector('.mm-road-line'),dashes=root.querySelector('.mm-road-dashes'),roadSvg=root.querySelector('.mm-road-svg'),topTruck=root.querySelector('.mm-top-truck'),roadView=root.querySelector('.mm-road-view');
@@ -2098,6 +2129,10 @@ document.fonts.addEventListener('loadingdone',onMarineReady);
 const headerCenters={key:'',list:[]};
 // Only touch attributes that CSS selects on when the value really changes.
 const setStageData=(key,value)=>{if(screen.dataset[key]!==value)screen.dataset[key]=value;};
+// Writing an unchanged attribute, inert flag or text node still invalidates style (and layout for text) every
+// scroll frame, so per-frame writes go through these and only touch the DOM when the value changes.
+const setHidden=(el,v)=>{if(el.hidden!==v)el.hidden=v;},setInert=(el,v)=>{if(el.inert!==v)el.inert=v;};
+const setText=(el,v)=>{if(el.textContent!==v)el.textContent=v;},setAttr=(el,n,v)=>{if(el.getAttribute(n)!==v)el.setAttribute(n,v);};
 const roadCopyEl=root.querySelector('.mm-road-copy'),routeWordEl=root.querySelector('.mm-route-word');
 function updateMultimodal(raw,W,H,mobile){
  const progress=reduced.matches?(raw<.31?.09:raw<.49?.38:raw<.82?.65:.91):raw;
@@ -2106,8 +2141,8 @@ function updateMultimodal(raw,W,H,mobile){
  const viewport=screen.getBoundingClientRect(),marineVisible=viewport.bottom>0&&viewport.top<innerHeight&&document.visibilityState!=='hidden';
  const seaAir=computeSeaAirFrame(progress,W,H,mobile);
  const overhead=progress>=.31&&progress<.49,seaActive=progress>=.43&&(progress<.82||!seaAir.whiteComplete),airActive=progress>=.745;
- roadView.hidden=!overhead;sea.hidden=!seaActive;air.hidden=!airActive;plane.hidden=!airActive;cloud.hidden=seaAir.cloudHidden;
- truck.hidden=progress>=.31;info.hidden=progress>=.31;if(word.parentElement)word.parentElement.hidden=progress>=.31;root.querySelector('.uc-ground').hidden=progress>=.31;
+ setHidden(air,!airActive);setHidden(plane,!airActive);setHidden(cloud,seaAir.cloudHidden);
+ setHidden(truck,progress>=.31);setHidden(info,progress>=.31);if(word.parentElement)setHidden(word.parentElement,progress>=.31);setHidden(root.querySelector('.uc-ground'),progress>=.31);
  // phase and sea-layout are written once at the end of the frame; CSS selectors read them, so an
  // early write that is overwritten in the same frame only invalidated the whole stage's styles twice.
  const roadT=clamp((progress-.31)/.14),centre=W*.5,lane=mobile?W*.20:W*.14,roadY=mobile?H*.38:H*.30,radius=mobile?W*.28:W*.18;
@@ -2137,13 +2172,13 @@ function updateMultimodal(raw,W,H,mobile){
  const cargoRoad=!reduced.matches&&cargoFrame.side==='road',cargoSea=progress>=.455;
  sea.style.transform='none';roadView.style.transform=cargoRoad?`translate(${cargoFrame.roadX}px,${cargoFrame.roadY}px) scale(${cargoFrame.roadScale})`:'none';
  {const roadTextFade=String(1-Math.min(1,Math.max(0,(cargoRoad?cargoFrame.roadScale-1:0)/.25)));roadCopyEl.style.opacity=roadTextFade;routeWordEl.style.opacity=roadTextFade;};
- roadView.hidden=!(progress>=.31&&progress<.455);sea.hidden=!(cargoSea&&(progress<.82||!seaAir.whiteComplete));
+ setHidden(roadView,!(progress>=.31&&progress<.455));setHidden(sea,!(cargoSea&&(progress<.82||!seaAir.whiteComplete)));
  setStageData('phase',progress<.31?'road':progress<.455?'overhead':progress<.74?'sea':progress<.84?'cloud':'air');
- ship.hidden=progress>=.455;water.hidden=progress>=.455;deckCanvas.hidden=true;
- cargo.hidden=progress<cargoFrame.start||progress>=.455;
+ setHidden(ship,progress>=.455);setHidden(water,progress>=.455);setHidden(deckCanvas,true);
+ setHidden(cargo,progress<cargoFrame.start||progress>=.455);
  roof.style.visibility=cargoRoad?'hidden':'visible';
  const identityFrame=computeCargoIdentityFrame(progress,mobile);
- identity.style.opacity=String(reduced.matches?0:identityFrame.opacity);identity.hidden=reduced.matches||identityFrame.opacity===0;
+ identity.style.opacity=String(reduced.matches?0:identityFrame.opacity);setHidden(identity,reduced.matches||identityFrame.opacity===0);
  identity.dataset.phase=identityFrame.phase;screen.dataset.identityOpacity=String(identityFrame.opacity);
  if(cargo.parentElement!==screen)screen.append(cargo);
  cargo.style.left=cargoFrame.anchorX+'px';cargo.style.top=cargoFrame.anchorY+'px';
@@ -2151,7 +2186,7 @@ function updateMultimodal(raw,W,H,mobile){
  cargoPhoto.style.width=cargoFrame.imageHeight+'px';cargoPhoto.style.height=cargoFrame.imageWidth+'px';
  cargoPhoto.style.left=(cargoFrame.anchorWidth-cargoFrame.imageHeight)/2+'px';cargoPhoto.style.top=(cargoFrame.anchorHeight-cargoFrame.imageWidth)/2+'px';
  const macroRoof=progress<.455&&cargoFrame.active&&cargoFrame.anchorWidth>W*.08;
- cargoPhoto.hidden=macroRoof;textureCanvas.hidden=!macroRoof;
+ setHidden(cargoPhoto,macroRoof);setHidden(textureCanvas,!macroRoof);
  if(macroRoof&&cargoPhoto.complete&&cargoPhoto.naturalWidth){
   const pad=48,ratio=Math.min(2,window.devicePixelRatio||1),pixelW=Math.round((W+pad*2)*ratio),pixelH=Math.round((H+pad*2)*ratio);
   if(textureCanvas.width!==pixelW||textureCanvas.height!==pixelH){textureCanvas.width=pixelW;textureCanvas.height=pixelH;}
@@ -2162,7 +2197,7 @@ function updateMultimodal(raw,W,H,mobile){
   textureContext.clip();textureContext.translate(cargoFrame.anchorX+pad,cargoFrame.anchorY+pad);textureContext.rotate(Math.PI/2);
   textureContext.drawImage(roofReady?coloredRoof:cargoPhoto,-cargoFrame.imageHeight/2,-cargoFrame.imageWidth/2,cargoFrame.imageHeight,cargoFrame.imageWidth);textureContext.restore();
  }
- nativeCanvas.hidden=progress<.455;
+ setHidden(nativeCanvas,progress<.455);
  // The camera is motionless from .63-.70. Cross-fade a camera-matched Cycles
  // plate only inside that hold, while the native 3D vessel remains responsible
  // for the road handoff and sea departure in both directions.
@@ -2170,7 +2205,7 @@ function updateMultimodal(raw,W,H,mobile){
  const plateFits=W>0&&H>0&&Math.abs(W/H-1440/900)<1e-6;
  const stillOpacity=seaPlateEnabled&&seaPlateReady&&plateFits&&!mobile&&progress>=.63&&progress<=.70?
   between(progress,.63,.645)*(1-between(progress,.685,.70)):0;
- nativeStill.hidden=stillOpacity<=.001;nativeStill.style.opacity=String(stillOpacity);
+ setHidden(nativeStill,stillOpacity<=.001);nativeStill.style.opacity=String(stillOpacity);
  nativeCanvas.style.visibility=stillOpacity>=.999?'hidden':'visible';
  // Build the sea in the first pause after the journey loads (1.5 screens before it), well ahead of the
  // covered road-to-sea handoff. A reader who scrolls straight through without pausing meets the build at
@@ -2183,7 +2218,8 @@ function updateMultimodal(raw,W,H,mobile){
  if(progress>=.25&&progress<.84&&marinePending.size)runOneMarineTask();
  if(marineVisible&&progress>=.43&&progress<.84&&marineAvailable){
   if(!nativeMarine){marinePending.delete(buildMarine);buildMarine();}
-  if(nativeMarine&&progress>=.455&&progress<.84){
+  // Once the white air stage has covered the sea (from .82), the hidden canvas is not redrawn.
+  if(nativeMarine&&progress>=.455&&progress<.84&&!sea.hidden){
    try{flushMarinePending();const cameraFrame=nativeMarine.render(progress,W,H,mobile,cargoFrame);
     screen.dataset.nativeCamera=JSON.stringify(cameraFrame);screen.dataset.nativeReady='true';root.marineRuntime=nativeMarine;
    }catch(error){nativeFailed=true;screen.dataset.nativeError=error.message;console.warn('Marine rendering unavailable:',error.message);}
@@ -2195,7 +2231,7 @@ function updateMultimodal(raw,W,H,mobile){
   mobileSource.setAttribute('srcset',mobileSource.dataset.srcset);
   nativePoster.querySelector('img').src=assets.vesselHold;
  }
- nativePoster.hidden=!nativeUnavailable;nativeCanvas.style.display=nativeUnavailable?'none':'';
+ setHidden(nativePoster,!nativeUnavailable);nativeCanvas.style.display=nativeUnavailable?'none':'';
  screen.dataset.nativeFallback=String(nativeUnavailable);
  setStageData('seaLayout','native');
  sea.style.setProperty('--native-shade',String(between(progress,.50,.58)));
@@ -2238,10 +2274,10 @@ function updateMultimodal(raw,W,H,mobile){
  const airInfo=seaAir.airInfo;airCopy.style.transform=`translateY(${(1-airInfo)*H*.55}px)`;airSecondary.style.transform=airCopy.style.transform;root.querySelector('.mm-air-ground').style.top=mix(H,H*(mobile?.48:W<1200?.46:.52),airInfo)+'px';
  root.querySelector('[data-transition-play]').disabled=reduced.matches;
  root.querySelector('[data-cargo-play]').disabled=reduced.matches;
- airCopy.inert=airInfo<.999;airSecondary.inert=airInfo<.999;sea.inert=progress<.65||progress>=.70;
+ setInert(airCopy,airInfo<.999);setInert(airSecondary,airInfo<.999);setInert(sea,progress<.65||progress>=.70);
  const stage=progress<.16||progress>=.31&&progress<.49?0:progress<.31?1:progress<.745?2:3;
- for(const b of modeNav.children)b.setAttribute('aria-current',String(Number(b.dataset.jump)===[9,25,65,91][stage]));
- root.querySelector('.uc-counter').textContent=['01 / 04','02 / 04','03 / 04','04 / 04'][stage];
+ for(const b of modeNav.children)setAttr(b,'aria-current',String(Number(b.dataset.jump)===[9,25,65,91][stage]));
+ setText(root.querySelector('.uc-counter'),['01 / 04','02 / 04','03 / 04','04 / 04'][stage]);
  modeNav.style.visibility=progress>=.30&&progress<.65||progress>.70&&progress<.885?'hidden':'visible';
  if(reduced.matches){roadView.hidden=progress!==.38;sea.hidden=progress!==.65;cloud.hidden=true;air.hidden=progress!==.91;plane.hidden=progress!==.91;root.querySelector('.uc-header').style.opacity='1';}
 }
@@ -2271,7 +2307,7 @@ function updateMultimodal(raw,W,H,mobile){
   screen.style.setProperty('--boundary',boundary+'px');screen.style.setProperty('--truck-x',truckX+'px');screen.style.setProperty('--truck-width',truckWidth+'px');screen.style.setProperty('--truck-top',truckTop+'px');screen.style.setProperty('--content-y',contentY+'px');screen.style.setProperty('--slot-height',slotHeight+'px');
   const warehouse=p>=.45,stage=p<.30?0:p<.62?1:p<.75?2:p<.84?3:p<.90?4:p<.96?5:6;
   screen.dataset.place=warehouse?'warehouse':'port';screen.dataset.progress=raw.toFixed(4);screen.dataset.scene=p<.30?'services':p<.62?'road':'journey';screen.dataset.lift=lift.toFixed(4);screen.dataset.eyeRatio=eyeRatio;
-  info.inert=lift<.999;info.style.opacity=String(Math.min(1,Math.max(0,(lift-.35)/.55)));
+  setInert(info,lift<.999);info.style.opacity=String(Math.min(1,Math.max(0,(lift-.35)/.55)));
   const key=(warehouse?'warehouse':'port')+'-'+stage+'-'+selectedMode;
   if(key!==lastKey){
    word.textContent=warehouse?'WAREHOUSE':'PORT';photo.src=warehouse?assets.warehouse:assets.port;photo.alt='';
@@ -2279,10 +2315,10 @@ function updateMultimodal(raw,W,H,mobile){
    else{const service=selectedMode>=0?services.modes[codes[selectedMode]]:null;title.innerHTML=service?service.title.toUpperCase():'A FULL LINE-UP<br>OF FIVE<br><span>TRANSPORT MODES.</span>';label.textContent='JSL / TRANSPORT SERVICES';copy.textContent=service?service.summary:services.description;}
    lastKey=key;
   }
-  word.style.transform='translateY('+((1-lift)*1.15)+'em)';modes.hidden=warehouse;root.querySelector('.uc-counter').textContent=warehouse?'02 / 02':'01 / 02';
-  for(const b of modes.children)b.setAttribute('aria-pressed',String(Number(b.dataset.mode)===selectedMode));
-  for(const b of steps.children)b.setAttribute('aria-pressed',String(Number(b.dataset.stage)===stage));
-  mobileStep.textContent='0'+(stage+1)+' / 07 · '+stages[stage].label;root.querySelector('[data-value]').textContent=Math.round(raw*100)+'%';play.disabled=reduced.matches;updateMultimodal(raw,W,H,mobile);
+  word.style.transform='translateY('+((1-lift)*1.15)+'em)';setHidden(modes,warehouse);
+  for(const b of modes.children)setAttr(b,'aria-pressed',String(Number(b.dataset.mode)===selectedMode));
+  for(const b of steps.children)setAttr(b,'aria-pressed',String(Number(b.dataset.stage)===stage));
+  setText(mobileStep,'0'+(stage+1)+' / 07 · '+stages[stage].label);setText(root.querySelector('[data-value]'),Math.round(raw*100)+'%');play.disabled=reduced.matches;updateMultimodal(raw,W,H,mobile);
  }
  range.addEventListener('input',()=>{stop();selectedMode=-1;render()});
  root.querySelectorAll('[data-p]').forEach(b=>b.addEventListener('click',()=>{stop();selectedMode=-1;range.value=b.dataset.p;render()}));

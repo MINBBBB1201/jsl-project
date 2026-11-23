@@ -23,3 +23,6 @@
   .journey-hero-motion .journey-orbit{bottom:-104vw}
 }
 @media(prefers-reduced-motion:reduce){.journey-hero-motion{height:auto}.journey-hero-motion .journey-hero{position:relative;min-height:900px;height:100svh}.journey-hero-motion .journey-hero::before,.journey-hero-motion .journey-hero::after{display:none}.journey-hero-motion .journey-hero-copy{clip-path:none!important;opacity:1!important;transform:none!important}.journey-hero-motion .journey-horizon{transform:none}}
+
+/* Paused while the hero is off screen (set by JourneyHeroMotion); the drift restyles and repaints every frame. */
+.journey-hero-motion.is-offscreen .journey-stars{animation-play-state:paused}
