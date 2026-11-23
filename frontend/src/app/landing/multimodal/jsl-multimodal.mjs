@@ -985,9 +985,12 @@ function computeSeaAirFrame(progress,W,H,mobile){
  const clamp=x=>Math.max(0,Math.min(1,x)),smooth=x=>{x=clamp(x);return x*x*(3-2*x)},between=(p,a,b)=>smooth((p-a)/(b-a)),mix=(a,b,t)=>a+(b-a)*t;
  const easeOut=(p,a,b)=>{const t=clamp((p-a)/(b-a));return 1-(1-t)*(1-t)};
  const p=progress>0?Math.min(progress,1):0,feather=mobile?34:70,ratio=1593/1600;
+ // Resting frame of the aircraft: on desktop it settles smaller and lower, inside the white stage between the
+ // header and the dark ground, so the upper wing is no longer cut off by the top of the screen.
+ const restW=mobile?W*.78:Math.min(W*.29,H*.44),restCx=mobile?W*.52:W*.68,restY=mobile?H*.27:H*.29;
  const crossing=between(p,.745,.825),settling=between(p,.825,.885),departure=between(p,.96,1);
- const basePlaneW=mix(W*(mobile?1.55:1.30),W*(mobile?.78:.46),settling),basePlaneX=mix(-W*1.55,W*.45,crossing)+mix(0,W*(mobile?-.32:.05),settling)+departure*W*.78;
- const basePlaneY=mix(H*.47,H*(mobile?.27:.15),settling)-departure*H*.13,baseEdge=clamp((basePlaneX+basePlaneW*.88)/(W*.98))*W;
+ const basePlaneW=mix(W*(mobile?1.55:1.30),restW,settling),basePlaneX=mix(-W*1.55,W*.45,crossing)+mix(0,mobile?-W*.32:restCx-restW/2-W*.45,settling)+departure*W*.78;
+ const basePlaneY=mix(H*.47,restY,settling)-departure*H*.13,baseEdge=clamp((basePlaneX+basePlaneW*.88)/(W*.98))*W;
  if(p<.70||p>=.885){
   const cloudT=between(p,.70,.78);
   return {shipDeparture:between(p,.70,.745),seaExit:between(p,.70,.74),cloudLeft:mix(-1.58*W,-.42*W,cloudT),cloudRight:mix(W*1.02,-.10*W,cloudT),
@@ -999,9 +1002,9 @@ function computeSeaAirFrame(progress,W,H,mobile){
  if(p>=.745){
   // One forward gesture: the aircraft enters at speed and decelerates (camera catching up) while the pullback
   // starts inside the crossing, so there is no halt at .825 and the tail never reverses on screen.
-  const w0=W*(mobile?1.55:1.30),w1=W*(mobile?.78:.46),cx0=-W*(mobile?1.55:1.32)+w0/2,cxCross=W*(mobile?.56:.73),cxEnd=W*(mobile?.52:.73);
+  const w0=W*(mobile?1.55:1.30),w1=restW,cx0=-W*(mobile?1.55:1.32)+w0/2,cxCross=W*(mobile?.56:.73),cxEnd=restCx;
   const fly=easeOut(p,.745,.825),pull=between(p,.785,.885),cxFly=mix(cx0,cxCross,fly);
-  planeW=mix(w0,w1,pull);planeX=cxFly+(cxEnd-cxCross)*pull-planeW/2;planeY=mix(H*.47,H*(mobile?.27:.15),pull);
+  planeW=mix(w0,w1,pull);planeX=cxFly+(cxEnd-cxCross)*pull-planeW/2;planeY=mix(H*.47,restY,pull);
   // Reveal edge follows the crossing component only, so it never retreats while the camera pulls back.
   const sweep=(cxFly-w0/2+w0*.88)/.98;
   whiteEdge=mix(Math.max(-feather,Math.min(W+feather,sweep)),W+feather,between(p,.805,.825));
@@ -2156,7 +2159,10 @@ function updateMultimodal(raw,W,H,mobile){
  // Taller banks during the crossing so no strip of sea shows above the cloud next to the reveal edge.
  const cloudTall=between(progress,.72,.78);cloudLeft.style.height=cloudRight.style.height=(110+40*cloudTall)+'%';
  cloudLeft.style.top=cloudRight.style.top=(-5-20*cloudTall)+'%';
- plane.style.width=seaAir.planeWidth+'px';plane.style.left=seaAir.planeLeft+'px';plane.style.top=seaAir.planeTop+'px';
+ plane.style.width=seaAir.planeWidth+'px';plane.style.left=seaAir.planeLeft+'px';
+ // Enters slightly yawed and settles nose-up on a gentle climbing heading, then keeps climbing a little while
+ // the air copy is read.
+ plane.style.top=(seaAir.planeTop-H*.025*between(progress,.885,.96))+'px';plane.style.transform=`rotate(${-9+5*between(progress,.745,.885)}deg)`;
  const feather=(mobile?34:70)*(1+2.2*between(progress,.745,.80)*(1-between(progress,.80,.825)));air.style.maskImage=`linear-gradient(to right,#000 ${seaAir.whiteEdge-feather}px,transparent ${seaAir.whiteEdge+feather}px)`;
  if(seaAir.whiteComplete)air.style.maskImage='none';
  // Each header label follows the actual reveal under it, including reverse scrubbing.
