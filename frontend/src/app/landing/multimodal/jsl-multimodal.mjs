@@ -674,10 +674,32 @@ function initMarineDaylight(THREE,scene,renderer,canvas,lights,onReady){
   if(disposed)return;
   nativeLight();releaseTarget();status.state='fallback';status.error=error instanceof Error?error.message:String(error);refresh();
  }
+ // PMREM's own programs used to compile synchronously inside the build (about a second on integrated
+ // graphics). Create its materials first and compile them with KHR_parallel_shader_compile; the build then
+ // finds them ready in the program cache. The private hooks are guarded and fall back to the plain build.
+ function prepare(){
+  if(disposed||!source||renderer.getContext().isContextLost())return;
+  try{
+   if(generator)generator.dispose();
+   generator=new THREE.PMREMGenerator(renderer);
+   if(typeof generator._setSize!=='function'||typeof generator._allocateTargets!=='function'){marineWhenQuiet(build);return;}
+   generator._setSize(source.image.width/4);
+   const probe=generator._allocateTargets();generator.compileEquirectangularShader();
+   // Use PMREM's own plane geometry and a linear half-float target, as its render does, so the cache keys match.
+   const group=new THREE.Group(),geometry=generator._lodMeshes?.[0]?.geometry||new THREE.BufferGeometry();
+   for(const material of [generator._equirectMaterial,generator._blurMaterial,generator._ggxMaterial])
+    if(material?.isMaterial)group.add(new THREE.Mesh(geometry,material));
+   const previous=renderer.getRenderTarget();renderer.setRenderTarget(probe);
+   const compiled=renderer.compileAsync(group,new THREE.OrthographicCamera());
+   renderer.setRenderTarget(previous);
+   compiled.catch(()=>{}).then(()=>{probe.dispose();if(!disposed)marineWhenQuiet(build);});
+  }catch(error){fail(error);}
+ }
  function build(){
   if(disposed||!source||renderer.getContext().isContextLost())return;
   try{
-   releaseTarget();generator=new THREE.PMREMGenerator(renderer);
+   if(target){target.dispose();target=null;}
+   if(!generator)generator=new THREE.PMREMGenerator(renderer);
    target=generator.fromEquirectangular(source);generator.dispose();generator=null;
    scene.environment=target.texture;scene.environmentIntensity=.68;
    // Keep the original sun direction and camera. The HDR supplies reflected
@@ -707,8 +729,8 @@ function initMarineDaylight(THREE,scene,renderer,canvas,lights,onReady){
    const Loader=createMarineRGBELoader(THREE),loader=new Loader();status.loads++;
    loader.load("/images/multimodal/sea-environment.hdr",texture=>{
     if(disposed){texture.dispose();return;}
-    // PMREM compiles and renders synchronously (about a second on integrated graphics): do it in a pause.
-    source=texture;source.mapping=THREE.EquirectangularReflectionMapping;marineWhenQuiet(build);
+    // PMREM programs compile off the thread first; the render itself then runs in a pause.
+    source=texture;source.mapping=THREE.EquirectangularReflectionMapping;marineWhenQuiet(prepare);
    },undefined,fail);
   }catch(error){fail(error);}
  }
@@ -1935,7 +1957,12 @@ function initMarineWater(THREE,scene){
  return {water,wake,drawWaves(renderer){
   if(!waveTarget)return;
   const previous=renderer.getRenderTarget();renderer.setRenderTarget(waveTarget);renderer.render(waveScene,waveCamera);renderer.setRenderTarget(previous);
- },compileWaves(renderer){return waveTarget?renderer.compileAsync(waveScene,waveCamera):Promise.resolve();},dispose(){
+ },compileWaves(renderer){
+  // Compile for the tile target it draws into: a linear target gets a different program than the canvas.
+  if(!waveTarget)return Promise.resolve();
+  const previous=renderer.getRenderTarget();renderer.setRenderTarget(waveTarget);
+  const compiled=renderer.compileAsync(waveScene,waveCamera);renderer.setRenderTarget(previous);return compiled;
+ },dispose(){
   waveTarget?.dispose();waveScene.traverse(o=>{if(o.isMesh){o.geometry.dispose();o.material.dispose();}});
  },setEnvironment(texture){
   if(selected&&texture&&!texture.userData.jslSeaMips){texture.generateMipmaps=true;texture.minFilter=THREE.LinearMipmapLinearFilter;texture.needsUpdate=true;texture.userData.jslSeaMips=true;}
@@ -2013,10 +2040,12 @@ function initMarineRuntime(THREE,canvas,roofImage){
  // compileAsync uses KHR_parallel_shader_compile, so the driver builds the programs off the page's thread;
  // a synchronous first-frame compile of the water shader stalled the page for seconds on integrated GPUs.
  // Runs again once the HDR daylight or the vessel photograph changes the materials.
+ // The sea is drawn only for a state that has been warmed (see ready()); until then the page keeps the
+ // previous frame or the poster instead of blocking the main thread on a program or an upload.
+ const stateKey=()=>daylight.status.state+'/'+(model.group.userData.photoVessel?.status.state||'none');
+ let readyKey='',drawnOnce=false;
  function warm(){
-  const vessel=model.group.userData.photoVessel;
-  if(daylight.status.state==='loading'||vessel?.status.state==='loading')return;
-  const key=daylight.status.state+'/'+(vessel?.status.state||'none');
+  const key=stateKey();
   if(key===warmed)return;warmed=key;
   marineWhenQuiet(()=>{
    if(renderer.getContext().isContextLost())return;
@@ -2024,9 +2053,16 @@ function initMarineRuntime(THREE,canvas,roofImage){
    scene.traverse(o=>{for(const m of Array.isArray(o.material)?o.material:o.material?[o.material]:[])for(const v of Object.values(m))if(v?.isTexture&&v.image)renderer.initTexture(v);});
    // Then one small hidden draw, also in a pause, builds what compile() cannot reach: the shadow-pass
    // depth programs. The first visible frame redraws the shadow map for its own pose.
-   Promise.all([renderer.compileAsync(scene,camera),sea.compileWaves(renderer)]).then(()=>marineWhenQuiet(()=>{
+   // The water and the occluder depth pass draw into the linear water buffer, so compile them for it too.
+   const occluder=new THREE.Group(),box=new THREE.BoxGeometry();
+   occluder.add(new THREE.Mesh(box,depthOnly),new THREE.InstancedMesh(box,depthOnly,1));
+   renderer.setRenderTarget(waterTarget);
+   const intoWater=[renderer.compileAsync(sea.water,camera,scene),renderer.compileAsync(occluder,camera,scene)];
+   renderer.setRenderTarget(null);
+   Promise.all([renderer.compileAsync(scene,camera),sea.compileWaves(renderer),...intoWater]).finally(()=>box.dispose()).then(()=>marineWhenQuiet(()=>{
     if(renderer.getContext().isContextLost())return;
     renderer.shadowMap.needsUpdate=true;sun.shadow.needsUpdate=true;drawFrame();shadowKey='';
+    if(stateKey()===key){readyKey=key;document.getElementById('jsl-marine-native')?.ucRender?.();}
    })).catch(()=>{});
   });
  }
@@ -2039,7 +2075,7 @@ function initMarineRuntime(THREE,canvas,roofImage){
   if(native&&!settled){
    // Skip the refinement once the sea has left the screen (hidden canvas or sea view).
    lastFrame=[progress,W,H,mobile,cargoFrame];
-   settleTimer=setTimeout(()=>{settleTimer=0;if(lastFrame&&canvas.offsetParent&&!renderer.getContext().isContextLost())render(...lastFrame,true);},180);
+   settleTimer=setTimeout(()=>{settleTimer=0;if(lastFrame&&canvas.offsetParent&&readyKey===stateKey()&&!renderer.getContext().isContextLost())render(...lastFrame,true);},180);
   }
   const size=W+'x'+H+'@'+ratio;if(size!==previousSize){
    renderer.setPixelRatio(ratio);renderer.setSize(W,H,false);previousSize=size;
@@ -2067,10 +2103,12 @@ function initMarineRuntime(THREE,canvas,roofImage){
    ...model.group.position.toArray(),...model.group.quaternion.toArray(),...model.group.scale.toArray()].join(',');
   if(nextShadowKey!==shadowKey){invalidateShadows();shadowKey=nextShadowKey;shadowCache.updates++;}
   sea.setNativeHullVisible(model.group.userData.photoVessel?.status.renderSource!=='photo');
-  sea.setEnvironment(daylight.sourceTexture);sea.update(progress);drawFrame();
+  sea.setEnvironment(daylight.sourceTexture);sea.update(progress);drawFrame();drawnOnce=true;
   return {...frame,triangles:renderer.info.render.triangles,calls:renderer.info.render.calls,containers:model.bounds.containerCount};
  }
- return {render,warm,model,scene,camera,renderer,daylight,shadowCache,invalidateShadows,dispose(){clearTimeout(settleTimer);lastFrame=null;sea.dispose();waterTarget.dispose();waterQuad.geometry.dispose();waterQuad.material.dispose();canvas.removeEventListener('webglcontextlost',releaseSurfaceGPU);canvas.removeEventListener('webglcontextrestored',invalidateShadows);daylight.dispose();model.group.userData.photographicMaterials?.dispose();model.group.userData.fabrication?.dispose();model.group.userData.selectedSurfaces?.dispose();model.group.userData.photoVessel?.dispose();renderer.dispose();}};
+ // A restored context has lost every program and upload: warm again before the next visible frame.
+ canvas.addEventListener('webglcontextrestored',()=>{warmed='';readyKey='';drawnOnce=false;});
+ return {render,warm,ready:()=>readyKey!==''&&readyKey===stateKey(),get drawnOnce(){return drawnOnce;},model,scene,camera,renderer,daylight,shadowCache,invalidateShadows,dispose(){clearTimeout(settleTimer);lastFrame=null;sea.dispose();waterTarget.dispose();waterQuad.geometry.dispose();waterQuad.material.dispose();canvas.removeEventListener('webglcontextlost',releaseSurfaceGPU);canvas.removeEventListener('webglcontextrestored',invalidateShadows);daylight.dispose();model.group.userData.photographicMaterials?.dispose();model.group.userData.fabrication?.dispose();model.group.userData.selectedSurfaces?.dispose();model.group.userData.photoVessel?.dispose();renderer.dispose();}};
 }
 
 const path=root.querySelector('.mm-road-line'),dashes=root.querySelector('.mm-road-dashes'),roadSvg=root.querySelector('.mm-road-svg'),topTruck=root.querySelector('.mm-top-truck'),roadView=root.querySelector('.mm-road-view');
@@ -2226,14 +2264,19 @@ function updateMultimodal(raw,W,H,mobile){
  if(marineVisible&&progress>=.43&&progress<.84&&marineAvailable){
   if(!nativeMarine){marinePending.delete(buildMarine);buildMarine();}
   // Once the white air stage has covered the sea (from .82), the hidden canvas is not redrawn.
-  if(nativeMarine&&progress>=.455&&progress<.84&&!sea.hidden){
-   try{flushMarinePending();const cameraFrame=nativeMarine.render(progress,W,H,mobile,cargoFrame);
+  // Draw only a warmed state. Until then the remaining setup advances one step per frame (above) and the
+  // canvas keeps its last frame, or the poster stands in if nothing has been drawn yet.
+  if(nativeMarine&&progress>=.455&&progress<.84&&!sea.hidden&&nativeMarine.ready()){
+   try{const cameraFrame=nativeMarine.render(progress,W,H,mobile,cargoFrame);
     screen.dataset.nativeCamera=JSON.stringify(cameraFrame);screen.dataset.nativeReady='true';root.marineRuntime=nativeMarine;
    }catch(error){nativeFailed=true;screen.dataset.nativeError=error.message;console.warn('Marine rendering unavailable:',error.message);}
   }
  }
- const nativeUnavailable=progress>=.455&&progress<.84&&(!nativeMarine||nativeFailed||nativeContextLost);
- if(marineVisible&&nativeUnavailable&&!nativePoster.querySelector('img').getAttribute('src')){
+ const nativeWaiting=!!nativeMarine&&!nativeMarine.ready()&&!nativeMarine.drawnOnce;
+ const nativeUnavailable=progress>=.455&&progress<.84&&(!nativeMarine||nativeFailed||nativeContextLost||nativeWaiting);
+ // Fetch the poster a little ahead when the sea may still be warming at the handoff.
+ const posterLikely=nativeUnavailable||(progress>=.40&&progress<.84&&!nativeMarine?.ready());
+ if(marineVisible&&posterLikely&&!nativePoster.querySelector('img').getAttribute('src')){
   const mobileSource=nativePoster.querySelector('source');
   mobileSource.setAttribute('srcset',mobileSource.dataset.srcset);
   nativePoster.querySelector('img').src=assets.vesselHold;
