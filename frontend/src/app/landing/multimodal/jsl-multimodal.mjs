@@ -2033,17 +2033,76 @@ function initMarineRuntime(THREE,canvas,roofImage){
  waterQuad.frustumCulled=false;waterQuad.renderOrder=-1000;scene.add(waterQuad);
  // Depth of the opaque native vessel goes into the water buffer first, so the water shader skips every
  // pixel the hull and containers cover (one pass used to get this from early depth rejection).
- const depthOnly=new THREE.MeshBasicMaterial({colorWrite:false});
- const markOccluders=()=>model.group.traverse(o=>{if(!o.isMesh)return;const list=Array.isArray(o.material)?o.material:[o.material];if(list.every(m=>m&&!m.transparent))o.layers.enable(2);else o.layers.disable(2);});
+ // Plain and instanced occluders use separate materials (layers 2 and 3): one shared override material
+ // flipped program variants on every draw, and three re-derived its parameters each time.
+ const depthOnly=new THREE.MeshBasicMaterial({colorWrite:false}),depthOnlyInstanced=new THREE.MeshBasicMaterial({colorWrite:false});
+ const markOccluders=()=>model.group.traverse(o=>{
+  if(!o.isMesh)return;const list=Array.isArray(o.material)?o.material:[o.material];
+  const opaque=list.every(m=>m&&!m.transparent);
+  if(opaque&&!o.isInstancedMesh)o.layers.enable(2);else o.layers.disable(2);
+  if(opaque&&o.isInstancedMesh)o.layers.enable(3);else o.layers.disable(3);
+ });
  markOccluders();
- function drawFrame(){
+ // Changing the canvas size reallocates its drawing buffer, and the next frames stalled for 40-110 ms each
+ // time the close-up switched between its moving and settled resolutions. The canvas now keeps one size:
+ // a moving close-up frame is drawn into part of one fixed buffer and scaled up by a quad that applies the
+ // tone mapping and colour conversion the canvas pass would have applied.
+ // Inside that buffer the moving scale also follows the frame rate: when frames run long it steps down (to
+ // 70% of the base scale at most), and it climbs back while they keep up with the display. A pause still
+ // redraws the frame at full resolution, so only motion is affected.
+ const MOTION_FLOOR=.7;
+ let motionBuffer=null,motionFactor=1,lastMotionAt=0,motionAverage=0,displayInterval=8.3,intervalSamples=[];
+ const upscaleScene=new THREE.Scene(),upscaleCamera=new THREE.OrthographicCamera(-1,1,1,-1,0,1);
+ const upscaleQuad=new THREE.Mesh(new THREE.PlaneGeometry(2,2),new THREE.ShaderMaterial({
+  name:'JSL / sea motion upscale',depthTest:false,depthWrite:false,
+  uniforms:{map:{value:null},extent:{value:new THREE.Vector2(1,1)},limit:{value:new THREE.Vector2(1,1)}},
+  vertexShader:'varying vec2 vUv;void main(){vUv=uv;gl_Position=vec4(position.xy,0.,1.);}',
+  fragmentShader:'uniform sampler2D map;uniform vec2 extent,limit;varying vec2 vUv;void main(){gl_FragColor=texture2D(map,min(vUv*extent,limit));}'
+ }));
+ upscaleQuad.frustumCulled=false;upscaleScene.add(upscaleQuad);
+ function paceMotion(moving){
+  const now=performance.now();
+  if(!moving){lastMotionAt=0;return;}
+  const dt=lastMotionAt?now-lastMotionAt:0;lastMotionAt=now;
+  if(!dt||dt>100)return;
+  // The display interval is the shortest recent frame (8.3 ms at 120 Hz, 16.7 ms at 60 Hz).
+  intervalSamples.push(dt);if(intervalSamples.length>90)intervalSamples.shift();
+  displayInterval=Math.max(4,Math.min(...intervalSamples));
+  motionAverage=motionAverage?motionAverage*.8+dt*.2:dt;
+  if(motionAverage>displayInterval*1.35)motionFactor=Math.max(MOTION_FLOOR,motionFactor*.93);
+  else if(motionAverage<displayInterval*1.12)motionFactor=Math.min(1,motionFactor*1.02);
+ }
+ function motionTarget(scale,W,H,full){
+  const maxW=Math.max(1,Math.round(W*full*NATIVE_MOTION_SCALE)),maxH=Math.max(1,Math.round(H*full*NATIVE_MOTION_SCALE));
+  if(!motionBuffer){
+   // Drawn like the canvas: tone mapped, sRGB-encoded into plain RGBA8. three gives that output only to a
+   // target flagged as XR, and it means every program is the one already compiled for the canvas (a linear
+   // buffer needed a second set, about 0.7 s of compile on integrated graphics) and blending matches the
+   // settled frame exactly. The quad then copies the bytes without another conversion.
+   motionBuffer=new THREE.WebGLRenderTarget(maxW,maxH,{samples:4,depthBuffer:true});
+   motionBuffer.texture.colorSpace=THREE.SRGBColorSpace;motionBuffer.texture.internalFormat='RGBA8';motionBuffer.isXRRenderTarget=true;
+  }
+  else if(motionBuffer.width!==maxW||motionBuffer.height!==maxH)motionBuffer.setSize(maxW,maxH);
+  const s=Math.min(NATIVE_MOTION_SCALE,scale*motionFactor);
+  const w=Math.max(1,Math.min(maxW,Math.round(W*full*s))),h=Math.max(1,Math.min(maxH,Math.round(H*full*s)));
+  motionBuffer.viewport.set(0,0,w,h);
+  upscaleQuad.material.uniforms.extent.value.set(w/maxW,h/maxH);
+  upscaleQuad.material.uniforms.limit.value.set((w-.5)/maxW,(h-.5)/maxH);
+  return motionBuffer;
+ }
+ function drawFrame(target=null){
   sea.drawWaves(renderer);
   renderer.setRenderTarget(waterTarget);
-  camera.layers.set(2);scene.overrideMaterial=depthOnly;renderer.render(scene,camera);scene.overrideMaterial=null;
-  renderer.autoClear=false;camera.layers.set(1);renderer.render(scene,camera);renderer.autoClear=true;
-  camera.layers.set(0);renderer.setRenderTarget(null);renderer.render(scene,camera);
+  camera.layers.set(2);scene.overrideMaterial=depthOnly;renderer.render(scene,camera);
+  renderer.autoClear=false;camera.layers.set(3);scene.overrideMaterial=depthOnlyInstanced;renderer.render(scene,camera);scene.overrideMaterial=null;
+  camera.layers.set(1);renderer.render(scene,camera);renderer.autoClear=true;
+  camera.layers.set(0);renderer.setRenderTarget(target);renderer.render(scene,camera);
+  if(target){upscaleQuad.material.uniforms.map.value=target.texture;renderer.setRenderTarget(null);renderer.render(upscaleScene,upscaleCamera);}
  }
  function invalidateShadows(){shadowKey='';renderer.shadowMap.needsUpdate=true;sun.shadow.needsUpdate=true;}
+ // Source changes alter the shadow casters. HDR loading can also move the sun. The camera is not part of it.
+ const shadowStateKey=()=>[model.group.userData.photoVessel?.status.renderSource||'native',...sun.position.toArray(),...sun.target.position.toArray(),
+  ...model.group.position.toArray(),...model.group.quaternion.toArray(),...model.group.scale.toArray()].join(',');
  canvas.addEventListener('webglcontextrestored',invalidateShadows);
  // Compile every program the sea will use and upload its large textures before the first visible frame.
  // compileAsync uses KHR_parallel_shader_compile, so the driver builds the programs off the page's thread;
@@ -2063,18 +2122,24 @@ function initMarineRuntime(THREE,canvas,roofImage){
    // Then one small hidden draw, also in a pause, builds what compile() cannot reach: the shadow-pass
    // depth programs. The first visible frame redraws the shadow map for its own pose.
    // The water and the occluder depth pass draw into the linear water buffer, so compile them for it too.
-   const occluder=new THREE.Group(),box=new THREE.BoxGeometry();
-   occluder.add(new THREE.Mesh(box,depthOnly),new THREE.InstancedMesh(box,depthOnly,1));
+   // Occluders compile under their own camera layers, so the light set (none) matches the depth passes.
+   const box=new THREE.BoxGeometry();
    renderer.setRenderTarget(waterTarget);
-   const intoWater=[renderer.compileAsync(sea.water,camera,scene),renderer.compileAsync(occluder,camera,scene)];
-   renderer.setRenderTarget(null);
-   const compiled=Promise.all([renderer.compileAsync(scene,camera),sea.compileWaves(renderer),...intoWater]).finally(()=>box.dispose());
+   const intoBuffers=[renderer.compileAsync(sea.water,camera,scene)];
+   camera.layers.set(2);intoBuffers.push(renderer.compileAsync(new THREE.Mesh(box,depthOnly),camera,scene));
+   camera.layers.set(3);intoBuffers.push(renderer.compileAsync(new THREE.InstancedMesh(box,depthOnlyInstanced,1),camera,scene));
+   camera.layers.set(0);renderer.setRenderTarget(null);
+   const compiled=Promise.all([renderer.compileAsync(scene,camera),renderer.compileAsync(upscaleScene,upscaleCamera),sea.compileWaves(renderer),...intoBuffers]).finally(()=>box.dispose());
    // Once the sea has been drawn, the shadow programs exist: a later state (HDR, photograph) only needs its
    // compiled programs, and the visible sea resumes without waiting for a quiet moment.
    if(drawnOnce){compiled.then(()=>{if(stateKey()===key){readyKey=key;document.getElementById('jsl-marine-native')?.ucRender?.();}}).catch(()=>{});return;}
    compiled.then(()=>marineWhenQuiet(()=>{
     if(renderer.getContext().isContextLost())return;
-    renderer.shadowMap.needsUpdate=true;sun.shadow.needsUpdate=true;drawFrame();shadowKey='';
+    // The shadow map drawn here is valid for the first visible frame (the camera is not part of it), and the
+    // moving-frame buffer is allocated and drawn once now rather than on the first scrolled frame.
+    renderer.shadowMap.needsUpdate=true;sun.shadow.needsUpdate=true;drawFrame();shadowKey=shadowStateKey();
+    const W=canvas.clientWidth,H=canvas.clientHeight;
+    if(W>0&&H>0)drawFrame(motionTarget(NATIVE_MOTION_SCALE,W,H,Math.min(innerWidth<768?1.25:1,window.devicePixelRatio||1,Math.sqrt(1600000/(W*H)))));
     if(stateKey()===key){readyKey=key;document.getElementById('jsl-marine-native')?.ucRender?.();}
    })).catch(()=>{});
   });
@@ -2086,17 +2151,18 @@ function initMarineRuntime(THREE,canvas,roofImage){
   // The tilt from .50 turns the whole container stack on screen and is the heaviest stretch: it moves at a
   // lower scale still. Any pause redraws the frame at full resolution.
   const native=progress<PHOTO_HANDOFF,motionScale=progress>=TILT_START?TILT_MOTION_SCALE:NATIVE_MOTION_SCALE;
-  const ratio=full*(native&&!settled?motionScale:1);
   clearTimeout(settleTimer);lastFrame=null;
   if(native&&!settled){
    // Skip the refinement once the sea has left the screen (hidden canvas or sea view).
    lastFrame=[progress,W,H,mobile,cargoFrame];
    settleTimer=setTimeout(()=>{settleTimer=0;if(lastFrame&&canvas.offsetParent&&readyKey===stateKey()&&!renderer.getContext().isContextLost())render(...lastFrame,true);},180);
   }
-  const size=W+'x'+H+'@'+ratio;if(size!==previousSize){
-   renderer.setPixelRatio(ratio);renderer.setSize(W,H,false);previousSize=size;
+  const size=W+'x'+H+'@'+full;if(size!==previousSize){
+   renderer.setPixelRatio(full);renderer.setSize(W,H,false);previousSize=size;
    waterTarget.setSize(Math.max(1,Math.round(W*full*WATER_SCALE)),Math.max(1,Math.round(H*full*WATER_SCALE)));
   }
+  paceMotion(native&&!settled);
+  const target=native&&!settled?motionTarget(motionScale,W,H,full):null;
   const frame=computeMarineCamera(progress,W,H,mobile,cargoFrame,model.bounds);
   // Match the road PHOTO extent as well as the container rectangle. The old
   // crop changes while the frame is fully covered, from 45.5 to 47 percent.
@@ -2113,18 +2179,15 @@ function initMarineRuntime(THREE,canvas,roofImage){
   camera.position.fromArray(frame.position);camera.up.fromArray(frame.up);camera.lookAt(new THREE.Vector3(...frame.target));
   for(const key of ['left','right','top','bottom','near','far','zoom'])camera[key]=frame[key];
   camera.updateProjectionMatrix();model.group.userData.photoVessel?.update(progress);
-  // Source changes alter the shadow casters. HDR loading can also move the sun.
-  const source=model.group.userData.photoVessel?.status.renderSource||'native';
-  const nextShadowKey=[source,...sun.position.toArray(),...sun.target.position.toArray(),
-   ...model.group.position.toArray(),...model.group.quaternion.toArray(),...model.group.scale.toArray()].join(',');
+  const nextShadowKey=shadowStateKey();
   if(nextShadowKey!==shadowKey){invalidateShadows();shadowKey=nextShadowKey;shadowCache.updates++;}
   sea.setNativeHullVisible(model.group.userData.photoVessel?.status.renderSource!=='photo');
-  sea.setEnvironment(daylight.sourceTexture);sea.update(progress);drawFrame();drawnOnce=true;
+  sea.setEnvironment(daylight.sourceTexture);sea.update(progress);drawFrame(target);drawnOnce=true;
   return {...frame,triangles:renderer.info.render.triangles,calls:renderer.info.render.calls,containers:model.bounds.containerCount};
  }
  // A restored context has lost every program and upload: warm again before the next visible frame.
  canvas.addEventListener('webglcontextrestored',()=>{warmed='';readyKey='';drawnOnce=false;});
- return {render,warm,ready:()=>readyKey!==''&&readyKey===stateKey(),get drawnOnce(){return drawnOnce;},model,scene,camera,renderer,daylight,shadowCache,invalidateShadows,dispose(){clearTimeout(settleTimer);lastFrame=null;sea.dispose();waterTarget.dispose();waterQuad.geometry.dispose();waterQuad.material.dispose();canvas.removeEventListener('webglcontextlost',releaseSurfaceGPU);canvas.removeEventListener('webglcontextrestored',invalidateShadows);daylight.dispose();model.group.userData.photographicMaterials?.dispose();model.group.userData.fabrication?.dispose();model.group.userData.selectedSurfaces?.dispose();model.group.userData.photoVessel?.dispose();renderer.dispose();}};
+ return {render,warm,ready:()=>readyKey!==''&&readyKey===stateKey(),get drawnOnce(){return drawnOnce;},model,scene,camera,renderer,daylight,shadowCache,invalidateShadows,dispose(){clearTimeout(settleTimer);lastFrame=null;sea.dispose();waterTarget.dispose();motionBuffer?.dispose();upscaleQuad.geometry.dispose();upscaleQuad.material.dispose();depthOnly.dispose();depthOnlyInstanced.dispose();waterQuad.geometry.dispose();waterQuad.material.dispose();canvas.removeEventListener('webglcontextlost',releaseSurfaceGPU);canvas.removeEventListener('webglcontextrestored',invalidateShadows);daylight.dispose();model.group.userData.photographicMaterials?.dispose();model.group.userData.fabrication?.dispose();model.group.userData.selectedSurfaces?.dispose();model.group.userData.photoVessel?.dispose();renderer.dispose();}};
 }
 
 const path=root.querySelector('.mm-road-line'),dashes=root.querySelector('.mm-road-dashes'),roadSvg=root.querySelector('.mm-road-svg'),topTruck=root.querySelector('.mm-top-truck'),roadView=root.querySelector('.mm-road-view');
