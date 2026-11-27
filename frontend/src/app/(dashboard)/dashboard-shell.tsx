@@ -5,7 +5,6 @@ import { AppSidebar } from "@/components/app-sidebar";
 import { SiteHeader } from "@/components/site-header";
 import { SiteFooter } from "@/components/site-footer";
 import { SidebarProvider, SidebarInset } from "@/components/ui/sidebar";
-import { ThemeCustomizer, ThemeCustomizerTrigger } from "@/components/theme-customizer";
 import { useSidebarConfig } from "@/hooks/use-sidebar-config";
 import { AuthProvider } from "@/contexts/auth-context";
 import { RequireAuth } from "@/components/auth/require-auth";
@@ -37,7 +36,6 @@ function DashboardShell({
 }: {
   children: React.ReactNode;
 }) {
-  const [themeCustomizerOpen, setThemeCustomizerOpen] = React.useState(false);
   const { config } = useSidebarConfig();
 
   return (
@@ -88,13 +86,6 @@ function DashboardShell({
           />
         </>
       )}
-
-      {/* Theme Customizer */}
-      <ThemeCustomizerTrigger onClick={() => setThemeCustomizerOpen(true)} />
-      <ThemeCustomizer
-        open={themeCustomizerOpen}
-        onOpenChange={setThemeCustomizerOpen}
-      />
     </SidebarProvider>
   );
 }
