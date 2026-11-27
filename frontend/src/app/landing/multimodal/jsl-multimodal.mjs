@@ -701,12 +701,21 @@ function initMarineDaylight(THREE,scene,renderer,canvas,lights,onReady){
    if(target){target.dispose();target=null;}
    if(!generator)generator=new THREE.PMREMGenerator(renderer);
    target=generator.fromEquirectangular(source);generator.dispose();generator=null;
-   scene.environment=target.texture;scene.environmentIntensity=.68;
-   // Keep the original sun direction and camera. The HDR supplies reflected
-   // daylight while a lower hemispheric fill restores directional contrast.
-   scene.environmentRotation.set(0,.8,0);
-   lights.ambient.intensity=.38;lights.sun.intensity=2.35;lights.fill.intensity=.16;
-   status.builds++;status.state='ready';status.error=null;refresh();
+   // The environment adds a define to every vessel material. Compile those programs with the environment
+   // in place but apply it only once they are ready, so a sea already on screen keeps drawing meanwhile.
+   const environment=target.texture,previous=scene.environment;
+   scene.environment=environment;
+   const compiled=renderer.compileAsync(scene,new THREE.OrthographicCamera());
+   scene.environment=previous;
+   compiled.catch(()=>{}).then(()=>{
+    if(disposed||target?.texture!==environment)return;
+    scene.environment=environment;scene.environmentIntensity=.68;
+    // Keep the original sun direction and camera. The HDR supplies reflected
+    // daylight while a lower hemispheric fill restores directional contrast.
+    scene.environmentRotation.set(0,.8,0);
+    lights.ambient.intensity=.38;lights.sun.intensity=2.35;lights.fill.intensity=.16;
+    status.builds++;status.state='ready';status.error=null;refresh();
+   });
   }catch(error){fail(error);}
  }
  function lost(){
@@ -2013,7 +2022,7 @@ function initMarineRuntime(THREE,canvas,roofImage){
  // The native close-up before the photo handoff fills the screen with physically shaded containers. While
  // it moves it draws at 60%, and the same frame is redrawn at full resolution once scrolling pauses. From
  // the handoff (.575, a match-cut) the vessel is a photograph and everything but the water stays sharp.
- const NATIVE_MOTION_SCALE=.6,PHOTO_HANDOFF=.575;let settleTimer=0,lastFrame=null;
+ const NATIVE_MOTION_SCALE=.6,TILT_START=.50,TILT_MOTION_SCALE=.45,PHOTO_HANDOFF=.575;let settleTimer=0,lastFrame=null;
  sea.water.layers.set(1);for(const light of [ambient,sun,fill])light.layers.enable(1);
  const waterTarget=new THREE.WebGLRenderTarget(1,1,{type:THREE.HalfFloatType,depthBuffer:true});
  const waterQuad=new THREE.Mesh(new THREE.PlaneGeometry(2,2),new THREE.ShaderMaterial({
@@ -2059,7 +2068,11 @@ function initMarineRuntime(THREE,canvas,roofImage){
    renderer.setRenderTarget(waterTarget);
    const intoWater=[renderer.compileAsync(sea.water,camera,scene),renderer.compileAsync(occluder,camera,scene)];
    renderer.setRenderTarget(null);
-   Promise.all([renderer.compileAsync(scene,camera),sea.compileWaves(renderer),...intoWater]).finally(()=>box.dispose()).then(()=>marineWhenQuiet(()=>{
+   const compiled=Promise.all([renderer.compileAsync(scene,camera),sea.compileWaves(renderer),...intoWater]).finally(()=>box.dispose());
+   // Once the sea has been drawn, the shadow programs exist: a later state (HDR, photograph) only needs its
+   // compiled programs, and the visible sea resumes without waiting for a quiet moment.
+   if(drawnOnce){compiled.then(()=>{if(stateKey()===key){readyKey=key;document.getElementById('jsl-marine-native')?.ucRender?.();}}).catch(()=>{});return;}
+   compiled.then(()=>marineWhenQuiet(()=>{
     if(renderer.getContext().isContextLost())return;
     renderer.shadowMap.needsUpdate=true;sun.shadow.needsUpdate=true;drawFrame();shadowKey='';
     if(stateKey()===key){readyKey=key;document.getElementById('jsl-marine-native')?.ucRender?.();}
@@ -2070,7 +2083,10 @@ function initMarineRuntime(THREE,canvas,roofImage){
   // HTML copy stays at device resolution. Bound the decorative WebGL surface:
   // a retina screen otherwise multiplies every water pixel.
   const full=Math.min(mobile?1.25:1,window.devicePixelRatio||1,Math.sqrt(1600000/(W*H)));
-  const native=progress<PHOTO_HANDOFF,ratio=full*(native&&!settled?NATIVE_MOTION_SCALE:1);
+  // The tilt from .50 turns the whole container stack on screen and is the heaviest stretch: it moves at a
+  // lower scale still. Any pause redraws the frame at full resolution.
+  const native=progress<PHOTO_HANDOFF,motionScale=progress>=TILT_START?TILT_MOTION_SCALE:NATIVE_MOTION_SCALE;
+  const ratio=full*(native&&!settled?motionScale:1);
   clearTimeout(settleTimer);lastFrame=null;
   if(native&&!settled){
    // Skip the refinement once the sea has left the screen (hidden canvas or sea view).
