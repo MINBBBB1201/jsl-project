@@ -74,8 +74,8 @@ export function AutomationLogCard() {
   const schedules = data?.schedules ?? []
 
   return (
-    <Card>
-      <CardHeader>
+    <Card className="gap-0 rounded-md py-0 shadow-none">
+      <CardHeader className="border-b py-4 [.border-b]:pb-4">
         <CardTitle className="flex items-center gap-2">
           <Bot className="size-4 text-muted-foreground" aria-hidden />
           운영 자동화
@@ -96,7 +96,7 @@ export function AutomationLogCard() {
         </CardAction>
       </CardHeader>
 
-      <CardContent className="space-y-4">
+      <CardContent className="space-y-4 py-5">
         {/* 등록된 스케줄 */}
         {schedules.length > 0 && (
           <div className="flex flex-wrap gap-2">

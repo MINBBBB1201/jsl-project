@@ -88,7 +88,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
                 </div>
                 <div className="grid flex-1 text-left text-sm leading-tight">
                   <span className="truncate font-medium">JSL Logistics</span>
-                  <span className="truncate text-xs">Logistics Dashboard</span>
+                  <span className="truncate text-xs">업무 포털</span>
                 </div>
               </Link>
             </SidebarMenuButton>

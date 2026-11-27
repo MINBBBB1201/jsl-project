@@ -229,8 +229,8 @@ export function ShipmentTable() {
 
   return (
     <>
-      <Card>
-      <CardHeader>
+      <Card className="gap-0 rounded-md py-0 shadow-none">
+      <CardHeader className="border-b py-4 [.border-b]:pb-4">
         <CardTitle className="flex items-center gap-2">
           <Package className="text-muted-foreground size-4" />
           화물 목록
@@ -254,7 +254,7 @@ export function ShipmentTable() {
         </CardAction>
       </CardHeader>
 
-      <CardContent className="space-y-4">
+      <CardContent className="space-y-4 py-5">
         <div className="flex flex-wrap items-center gap-2">
           <Select
             value={params.status || ALL}
@@ -376,7 +376,7 @@ export function ShipmentTable() {
       </CardContent>
 
       {!error && pagination && (
-        <CardFooter className="flex flex-wrap items-center justify-between gap-3 text-sm">
+        <CardFooter className="flex flex-wrap items-center justify-between gap-3 border-t py-4 text-sm [.border-t]:pt-4">
           <div className="text-muted-foreground tabular-nums">
             {pagination.total > 0
               ? `${pagination.total.toLocaleString("ko-KR")}건 중 ${from.toLocaleString("ko-KR")}–${to.toLocaleString("ko-KR")}`

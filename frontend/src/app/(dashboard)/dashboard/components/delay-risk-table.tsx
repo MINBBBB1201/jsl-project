@@ -83,8 +83,8 @@ export function DelayRiskTable() {
   const { data, isLoading, error, reload } = useRiskShipments(8)
 
   return (
-    <Card>
-      <CardHeader>
+    <Card className="gap-0 rounded-md py-0 shadow-none">
+      <CardHeader className="border-b py-4 [.border-b]:pb-4">
         <CardTitle className="flex items-center gap-2">
           <AlertTriangle className="size-4 text-muted-foreground" />
           지연 리스크 화물
@@ -106,7 +106,7 @@ export function DelayRiskTable() {
         </CardAction>
       </CardHeader>
 
-      <CardContent>
+      <CardContent className="py-5">
         {error ? (
           <div className="py-8 text-center text-sm text-destructive">{error}</div>
         ) : isLoading ? (

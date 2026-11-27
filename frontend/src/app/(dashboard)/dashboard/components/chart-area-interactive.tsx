@@ -111,8 +111,8 @@ export function ChartAreaInteractive() {
   }
 
   return (
-    <Card className="@container/card">
-      <CardHeader>
+    <Card className="@container/card gap-0 rounded-md py-0 shadow-none">
+      <CardHeader className="border-b py-4 [.border-b]:pb-4">
         <CardTitle>화물 처리 추이</CardTitle>
         <CardDescription>
           {trend ? (
@@ -181,7 +181,7 @@ export function ChartAreaInteractive() {
           </Select>
         </CardAction>
       </CardHeader>
-      <CardContent className="px-2 pt-4 sm:px-6 sm:pt-6">
+      <CardContent className="px-2 py-4 sm:px-6 sm:py-6">
         {error ? (
           <div className="text-destructive flex h-[250px] items-center justify-center text-center text-sm">
             {error}
@@ -198,32 +198,6 @@ export function ChartAreaInteractive() {
               "집하 4 + 완료 2 = 6" 처럼 읽히는 높이가 나오는데 그런 수치는 없다.
             */}
             <AreaChart data={trend.points}>
-              <defs>
-                <linearGradient id="fillCreated" x1="0" y1="0" x2="0" y2="1">
-                  <stop
-                    offset="5%"
-                    stopColor="var(--color-created)"
-                    stopOpacity={0.8}
-                  />
-                  <stop
-                    offset="95%"
-                    stopColor="var(--color-created)"
-                    stopOpacity={0.1}
-                  />
-                </linearGradient>
-                <linearGradient id="fillCompleted" x1="0" y1="0" x2="0" y2="1">
-                  <stop
-                    offset="5%"
-                    stopColor="var(--color-completed)"
-                    stopOpacity={0.8}
-                  />
-                  <stop
-                    offset="95%"
-                    stopColor="var(--color-completed)"
-                    stopOpacity={0.1}
-                  />
-                </linearGradient>
-              </defs>
               <CartesianGrid vertical={false} />
               <XAxis
                 dataKey="date"
@@ -251,14 +225,20 @@ export function ChartAreaInteractive() {
               <Area
                 dataKey="completed"
                 type="monotone"
-                fill="url(#fillCompleted)"
+                // 짙은 세로 그라디언트(템플릿 기본값)는 두 계열이 겹치는 곳이 탁한
+                // 갈색으로 섞였다. 옅은 단색 면 + 선으로 바꿔 겹쳐도 선이 읽히게 한다.
+                fill="var(--color-completed)"
+                fillOpacity={0.08}
                 stroke="var(--color-completed)"
+                strokeWidth={1.5}
               />
               <Area
                 dataKey="created"
                 type="monotone"
-                fill="url(#fillCreated)"
+                fill="var(--color-created)"
+                fillOpacity={0.08}
                 stroke="var(--color-created)"
+                strokeWidth={1.5}
               />
               {/* 계열이 둘이라 범례가 없으면 어느 쪽이 집하인지 알 수 없다 */}
               <ChartLegend content={<ChartLegendContent />} />
