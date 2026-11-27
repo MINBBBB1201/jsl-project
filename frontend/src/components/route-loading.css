@@ -1,0 +1,24 @@
+/*
+  라우트 로딩 진행 바 (components/route-loading.tsx).
+  실제 진행률을 알 수 없어 짧은 막대가 왼쪽에서 오른쪽으로 지나가는 무한 바로 둔다.
+  움직임 줄이기 설정에서는 멈춘 채 가운데에 머문다.
+*/
+@keyframes jsl-route-progress {
+  0% {
+    transform: translateX(-100%);
+  }
+  100% {
+    transform: translateX(350%);
+  }
+}
+
+.jsl-route-progress {
+  animation: jsl-route-progress 1.2s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .jsl-route-progress {
+    animation: none;
+    transform: translateX(150%);
+  }
+}

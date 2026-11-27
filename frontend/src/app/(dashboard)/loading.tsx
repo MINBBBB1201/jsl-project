@@ -1,1 +1,1 @@
-export { RouteLoading as default } from "@/components/route-loading";
+export { DashboardContentSkeleton as default } from "@/components/route-loading";
