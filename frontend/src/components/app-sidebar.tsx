@@ -10,7 +10,7 @@ import {
   Megaphone,
 } from "lucide-react"
 import Link from "next/link"
-import { Logo } from "@/components/logo"
+import Image from "next/image"
 
 import { NavMain } from "@/components/nav-main"
 import { NavUser } from "@/components/nav-user"
@@ -83,12 +83,20 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
           <SidebarMenuItem>
             <SidebarMenuButton size="lg" asChild>
               <Link href="/dashboard">
-                <div className="flex aspect-square size-8 items-center justify-center rounded-lg bg-primary text-primary-foreground">
-                  <Logo size={24} className="text-current" />
-                </div>
-                <div className="grid flex-1 text-left text-sm leading-tight">
-                  <span className="truncate font-medium">JSL Logistics</span>
-                  <span className="truncate text-xs">Logistics Dashboard</span>
+                {/*
+                  사이드바는 라이트·다크 모두 어두운 면이라 어두운 바탕용 워드마크를
+                  고정해서 쓴다. 정사각 마크(logo-mark.png)는 네이비 배경이 박혀 있어
+                  이 면 위에서 색이 따로 논다.
+                */}
+                <Image
+                  src="/logo-wordmark-dark.png"
+                  alt="JSL LOGISTICS CO., LTD"
+                  width={311}
+                  height={240}
+                  className="h-9 w-auto shrink-0 object-contain"
+                />
+                <div className="grid flex-1 text-left leading-tight">
+                  <span className="portal-eyebrow truncate !text-[#bcad9d]">Operations portal</span>
                 </div>
               </Link>
             </SidebarMenuButton>

@@ -2,7 +2,7 @@
 
 import * as React from "react"
 import { RotateCcw } from "lucide-react"
-import { Area, AreaChart, CartesianGrid, XAxis } from "recharts"
+import { Area, AreaChart, CartesianGrid, XAxis, YAxis } from "recharts"
 
 import { useIsMobile } from "@/hooks/use-mobile"
 import { Button } from "@/components/ui/button"
@@ -111,9 +111,9 @@ export function ChartAreaInteractive() {
   }
 
   return (
-    <Card className="@container/card">
-      <CardHeader>
-        <CardTitle>화물 처리 추이</CardTitle>
+    <Card className="@container/card gap-0 rounded-none border-x-0 border-b-0 border-t bg-transparent py-0 shadow-none">
+      <CardHeader className="px-0 pt-5 pb-3">
+        <CardTitle className="text-[17px] tracking-[-0.02em]">화물 처리 추이</CardTitle>
         <CardDescription>
           {trend ? (
             <>
@@ -181,7 +181,7 @@ export function ChartAreaInteractive() {
           </Select>
         </CardAction>
       </CardHeader>
-      <CardContent className="px-2 pt-4 sm:px-6 sm:pt-6">
+      <CardContent className="px-0 pt-2 pb-2">
         {error ? (
           <div className="text-destructive flex h-[250px] items-center justify-center text-center text-sm">
             {error}
@@ -198,33 +198,16 @@ export function ChartAreaInteractive() {
               "집하 4 + 완료 2 = 6" 처럼 읽히는 높이가 나오는데 그런 수치는 없다.
             */}
             <AreaChart data={trend.points}>
-              <defs>
-                <linearGradient id="fillCreated" x1="0" y1="0" x2="0" y2="1">
-                  <stop
-                    offset="5%"
-                    stopColor="var(--color-created)"
-                    stopOpacity={0.8}
-                  />
-                  <stop
-                    offset="95%"
-                    stopColor="var(--color-created)"
-                    stopOpacity={0.1}
-                  />
-                </linearGradient>
-                <linearGradient id="fillCompleted" x1="0" y1="0" x2="0" y2="1">
-                  <stop
-                    offset="5%"
-                    stopColor="var(--color-completed)"
-                    stopOpacity={0.8}
-                  />
-                  <stop
-                    offset="95%"
-                    stopColor="var(--color-completed)"
-                    stopOpacity={0.1}
-                  />
-                </linearGradient>
-              </defs>
               <CartesianGrid vertical={false} />
+              {/* 눈금이 없으면 선의 높이가 몇 건인지 읽을 수 없다. 건수라 정수만 쓴다 */}
+              <YAxis
+                width={32}
+                tickLine={false}
+                axisLine={false}
+                tickMargin={4}
+                tickCount={5}
+                allowDecimals={false}
+              />
               <XAxis
                 dataKey="date"
                 tickLine={false}
@@ -251,14 +234,18 @@ export function ChartAreaInteractive() {
               <Area
                 dataKey="completed"
                 type="monotone"
-                fill="url(#fillCompleted)"
+                // 면 채움은 뺀다. 두 계열이 겹치는 곳이 탁하게 섞이고, 이 차트가
+                // 답하는 것은 "어느 쪽이 위인가"라 선만으로 충분하다.
+                fill="none"
                 stroke="var(--color-completed)"
+                strokeWidth={2}
               />
               <Area
                 dataKey="created"
                 type="monotone"
-                fill="url(#fillCreated)"
+                fill="none"
                 stroke="var(--color-created)"
+                strokeWidth={2}
               />
               {/* 계열이 둘이라 범례가 없으면 어느 쪽이 집하인지 알 수 없다 */}
               <ChartLegend content={<ChartLegendContent />} />

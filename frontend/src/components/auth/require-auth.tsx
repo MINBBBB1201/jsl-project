@@ -2,9 +2,9 @@
 
 import * as React from "react"
 import { usePathname, useRouter } from "next/navigation"
-import { Loader2 } from "lucide-react"
 
 import { useAuth } from "@/contexts/auth-context"
+import { PortalShellSkeleton } from "@/components/route-loading"
 
 /**
  * 로그인하지 않은 접근을 로그인 화면으로 보낸다.
@@ -25,17 +25,12 @@ export function RequireAuth({ children }: { children: React.ReactNode }) {
   }, [status, pathname, router])
 
   if (status !== "authenticated") {
+    // 가운데 스피너 대신 포털 골격을 먼저 보여 준다. 확인이 끝나면 같은 자리에
+    // 사이드바·헤더가 들어서므로 화면이 덜 튄다.
     return (
-      <div
-        className="flex min-h-svh items-center justify-center"
-        role="status"
-        aria-live="polite"
-      >
-        <Loader2 className="size-6 animate-spin text-muted-foreground" aria-hidden />
-        <span className="sr-only">
-          {status === "loading" ? "로그인 상태를 확인하는 중" : "로그인 화면으로 이동 중"}
-        </span>
-      </div>
+      <PortalShellSkeleton
+        label={status === "loading" ? "로그인 상태를 확인하는 중" : "로그인 화면으로 이동 중"}
+      />
     )
   }
 

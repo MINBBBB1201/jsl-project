@@ -1,4 +1,5 @@
 import { RootDocument, rootMetadata } from "@/components/layout/root-document";
+import "@/app/portal-theme.css";
 
 import { DashboardLayoutClient } from "./dashboard-shell";
 
@@ -11,7 +12,7 @@ export default function DashboardLayout({
   children: React.ReactNode;
 }) {
   return (
-    <RootDocument lang="ko">
+    <RootDocument lang="ko" theme="portal">
       <DashboardLayoutClient>{children}</DashboardLayoutClient>
     </RootDocument>
   );

@@ -32,9 +32,15 @@ export const rootMetadata: Metadata = {
 
 export function RootDocument({
   lang,
+  theme,
   children,
 }: {
   lang: string;
+  /**
+   * "portal" 이면 <html> 에 portal 클래스를 붙여 업무 포털 테마
+   * (app/portal-theme.css)를 켠다. 그 스타일시트는 쓰는 레이아웃이 불러온다.
+   */
+  theme?: "portal";
   children: React.ReactNode;
 }) {
   /*
@@ -57,7 +63,7 @@ export function RootDocument({
   return (
     <html
       lang={lang}
-      className={`${generalSans.variable} ${poppins.variable} ${beVietnamPro.variable} antialiased`}
+      className={`${generalSans.variable} ${poppins.variable} ${beVietnamPro.variable} antialiased${theme ? ` ${theme}` : ""}`}
       suppressHydrationWarning
     >
       <body>

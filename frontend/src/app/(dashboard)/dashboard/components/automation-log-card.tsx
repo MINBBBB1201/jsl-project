@@ -1,7 +1,7 @@
 "use client"
 
 import * as React from "react"
-import { AlertCircle, Bot, CircleCheck, CircleX, RefreshCw } from "lucide-react"
+import { AlertCircle, CircleCheck, CircleX, RefreshCw } from "lucide-react"
 import { formatDistanceToNow } from "date-fns"
 import { ko } from "date-fns/locale"
 
@@ -74,10 +74,9 @@ export function AutomationLogCard() {
   const schedules = data?.schedules ?? []
 
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle className="flex items-center gap-2">
-          <Bot className="size-4 text-muted-foreground" aria-hidden />
+    <Card className="gap-0 rounded-none border-x-0 border-b-0 border-t bg-transparent py-0 shadow-none">
+      <CardHeader className="px-0 pt-5 pb-3">
+        <CardTitle className="text-[17px] tracking-[-0.02em]">
           운영 자동화
         </CardTitle>
         <CardDescription>
@@ -96,7 +95,7 @@ export function AutomationLogCard() {
         </CardAction>
       </CardHeader>
 
-      <CardContent className="space-y-4">
+      <CardContent className="space-y-4 px-0 pb-2">
         {/* 등록된 스케줄 */}
         {schedules.length > 0 && (
           <div className="flex flex-wrap gap-2">

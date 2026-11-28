@@ -21,28 +21,33 @@ export const SHIPMENT_STATUS_LABELS: Record<ShipmentStatus, string> = {
 }
 
 /**
- * 상태별 배지 색.
+ * 상태별 배지 모양.
  *
- * Badge 의 variant 는 4종뿐이라 6개 상태를 구분하지 못한다. 그래서 리스크 등급이
- * 쓰는 방식(lib/transport-modes.ts 의 RISK_LEVEL_STYLE)과 같이 색 클래스를 직접 준다.
- * 라이트/다크 양쪽 값을 함께 적어야 다크에서 글자가 배경에 묻히지 않는다.
+ * 예전에는 상태마다 색이 달랐다(파랑·남색·초록·빨강·노랑). 목록의 대부분이
+ * "운송중"이라 표 전체가 파란 알약 줄이 되고, 정작 봐야 할 예외·지연이 묻혔다.
+ * 포털 테마(app/portal-theme.css)에 맞춰 정상 흐름은 테두리 없는 글자로 두고
+ * (랜딩의 배지 처리와 같다), 조치가 필요한 상태만 주황 배지로 띄운다.
+ * 상태는 색이 아니라 글자로 읽힌다.
  */
+const PLAIN = "border-transparent px-0"
+
 const STATUS_STYLE: Record<ShipmentStatus, string> = {
-  pending: "bg-slate-100 text-slate-700 dark:bg-slate-800 dark:text-slate-300",
-  in_transit: "bg-blue-100 text-blue-800 dark:bg-blue-950 dark:text-blue-300",
-  out_for_delivery:
-    "bg-indigo-100 text-indigo-800 dark:bg-indigo-950 dark:text-indigo-300",
-  delivered:
-    "bg-emerald-100 text-emerald-800 dark:bg-emerald-950 dark:text-emerald-300",
-  exception: "bg-red-100 text-red-800 dark:bg-red-950 dark:text-red-300",
-  delayed: "bg-amber-100 text-amber-900 dark:bg-amber-950 dark:text-amber-300",
+  pending: `${PLAIN} text-muted-foreground`,
+  in_transit: `${PLAIN} text-foreground`,
+  out_for_delivery: `${PLAIN} text-foreground`,
+  delivered: `${PLAIN} text-muted-foreground`,
+  exception: "border-transparent bg-brand-orange text-[#17100b]",
+  delayed: "border-brand-orange-deep text-brand-orange-deep",
 }
 
-/** 등급 배지는 지연 리스크 화물 위젯과 같은 variant 를 쓴다 (delay-risk-table.tsx) */
-const LEVEL_VARIANT: Record<RiskLevel, "destructive" | "secondary" | "outline"> = {
-  지연: "destructive",
-  지연위험: "secondary",
-  정상: "outline",
+/**
+ * 등급 배지. 지연만 주황으로 채우고, 지연위험은 주황 선, 정상은 회색 글자다.
+ * 지연 리스크 화물 위젯(delay-risk-table.tsx)도 이 배지를 쓴다.
+ */
+const LEVEL_STYLE: Record<RiskLevel, string> = {
+  지연: "border-transparent bg-brand-orange text-[#17100b]",
+  지연위험: "border-brand-orange-deep text-brand-orange-deep",
+  정상: `${PLAIN} text-muted-foreground`,
 }
 
 export function ShipmentStatusBadge({
@@ -56,10 +61,7 @@ export function ShipmentStatusBadge({
   const style = STATUS_STYLE[known]
 
   return (
-    <Badge
-      variant="outline"
-      className={cn(style && "border-transparent", style, className)}
-    >
+    <Badge variant="outline" className={cn("font-normal", style, className)}>
       {SHIPMENT_STATUS_LABELS[known] ?? status}
     </Badge>
   )
@@ -74,5 +76,9 @@ export function ShipmentStatusBadge({
  */
 export function RiskLevelBadge({ level }: { level: RiskLevel | null }) {
   if (!level) return <span className="text-muted-foreground">—</span>
-  return <Badge variant={LEVEL_VARIANT[level]}>{level}</Badge>
+  return (
+    <Badge variant="outline" className={cn("font-normal", LEVEL_STYLE[level])}>
+      {level}
+    </Badge>
+  )
 }

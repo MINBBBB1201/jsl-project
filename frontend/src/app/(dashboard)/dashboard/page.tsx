@@ -3,17 +3,17 @@ import { ChartAreaInteractive } from "./components/chart-area-interactive"
 import { DelayRiskTable } from "./components/delay-risk-table"
 import { SectionCards } from "./components/section-cards"
 import { ShipmentTable } from "./components/shipment-table"
+import { PortalPageHeader } from "@/components/portal/portal-kit"
 
 export default function Page() {
   return (
     <>
-      {/* Page Title and Description */}
-      <div className="px-4 lg:px-6">
-        <div className="flex flex-col gap-2">
-          <h1 className="text-2xl font-bold tracking-tight">Dashboard</h1>
-          <p className="text-muted-foreground">Welcome to your admin dashboard</p>
-        </div>
-      </div>
+      <PortalPageHeader
+        eyebrow="Operations"
+        title="운영 현황"
+        tail="최근 30일"
+        description="화물 처리 실적과 진행 중인 배송의 지연 위험을 봅니다."
+      />
 
       <div className="@container/main px-4 lg:px-6 space-y-6">
         <SectionCards />

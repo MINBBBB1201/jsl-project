@@ -1,0 +1,258 @@
+/*
+  업무 포털(로그인·대시보드) 테마 — 랜딩의 승인된 주황 테마와 같은 값을 쓴다.
+
+  값의 출처는 app/landing/orange-theme.css 의 --jsl-* 여덟 개다
+  (night #17100b, panel #1e1712, paper #f3efe7, ink #28221c, muted #6e6459,
+  rule #c8beb1, orange #ff7a22, orange-text #a63f07). 랜딩은 .journey--orange
+  범위에서만 이 값을 쓰고, 포털은 예전 네이비 토큰(globals.css :root)을 그대로
+  물려받아 두 화면이 다른 사이트처럼 보였다.
+
+  ── 범위 ────────────────────────────────────────────────────────────────
+  <html class="portal"> 에만 걸린다 (components/layout/root-document.tsx 의
+  theme="portal"). 대화상자·드롭다운은 <body> 로 포털되므로 감싸는 div 가 아니라
+  <html> 에 걸어야 그쪽까지 색이 따라온다. 공개 페이지([locale])는 건드리지 않는다.
+
+  ── 왜 globals.css 를 고치지 않나 ───────────────────────────────────────
+  :root 값을 바꾸면 화물 조회·공지 같은 공개 페이지와 랜딩의 비-주황 구간까지
+  바뀐다. 이 파일은 층(@layer) 밖에 있어 Tailwind 유틸리티보다 항상 우선한다.
+
+  대비(계산값): ink/paper 13.6:1, muted/paper 5.0:1, orange-text/paper 5.6:1,
+  paper/night 16.6:1, #bcad9d/night 8.6:1. 주황 #ff7a22 는 paper 위 2.5:1 이라
+  글자색으로 쓰지 않는다 — 면(버튼의 화살표 칸, 지연 배지)과 선에만 쓴다.
+*/
+html.portal {
+  --radius: 0px;
+
+  --background: #f3efe7;
+  --foreground: #28221c;
+  --card: #f3efe7;
+  --card-foreground: #28221c;
+  --popover: #f8f5ef;
+  --popover-foreground: #28221c;
+  /* 버튼 기본색은 나이트다. 주황은 화면마다 한 곳(주요 동작의 화살표 칸)에만 둔다 */
+  --primary: #17100b;
+  --primary-foreground: #f3efe7;
+  --secondary: #e7e0d5;
+  --secondary-foreground: #28221c;
+  --muted: #e7e0d5;
+  --muted-foreground: #6e6459;
+  --accent: #e7e0d5;
+  --accent-foreground: #28221c;
+  --border: #d2c9bc;
+  --input: #938474;
+  --ring: #ff7a22;
+
+  --brand-navy-deep: #17100b;
+  --brand-slate: #bcad9d;
+  --brand-orange: #ff7a22;
+  --brand-orange-deep: #a63f07;
+  --brand-orange-light: #ff9239;
+  --brand-cta: #ff7a22;
+  --brand-cta-foreground: #17100b;
+
+  /* 차트: 주황 한 색과 잉크. 나머지는 무채색 단계 */
+  --chart-1: #ff7a22;
+  --chart-2: #28221c;
+  --chart-3: #8c8378;
+  --chart-4: #a63f07;
+  --chart-5: #c8beb1;
+
+  /* 사이드바는 랜딩 메뉴와 같은 나이트 면 */
+  --sidebar: #17100b;
+  --sidebar-foreground: #d1c5b8;
+  --sidebar-primary: #ff7a22;
+  --sidebar-primary-foreground: #17100b;
+  --sidebar-accent: #30251d;
+  --sidebar-accent-foreground: #f3efe7;
+  --sidebar-border: #3a2c22;
+  --sidebar-ring: #ff7a22;
+
+  /* 두 톤 제목의 낮춘 쪽 */
+  --portal-tail: #857b70;
+}
+
+html.portal.dark {
+  --background: #17100b;
+  --foreground: #f3efe7;
+  --card: #17100b;
+  --card-foreground: #f3efe7;
+  --popover: #1e1712;
+  --popover-foreground: #f3efe7;
+  --primary: #f3efe7;
+  --primary-foreground: #17100b;
+  --secondary: #30251d;
+  --secondary-foreground: #f3efe7;
+  --muted: #30251d;
+  --muted-foreground: #bcad9d;
+  --accent: #30251d;
+  --accent-foreground: #f3efe7;
+  --border: #3a2c22;
+  --input: #66503d;
+  --ring: #ff7a22;
+
+  --brand-orange-deep: #ff9239;
+  --brand-cta: #ff7a22;
+  --brand-cta-foreground: #17100b;
+
+  --chart-1: #ff7a22;
+  --chart-2: #d1c5b8;
+  --chart-3: #8f8275;
+  --chart-4: #ff9239;
+  --chart-5: #4b3a2d;
+
+  --sidebar: #120c08;
+  --sidebar-foreground: #bcad9d;
+  --sidebar-accent: #30251d;
+  --sidebar-accent-foreground: #f3efe7;
+  --sidebar-border: #3a2c22;
+
+  --portal-tail: #8f8275;
+}
+
+html.portal ::selection {
+  background: #ff7a22;
+  color: #17100b;
+}
+
+/*
+  각진 모서리. --radius 가 0 이면 rounded-sm/md/lg 는 0 이 되지만 rounded-xl 은
+  calc(var(--radius) + 4px) 라 4px 가 남는다. 아바타·스위치의 rounded-full 은 둔다.
+*/
+html.portal .rounded-xl,
+html.portal .rounded-2xl,
+html.portal [data-slot="card"] {
+  border-radius: 0;
+}
+
+/*
+  쉬고 있는 면의 그림자를 없앤다. box-shadow 를 직접 지우면 포커스 링(같은
+  속성으로 합성된다)까지 사라지므로 Tailwind 의 그림자 변수만 비운다.
+  떠 있는 것(메뉴·대화상자)은 그대로 둔다.
+*/
+html.portal
+  :is(
+    [data-slot="button"],
+    [data-slot="input"],
+    [data-slot="textarea"],
+    [data-slot="select-trigger"],
+    [data-slot="card"],
+    [data-slot="badge"]
+  ) {
+  --tw-shadow: 0 0 #0000;
+}
+
+/* ── 랜딩에서 가져온 부품 ────────────────────────────────────────────────
+   랜딩 스타일시트(app/landing/journey.css)는 .journey 아래 장면 전체를 담고
+   있어 통째로 불러올 수 없다. 그래서 값만 옮겨 적는다. 랜딩 쪽 값이 바뀌면
+   여기도 맞춰야 한다 — 옮겨 온 원본 선택자를 줄마다 적어 둔다. */
+
+/* 작은 라벨 ← .journey-eyebrow (11px / .09em / 600 / 대문자).
+   히어로에서는 주황(#ff7a33)인데 종이색 위에서는 대비가 모자라 주황 글자색을 쓴다. */
+html.portal .portal-eyebrow {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.09em;
+  line-height: 1.4;
+  text-transform: uppercase;
+  color: var(--brand-orange-deep);
+}
+html.portal .portal-eyebrow--quiet {
+  color: var(--muted-foreground);
+}
+
+/* 화면 제목 ← .journey-intro h2 (첫 줄은 잉크, 뒤따르는 말은 한 톤 낮춤).
+   랜딩은 65px 까지 커지지만 매일 보는 화면이라 30px 에서 멈춘다. */
+html.portal .portal-title {
+  font-size: clamp(24px, 2.1vw, 30px);
+  font-weight: 700;
+  letter-spacing: -0.045em;
+  line-height: 1.15;
+  word-break: keep-all;
+}
+html.portal .portal-title-tail {
+  margin-left: 0.4em;
+  color: var(--portal-tail);
+}
+
+/* 버튼은 알약 ← .journey-editorial [data-slot=button]{border-radius:100px} */
+html.portal [data-slot="button"] {
+  border-radius: 100px;
+}
+
+/* 주요 동작 ← .journey-pill (주황 테마: 주황 면에 나이트 글자, 오른쪽 위 화살표) */
+html.portal .portal-pill {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 14px;
+  min-height: 46px;
+  padding: 12px 24px;
+  border-radius: 100px;
+  background: #ff7a22;
+  color: #17100b;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition:
+    background 0.2s,
+    transform 0.2s;
+}
+html.portal .portal-pill:hover:not(:disabled) {
+  background: #ff9239;
+  transform: translateY(-1px);
+}
+html.portal .portal-pill:focus-visible {
+  outline: 2px solid #ff7a22;
+  outline-offset: 4px;
+}
+html.portal .portal-pill:disabled {
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+/* 로그인 패널의 주황 지평선 ← .journey-horizon (히어로 아래쪽의 빛나는 호).
+   타원 하나에 그림자 세 겹이다. 타원 색을 페이지 바탕색으로 두어 패널 아래가
+   페이지로 이어져 보이게 한다. */
+html.portal .portal-horizon {
+  position: absolute;
+  bottom: -250px;
+  left: -25%;
+  width: 150%;
+  height: 330px;
+  border-radius: 50%;
+  background: var(--background);
+  box-shadow:
+    0 -20px 25px #f7dcc0,
+    0 -50px 55px #f0782f,
+    0 -80px 70px #9c2f06;
+  pointer-events: none;
+}
+html.portal.dark .portal-horizon {
+  box-shadow:
+    0 -14px 22px #f0782f,
+    0 -44px 55px #9c2f06;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html.portal .portal-pill {
+    transition: none;
+  }
+  html.portal .portal-pill:hover:not(:disabled) {
+    transform: none;
+  }
+}
+
+/* ── 표 ────────────────────────────────────────────────────────────────
+   머리줄은 회색 12px 보통 굵기(데이터보다 조용하게), 첫·끝 칸은 안쪽 여백을
+   없애 구역 제목과 같은 왼쪽·오른쪽 선에 맞춘다. */
+html.portal [data-slot="table-head"] {
+  color: var(--muted-foreground);
+  font-size: 12px;
+  font-weight: 400;
+}
+html.portal [data-slot="table"] :is(th, td):first-child {
+  padding-left: 0;
+}
+html.portal [data-slot="table"] :is(th, td):last-child {
+  padding-right: 0;
+}

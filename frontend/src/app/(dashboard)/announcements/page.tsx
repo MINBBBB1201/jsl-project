@@ -30,6 +30,7 @@ import { EditBodyDialog } from "./components/edit-body-dialog"
 import { NewNoticeDialog } from "./components/new-notice-dialog"
 import { useNotices } from "./use-notices"
 import type { Notice } from "./types"
+import { PortalPageHeader } from "@/components/portal/portal-kit"
 
 const formatDate = (value: string | null | undefined) => {
   if (!value) return "—"
@@ -140,12 +141,12 @@ export default function NoticesPage() {
 
   return (
     <div className="space-y-6 px-4 lg:px-6">
-      <div className="flex flex-col gap-2">
-        <h1 className="text-2xl font-bold tracking-tight">공지사항</h1>
-        <p className="text-muted-foreground">
-          사내 공지사항을 작성·발행합니다. 발행한 공지만 공개 페이지에 노출됩니다.
-        </p>
-      </div>
+      <PortalPageHeader
+        className="px-0 lg:px-0"
+        eyebrow="Announcements"
+        title="공지사항"
+        description="사내 공지사항을 작성·발행합니다. 발행한 공지만 공개 페이지에 노출됩니다."
+      />
 
       <Card>
         <CardHeader>
