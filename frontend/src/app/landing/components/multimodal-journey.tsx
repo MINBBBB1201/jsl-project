@@ -14,6 +14,41 @@ type Guest = HTMLElement & {
   marineRuntime?: { dispose(): void; renderer?: { forceContextLoss(): void } }
 }
 
+/**
+ * 해상 장면 프레임을 페이지가 한가할 때 미리 받아 둔다.
+ *
+ * 프레임 재생기(jsl-multimodal.mjs initMarineFrames)는 이 섹션 엔진이 뜬 뒤에야
+ * 다운로드를 시작한다. 측정해 보니 프레임(데스크톱 160장, 약 11MB)을 다 받기 전에
+ * 해상 구간에 닿으면 프레임이 비어 끊겼고(최대 67ms), 다 받은 뒤에는 같은 구간이
+ * 초당 120프레임이었다. 그래서 첫 화면이 다 그려진 뒤 유휴 시간에 같은 주소로 먼저
+ * 받아 HTTP 캐시에 넣는다(next.config.ts 의 /images 캐시 헤더). 재생기는 같은
+ * 주소를 다시 부르므로 캐시에서 바로 받는다.
+ *
+ * 데이터 절약, 느린 회선, 동작 줄이기 설정에서는 하지 않는다(재생기도 그때는 일부만 받는다).
+ * 재생기와 같은 순서(듬성듬성 → 촘촘히)로, 한 번에 3개씩만 받는다.
+ */
+function prefetchSeaFrames(signal: AbortSignal) {
+  const connection = (navigator as Navigator & { connection?: { saveData?: boolean; effectiveType?: string; downlink?: number } }).connection || {}
+  const lite = connection.saveData === true || /^(slow-)?2g$/.test(connection.effectiveType || "") ||
+    (typeof connection.downlink === "number" && connection.downlink > 0 && connection.downlink < 1.5) ||
+    matchMedia("(prefers-reduced-motion: reduce)").matches
+  if (lite) return
+  const base = `/images/multimodal/sea-frames/${matchMedia("(max-width:767px)").matches ? "mobile" : "desktop"}`
+  fetch(`${base}/manifest.json`, { signal }).then(r => (r.ok ? r.json() : null)).then((manifest: { frames?: { file: string }[] } | null) => {
+    const frames = manifest?.frames
+    if (!frames || signal.aborted) return
+    const order: number[] = [], seen = new Set<number>()
+    for (const stride of [16, 8, 4, 2, 1]) for (let i = 0; i < frames.length; i += stride) if (!seen.has(i)) { seen.add(i); order.push(i) }
+    let next = 0
+    const pump = (): void => {
+      if (signal.aborted || next >= order.length) return
+      const file = frames[order[next++]].file
+      fetch(`${base}/${file}`, { signal, priority: "low" } as RequestInit).then(r => r.blob()).catch(() => {}).finally(pump)
+    }
+    for (let k = 0; k < 3; k++) pump()
+  }).catch(() => {})
+}
+
 // Mode order of the guest's service buttons (`data-mode`).
 const GUEST_MODES = ["AIR", "SEA", "TRUCK", "RAIL", "EXPRESS"]
 // The guest's road, operations and process frames finish at 31% of its range.
@@ -52,6 +87,16 @@ export function MultimodalJourney() {
   const [loadFailed, setLoadFailed] = useState(false)
 
   // Reduced motion has no journey engine, but same-page Next links still need target focus.
+  useEffect(() => {
+    // 첫 화면이 다 그려진 뒤 유휴 시간에 해상 프레임을 미리 받는다 (prefetchSeaFrames 주석 참고)
+    const controller = new AbortController()
+    const idle = (cb: () => void) => (typeof window.requestIdleCallback === "function" ? window.requestIdleCallback(cb, { timeout: 4000 }) : setTimeout(cb, 1500))
+    const begin = () => idle(() => prefetchSeaFrames(controller.signal))
+    if (document.readyState === "complete") begin()
+    else window.addEventListener("load", begin, { once: true })
+    return () => { controller.abort(); window.removeEventListener("load", begin) }
+  }, [])
+
   useEffect(() => {
     if (!reduced) return
     let frame = 0
