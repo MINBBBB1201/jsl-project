@@ -2066,6 +2066,103 @@ function initMarineRuntime(THREE,canvas,roofImage){
  return {render,warm,model,scene,camera,renderer,daylight,shadowCache,invalidateShadows,dispose(){clearTimeout(settleTimer);lastFrame=null;waterTarget.dispose();waterQuad.geometry.dispose();waterQuad.material.dispose();canvas.removeEventListener('webglcontextlost',releaseSurfaceGPU);canvas.removeEventListener('webglcontextrestored',invalidateShadows);daylight.dispose();model.group.userData.photographicMaterials?.dispose();model.group.userData.fabrication?.dispose();model.group.userData.selectedSurfaces?.dispose();model.group.userData.photoVessel?.dispose();renderer.dispose();}};
 }
 
+// The sea as a pre-rendered sequence. The real-time renderer above (vessel, physical materials, HDR
+// daylight, shadows, per-pixel water) needed a capable GPU and stalled or dropped frames on ordinary
+// machines. The same frames are rendered ahead of time (tools/sea-frames: `?sea=3d` keeps the live
+// renderer for that) and drawn here by scroll progress, so the cost no longer depends on the device.
+// Files arrive coarse to fine (every 16th first, then the gaps) and stay compressed in memory. Only the
+// frames around the reader are decoded, off the main thread (createImageBitmap), more of them ahead in
+// the scroll direction; the rest are released. A frame that is not decoded yet is never decoded on the
+// spot: the nearest decoded frame stands in, so fast scrolling costs a coarser image, never a stall.
+// Capture positions are denser where the picture changes faster (tools/sea-frames/plan.cjs). Data-saver, very slow connections and
+// reduced motion fetch only the coarse set.
+function initMarineFrames(canvas,base){
+ const context=canvas.getContext('2d',{alpha:false});
+ const connection=navigator.connection||{};
+ // effectiveType reads "3g" for any round trip above ~270 ms even on a fast line, so bandwidth decides.
+ const lite=connection.saveData===true||/^(slow-)?2g$/.test(connection.effectiveType||'')||(connection.downlink>0&&connection.downlink<1.5)||matchMedia('(prefers-reduced-motion: reduce)').matches;
+ const AHEAD=10,BEHIND=4,KEEP=18,COARSE=16,DECODES=3;
+ const sets=new Map();let current=null,drawn=false,lastKey='',disposed=false,lastProgress=0,direction=1;
+ const status={state:'loading',fetched:0,decoded:0,total:0,lite};
+ const refresh=()=>{if(!disposed)document.getElementById('jsl-marine-native')?.ucRender?.();};
+ function load(name){
+  if(sets.has(name))return sets.get(name);
+  const set={name,frames:[],blobs:[],bitmaps:new Map(),pending:new Set(),queue:[],active:0,ready:false};sets.set(name,set);
+  fetch(`${base}/${name}/manifest.json`).then(r=>r.ok?r.json():Promise.reject(new Error(r.status))).then(manifest=>{
+   if(disposed)return;
+   set.frames=manifest.frames;set.blobs=new Array(set.frames.length).fill(null);status.total=set.frames.length;
+   const order=[],seen=new Set();
+   for(const stride of lite?[COARSE]:[COARSE,8,4,2,1])for(let i=0;i<set.frames.length;i+=stride)if(!seen.has(i)){seen.add(i);order.push(i);}
+   if(!seen.has(set.frames.length-1))order.push(set.frames.length-1);
+   let next=0;
+   const pump=()=>{
+    if(disposed||next>=order.length)return;
+    const index=order[next++];
+    fetch(`${base}/${name}/${set.frames[index].file}`).then(r=>r.ok?r.blob():Promise.reject(new Error(r.status))).then(blob=>{
+     if(disposed)return;set.blobs[index]=blob;status.fetched++;
+     // Coarse frames stay decoded: they are the stand-ins while the reader outruns the decoder.
+     if(index%COARSE===0||index===set.frames.length-1)request(set,index,true);
+    }).catch(()=>{}).finally(pump);
+   };
+   for(let k=0;k<6;k++)pump();
+  }).catch(error=>{status.state='failed';status.error=String(error);});
+  return set;
+ }
+ function request(set,index,urgent){
+  if(set.bitmaps.has(index)||set.pending.has(index)||!set.blobs[index])return;
+  set.pending.add(index);if(urgent)set.queue.unshift(index);else set.queue.push(index);decode(set);
+ }
+ function decode(set){
+  while(set.active<DECODES&&set.queue.length){
+   const index=set.queue.shift();set.active++;
+   createImageBitmap(set.blobs[index]).then(bitmap=>{
+    if(disposed||!set.pending.has(index)){bitmap.close();return;}
+    set.bitmaps.set(index,bitmap);set.ready=true;status.decoded=set.bitmaps.size;if(set===current)refresh();
+   }).catch(()=>{}).finally(()=>{set.pending.delete(index);set.active--;decode(set);});
+  }
+ }
+ // Decode the window around the reader (ahead in the scroll direction first) and release what fell out.
+ function schedule(set,centre){
+  const last=set.frames.length-1;set.queue.length=0;
+  for(let k=0;k<=AHEAD;k++){const i=centre+direction*k;if(i>=0&&i<=last)request(set,i,false);if(k&&k<=BEHIND){const j=centre-direction*k;if(j>=0&&j<=last)request(set,j,false);}}
+  for(const [i,bitmap] of set.bitmaps)if(Math.abs(i-centre)>KEEP&&i%COARSE!==0&&i!==last){bitmap.close();set.bitmaps.delete(i);}
+  for(const i of set.pending)if(Math.abs(i-centre)>KEEP&&i%COARSE!==0)set.pending.delete(i);
+  status.decoded=set.bitmaps.size;
+ }
+ function nearestDecoded(set,from,step){for(let i=from;i>=0&&i<set.frames.length;i+=step)if(set.bitmaps.has(i))return i;return -1;}
+ function cover(bitmap){
+  const cw=canvas.width,ch=canvas.height,iw=bitmap.width,ih=bitmap.height;
+  const scale=Math.max(cw/iw,ch/ih),w=iw*scale,h=ih*scale;
+  context.drawImage(bitmap,(cw-w)/2,(ch-h)/2,w,h);
+ }
+ return {kind:'frames',status,ready:()=>!!current?.ready,get drawnOnce(){return drawn;},warm(){},
+  // Start fetching before the sequence is on screen (the road section gives the time).
+  preload(mobile){current=load(mobile?'mobile':'desktop');},
+  render(progress,W,H,mobile){
+   current=load(mobile?'mobile':'desktop');
+   const ratio=Math.min(window.devicePixelRatio||1,1.5),cw=Math.round(W*ratio),ch=Math.round(H*ratio);
+   if(canvas.width!==cw||canvas.height!==ch){canvas.width=cw;canvas.height=ch;lastKey='';}
+   if(progress!==lastProgress){direction=progress>lastProgress?1:-1;lastProgress=progress;}
+   const frames=current.frames;if(!frames.length)return {frames:'loading'};
+   let hi=frames.findIndex(f=>f.progress>=progress);if(hi<0)hi=frames.length-1;
+   const lo=frames[hi].progress>progress&&hi>0?hi-1:hi;
+   schedule(current,direction>0?lo:hi);
+   if(!current.ready)return {frames:'loading'};
+   // The closest captured frame, or the closest decoded one while it is still decoding. No cross-fade:
+   // blending two frames of a fast zoom drew the containers twice.
+   const want=Math.abs(frames[lo].progress-progress)<=Math.abs(frames[hi].progress-progress)?lo:hi;
+   let shown=want;
+   if(!current.bitmaps.has(want)){
+    const a=nearestDecoded(current,want,-1),b=nearestDecoded(current,want,1);
+    shown=a<0?b:b<0?a:Math.abs(frames[a].progress-progress)<=Math.abs(frames[b].progress-progress)?a:b;
+   }
+   const key=shown+'/'+cw+'x'+ch;
+   if(key!==lastKey){lastKey=key;cover(current.bitmaps.get(shown),1);drawn=true;status.state='ready';}
+   return {frames:current.name,frame:shown,wanted:want,decoded:status.decoded,fetched:status.fetched,lite};
+  },
+  dispose(){disposed=true;for(const set of sets.values()){for(const bitmap of set.bitmaps.values())bitmap.close();set.bitmaps.clear();}sets.clear();}};
+}
+const seaFramesBase='/images/multimodal/sea-frames',seaLive=/[?&]sea=3d\b/.test(location.search);
 const path=root.querySelector('.mm-road-line'),dashes=root.querySelector('.mm-road-dashes'),roadSvg=root.querySelector('.mm-road-svg'),topTruck=root.querySelector('.mm-top-truck'),roadView=root.querySelector('.mm-road-view');
 let roadMetrics=null;
 const sea=root.querySelector('.mm-sea-view'),water=root.querySelector('.mm-water'),ship=root.querySelector('.mm-ship'),seaTitle=root.querySelector('.mm-sea-title'),seaCopies=root.querySelectorAll('.mm-sea-copy');
@@ -2076,7 +2173,7 @@ const nativeCanvas=root.querySelector('.mm-native-canvas'),nativeStill=root.quer
 const nativePoster=root.querySelector('.mm-native-poster');let nativeFailed=false,nativeContextLost=false,marineBuildQueued=false;
 function buildMarine(){
  if(disposed||nativeMarine||nativeFailed)return;
- try{nativeMarine=initMarineRuntime(window.JslMarineThree,nativeCanvas,cargoPhoto);root.marineRuntime=nativeMarine;nativeMarine.warm();}
+ try{nativeMarine=seaLive?initMarineRuntime(window.JslMarineThree,nativeCanvas,cargoPhoto):initMarineFrames(nativeCanvas,seaFramesBase);root.marineRuntime=nativeMarine;nativeMarine.warm();}
  catch(error){nativeFailed=true;screen.dataset.nativeError=error.message;console.warn('Marine rendering unavailable:',error.message);}
 }
 // The failure poster is not downloaded on every healthy journey load.
@@ -2210,7 +2307,9 @@ function updateMultimodal(raw,W,H,mobile){
  // Build the sea in the first pause after the journey loads (1.5 screens before it), well ahead of the
  // covered road-to-sea handoff. A reader who scrolls straight through without pausing meets the build at
  // the handoff, as before. Nothing is drawn off screen.
- const marineAvailable=!nativeFailed&&!nativeContextLost&&!!window.JslMarineThree&&cargoPhoto.complete&&!!cargoPhoto.naturalWidth;
+ const marineAvailable=!nativeFailed&&!nativeContextLost&&(!seaLive||!!window.JslMarineThree)&&cargoPhoto.complete&&!!cargoPhoto.naturalWidth;
+ // The frame sequence starts downloading as soon as the journey loads, well before the handoff.
+ if(!seaLive&&!nativeMarine&&marineAvailable&&progress<.84){buildMarine();nativeMarine?.preload?.(mobile);}
  if(marineAvailable&&!nativeMarine&&!marineBuildQueued&&progress<.84){marineBuildQueued=true;marineWhenQuiet(buildMarine);}
  nativeMarine?.warm();
  // A reader who never pauses still gets the setup well before the handoff: from a quarter of the way along
@@ -2225,7 +2324,9 @@ function updateMultimodal(raw,W,H,mobile){
    }catch(error){nativeFailed=true;screen.dataset.nativeError=error.message;console.warn('Marine rendering unavailable:',error.message);}
   }
  }
- const nativeUnavailable=progress>=.455&&progress<.84&&(!nativeMarine||nativeFailed||nativeContextLost);
+ // Until the first frames arrive, the poster stands in (the live renderer is always ready once built).
+ const nativeWaiting=!!nativeMarine&&nativeMarine.kind==='frames'&&!nativeMarine.ready()&&!nativeMarine.drawnOnce;
+ const nativeUnavailable=progress>=.455&&progress<.84&&(!nativeMarine||nativeFailed||nativeContextLost||nativeWaiting);
  if(marineVisible&&nativeUnavailable&&!nativePoster.querySelector('img').getAttribute('src')){
   const mobileSource=nativePoster.querySelector('source');
   mobileSource.setAttribute('srcset',mobileSource.dataset.srcset);

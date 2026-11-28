@@ -11,7 +11,7 @@ import "./multimodal-journey.css"
 type Guest = HTMLElement & {
   ucRender?: () => void
   ucDispose?: () => void
-  marineRuntime?: { dispose(): void; renderer: { forceContextLoss(): void } }
+  marineRuntime?: { dispose(): void; renderer?: { forceContextLoss(): void } }
 }
 
 // Mode order of the guest's service buttons (`data-mode`).
@@ -148,15 +148,19 @@ export function MultimodalJourney() {
           if (guest.isConnected) return
           guest.ucDispose?.()
           guest.marineRuntime?.dispose()
-          guest.marineRuntime?.renderer.forceContextLoss()
+          guest.marineRuntime?.renderer?.forceContextLoss()
         }, 0)
       })
 
-      void import("three").then(THREE => {
-        if (cancelled) return
-        Object.assign(window, { JslMarineThree: THREE })
-        window.dispatchEvent(new Event("jsl-marine-ready"))
-      }).catch(() => {}) // without Three.js the engine keeps its static fallback
+      // The sea plays pre-rendered frames. Three.js is loaded only for `?sea=3d`, the live renderer that
+      // produces those frames (see tools/sea-frames).
+      if (/[?&]sea=3d\b/.test(window.location.search)) {
+        void import("three").then(THREE => {
+          if (cancelled) return
+          Object.assign(window, { JslMarineThree: THREE })
+          window.dispatchEvent(new Event("jsl-marine-ready"))
+        }).catch(() => {}) // without Three.js the engine keeps its static fallback
+      }
       const [{ gsap }, { ScrollTrigger }] = await Promise.all([import("gsap"), import("gsap/ScrollTrigger")])
       if (cancelled) return
       gsap.registerPlugin(ScrollTrigger)
