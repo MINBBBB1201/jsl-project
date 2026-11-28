@@ -2,6 +2,9 @@ const express = require("express");
 const router = express.Router();
 const { body, param, query, validationResult } = require("express-validator");
 const shipmentController = require("../controllers/shipment.controller");
+const importController = require("../controllers/shipment/import.controller");
+const multer = require("multer");
+const rateLimit = require("express-rate-limit");
 const { requireAuth, requireRole } = require("../middleware/auth.middleware");
 const { SHIPMENT_WRITE_ROLES } = require("../models/user.model");
 
@@ -83,6 +86,38 @@ router.get(
 
 // 랜딩 히어로용 공개 집계 (등급별 건수만 — 화물 단위 정보 없음).
 // ⚠️ '/:trackingNumber' 보다 먼저 선언해야 한다.
+// ── 엑셀 업로드 (운영 권한만) ──────────────────────────────────────────
+// 메모리에 2MB 까지만 받고 디스크에 쓰지 않는다. 분당 10회로 제한한다.
+const importUpload = multer({
+  storage: multer.memoryStorage(),
+  limits: { fileSize: 2 * 1024 * 1024, files: 1, fields: 3 },
+});
+const importLimiter = rateLimit({
+  windowMs: 60 * 1000,
+  limit: 10,
+  // 테스트는 한 파일에서 수십 번 부르므로 제한을 건너뛴다
+  skip: () => process.env.NODE_ENV === "test",
+  standardHeaders: "draft-7",
+  legacyHeaders: false,
+  message: { success: false, error: "요청이 너무 잦습니다. 잠시 후 다시 시도해 주세요." },
+});
+router.get("/import/template", requireShipmentWrite, importController.downloadTemplate);
+router.post(
+  "/import",
+  importLimiter,
+  requireShipmentWrite,
+  (req, res, next) =>
+    importUpload.single("file")(req, res, (err) =>
+      err
+        ? res.status(err.code === "LIMIT_FILE_SIZE" ? 413 : 400).json({
+            success: false,
+            error: err.code === "LIMIT_FILE_SIZE" ? "파일은 2MB 이하여야 합니다." : "업로드 오류입니다.",
+          })
+        : next(),
+    ),
+  importController.importShipments,
+);
+
 router.get("/public-summary", shipmentController.getPublicSummary);
 
 // 공개 조회 화면의 예시 번호 안내용 (번호만 반환).

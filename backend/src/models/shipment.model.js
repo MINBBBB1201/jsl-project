@@ -148,9 +148,10 @@ const shipmentSchema = new mongoose.Schema(
         type: String,
         required: true,
       },
+      // 엑셀 업로드 양식에서 선택 항목이라 모델에서는 필수가 아니다.
+      // 직접 등록하는 POST /api/shipments 는 라우트 검증이 이메일을 계속 요구한다.
       email: {
         type: String,
-        required: true,
       },
       phone: String,
     },
