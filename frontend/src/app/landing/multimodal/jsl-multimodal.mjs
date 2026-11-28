@@ -2084,7 +2084,9 @@ function initMarineFrames(canvas,base){
  const connection=navigator.connection||{};
  // effectiveType reads "3g" for any round trip above ~270 ms even on a fast line, so bandwidth decides.
  /* 절약 모드(16장 간격만 받음)는 사용자가 데이터 절약을 켰거나 동작 줄이기를 켰을 때만. 예전에는 navigator.connection 의 downlink·effectiveType 추정값도 봤는데, Windows Chrome 이 빠른 회선에서도 1.5Mbps 안팎·3g 로 추정해 절약 모드가 켜졌고, 선박이 16장씩 건너뛰며 멈춘 듯 끊겼다(실제 방문 녹화로 확인). */const lite=connection.saveData===true||matchMedia('(prefers-reduced-motion: reduce)').matches;
- const AHEAD=10,BEHIND=4,KEEP=18,COARSE=16,DECODES=3;
+ /* 동시 디코딩은 2장. 3장이면 디코딩 스레드가 GPU 합성과 CPU를 다퉈 컨테이너→선박 구간에서 50~180ms 끊김이 잦았다
+    (배포본 1440px 10회: 3장 38번, 2장 6번 / 520px 3회: 14번 대 5번). 1장은 디코딩이 뒤처져 더 나빴다. */
+ const AHEAD=10,BEHIND=4,KEEP=18,COARSE=16,DECODES=2;
  const sets=new Map();let current=null,drawn=false,lastKey='',disposed=false,lastProgress=0,direction=1;
  const status={state:'loading',fetched:0,decoded:0,total:0,lite};
  const refresh=()=>{if(!disposed)document.getElementById('jsl-marine-native')?.ucRender?.();};
