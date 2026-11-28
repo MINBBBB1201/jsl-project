@@ -40,6 +40,7 @@ import {
 import { DocumentStatusBadge, DocumentTypeBadge, TYPE_LABELS, STATUS_LABELS } from "./components/badges"
 import { NewDocumentDialog } from "./components/new-document-dialog"
 import { useTradeDocumentList } from "./use-trade-documents"
+import { PortalPageHeader } from "@/components/portal/portal-kit"
 
 /** 전체 선택을 뜻하는 값. Radix Select 는 빈 문자열을 value 로 못 쓴다. */
 const ALL = "all"
@@ -95,13 +96,12 @@ export default function TradeDocumentsPage() {
 
   return (
     <div className="space-y-6 px-4 lg:px-6">
-      <div className="flex flex-col gap-2">
-        <h1 className="text-2xl font-bold tracking-tight">무역서류</h1>
-        <p className="text-muted-foreground">
-          상업송장·포장명세서·프로포마를 화물과 연결해 저장·발행·개정합니다.
-          단가·HS코드 같은 상업 정보는 화물 데이터에 없어 직접 입력해야 합니다.
-        </p>
-      </div>
+      <PortalPageHeader
+        className="px-0 lg:px-0"
+        eyebrow="Trade documents"
+        title="무역서류"
+        description="상업송장·포장명세서·프로포마를 화물과 연결해 저장·발행·개정합니다. 단가·HS코드 같은 상업 정보는 화물 데이터에 없어 직접 입력해야 합니다."
+      />
 
       <Card>
         <CardHeader>

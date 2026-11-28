@@ -7,7 +7,6 @@ import {
   ArrowUpDown,
   ChevronLeft,
   ChevronRight,
-  Package,
   RotateCcw,
 } from "lucide-react"
 
@@ -135,7 +134,7 @@ function SortHeader({
       <button
         type="button"
         onClick={() => onSort(field)}
-        className="text-foreground -mx-1 flex cursor-pointer items-center gap-1 rounded px-1 py-0.5 whitespace-nowrap hover:underline"
+        className="hover:text-foreground -mx-1 flex cursor-pointer items-center gap-1 px-1 py-0.5 whitespace-nowrap hover:underline"
       >
         {SORT_LABELS[field]}
         <Icon
@@ -229,10 +228,9 @@ export function ShipmentTable() {
 
   return (
     <>
-      <Card className="gap-0 rounded-md py-0 shadow-none">
-      <CardHeader className="border-b py-4 [.border-b]:pb-4">
-        <CardTitle className="flex items-center gap-2">
-          <Package className="text-muted-foreground size-4" />
+      <Card className="gap-0 rounded-none border-x-0 border-b-0 border-t bg-transparent py-0 shadow-none">
+      <CardHeader className="px-0 pt-5 pb-3">
+        <CardTitle className="text-[17px] tracking-[-0.02em]">
           화물 목록
         </CardTitle>
         <CardDescription>
@@ -254,7 +252,7 @@ export function ShipmentTable() {
         </CardAction>
       </CardHeader>
 
-      <CardContent className="space-y-4 py-5">
+      <CardContent className="space-y-4 px-0 pb-2">
         <div className="flex flex-wrap items-center gap-2">
           <Select
             value={params.status || ALL}
@@ -376,7 +374,7 @@ export function ShipmentTable() {
       </CardContent>
 
       {!error && pagination && (
-        <CardFooter className="flex flex-wrap items-center justify-between gap-3 border-t py-4 text-sm [.border-t]:pt-4">
+        <CardFooter className="flex flex-wrap items-center justify-between gap-3 border-t px-0 py-3 text-sm [.border-t]:pt-3">
           <div className="text-muted-foreground tabular-nums">
             {pagination.total > 0
               ? `${pagination.total.toLocaleString("ko-KR")}건 중 ${from.toLocaleString("ko-KR")}–${to.toLocaleString("ko-KR")}`

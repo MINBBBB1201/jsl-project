@@ -1,8 +1,8 @@
 "use client"
 
-import { AlertTriangle, RotateCcw } from "lucide-react"
+import { RotateCcw } from "lucide-react"
 
-import { Badge } from "@/components/ui/badge"
+import { RiskLevelBadge } from "./shipment-badges"
 import { Button } from "@/components/ui/button"
 import { Skeleton } from "@/components/ui/skeleton"
 import {
@@ -24,15 +24,8 @@ import {
 import {
   TRANSPORT_MODE_LABELS,
   useRiskShipments,
-  type RiskLevel,
   type RiskShipment,
 } from "../use-delay-summary"
-
-const LEVEL_VARIANT: Record<RiskLevel, "destructive" | "secondary" | "outline"> = {
-  지연: "destructive",
-  지연위험: "secondary",
-  정상: "outline",
-}
 
 const formatDate = (value: string | null) => {
   if (!value) return "—"
@@ -69,7 +62,7 @@ function Row({ shipment }: { shipment: RiskShipment }) {
         {formatRatio(risk.score)}
       </TableCell>
       <TableCell className="text-right">
-        <Badge variant={LEVEL_VARIANT[level]}>{level}</Badge>
+        <RiskLevelBadge level={level} />
       </TableCell>
     </TableRow>
   )
@@ -83,10 +76,9 @@ export function DelayRiskTable() {
   const { data, isLoading, error, reload } = useRiskShipments(8)
 
   return (
-    <Card className="gap-0 rounded-md py-0 shadow-none">
-      <CardHeader className="border-b py-4 [.border-b]:pb-4">
-        <CardTitle className="flex items-center gap-2">
-          <AlertTriangle className="size-4 text-muted-foreground" />
+    <Card className="gap-0 rounded-none border-x-0 border-b-0 border-t bg-transparent py-0 shadow-none">
+      <CardHeader className="px-0 pt-5 pb-3">
+        <CardTitle className="text-[17px] tracking-[-0.02em]">
           지연 리스크 화물
         </CardTitle>
         <CardDescription>
@@ -106,7 +98,7 @@ export function DelayRiskTable() {
         </CardAction>
       </CardHeader>
 
-      <CardContent className="py-5">
+      <CardContent className="px-0 pb-2">
         {error ? (
           <div className="py-8 text-center text-sm text-destructive">{error}</div>
         ) : isLoading ? (

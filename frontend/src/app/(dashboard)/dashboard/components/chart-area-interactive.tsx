@@ -2,7 +2,7 @@
 
 import * as React from "react"
 import { RotateCcw } from "lucide-react"
-import { Area, AreaChart, CartesianGrid, XAxis } from "recharts"
+import { Area, AreaChart, CartesianGrid, XAxis, YAxis } from "recharts"
 
 import { useIsMobile } from "@/hooks/use-mobile"
 import { Button } from "@/components/ui/button"
@@ -111,9 +111,9 @@ export function ChartAreaInteractive() {
   }
 
   return (
-    <Card className="@container/card gap-0 rounded-md py-0 shadow-none">
-      <CardHeader className="border-b py-4 [.border-b]:pb-4">
-        <CardTitle>화물 처리 추이</CardTitle>
+    <Card className="@container/card gap-0 rounded-none border-x-0 border-b-0 border-t bg-transparent py-0 shadow-none">
+      <CardHeader className="px-0 pt-5 pb-3">
+        <CardTitle className="text-[17px] tracking-[-0.02em]">화물 처리 추이</CardTitle>
         <CardDescription>
           {trend ? (
             <>
@@ -181,7 +181,7 @@ export function ChartAreaInteractive() {
           </Select>
         </CardAction>
       </CardHeader>
-      <CardContent className="px-2 py-4 sm:px-6 sm:py-6">
+      <CardContent className="px-0 pt-2 pb-2">
         {error ? (
           <div className="text-destructive flex h-[250px] items-center justify-center text-center text-sm">
             {error}
@@ -199,6 +199,15 @@ export function ChartAreaInteractive() {
             */}
             <AreaChart data={trend.points}>
               <CartesianGrid vertical={false} />
+              {/* 눈금이 없으면 선의 높이가 몇 건인지 읽을 수 없다. 건수라 정수만 쓴다 */}
+              <YAxis
+                width={32}
+                tickLine={false}
+                axisLine={false}
+                tickMargin={4}
+                tickCount={5}
+                allowDecimals={false}
+              />
               <XAxis
                 dataKey="date"
                 tickLine={false}
@@ -225,20 +234,18 @@ export function ChartAreaInteractive() {
               <Area
                 dataKey="completed"
                 type="monotone"
-                // 짙은 세로 그라디언트(템플릿 기본값)는 두 계열이 겹치는 곳이 탁한
-                // 갈색으로 섞였다. 옅은 단색 면 + 선으로 바꿔 겹쳐도 선이 읽히게 한다.
-                fill="var(--color-completed)"
-                fillOpacity={0.08}
+                // 면 채움은 뺀다. 두 계열이 겹치는 곳이 탁하게 섞이고, 이 차트가
+                // 답하는 것은 "어느 쪽이 위인가"라 선만으로 충분하다.
+                fill="none"
                 stroke="var(--color-completed)"
-                strokeWidth={1.5}
+                strokeWidth={2}
               />
               <Area
                 dataKey="created"
                 type="monotone"
-                fill="var(--color-created)"
-                fillOpacity={0.08}
+                fill="none"
                 stroke="var(--color-created)"
-                strokeWidth={1.5}
+                strokeWidth={2}
               />
               {/* 계열이 둘이라 범례가 없으면 어느 쪽이 집하인지 알 수 없다 */}
               <ChartLegend content={<ChartLegendContent />} />

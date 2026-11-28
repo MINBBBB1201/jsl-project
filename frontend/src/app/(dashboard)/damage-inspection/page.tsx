@@ -8,6 +8,7 @@ import { ImageUploader } from "./components/image-uploader"
 import { InspectionHistory } from "./components/inspection-history"
 import { InspectionResultCard, RateLimitNotice } from "./components/inspection-result"
 import { useDamageInspection, useInspectionHistory } from "./use-damage-inspection"
+import { PortalPageHeader } from "@/components/portal/portal-kit"
 
 export default function DamageInspectionPage() {
   const { result, isInspecting, error, isRateLimited, inspect, reset } =
@@ -33,14 +34,12 @@ export default function DamageInspectionPage() {
 
   return (
     <div className="space-y-6 px-4 lg:px-6">
-      {/* 제목 */}
-      <div className="flex flex-col gap-2">
-        <h1 className="text-2xl font-bold tracking-tight">화물 파손 판정</h1>
-        <p className="text-muted-foreground">
-          화물 사진을 올리면 AI가 손상 여부를 1차로 확인합니다. 최종 판단은
-          담당자가 실물을 확인한 뒤 내려주세요.
-        </p>
-      </div>
+      <PortalPageHeader
+        className="px-0 lg:px-0"
+        eyebrow="Damage inspection"
+        title="화물 파손 판정"
+        description="화물 사진을 올리면 AI가 손상 여부를 1차로 확인합니다. 최종 판단은 담당자가 실물을 확인한 뒤 내려주세요."
+      />
 
       {/* 기능 성격 고지 — 과장하지 않기 위해 상단에 명시 */}
       <Card className="border-dashed">
