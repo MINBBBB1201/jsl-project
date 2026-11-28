@@ -71,17 +71,19 @@ const toneOf = (status: string, level: RiskLevel | null): Tone => {
 }
 
 const TONE_STYLE: Record<Tone, { fill: string; line: string; text: string; ring: string }> = {
+  // 주황 테마(app/portal-theme.css): 정상 진행은 잉크색, 지연위험은 브랜드 주황,
+  // 지연·예외만 빨강으로 둔다. 초록·노랑 신호등 색은 쓰지 않는다.
   normal: {
-    fill: "bg-emerald-500 text-white dark:bg-emerald-600",
-    line: "bg-emerald-500 dark:bg-emerald-600",
-    text: "text-emerald-700 dark:text-emerald-400",
-    ring: "ring-emerald-500/30",
+    fill: "bg-foreground text-background",
+    line: "bg-foreground",
+    text: "text-foreground",
+    ring: "ring-foreground/20",
   },
   warning: {
-    fill: "bg-amber-500 text-white dark:bg-amber-600",
-    line: "bg-amber-500 dark:bg-amber-600",
-    text: "text-amber-700 dark:text-amber-400",
-    ring: "ring-amber-500/30",
+    fill: "bg-brand-orange text-[#17100b]",
+    line: "bg-brand-orange",
+    text: "text-brand-orange-deep",
+    ring: "ring-brand-orange/30",
   },
   danger: {
     fill: "bg-red-500 text-white dark:bg-red-600",

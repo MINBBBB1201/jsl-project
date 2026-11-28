@@ -179,7 +179,7 @@ export function TrackingClient() {
           className="flex-1"
           disabled={isLoading}
         />
-        <Button type="submit" disabled={isLoading} className="cursor-pointer">
+        <Button type="submit" variant="brand" disabled={isLoading} className="cursor-pointer">
           {isLoading ? (
             <Loader2 className="size-4 animate-spin" />
           ) : (

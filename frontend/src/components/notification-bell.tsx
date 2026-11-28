@@ -30,7 +30,7 @@ const TYPE_STYLE: Record<
 > = {
   contact: {
     icon: Mail,
-    className: "text-sky-600 dark:text-sky-400",
+    className: "text-muted-foreground",
     label: "문의",
   },
   "delay-risk": {

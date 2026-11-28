@@ -7,6 +7,8 @@ import { LogoWordmark } from '@/components/logo'
 import { LandingFooter } from '@/app/landing/components/footer'
 import { useTranslations } from 'next-intl'
 import { LanguageSwitcher } from '@/components/language-switcher'
+import { useEffect } from 'react'
+import '@/app/portal-theme.css'
 
 /**
  * 공개 페이지(로그인 불필요) 공용 셸.
@@ -18,8 +20,17 @@ import { LanguageSwitcher } from '@/components/language-switcher'
 export function PublicPageShell({ children }: { children: React.ReactNode }) {
   const t = useTranslations('common')
 
+  // 업무 포털과 같은 주황 테마(app/portal-theme.css). 셸 안은 .portal-surface 가 서버
+  // 렌더부터 칠하고, <body> 로 포털되는 드롭다운·대화상자까지 같은 색을 쓰도록 셸이
+  // 떠 있는 동안 <html> 에도 portal 클래스를 붙인다.
+  useEffect(() => {
+    const html = document.documentElement
+    html.classList.add('portal')
+    return () => html.classList.remove('portal')
+  }, [])
+
   return (
-    <div className="min-h-screen bg-background flex flex-col">
+    <div className="portal-surface min-h-screen bg-background flex flex-col">
       <header className="border-b sticky top-0 z-40 bg-background/80 backdrop-blur-sm">
         {/* 바 높이와 로고 크기는 랜딩 헤더(navbar.tsx)와 같은 값을 쓴다.
             두 헤더를 오가며 로고가 커졌다 작아졌다 하면 안 된다 —

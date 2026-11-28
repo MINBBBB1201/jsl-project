@@ -31,11 +31,11 @@ export const RISK_LEVEL_STYLE: Record<
 > = {
   정상: {
     badge:
-      "bg-emerald-100 text-emerald-800 dark:bg-emerald-950 dark:text-emerald-300",
+      "bg-muted text-muted-foreground",
     description: "예상 소요일 대비 정상 범위에서 운송 중입니다.",
   },
   지연위험: {
-    badge: "bg-amber-100 text-amber-900 dark:bg-amber-950 dark:text-amber-300",
+    badge: "bg-[#ffe7d3] text-[#a63f07] dark:bg-[#3a2416] dark:text-[#ff9239]",
     description: "예상 도착일이 임박했습니다. 지연될 수 있습니다.",
   },
   지연: {
