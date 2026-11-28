@@ -2083,7 +2083,7 @@ function initMarineFrames(canvas,base){
  const context=canvas.getContext('2d',{alpha:false});
  const connection=navigator.connection||{};
  // effectiveType reads "3g" for any round trip above ~270 ms even on a fast line, so bandwidth decides.
- const lite=connection.saveData===true||/^(slow-)?2g$/.test(connection.effectiveType||'')||(connection.downlink>0&&connection.downlink<1.5)||matchMedia('(prefers-reduced-motion: reduce)').matches;
+ /* 절약 모드(16장 간격만 받음)는 사용자가 데이터 절약을 켰거나 동작 줄이기를 켰을 때만. 예전에는 navigator.connection 의 downlink·effectiveType 추정값도 봤는데, Windows Chrome 이 빠른 회선에서도 1.5Mbps 안팎·3g 로 추정해 절약 모드가 켜졌고, 선박이 16장씩 건너뛰며 멈춘 듯 끊겼다(실제 방문 녹화로 확인). */const lite=connection.saveData===true||matchMedia('(prefers-reduced-motion: reduce)').matches;
  const AHEAD=10,BEHIND=4,KEEP=18,COARSE=16,DECODES=3;
  const sets=new Map();let current=null,drawn=false,lastKey='',disposed=false,lastProgress=0,direction=1;
  const status={state:'loading',fetched:0,decoded:0,total:0,lite};
@@ -2141,6 +2141,9 @@ function initMarineFrames(canvas,base){
  return {kind:'frames',status,ready:()=>!!current?.ready,get drawnOnce(){return drawn;},warm(){},
   // Start fetching before the sequence is on screen (the road section gives the time).
   preload(mobile){current=load(mobile?'mobile':'desktop');},
+  // 컨테이너→선박 전환이 시작되면(장면 36%) 해상 첫 장면들을 미리 디코딩한다. 예전에는 렌더가 시작되는 43%에야
+  // 시작해서, 휠로 빠르게 내리면 선박 첫 장면이 몇 장 늦게 따라왔다.
+  prime(mobile){current=load(mobile?'mobile':'desktop');if(current.frames.length){direction=1;schedule(current,0);}},
   render(progress,W,H,mobile){
    current=load(mobile?'mobile':'desktop');
    const ratio=Math.min(window.devicePixelRatio||1,1.5),cw=Math.round(W*ratio),ch=Math.round(H*ratio);
@@ -2324,6 +2327,7 @@ function updateMultimodal(raw,W,H,mobile){
  // A reader who never pauses still gets the setup well before the handoff: from a quarter of the way along
  // the road, one pending step per frame. Shader compilation itself stays off the page's thread.
  if(progress>=.25&&progress<.84&&marinePending.size)runOneMarineTask();
+ if(marineVisible&&progress>=.36&&progress<.43&&marineAvailable&&nativeMarine&&nativeMarine.prime)nativeMarine.prime(mobile);
  if(marineVisible&&progress>=.43&&progress<.84&&marineAvailable){
   if(!nativeMarine){marinePending.delete(buildMarine);buildMarine();}
   // Once the white air stage has covered the sea (from .82), the hidden canvas is not redrawn.

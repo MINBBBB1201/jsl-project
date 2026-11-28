@@ -29,9 +29,8 @@ type Guest = HTMLElement & {
  */
 function prefetchSeaFrames(signal: AbortSignal) {
   const connection = (navigator as Navigator & { connection?: { saveData?: boolean; effectiveType?: string; downlink?: number } }).connection || {}
-  const lite = connection.saveData === true || /^(slow-)?2g$/.test(connection.effectiveType || "") ||
-    (typeof connection.downlink === "number" && connection.downlink > 0 && connection.downlink < 1.5) ||
-    matchMedia("(prefers-reduced-motion: reduce)").matches
+  // 회선 추정값(downlink·effectiveType)은 Windows Chrome 에서 빠른 회선도 느리게 잡아 쓰지 않는다 (재생기와 같은 기준)
+  const lite = connection.saveData === true || matchMedia("(prefers-reduced-motion: reduce)").matches
   if (lite) return
   const base = `/images/multimodal/sea-frames/${matchMedia("(max-width:767px)").matches ? "mobile" : "desktop"}`
   fetch(`${base}/manifest.json`, { signal }).then(r => (r.ok ? r.json() : null)).then((manifest: { frames?: { file: string }[] } | null) => {
