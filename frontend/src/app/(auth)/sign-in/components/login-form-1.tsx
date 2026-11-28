@@ -9,8 +9,8 @@ import { z } from "zod"
 import { AlertCircle, Loader2 } from "lucide-react"
 
 import { cn } from "@/lib/utils"
-import { Button } from "@/components/ui/button"
 import { AuthHeading } from "@/components/auth/auth-shell"
+import { PillButton } from "@/components/portal/portal-kit"
 import { Input } from "@/components/ui/input"
 import {
   Form,
@@ -73,7 +73,6 @@ export function LoginForm1({
   return (
     <div className={cn("flex flex-col", className)} {...props}>
       <AuthHeading
-        eyebrow="Sign in"
         title="로그인"
         description="사내 계정으로 로그인하세요. 화물 조회는 로그인 없이 이용할 수 있습니다."
       />
@@ -130,23 +129,19 @@ export function LoginForm1({
               {error && (
                 <p
                   role="alert"
-                  className="flex items-start gap-2 rounded-md border border-destructive/50 p-3 text-sm text-destructive"
+                  className="flex items-start gap-2 border border-destructive/50 p-3 text-sm text-destructive"
                 >
                   <AlertCircle className="mt-0.5 size-4 shrink-0" aria-hidden />
                   {error}
                 </p>
               )}
 
-              <Button
-                type="submit"
-                className="h-11 w-full cursor-pointer text-[15px]"
-                disabled={isSubmitting}
-              >
+              <PillButton type="submit" disabled={isSubmitting}>
                 {isSubmitting && (
                   <Loader2 className="size-4 animate-spin" aria-hidden />
                 )}
                 {isSubmitting ? "로그인 중..." : "로그인"}
-              </Button>
+              </PillButton>
             </div>
             <div className="border-t pt-5 text-sm text-muted-foreground">
               계정이 필요하신가요?{" "}

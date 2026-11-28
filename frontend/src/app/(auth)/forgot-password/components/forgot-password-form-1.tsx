@@ -26,7 +26,6 @@ export function ForgotPasswordForm1({
   return (
     <div className={cn("flex flex-col", className)} {...props}>
       <AuthHeading
-        eyebrow="Password"
         title="비밀번호 재설정"
         description="사내 계정 비밀번호는 관리자가 재발급합니다."
       />

@@ -10,6 +10,7 @@ import { AlertCircle, CheckCircle2, Loader2, Mail } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
 import { AuthHeading } from "@/components/auth/auth-shell"
+import { PillButton } from "@/components/portal/portal-kit"
 import { Input } from "@/components/ui/input"
 import {
   Form,
@@ -62,7 +63,6 @@ function GuidanceCard({ status }: { status: "loading" | "unauthenticated" | "sal
   return (
     <div>
       <AuthHeading
-        eyebrow="Account"
         title="계정 발급 안내"
         description="JSL 업무 포털은 사내 계정으로만 이용할 수 있습니다."
       />
@@ -154,7 +154,6 @@ export function SignupForm1({
   return (
     <div className={cn("flex flex-col", className)} {...props}>
       <AuthHeading
-        eyebrow="Account"
         title="직원 계정 발급"
         description={`관리자(${user.email})로 로그인되어 있습니다. 새 직원 계정을 발급합니다.`}
       />
@@ -252,7 +251,7 @@ export function SignupForm1({
             {error && (
               <p
                 role="alert"
-                className="flex items-start gap-2 rounded-md border border-destructive/50 p-3 text-sm text-destructive"
+                className="flex items-start gap-2 border border-destructive/50 p-3 text-sm text-destructive"
               >
                 <AlertCircle className="mt-0.5 size-4 shrink-0" aria-hidden />
                 {error}
@@ -262,21 +261,17 @@ export function SignupForm1({
             {created && (
               <p
                 role="status"
-                className="flex items-start gap-2 rounded-md border border-primary/40 p-3 text-sm"
+                className="flex items-start gap-2 border border-primary/40 p-3 text-sm"
               >
                 <CheckCircle2 className="mt-0.5 size-4 shrink-0 text-primary" aria-hidden />
                 {created.email} 계정을 발급했습니다 ({ROLE_LABELS[created.role]}).
               </p>
             )}
 
-            <Button
-              type="submit"
-              className="h-11 w-full cursor-pointer"
-              disabled={isSubmitting}
-            >
+            <PillButton type="submit" disabled={isSubmitting}>
               {isSubmitting && <Loader2 className="size-4 animate-spin" aria-hidden />}
               {isSubmitting ? "발급 중..." : "계정 발급"}
-            </Button>
+            </PillButton>
 
             <Button asChild variant="ghost" className="w-full cursor-pointer">
               <Link href="/dashboard">대시보드로 돌아가기</Link>
