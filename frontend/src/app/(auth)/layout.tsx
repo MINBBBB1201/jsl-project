@@ -3,6 +3,7 @@ import type { Metadata } from "next";
 import { AuthProvider } from "@/contexts/auth-context";
 import { AuthShell } from "@/components/auth/auth-shell";
 import { RootDocument, rootMetadata } from "@/components/layout/root-document";
+import "@/app/portal-theme.css";
 
 export const metadata: Metadata = {
   ...rootMetadata,
@@ -19,7 +20,7 @@ export default function AuthLayout({
   children: React.ReactNode;
 }) {
   return (
-    <RootDocument lang="ko">
+    <RootDocument lang="ko" theme="portal">
       <AuthProvider>
         <AuthShell>{children}</AuthShell>
       </AuthProvider>

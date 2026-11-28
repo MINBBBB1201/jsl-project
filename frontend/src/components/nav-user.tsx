@@ -9,7 +9,6 @@ import {
 import Link from "next/link"
 import { useRouter } from "next/navigation"
 
-import { Logo } from "@/components/logo"
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -27,6 +26,21 @@ import {
 } from "@/components/ui/sidebar"
 import { useAuth } from "@/contexts/auth-context"
 import { ROLE_LABELS } from "@/lib/auth"
+
+/**
+ * 이름 첫 글자를 담은 사각 칸. 예전에는 모든 사용자에게 회사 로고 타일을 아바타처럼
+ * 보여 줬는데, 누가 로그인했는지 구분되지 않고 네이비 타일이 이 면에서 색이 따로 놀았다.
+ */
+function UserInitial({ name }: { name: string }) {
+  return (
+    <span
+      aria-hidden="true"
+      className="bg-sidebar-accent text-sidebar-accent-foreground grid size-8 shrink-0 place-items-center text-sm font-semibold"
+    >
+      {name.trim().charAt(0) || "—"}
+    </span>
+  )
+}
 
 export function NavUser() {
   const { isMobile } = useSidebar()
@@ -53,9 +67,7 @@ export function NavUser() {
               size="lg"
               className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground cursor-pointer"
             >
-              <div className="flex h-8 w-8 items-center justify-center rounded-lg">
-                < Logo size={28} />
-              </div>
+              <UserInitial name={name} />
               <div className="grid flex-1 text-left text-sm leading-tight">
                 <span className="truncate font-medium">{name}</span>
                 <span className="text-muted-foreground truncate text-xs">
@@ -73,9 +85,7 @@ export function NavUser() {
           >
             <DropdownMenuLabel className="p-0 font-normal">
               <div className="flex items-center gap-2 px-1 py-1.5 text-left text-sm">
-                <div className="h-8 w-8 rounded-lg">
-                  < Logo size={28} />
-                </div>
+                <UserInitial name={name} />
                 <div className="grid flex-1 text-left text-sm leading-tight">
                   <span className="truncate font-medium">
                     {name}

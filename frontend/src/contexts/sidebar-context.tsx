@@ -17,7 +17,8 @@ export const SidebarContext = React.createContext<SidebarContextValue | null>(nu
 
 export function SidebarConfigProvider({ children }: { children: React.ReactNode }) {
   const [config, setConfig] = React.useState<SidebarConfig>({
-    variant: "inset",
+    // 본문이 둥근 카드처럼 떠 있는 inset 대신, 선 하나로 나뉘는 기본형을 쓴다
+    variant: "sidebar",
     collapsible: "offcanvas", 
     side: "left"
   })
